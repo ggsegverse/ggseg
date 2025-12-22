@@ -37,7 +37,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">ggseg</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.6.7.9000</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.6.8</span>
       </span>
     </div>
 
@@ -190,13 +190,13 @@ features object. You can actually call <code>plot</code> directly on the
 data, and the standard simple features plot will appear.</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">dk</span><span class="op">$</span><span class="va">data</span><span class="op">)</span></span></code></pre></div>
-<p><img src="ggseg_files/figure-html/unnamed-chunk-3-1.png" class="r-plt" width="576"></p>
+<p><img src="ggseg_files/figure-html/unnamed-chunk-3-1.png" class="r-plt" alt="" width="576"></p>
 <p>Even better, though, you should call <code>plot</code> directly on
 the atlas object. This will give you a fast overview of the atlas you
 are thinking of using.</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">dk</span><span class="op">)</span></span></code></pre></div>
-<p><img src="ggseg_files/figure-html/unnamed-chunk-4-1.png" class="r-plt" width="576"></p>
+<p><img src="ggseg_files/figure-html/unnamed-chunk-4-1.png" class="r-plt" alt="" width="576"></p>
 <p>You will notice that the new atlas-class has better resolution and
 default values that what you get from the ggseg-atlas class.</p>
 <div class="section level3">
@@ -314,7 +314,7 @@ the <code>region</code> column.</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="../reference/ggbrain.html">geom_brain</a></span><span class="op">(</span>atlas <span class="op">=</span> <span class="va">dk</span><span class="op">)</span></span></code></pre></div>
-<p><img src="ggseg_files/figure-html/unnamed-chunk-7-1.png" class="r-plt" width="576"></p>
+<p><img src="ggseg_files/figure-html/unnamed-chunk-7-1.png" class="r-plt" alt="" width="576"></p>
 <p>This new geom makes it possible for you to also better control the
 position of the brain slices, using specialized function for this to the
 position argument. The <code>position_brain</code> function takes a
@@ -323,7 +323,7 @@ positions of the slices.</p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="../reference/ggbrain.html">geom_brain</a></span><span class="op">(</span>atlas <span class="op">=</span> <span class="va">dk</span>, position <span class="op">=</span> <span class="fu"><a href="../reference/position_brain.html">position_brain</a></span><span class="op">(</span><span class="va">hemi</span> <span class="op">~</span> <span class="va">side</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
-<p><img src="ggseg_files/figure-html/unnamed-chunk-8-1.png" class="r-plt" width="576"></p>
+<p><img src="ggseg_files/figure-html/unnamed-chunk-8-1.png" class="r-plt" alt="" width="576"></p>
 <p>A new addition to the positions, is the ability to also specify the
 order directly through a character vector. By default, the position
 is:</p>
@@ -336,7 +336,7 @@ is:</p>
 <span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="../reference/ggbrain.html">geom_brain</a></span><span class="op">(</span>atlas <span class="op">=</span> <span class="va">dk</span>, position <span class="op">=</span> <span class="fu"><a href="../reference/position_brain.html">position_brain</a></span><span class="op">(</span><span class="va">cortical_pos</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
-<p><img src="ggseg_files/figure-html/unnamed-chunk-9-1.png" class="r-plt" width="576"></p>
+<p><img src="ggseg_files/figure-html/unnamed-chunk-9-1.png" class="r-plt" alt="" width="576"></p>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span></span>
 <span><span class="co"># Which can easily be switched around!</span></span>
@@ -349,7 +349,7 @@ is:</p>
 <span></span>
 <span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="../reference/ggbrain.html">geom_brain</a></span><span class="op">(</span>atlas <span class="op">=</span> <span class="va">dk</span>, position <span class="op">=</span> <span class="fu"><a href="../reference/position_brain.html">position_brain</a></span><span class="op">(</span><span class="va">cortical_pos</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
-<p><img src="ggseg_files/figure-html/unnamed-chunk-9-2.png" class="r-plt" width="576"></p>
+<p><img src="ggseg_files/figure-html/unnamed-chunk-9-2.png" class="r-plt" alt="" width="576"></p>
 </div>
 <div class="section level3">
 <h3 id="reducing-slices">Reducing slices<a class="anchor" aria-label="anchor" href="#reducing-slices"></a>
@@ -362,19 +362,19 @@ works.</p>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="../reference/ggbrain.html">geom_brain</a></span><span class="op">(</span>atlas <span class="op">=</span> <span class="va">dk</span>, side <span class="op">=</span> <span class="st">"lateral"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="ggseg_files/figure-html/unnamed-chunk-10-1.png" class="r-plt" width="576"></p>
+<p><img src="ggseg_files/figure-html/unnamed-chunk-10-1.png" class="r-plt" alt="" width="576"></p>
 <div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span></span>
 <span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="../reference/ggbrain.html">geom_brain</a></span><span class="op">(</span>atlas <span class="op">=</span> <span class="va">dk</span>, hemi <span class="op">=</span> <span class="st">"left"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="ggseg_files/figure-html/unnamed-chunk-10-2.png" class="r-plt" width="576"></p>
+<p><img src="ggseg_files/figure-html/unnamed-chunk-10-2.png" class="r-plt" alt="" width="576"></p>
 <p>This also should work for subcortical atlases, but the hemisphere
 (<code>hemi</code>) specification should be used carefully, as it might
 end up looking quite different than what you intended!</p>
 <div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="../reference/ggbrain.html">geom_brain</a></span><span class="op">(</span>atlas <span class="op">=</span> <span class="va">aseg</span>, side <span class="op">=</span> <span class="st">"coronal"</span>, hemi <span class="op">=</span> <span class="st">"left"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="ggseg_files/figure-html/unnamed-chunk-11-1.png" class="r-plt" width="576"></p>
+<p><img src="ggseg_files/figure-html/unnamed-chunk-11-1.png" class="r-plt" alt="" width="576"></p>
 </div>
 <div class="section level3">
 <h3 id="plotting-with-data">Plotting with data<a class="anchor" aria-label="anchor" href="#plotting-with-data"></a>
@@ -430,7 +430,7 @@ scales etc, to your liking.</p>
 <span>    caption <span class="op">=</span> <span class="st">"I'm pretty happy about this!"</span></span>
 <span>  <span class="op">)</span></span>
 <span><span class="co">#&gt; merging atlas and data by 'region'</span></span></code></pre></div>
-<p><img src="ggseg_files/figure-html/unnamed-chunk-13-1.png" class="r-plt" width="576"></p>
+<p><img src="ggseg_files/figure-html/unnamed-chunk-13-1.png" class="r-plt" alt="" width="576"></p>
 <div class="section level4">
 <h4 id="facet-group-data">Facet group data<a class="anchor" aria-label="anchor" href="#facet-group-data"></a>
 </h4>
@@ -477,7 +477,7 @@ merged correctly, you will need to <code>group_by</code> your data
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/facet_wrap.html" class="external-link">facet_wrap</a></span><span class="op">(</span><span class="op">~</span><span class="va">groups</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">ggtitle</a></span><span class="op">(</span><span class="st">"correct facetting"</span><span class="op">)</span></span>
 <span><span class="co">#&gt; merging atlas and data by 'region'</span></span></code></pre></div>
-<p><img src="ggseg_files/figure-html/unnamed-chunk-15-1.png" class="r-plt" width="576"></p>
+<p><img src="ggseg_files/figure-html/unnamed-chunk-15-1.png" class="r-plt" alt="" width="576"></p>
 </div>
 </div>
 <div class="section level3">
@@ -487,7 +487,7 @@ merged correctly, you will need to <code>group_by</code> your data
 of the entire atlas, with labels for each region.</p>
 <div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">dk</span><span class="op">)</span></span></code></pre></div>
-<p><img src="ggseg_files/figure-html/unnamed-chunk-16-1.png" class="r-plt" width="576"></p>
+<p><img src="ggseg_files/figure-html/unnamed-chunk-16-1.png" class="r-plt" alt="" width="576"></p>
 <p>Sometimes, though, you might still want to plot regions as
 categorical, but only a subset of them. To do this, we need to do a
 little hack. Since the ggseg plotting function copies over the entire
@@ -512,7 +512,7 @@ mirrored information, but with different names.</p>
 <span>  <span class="fu"><a href="../reference/ggbrain.html">geom_brain</a></span><span class="op">(</span>atlas <span class="op">=</span> <span class="va">dk</span>, <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>fill <span class="op">=</span> <span class="va">reg_col</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="../reference/scale_brain2.html">scale_fill_brain2</a></span><span class="op">(</span><span class="va">dk</span><span class="op">$</span><span class="va">palette</span><span class="op">[</span><span class="va">data</span><span class="op">$</span><span class="va">region</span><span class="op">]</span><span class="op">)</span></span>
 <span><span class="co">#&gt; merging atlas and data by 'region'</span></span></code></pre></div>
-<p><img src="ggseg_files/figure-html/unnamed-chunk-17-1.png" class="r-plt" width="576"></p>
+<p><img src="ggseg_files/figure-html/unnamed-chunk-17-1.png" class="r-plt" alt="" width="576"></p>
 </div>
 <div class="section level3">
 <h3 id="plotting-with-ggseg">Plotting with ggseg<a class="anchor" aria-label="anchor" href="#plotting-with-ggseg"></a>
@@ -536,7 +536,7 @@ mirrored information, but with different names.</p>
 <span><span class="co">#&gt; <span style="color: #555555;">This warning is displayed once every 8 hours.</span></span></span>
 <span><span class="co">#&gt; <span style="color: #555555;">Call `lifecycle::last_lifecycle_warnings()` to see where this warning was</span></span></span>
 <span><span class="co">#&gt; <span style="color: #555555;">generated.</span></span></span></code></pre></div>
-<p><img src="ggseg_files/figure-html/unnamed-chunk-18-1.png" class="r-plt" width="576"></p>
+<p><img src="ggseg_files/figure-html/unnamed-chunk-18-1.png" class="r-plt" alt="" width="576"></p>
 </div>
 </div>
   </div>

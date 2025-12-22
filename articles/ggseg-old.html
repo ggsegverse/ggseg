@@ -37,7 +37,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">ggseg</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.6.7.9000</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.6.8</span>
       </span>
     </div>
 
@@ -129,7 +129,7 @@ segmentations.</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://ggplot2.tidyverse.org" class="external-link">ggplot2</a></span><span class="op">)</span></span>
 <span><span class="fu"><a href="../reference/ggseg.html">ggseg</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
-<p><img src="ggseg-old_files/figure-html/start-1.png" class="r-plt" width="700"></p>
+<p><img src="ggseg-old_files/figure-html/start-1.png" class="r-plt" alt="" width="700"></p>
 <p>The plot is kept as simple as possible, with as little extra
 information to ggplot as possible. This is done for it to be easy to
 extend the plot with the many ggplot options available. By default it
@@ -138,14 +138,14 @@ the brain and it’s segments, without any grid or axis information. You
 can add ggplot2’s <code>theme_void</code> to achieve this.</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/ggseg.html">ggseg</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html" class="external-link">theme_void</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
-<p><img src="ggseg-old_files/figure-html/void-1.png" class="r-plt" width="480"></p>
+<p><img src="ggseg-old_files/figure-html/void-1.png" class="r-plt" alt="" width="480"></p>
 <p>You can supply some extra options to ggseg, to alter the plot as you
 wish.</p>
 <p>You can stack the hemispheres if you want</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/ggseg.html">ggseg</a></span><span class="op">(</span>position <span class="op">=</span> <span class="st">"stacked"</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html" class="external-link">theme_void</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
-<p><img src="ggseg-old_files/figure-html/stacked-1.png" class="r-plt" width="480"></p>
+<p><img src="ggseg-old_files/figure-html/stacked-1.png" class="r-plt" alt="" width="480"></p>
 </div>
 <div class="section level3">
 <h3 id="using-fill-and-colour">Using fill and colour<a class="anchor" aria-label="anchor" href="#using-fill-and-colour"></a>
@@ -157,7 +157,7 @@ achieve this. <strong>Note:</strong> unlike other ggplots, before using
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/ggseg.html">ggseg</a></span><span class="op">(</span>mapping <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>fill <span class="op">=</span> <span class="va">region</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html" class="external-link">theme_void</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
-<p><img src="ggseg-old_files/figure-html/fill-1.png" class="r-plt" width="480"></p>
+<p><img src="ggseg-old_files/figure-html/fill-1.png" class="r-plt" alt="" width="480"></p>
 <p>Maybe you also want the contour lines to be black rather than white,
 and also a little thicker?</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
@@ -170,7 +170,7 @@ and also a little thicker?</p>
 <span><span class="co">## <span style="color: #555555;">This warning is displayed once every 8 hours.</span></span></span>
 <span><span class="co">## <span style="color: #555555;">Call `lifecycle::last_lifecycle_warnings()` to see where this warning was</span></span></span>
 <span><span class="co">## <span style="color: #555555;">generated.</span></span></span></code></pre>
-<p><img src="ggseg-old_files/figure-html/fill2-1.png" class="r-plt" width="480"></p>
+<p><img src="ggseg-old_files/figure-html/fill2-1.png" class="r-plt" alt="" width="480"></p>
 <p>There are built-in functions to use the colour palettes as seen in
 the source articles for the atlases. Using the
 <code>scale_..._brain</code> functions, these can be applied by
@@ -179,7 +179,7 @@ supplying the name of the atlas as a string.</p>
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/ggseg.html">ggseg</a></span><span class="op">(</span>mapping <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>fill <span class="op">=</span> <span class="va">region</span><span class="op">)</span>, position <span class="op">=</span> <span class="st">"stacked"</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="../reference/scale_brain.html">scale_fill_brain</a></span><span class="op">(</span><span class="st">"dk"</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html" class="external-link">theme_void</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
-<p><img src="ggseg-old_files/figure-html/fill3-1.png" class="r-plt" width="480"></p>
+<p><img src="ggseg-old_files/figure-html/fill3-1.png" class="r-plt" alt="" width="480"></p>
 <p>You can have a look at the available palettes with:</p>
 <p>If you want to plot the entire brain, but hightlight specific regions
 with colour, you will need to provide the function with some data. The
@@ -203,7 +203,7 @@ atlas.</p>
 <span></span>
 <span><span class="fu"><a href="../reference/ggseg.html">ggseg</a></span><span class="op">(</span>.data <span class="op">=</span> <span class="va">some_data</span>, mapping <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>fill <span class="op">=</span> <span class="va">p</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## merging atlas and data by 'region'</span></span></code></pre>
-<p><img src="ggseg-old_files/figure-html/datasupp-1.png" class="r-plt" width="480"></p>
+<p><img src="ggseg-old_files/figure-html/datasupp-1.png" class="r-plt" alt="" width="480"></p>
 <p>We can also change how this looks, by various ggplot functions</p>
 <div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/ggseg.html">ggseg</a></span><span class="op">(</span>.data <span class="op">=</span> <span class="va">some_data</span>, colour <span class="op">=</span> <span class="st">"black"</span>, mapping <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>fill <span class="op">=</span> <span class="va">p</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
@@ -211,7 +211,7 @@ atlas.</p>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_gradient.html" class="external-link">scale_fill_gradient</a></span><span class="op">(</span>low <span class="op">=</span> <span class="st">"firebrick"</span>, high <span class="op">=</span> <span class="st">"goldenrod"</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span>title <span class="op">=</span> <span class="st">"Aparc plots rule"</span>, fill <span class="op">=</span> <span class="st">"p-value"</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## merging atlas and data by 'region'</span></span></code></pre>
-<p><img src="ggseg-old_files/figure-html/datasupp2-1.png" class="r-plt" width="480"></p>
+<p><img src="ggseg-old_files/figure-html/datasupp2-1.png" class="r-plt" alt="" width="480"></p>
 </div>
 <div class="section level3">
 <h3 id="single-hemisphere-results">Single hemisphere results<a class="anchor" aria-label="anchor" href="#single-hemisphere-results"></a>
@@ -221,7 +221,7 @@ atlas.</p>
 <div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/ggseg.html">ggseg</a></span><span class="op">(</span>hemisphere <span class="op">=</span> <span class="st">"right"</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html" class="external-link">theme_void</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
-<p><img src="ggseg-old_files/figure-html/hemisphere-1.png" class="r-plt" width="480"></p>
+<p><img src="ggseg-old_files/figure-html/hemisphere-1.png" class="r-plt" alt="" width="480"></p>
 <p>If the results are only in one hemisphere, but you still want to plot
 both of them, make sure your data.fame includes the column
 <code>hemi</code> with either “rh” or “lh” for this to happen.</p>
@@ -233,7 +233,7 @@ both of them, make sure your data.fame includes the column
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_gradient.html" class="external-link">scale_fill_gradient</a></span><span class="op">(</span>low <span class="op">=</span> <span class="st">"firebrick"</span>, high <span class="op">=</span> <span class="st">"goldenrod"</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span>title <span class="op">=</span> <span class="st">"Aparc plots rule"</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## merging atlas and data by 'region', 'hemi'</span></span></code></pre>
-<p><img src="ggseg-old_files/figure-html/datasuppX-1.png" class="r-plt" width="480"></p>
+<p><img src="ggseg-old_files/figure-html/datasuppX-1.png" class="r-plt" alt="" width="480"></p>
 <p>You may also choose to only plot a single hemisphere, in which case
 using the <code>hemisphere</code> argument can do that for you.</p>
 <div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
@@ -249,7 +249,7 @@ using the <code>hemisphere</code> argument can do that for you.</p>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_gradient.html" class="external-link">scale_fill_gradient</a></span><span class="op">(</span>low <span class="op">=</span> <span class="st">"firebrick"</span>, high <span class="op">=</span> <span class="st">"goldenrod"</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span>title <span class="op">=</span> <span class="st">"Aparc plots rule"</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## merging atlas and data by 'region', 'hemi'</span></span></code></pre>
-<p><img src="ggseg-old_files/figure-html/datasuppHemi-1.png" class="r-plt" width="480"></p>
+<p><img src="ggseg-old_files/figure-html/datasuppHemi-1.png" class="r-plt" alt="" width="480"></p>
 </div>
 <div class="section level3">
 <h3 id="faceting">Faceting<a class="anchor" aria-label="anchor" href="#faceting"></a>
@@ -276,7 +276,7 @@ plotting to look nice.</p>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/facet_wrap.html" class="external-link">facet_wrap</a></span><span class="op">(</span><span class="op">~</span><span class="va">AgeG</span>, ncol <span class="op">=</span> <span class="fl">1</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>legend.position <span class="op">=</span> <span class="st">"bottom"</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## merging atlas and data by 'region'</span></span></code></pre>
-<p><img src="ggseg-old_files/figure-html/datasupp3-1.png" class="r-plt" width="480"></p>
+<p><img src="ggseg-old_files/figure-html/datasupp3-1.png" class="r-plt" alt="" width="480"></p>
 <p>As you can see. The result of this faceting is not what we are after.
 This is because the the function requires full data to be able to plot,
 and the <code>AgeG</code> column is NA for everything outside the
@@ -298,7 +298,7 @@ over them, and binding them together again.</p>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/facet_wrap.html" class="external-link">facet_wrap</a></span><span class="op">(</span><span class="op">~</span><span class="va">AgeG</span>, ncol <span class="op">=</span> <span class="fl">1</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>legend.position <span class="op">=</span> <span class="st">"bottom"</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## merging atlas and data by 'region'</span></span></code></pre>
-<p><img src="ggseg-old_files/figure-html/duplicate-1.png" class="r-plt" width="480"></p>
+<p><img src="ggseg-old_files/figure-html/duplicate-1.png" class="r-plt" alt="" width="480"></p>
 <p>You can read more about more complex functions like this in the
 vignette for external data</p>
 <div class="sourceCode" id="cb25"><pre class="downlit sourceCode r">
@@ -326,7 +326,7 @@ background, and the regions without any data to be transparent?</p>
 <span>  <span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_colour_continuous.html" class="external-link">scale_fill_continuous</a></span><span class="op">(</span>na.value <span class="op">=</span> <span class="st">"transparent"</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## merging atlas and data by 'region'</span></span></code></pre>
-<p><img src="ggseg-old_files/figure-html/datasupp4-1.png" class="r-plt" width="480"></p>
+<p><img src="ggseg-old_files/figure-html/datasupp4-1.png" class="r-plt" alt="" width="480"></p>
 <p>Depending on what type of column is used for fill (continuous or
 discrete), you can also use the different <code>scales</code> to alter
 the colours.</p>
@@ -350,12 +350,12 @@ the colours.</p>
 <span>    na.value <span class="op">=</span> <span class="st">"transparent"</span></span>
 <span>  <span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## merging atlas and data by 'region'</span></span></code></pre>
-<p><img src="ggseg-old_files/figure-html/datasupp5-1.png" class="r-plt" width="480"></p>
+<p><img src="ggseg-old_files/figure-html/datasupp5-1.png" class="r-plt" alt="" width="480"></p>
 <p>You can try other atlases too, and also get many more atlases is in
 the ggseg atlas library, <a href="https://github.com/ggseg/ggsegExtra" class="external-link">ggsegExtra</a>.</p>
 <div class="sourceCode" id="cb31"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/ggseg.html">ggseg</a></span><span class="op">(</span>atlas <span class="op">=</span> <span class="st">"aseg"</span>, mapping <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>fill <span class="op">=</span> <span class="va">region</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
-<p><img src="ggseg-old_files/figure-html/atlases-1.png" class="r-plt" width="480"></p>
+<p><img src="ggseg-old_files/figure-html/atlases-1.png" class="r-plt" alt="" width="480"></p>
 </div>
   </div>
 

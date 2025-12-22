@@ -37,7 +37,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">ggseg</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.6.7.9000</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.6.8</span>
       </span>
     </div>
 
@@ -157,7 +157,7 @@ information must be added to the <code>label</code> column for
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>label <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"lh_"</span>, <span class="va">label</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="../reference/ggseg.html">ggseg</a></span><span class="op">(</span>atlas <span class="op">=</span> <span class="va">dk</span>, mapping <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>fill <span class="op">=</span> <span class="va">ThickAvg</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt; merging atlas and data by 'label'</span></span></code></pre></div>
-<p><img src="freesurfer_files_files/figure-html/unnamed-chunk-5-1.png" class="r-plt" width="700"></p>
+<p><img src="freesurfer_files_files/figure-html/unnamed-chunk-5-1.png" class="r-plt" alt="" width="700"></p>
 </div>
 <div class="section level3">
 <h3 id="read-in-raw-stats-files-for-an-atlas-for-all-subjects">Read in raw stats files for an atlas for all subjects<a class="anchor" aria-label="anchor" href="#read-in-raw-stats-files-for-an-atlas-for-all-subjects"></a>
@@ -198,7 +198,7 @@ fixed, so it is easy to plot.</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/ggseg.html">ggseg</a></span><span class="op">(</span><span class="va">dat</span>, mapping <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>fill <span class="op">=</span> <span class="va">ThickStd</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt; merging atlas and data by 'label'</span></span></code></pre></div>
-<p><img src="freesurfer_files_files/figure-html/unnamed-chunk-7-1.png" class="r-plt" width="700"></p>
+<p><img src="freesurfer_files_files/figure-html/unnamed-chunk-7-1.png" class="r-plt" alt="" width="700"></p>
 <p>With this data, we can even have a look at all the metrics at
 once.</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
@@ -211,7 +211,7 @@ once.</p>
 <span>  <span class="fu"><a href="../reference/ggseg.html">ggseg</a></span><span class="op">(</span>mapping <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>fill <span class="op">=</span> <span class="va">val</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/facet_wrap.html" class="external-link">facet_wrap</a></span><span class="op">(</span><span class="op">~</span><span class="va">stat</span><span class="op">)</span></span>
 <span><span class="co">#&gt; merging atlas and data by 'label'</span></span></code></pre></div>
-<p><img src="freesurfer_files_files/figure-html/unnamed-chunk-8-1.png" class="r-plt" width="100%"></p>
+<p><img src="freesurfer_files_files/figure-html/unnamed-chunk-8-1.png" class="r-plt" alt="" width="100%"></p>
 </div>
 </div>
 <div class="section level2">
@@ -290,7 +290,7 @@ those labels before plotting.</p>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/grep.html" class="external-link">grepl</a></span><span class="op">(</span><span class="st">"lh|rh"</span>, <span class="va">label</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="../reference/ggseg.html">ggseg</a></span><span class="op">(</span>mapping <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>fill <span class="op">=</span> <span class="va">volume</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt; merging atlas and data by 'label'</span></span></code></pre></div>
-<p><img src="freesurfer_files_files/figure-html/unnamed-chunk-13-1.png" class="r-plt" width="700"></p>
+<p><img src="freesurfer_files_files/figure-html/unnamed-chunk-13-1.png" class="r-plt" alt="" width="700"></p>
 </div>
   </div>
 
