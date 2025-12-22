@@ -19,14 +19,15 @@ spelling::spell_check_package()
 # Check URL are correct
 # remotes::install_github("r-lib/urlchecker")
 urlchecker::url_check()
-urlchecker::url_update()
+#urlchecker::url_update()
 
 # check on other distributions
 # _win devel
 devtools::check_win_devel()
+
 # _rhub
-devtools::check_rhub()
-rhub::check_on_windows(check_args = "--force-multiarch")
+#devtools::check_rhub()
+#rhub::check_on_windows(check_args = "--force-multiarch")
 # rhub::check_on_solaris() # retired?
 
 # Update NEWS
