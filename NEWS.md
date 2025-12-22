@@ -3,6 +3,9 @@
 
 # ggseg 1.6
 
+### ggseg 1.6.8
+
+* Increased C++ standard to C++17 to comply with CRAN policies
 
 ## ggseg 1.6.7
 
