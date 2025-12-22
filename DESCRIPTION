@@ -21,7 +21,7 @@ Description: Contains 'ggplot2' geom for plotting brain atlases using
     <doi:10.1177/2515245920928009>.
 License: MIT + file LICENSE
 Encoding: UTF-8
-RoxygenNote: 7.3.2
+RoxygenNote: 7.3.3
 Depends: 
     R (>= 3.3)
 LazyData: true
