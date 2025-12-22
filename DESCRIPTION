@@ -1,6 +1,6 @@
 Package: ggseg
 Title: Plotting Tool for Brain Atlases
-Version: 1.6.7.9000
+Version: 1.6.8
 Authors@R: c(
     person("Athanasia Mo", "Mowinckel", 
             email = "a.m.mowinckel@psykologi.uio.no", 
@@ -49,7 +49,7 @@ URL: https://github.com/ggseg/ggseg
 BugReports: https://github.com/ggseg/ggseg/issues
 Language: en-US
 SystemRequirements: 
-    C++11, 
+    C++17, 
     GDAL (>= 2.0.1), 
     GEOS (>= 3.4.0),
     PROJ (>= 4.8.0)
