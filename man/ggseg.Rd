@@ -2,8 +2,8 @@
 % Please edit documentation in R/ggseg-package.R, R/ggseg.R
 \docType{package}
 \name{ggseg}
-\alias{ggseg}
 \alias{ggseg-package}
+\alias{ggseg}
 \title{ggseg: Plot brain segmentations with ggplot}
 \usage{
 ggseg(

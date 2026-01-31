@@ -28,18 +28,25 @@ library(ggplot2)
 
 The first new thing to notice is that we have introduced a new atlas class called `brain-atlas`. 
 This class is a special class for ggseg-atlases, that contain information in a specific way. 
-They are objects with 3-levels, each containing important information about the atlas in question.
+They are objects with 4-levels, each containing important information about the atlas in question.
 
 ```{r}
-dk
+library(ggseg)
 dk$atlas
 dk$type
+dk$palette
 dk$data
 ```
 
-
+Of these four, only the `palette` is an optional part, where some atlases may have this field empty.
 The data, you might notice, is simple-features data, with a `geometry` column that includes all the information needed to plot the data as a simple features object. 
-You can call `plot` directly on the atlas object. 
+You can actually call `plot` directly on the data, and the standard simple features plot will appear.
+
+```{r}
+plot(dk$data)
+```
+
+Even better, though, you should call `plot` directly on the atlas object. 
 This will give you a fast overview of the atlas you are thinking of using.
 
 ```{r}
@@ -91,12 +98,23 @@ ggplot() +
 A new addition to the positions, is the ability to also specify the order directly through a character vector. By default, the position is:
 
 ```{r}
-cortical_pos <- c("left lateral", "left medial", "right medial", "right lateral")
+cortical_pos <- c(
+  "left lateral",
+  "left medial",
+  "right medial",
+  "right lateral"
+)
 ggplot() +
   geom_brain(atlas = dk, position = position_brain(cortical_pos))
 
 # Which can easily be switched around!
-cortical_pos <- c("right lateral", "left medial", "right medial", "left lateral")
+cortical_pos <- c(
+  "right lateral",
+  "left medial",
+  "right medial",
+  "left lateral"
+)
+
 ggplot() +
   geom_brain(atlas = dk, position = position_brain(cortical_pos))
 ```
@@ -127,28 +145,36 @@ By making sure _at least one column_ in your data has the same name and overlapp
 
 ```{r}
 library(dplyr)
-        
-someData = tibble(
-  region = c("transverse temporal", "insula",
-           "precentral","superior parietal"), 
-  p = sample(seq(0,.5,.001), 4)
+
+some_data <- tibble(
+  region = c(
+    "transverse temporal",
+    "insula",
+    "precentral",
+    "superior parietal"
+  ),
+  p = sample(seq(0, .5, .001), 4)
 )
 
-someData
+some_data
 ```
 
 And such plots can be further adapted with standard ggplot themes, scales etc, to your liking.
 
 ```{r}
-ggplot(someData) +
-  geom_brain(atlas = dk, 
-             position = position_brain(hemi ~ side),
-             aes(fill = p)) +
+ggplot(some_data) +
+  geom_brain(
+    atlas = dk,
+    position = position_brain(hemi ~ side),
+    aes(fill = p)
+  ) +
   scale_fill_viridis_c(option = "cividis", direction = -1) +
   theme_void() +
-  labs(title = "My awesome title", 
-       subtitle = "of a brain atlas plot",
-       caption = "I'm pretty happy about this!")
+  labs(
+    title = "My awesome title",
+    subtitle = "of a brain atlas plot",
+    caption = "I'm pretty happy about this!"
+  )
 ```
 
 ### Facet group data
@@ -157,24 +183,33 @@ Just like in ggseg, though, you still need to do some double work for faceting t
 Because the atlas and your data need to be merged correctly, you will need to `group_by` your data _before_ giving it to ggplot, for facets to work.
 
 ```{r}
-someData <- tibble(
-  region = rep(c("transverse temporal", "insula",
-           "precentral","superior parietal"), 2), 
-  p = sample(seq(0,.5,.001), 8),
+some_data <- tibble(
+  region = rep(
+    c(
+      "transverse temporal",
+      "insula",
+      "precentral",
+      "superior parietal"
+    ),
+    2
+  ),
+  p = sample(seq(0, .5, .001), 8),
   groups = c(rep("g1", 4), rep("g2", 4))
 )
 
-someData
+some_data
 ```
 
 
 ```{r}
-someData %>%
-  group_by(groups) %>%
+some_data |>
+  group_by(groups) |>
   ggplot() +
-  geom_brain(atlas = dk, 
-             position = position_brain(hemi ~ side),
-             aes(fill = p)) +
+  geom_brain(
+    atlas = dk,
+    position = position_brain(hemi ~ side),
+    aes(fill = p)
+  ) +
   facet_wrap(~groups) +
   ggtitle("correct facetting")
 ```
@@ -204,9 +239,11 @@ data <- data.frame(
 data
 
 ggplot(data) +
-  geom_brain(atlas = dk,
-             aes(fill = reg_col))
+  geom_brain(atlas = dk, aes(fill = reg_col)) +
+  scale_fill_brain2(dk$palette[data$region])
 ```
+
+
 
 
 ## Plotting with ggseg
@@ -214,11 +251,14 @@ ggplot(data) +
 You can also plot this new atlas class directly with the `ggseg` function, if you are more comfortable with that.
 
 ```{r}
-ggseg(someData, atlas = dk, 
-      colour = "black",
-      size = .1, 
-      position = "stacked",
-      mapping = aes(fill = p))
+ggseg(
+  some_data,
+  atlas = dk,
+  colour = "black",
+  size = .1,
+  position = "stacked",
+  mapping = aes(fill = p)
+)
 ```
 
 

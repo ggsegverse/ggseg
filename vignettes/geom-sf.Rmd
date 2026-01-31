@@ -79,84 +79,98 @@ First, let's make up some data that we want to plot. Here a data.frame of 4 brai
 
 ```{r}
 library(dplyr)
-        
-someData = tibble(
-  region = c("transverse temporal", "insula",
-           "precentral","superior parietal"), 
-  p = sample(seq(0,.5,.001), 4)
+
+some_data <- tibble(
+  region = c(
+    "transverse temporal",
+    "insula",
+    "precentral",
+    "superior parietal"
+  ),
+  p = sample(seq(0, .5, .001), 4)
 )
 
-someData
-  
+some_data
+
 ```
+
 To join a data.frame to an atlas object, you should use the specialized `brain_join` function. 
 This makes sure that atlas information is preserved while joining. 
 
 ```{r}
-someData %>% 
+some_data |>
   brain_join(dk)
 ```
+
 The output is a standard sf-object, and can therefore also be plotted as one. 
+
 ```{r}
-someData %>% 
-  brain_join(dk) %>% 
+some_data |>
+  brain_join(dk) |>
   plot()
 ```
 
 To use ggplot for plotting the new sf-object, use standard ggplot-syntax with the `geom_sf` geom.
+
 ```{r}
-someData %>% 
-  brain_join(dk) %>% 
-  ggplot() + 
+some_data |>
+  brain_join(dk) |>
+  ggplot() +
   geom_sf(aes(fill = p))
 ```
 
 
 If you want to reposition the slices, so that they are more to you liking, use the `reposition_brain` function (not to be confused with the ggproto-function `position_brain`!)
 ```{r}
-someData %>% 
-  brain_join(dk) %>% 
-  reposition_brain(hemi ~ side) %>% 
-  ggplot() + 
+some_data |>
+  brain_join(dk) |>
+  reposition_brain(hemi ~ side) |>
+  ggplot() +
   geom_sf(aes(fill = p))
 ```
 
 
 Once your data is plotted as a geom_sf, you can add geoms like `geom_sf_label` to add labels to the regions.
+
 ```{r}
-someData %>% 
-  brain_join(dk) %>% 
-  reposition_brain(hemi ~ side) %>% 
-  ggplot(aes(fill = p)) + 
-  geom_sf(show.legend = FALSE) + 
-  geom_sf_label(aes(label = ifelse(!is.na(p), region, NA)),
-                alpha = .8,
-                show.legend = FALSE)
+some_data |>
+  brain_join(dk) |>
+  reposition_brain(hemi ~ side) |>
+  ggplot(aes(fill = p)) +
+  geom_sf(show.legend = FALSE) +
+  geom_sf_label(
+    aes(label = ifelse(!is.na(p), region, NA)),
+    alpha = .8,
+    show.legend = FALSE
+  )
 ```
 
 If you want a version where the labels do not overlap each other, you can try the `geom_sf_label_repel` function from the `ggrepel` package. 
 
 ## Faceting groups
+
 If your data includes groups, and you want to facet the output, you need to group the data _before_ calling `brain_join`.
 
 ```{r}
-someData <- tibble(
-  region = rep(c("transverse temporal", "insula",
-           "precentral","superior parietal"), 2), 
-  p = sample(seq(0,.5,.001), 8),
+some_data <- tibble(
+  region = rep(
+    c("transverse temporal", "insula", "precentral", "superior parietal"),
+    2
+  ),
+  p = sample(seq(0, .5, .001), 8),
   groups = c(rep("g1", 4), rep("g2", 4))
 )
-someData
+some_data
 ```
 
 
 ```{r}
-someData %>%
-  group_by(groups) %>% 
-  brain_join(dk) %>% 
-  reposition_brain(hemi ~ side) %>% 
-  ggplot(aes(fill = p)) + 
-  geom_sf(show.legend = FALSE) + 
-  facet_wrap( ~ groups) +
+some_data |>
+  group_by(groups) |>
+  brain_join(dk) |>
+  reposition_brain(hemi ~ side) |>
+  ggplot(aes(fill = p)) +
+  geom_sf(show.legend = FALSE) +
+  facet_wrap(~groups) +
   ggtitle("correct facetting")
 ```

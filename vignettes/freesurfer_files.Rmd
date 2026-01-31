@@ -13,6 +13,7 @@ knitr::opts_chunk$set(
   comment = "#>"
 )
 
+library(ggseg)
 devtools::load_all(".")
 subject_dir <- here::here("tests/testthat/data/")
 
@@ -54,8 +55,9 @@ data
 This data should be well-suited for use with ggseg. 
 
 ```{r}
-data %>% 
-  mutate(label = paste0("lh_", label)) %>% 
+library(dplyr)
+data |>
+  mutate(label = paste0("lh_", label)) |>
   ggseg(atlas = dk, mapping = aes(fill = ThickAvg))
 ```
 
@@ -87,9 +89,9 @@ With this data, we can even have a look at all the metrics at once.
 library(dplyr)
 library(tidyr)
 
-dat %>% 
-  gather(stat, val, -subject, -label) %>% 
-  group_by(stat) %>% 
+dat |>
+  gather(stat, val, -subject, -label) |>
+  group_by(stat) |>
   ggseg(mapping = aes(fill = val)) +
   facet_wrap(~stat)
 ```
@@ -126,7 +128,7 @@ This will do two things: 1) remove the label suffix, and 2) rename the `value` c
 Alternatively, you will need to do string manipulation on the label column your self, we recommend the [stringr](https://stringr.tidyverse.org/index.html) package in that case.
 
 ```{r, eval = FALSE}
-dat %>% 
+dat |>
   ggseg(mapping = aes(fill = volume))
 ```
 
@@ -134,8 +136,8 @@ An error will be thrown because the FreeSurfer tables also include measures of t
 To avoid this, you can remove those labels before plotting.
 
 ```{r}
-dat %>% 
-  filter(grepl("lh|rh", label)) %>% 
+dat |>
+  filter(grepl("lh|rh", label)) |>
   ggseg(mapping = aes(fill = volume))
 ```
 

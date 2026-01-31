@@ -7,10 +7,12 @@
 status](https://github.com/ggseg/ggseg/workflows/R-CMD-check/badge.svg)](https://github.com/ggseg/ggseg/actions)
 [![CRAN
 status](https://www.r-pkg.org/badges/version/ggseg)](https://CRAN.R-project.org/package=ggseg)
-[![downloads](https://cranlogs.r-pkg.org/badges/last-month/ggseg?color=blue)](https://r-pkg.org/pkg/ggseg)
+[![downloads](https://CRANlogs.r-pkg.org/badges/last-month/ggseg?color=blue)](https://r-pkg.org/pkg/ggseg)
 [![codecov](https://codecov.io/gh/ggseg/ggseg/branch/main/graph/badge.svg?token=WtlS6Kk1vo)](https://app.codecov.io/gh/ggseg/ggseg)
 [![Lifecycle:
 maturing](https://img.shields.io/badge/lifecycle-maturing-blue.svg)](https://lifecycle.r-lib.org/articles/stages.html)
+[![Codecov test
+coverage](https://codecov.io/gh/ggseg/ggseg/graph/badge.svg)](https://app.codecov.io/gh/ggseg/ggseg)
 <!-- badges: end -->
 
 Contains ggplot2 geom for plotting brain atlases using simple features.
@@ -97,15 +99,15 @@ library(dplyr)
 #> The following objects are masked from 'package:base':
 #> 
 #>     intersect, setdiff, setequal, union
-someData <- tibble(
+some_data <- tibble(
   region = rep(c("transverse temporal", "insula",
            "precentral","superior parietal"), 2), 
   p = sample(seq(0,.5,.001), 8),
   groups = c(rep("g1", 4), rep("g2", 4))
 )
 
-someData %>%
-  group_by(groups) %>%
+some_data |>
+  group_by(groups) |>
   ggplot() +
   geom_brain(atlas = dk, 
              position = position_brain(hemi ~ side),

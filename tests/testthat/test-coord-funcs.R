@@ -3,5 +3,4 @@ test_that("squish_position works", {
   geo <- unnest(geo, ggseg)
 
   squish_position(geo, "left")
-
 })

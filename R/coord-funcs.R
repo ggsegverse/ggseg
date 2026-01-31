@@ -1,51 +1,61 @@
-
 #' @importFrom dplyr group_by summarise_at vars mutate
 #' @importFrom stats sd
 #' @keywords internal
 #' @noRd
-squish_position <- function(geobrain, hemisphere){
+squish_position <- function(geobrain, hemisphere) {
   mm <- group_by(geobrain, hemi)
-  mm <- summarise_at(mm, vars(.long),
-                     list(max = max, min = min, sd = sd))
+  mm <- summarise_at(mm, vars(.long), list(max = max, min = min, sd = sd))
   diff <- mm$min[2] - mm$max[1]
 
-  mutate(geobrain,
-         .long = ifelse(hemi == "right",
-                        .long - diff + mm$sd[1]*.5,
-                        .long))
+  mutate(
+    geobrain,
+    .long = ifelse(hemi == "right", .long - diff + mm$sd[1] * .5, .long)
+  )
 }
 
 #' @importFrom dplyr group_by mutate arrange
 #' @keywords internal
 #' @noRd
-stack_brain <- function (atlas){
-  if(unique(atlas$type) == "cortical"){
+stack_brain <- function(atlas) {
+  if (unique(atlas$type) == "cortical") {
     stack <- group_by(atlas, hemi, side)
     stack <- calc_stack(stack)
 
-    atlas = mutate(atlas,
-                   .lat = ifelse(hemi %in% "right",
-                                 .lat + (stack$.lat_max[1]), .lat),
-                   .long = ifelse(hemi %in% "right" & side %in% "lateral",
-                                  .long - stack$.long_min[3], .long),
-                   .long = ifelse(hemi %in% "right" & side %in%  "medial",
-                                  .long + (stack$.long_min[2] - stack$.long_min[4]),
-                                  .long))
-
-  }else if(unique(atlas$type) == "subcortical"){
+    atlas = mutate(
+      atlas,
+      .lat = ifelse(hemi %in% "right", .lat + (stack$.lat_max[1]), .lat),
+      .long = ifelse(
+        hemi %in% "right" & side %in% "lateral",
+        .long - stack$.long_min[3],
+        .long
+      ),
+      .long = ifelse(
+        hemi %in% "right" & side %in% "medial",
+        .long + (stack$.long_min[2] - stack$.long_min[4]),
+        .long
+      )
+    )
+  } else if (unique(atlas$type) == "subcortical") {
     stack <- group_by(atlas, side)
     stack <- calc_stack(stack)
     stack <- arrange(stack, .long_min)
 
-    for(k in 1:nrow(stack)){
-      atlas <-  mutate(atlas,
-                       .lat = ifelse(side %in% stack$side[k],
-                                     .lat + mean(stack$.lat_max)*k, .lat),
-                       .long = ifelse(side %in% stack$side[k],
-                                      .long - stack$.long_mean[k],
-                                      .long))
+    for (k in 1:nrow(stack)) {
+      atlas <- mutate(
+        atlas,
+        .lat = ifelse(
+          side %in% stack$side[k],
+          .lat + mean(stack$.lat_max) * k,
+          .lat
+        ),
+        .long = ifelse(
+          side %in% stack$side[k],
+          .long - stack$.long_mean[k],
+          .long
+        )
+      )
     }
-  }else{
+  } else {
     cat("Atlas '.type' not set, stacking not possible.")
   }
 
@@ -56,18 +66,17 @@ stack_brain <- function (atlas){
 #' @importFrom ggplot2 vars
 #' @importFrom stats sd
 #' @noRd
-calc_stack <- function(stack){
+calc_stack <- function(stack) {
   stack <- summarise_at(
     stack,
-    vars(.long,
-         .lat),
+    vars(.long, .lat),
     list(min = min, max = max, sd = sd, mean = mean)
   )
 
   stack <- mutate(stack, sd = .lat_sd + .long_sd)
 
   stack$.lat_max[1] <- ifelse(
-    stack$.lat_max[1]/4.5 < stack$.lat_sd[1],
+    stack$.lat_max[1] / 4.5 < stack$.lat_sd[1],
     stack$.lat_max[1] + stack$.lat_sd[1],
     stack$.lat_max[1]
   )
@@ -87,20 +96,22 @@ calc_stack <- function(stack){
 #' @keywords internal
 coords2sf <- function(coords, vertex_size_limits = NULL) {
   dt <- unnest(coords, ggseg)
-  dt <- dt[,c(".long", ".lat", ".id", ".subid")]
+  dt <- dt[, c(".long", ".lat", ".id", ".subid")]
   dt <- group_by(dt, .subid, .id)
   dt <- group_split(dt)
 
-  if(!is.null(vertex_size_limits)){
-    if(!is.na(vertex_size_limits[1]))
+  if (!is.null(vertex_size_limits)) {
+    if (!is.na(vertex_size_limits[1])) {
       dt <- dt[sapply(dt, function(x) nrow(x) > vertex_size_limits[1])]
+    }
 
-    if(!is.na(vertex_size_limits[2]))
+    if (!is.na(vertex_size_limits[2])) {
       dt <- dt[sapply(dt, function(x) nrow(x) < vertex_size_limits[2])]
+    }
   }
 
   dt <- lapply(dt, as.matrix)
-  dt <- lapply(dt, function(x) rbind(x[,1:4], x[1, 1:4]))
+  dt <- lapply(dt, function(x) rbind(x[, 1:4], x[1, 1:4]))
   dt <- lapply(dt, function(x) matrix(as.numeric(x), ncol = 4))
 
   dt <- st_polygon(dt)
@@ -114,10 +125,8 @@ coords2sf <- function(coords, vertex_size_limits = NULL) {
 
 #' Turn sf polygons to coordinates
 #' @noRd
-sf2coords <- function(x){
-  x$ggseg <- lapply(1:nrow(x),
-                    function(y) to_coords(x$geometry[[y]], y)
-  )
+sf2coords <- function(x) {
+  x$ggseg <- lapply(1:nrow(x), function(y) to_coords(x$geometry[[y]], y))
   x$geometry <- NULL
   x
 }
@@ -127,7 +136,7 @@ sf2coords <- function(x){
 #' @importFrom sf st_combine st_coordinates
 #' @keywords internal
 #' @noRd
-to_coords <- function(x, n){
+to_coords <- function(x, n) {
   k <- st_combine(x)
   k <- st_coordinates(k)
   k <- as_tibble(k)
@@ -137,13 +146,13 @@ to_coords <- function(x, n){
   k <- mutate(k, .order = row_number())
   k <- ungroup(k)
 
-  names(k) <- c(".long", ".lat",  ".subid", ".id", ".poly", ".order")
+  names(k) <- c(".long", ".lat", ".subid", ".id", ".poly", ".order")
 
   k
 }
 
 #' @keywords internal
 #' @noRd
-gap <- function(x){
+gap <- function(x) {
   (min(x) + max(x)) / 2
 }

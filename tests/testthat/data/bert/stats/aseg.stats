@@ -32,7 +32,7 @@
 # Measure lhSurfaceHoles, lhSurfaceHoles, Number of defect holes in lh surfaces prior to fixing, 39, unitless
 # Measure rhSurfaceHoles, rhSurfaceHoles, Number of defect holes in rh surfaces prior to fixing, 39, unitless
 # Measure SurfaceHoles, SurfaceHoles, Total number of defect holes in surfaces prior to fixing, 78, unitless
-# Measure EstimatedTotalIntraCranialVol, eTIV, Estimated Total Intracranial Volume, 1602572.131295, mm^3
+# Measure EstimatedTotalintracranialVol, eTIV, Estimated Total intracranial Volume, 1602572.131295, mm^3
 # SegVolFile mri/aseg.mgz 
 # SegVolFileTimeStamp  2017/01/20 08:45:38 
 # ColorTable /usr/local/freesurfer/stable6_0_0/ASegStatsLUT.txt 

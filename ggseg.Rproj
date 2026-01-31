@@ -18,5 +18,5 @@ StripTrailingWhitespace: Yes
 BuildType: Package
 PackageUseDevtools: Yes
 PackageInstallArgs: --no-multiarch --with-keep.source  --resave-data
-PackageCheckArgs: --as-cran
+PackageCheckArgs: --as-CRAN
 PackageRoxygenize: rd,collate,namespace

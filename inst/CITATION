@@ -1,15 +1,29 @@
 citHeader("To cite ggseg in publications use:")
 
-citEntry(
-  entry    = "misc",
-  title    = "Visualisation of Brain Statistics with R-packages ggseg and ggseg3d",
-  author   = "Athanasia M. Mowinckel and Didac Vidal-Piñeiro",
-  year     = "2019",
-  eprint   =  "1912.08200",
-  archivePrefix  =   "arXiv",
-  primaryClass   =   "stat.OT",
-  textVersion =  paste("Athanasia M. Mowinckel and Didac Vidal-Piñeiro (2019).",
-  "Visualisation of Brain Statistics with R-packages ggseg and ggseg3d.",
-  "arXiv:1912.08200")
+bibentry(
+  bibtype = "Misc",
+  title = "Visualisation of Brain Statistics with R-packages ggseg and ggseg3d",
+  author = c(
+    person(
+      "Athanasia Mo",
+      "Mowinckel",
+      email = "a.m.mowinckel@psykologi.uio.no",
+      comment = c(ORCID = "0000-0002-5756-0223")
+    ),
+    person(
+      "Didac",
+      "Vidal-Piñeiro",
+      email = "d.v.pineiro@psykologi.uio.no",
+      comment = c(ORCID = "0000-0001-9997-9156")
+    )
+  ),
+  year = "2019",
+  eprint = "1912.08200",
+  archivePrefix = "arXiv",
+  primaryClass = "stat.OT",
+  textVersion = paste(
+    "Athanasia M. Mowinckel and Didac Vidal-Piñeiro (2019).",
+    "Visualisation of Brain Statistics with R-packages ggseg and ggseg3d.",
+    "arXiv:1912.08200"
   )
-
+)

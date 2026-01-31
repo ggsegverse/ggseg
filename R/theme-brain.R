@@ -37,9 +37,7 @@
 #' p +
 #'   theme_darkbrain()
 #'
-theme_brain = function(text.size=12,
-                       text.family="mono"){
-
+theme_brain = function(text.size = 12, text.family = "mono") {
   theme(
     axis.ticks = element_blank(),
     panel.grid = element_blank(),
@@ -47,86 +45,91 @@ theme_brain = function(text.size=12,
     plot.background = element_blank(),
     legend.background = element_blank(),
 
-    text = element_text(family=text.family,
-                                 size=text.size),
+    text = element_text(family = text.family, size = text.size),
 
-    axis.text = element_text(family=text.family,
-                                      size=text.size)
+    axis.text = element_text(family = text.family, size = text.size)
   )
 }
 
 #' @export
 #' @rdname theme_brain
 #' @importFrom ggplot2 theme element_blank element_rect element_text
-theme_darkbrain = function(text.size=12,
-                           text.family="mono"){
-
+theme_darkbrain = function(text.size = 12, text.family = "mono") {
   theme(
     axis.ticks = element_blank(),
     panel.grid = element_blank(),
     panel.background = element_blank(),
 
-    legend.background = element_rect(fill="black"),
-    plot.background = element_rect(fill="black"),
+    legend.background = element_rect(fill = "black"),
+    plot.background = element_rect(fill = "black"),
 
-    text = element_text(colour="lightgrey",
-                        family=text.family,
-                        size=text.size),
-    axis.text = element_text(colour="lightgrey",
-                             family=text.family,
-                             size=text.size)
+    text = element_text(
+      colour = "lightgrey",
+      family = text.family,
+      size = text.size
+    ),
+    axis.text = element_text(
+      colour = "lightgrey",
+      family = text.family,
+      size = text.size
+    )
   )
-
 }
 
 #' @export
 #' @rdname theme_brain
 #' @importFrom ggplot2 theme element_blank element_rect element_text
-theme_custombrain = function(plot.background="white",
-                             text.colour="darkgrey",
-                             text.size=12,
-                             text.family="mono"){
-
+theme_custombrain = function(
+  plot.background = "white",
+  text.colour = "darkgrey",
+  text.size = 12,
+  text.family = "mono"
+) {
   theme(
     axis.ticks = element_blank(),
     panel.grid = element_blank(),
     panel.background = element_blank(),
 
-    legend.background = element_rect(fill=plot.background),
-    plot.background = element_rect(fill=plot.background),
+    legend.background = element_rect(fill = plot.background),
+    plot.background = element_rect(fill = plot.background),
 
-    text = element_text(colour=text.colour,
-                        family=text.family,
-                        size=text.size),
+    text = element_text(
+      colour = text.colour,
+      family = text.family,
+      size = text.size
+    ),
 
-    axis.text = element_text(colour=text.colour,
-                             family=text.family,
-                             size=text.size)
+    axis.text = element_text(
+      colour = text.colour,
+      family = text.family,
+      size = text.size
+    )
   )
-
 }
 
 #' @export
 #' @rdname theme_brain
 #' @importFrom ggplot2 theme element_blank element_rect element_text
-theme_brain2 = function(plot.background="white",
-                             text.colour="darkgrey",
-                             text.size=12,
-                             text.family="mono"){
-
+theme_brain2 = function(
+  plot.background = "white",
+  text.colour = "darkgrey",
+  text.size = 12,
+  text.family = "mono"
+) {
   theme(
     axis.ticks = element_blank(),
     panel.grid = element_blank(),
     panel.background = element_blank(),
 
-    legend.background = element_rect(fill=plot.background),
-    plot.background = element_rect(fill=plot.background),
+    legend.background = element_rect(fill = plot.background),
+    plot.background = element_rect(fill = plot.background),
 
-    text = element_text(colour=text.colour,
-                        family=text.family,
-                        size=text.size),
+    text = element_text(
+      colour = text.colour,
+      family = text.family,
+      size = text.size
+    ),
 
     axis.text = element_blank()
   )
-
 }

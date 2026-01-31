@@ -9,4 +9,10 @@ inst/doc
 docs/
 data-raw/dk/
 data-raw/aseg/
+revdep/
 
+/doc/
+/Meta/
+
+/.quarto/
+**/*.quarto_ipynb

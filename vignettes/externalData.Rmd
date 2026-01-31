@@ -8,8 +8,7 @@ vignette: >
 ---
 
 ```{r setup, include=F}
-knitr::opts_chunk$set(eval=TRUE, 
-                      fig.retina = 3)
+knitr::opts_chunk$set(eval = TRUE, fig.retina = 3)
 ```
 
 ## Introduction
@@ -52,11 +51,11 @@ If you want to use external data with your `ggseg` plot, you will need to make s
 For instance, here we make some data for the "default" and "visual" networks in the `dk` atlas, and two p values for those two networks.
 
 ```{r}
-someData = tibble(
-  region=c("superior temporal","precentral", "lateral orbitofrontal"),
-  p=c(.03,.6, .05)
+some_data <- tibble(
+  region = c("superior temporal", "precentral", "lateral orbitofrontal"),
+  p = c(.03, .6, .05)
 )
-someData
+some_data
 ```
 
 Notice you we have spelled both the column name and the region names **exactly** as they appear in the data. 
@@ -64,9 +63,9 @@ This is necessary for the merging within the `ggseg` function to work properly.
 This merge can be attempted before supplying the data to `ggseg` to see if there are any errors.
 
 ```{r}
-dk %>% 
-  as_tibble() %>% 
-  left_join(someData)
+dk |>
+  as_tibble() |>
+  left_join(some_data)
 ```
 
 No errors!
@@ -74,9 +73,9 @@ Yes, the `p` column is seemingly full of `NA`s, but that is just because the top
 We can sort the data differently, so we can see the `p`has been added correctly.
 
 ```{r}
-dk %>% 
-  as_tibble() %>% 
-  left_join(someData) %>% 
+dk |>
+  as_tibble() |>
+  left_join(some_data) |>
   arrange(p)
 ```
 
@@ -84,12 +83,12 @@ If you need your data to be matched on several columns, the approach is the same
 Add the column you want to match on, with the **exact** same name, and make sure it's content matches the content of the same column in the data.
 
 ```{r}
-someData$hemi = rep("left", nrow(someData))
-someData
+some_data$hemi <- rep("left", nrow(some_data))
+some_data
 
-dk %>% 
-  as_tibble() %>% 
-  left_join(someData) %>% 
+dk |>
+  as_tibble() |>
+  left_join(some_data) |>
   arrange(p)
 ```
 
@@ -101,22 +100,23 @@ The merge function has recognized that there are two equally named columns, and 
 When you have managed to create data that merges nicely with the atlas, you can go ahead and supply it to the function.
 
 ```{r}
-ggplot(someData) + geom_brain( atlas=dk, mapping=aes(fill=p))
+ggplot(some_data) + geom_brain(atlas = dk, mapping = aes(fill = p))
 ```
 
 You can actually also supply it directly as an atlas. 
 For instance, if you had saved the merged data from the previous steps, you can supply this directly to the `atlas` option.
 
 ```{r}
-newAtlas = dk %>% 
-  as_tibble() %>% 
-  left_join(someData) %>% 
+new_atlas <- dk |>
+  as_tibble() |>
+  left_join(some_data) |>
   as_brain_atlas()
 
 ggplot() +
-  geom_brain(atlas = newAtlas, 
-             mapping = aes(fill=p), 
-             position = position_brain(hemi ~ side)
+  geom_brain(
+    atlas = new_atlas,
+    mapping = aes(fill = p),
+    position = position_brain(hemi ~ side)
   )
 ```
 
@@ -124,18 +124,19 @@ It is this possibility of supplying a custom atlas that gives you particular fle
 Lets do a recap of the unwanted results:
 
 ```{r datasupp3}
-someData = data.frame(
-  region = rep(c("transverse temporal", "insula",
-               "precentral","superior parietal"),2), 
-  p = sample(seq(0,.5,.001), 8),
-  AgeG = c(rep("Young",4), rep("Old",4)),
-  stringsAsFactors = FALSE)
-  
-ggplot(someData) +   
-  geom_brain(atlas = dk, 
-             colour="white", 
-             mapping=aes(fill=p)) +
-  facet_wrap(~AgeG, ncol=1) +
+some_data <- data.frame(
+  region = rep(
+    c("transverse temporal", "insula", "precentral", "superior parietal"),
+    2
+  ),
+  p = sample(seq(0, .5, .001), 8),
+  AgeG = c(rep("Young", 4), rep("Old", 4)),
+  stringsAsFactors = FALSE
+)
+
+ggplot(some_data) +
+  geom_brain(atlas = dk, colour = "white", mapping = aes(fill = p)) +
+  facet_wrap(~AgeG, ncol = 1) +
   theme(legend.position = "bottom")
 
 ```
@@ -146,32 +147,34 @@ For this to work, you can supply already grouped data to `ggseg`, but you must m
 
 ```{r duplicate}
 # If you group_by the columns you will facet by, this will work well.
-someData = someData %>% 
+some_data <- some_data |>
   group_by(AgeG)
 
-# We can now supply the newAtlas as an atlas to ggseg
-ggplot(someData) +
-  geom_brain(atlas=dk, 
-             colour="white",
-             mapping=aes(fill=p)) +
-  facet_wrap(~AgeG, ncol=1) +
+# We can now supply the new_atlas as an atlas to ggseg
+ggplot(some_data) +
+  geom_brain(atlas = dk, colour = "white", mapping = aes(fill = p)) +
+  facet_wrap(~AgeG, ncol = 1) +
   theme(legend.position = "bottom") +
-  scale_fill_gradientn(colours = c("royalblue","firebrick","goldenrod"),na.value="grey")
+  scale_fill_gradientn(
+    colours = c("royalblue", "firebrick", "goldenrod"),
+    na.value = "grey"
+  )
 ```
 
 
 This whole procedure can be piped together, so you don't have to save all the intermediate steps.
 
 ```{r duplicatepipe}
-someData %>% 
-  group_by(AgeG) %>% 
+some_data |>
+  group_by(AgeG) |>
 
   ggplot() +
-  geom_brain(atlas=dk, 
-             colour="white", 
-             mapping=aes(fill=p)) +
-  facet_wrap(~AgeG, ncol=1) +
+  geom_brain(atlas = dk, colour = "white", mapping = aes(fill = p)) +
+  facet_wrap(~AgeG, ncol = 1) +
   theme(legend.position = "bottom") +
-  scale_fill_gradientn(colours = c("royalblue","firebrick","goldenrod"),na.value="grey")
+  scale_fill_gradientn(
+    colours = c("royalblue", "firebrick", "goldenrod"),
+    na.value = "grey"
+  )
 ```
 

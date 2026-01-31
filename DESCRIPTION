@@ -1,6 +1,6 @@
 Package: ggseg
 Title: Plotting Tool for Brain Atlases
-Version: 1.6.6
+Version: 1.6.8.9000
 Authors@R: c(
     person("Athanasia Mo", "Mowinckel", 
             email = "a.m.mowinckel@psykologi.uio.no", 
@@ -21,7 +21,7 @@ Description: Contains 'ggplot2' geom for plotting brain atlases using
     <doi:10.1177/2515245920928009>.
 License: MIT + file LICENSE
 Encoding: UTF-8
-RoxygenNote: 7.2.3
+RoxygenNote: 7.3.3
 Depends: 
     R (>= 3.3),
     ggseg.formats
@@ -29,7 +29,7 @@ Imports:
     ggplot2 (>= 3.3),
     dplyr (>= 1.0.0),
     tidyr (>= 1.0.0),
-    sf (>= 0.9-2),
+    sf,
     stats,
     grid,
     utils,
@@ -42,14 +42,16 @@ Suggests:
     covr,
     vdiffr,
     devtools,
-    testthat (>= 2.1.0),
+    testthat (>= 3.0.0),
     spelling
 VignetteBuilder: knitr
 URL: https://github.com/ggseg/ggseg
 BugReports: https://github.com/ggseg/ggseg/issues
 Language: en-US
 SystemRequirements: 
-    C++11, 
+    C++17, 
     GDAL (>= 2.0.1), 
     GEOS (>= 3.4.0),
     PROJ (>= 4.8.0)
+Config/testthat/edition: 3
+Config/testthat/parallel: true

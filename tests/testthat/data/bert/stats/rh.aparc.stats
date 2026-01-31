@@ -25,7 +25,7 @@
 # Measure Cortex, CortexVol Total cortical gray matter volume, 491582.219712, mm^3
 # Measure SupraTentorial, SupraTentorialVol, Supratentorial volume, 1058701.930284, mm^3
 # Measure SupraTentorialNotVent, SupraTentorialVolNotVent, Supratentorial volume, 1043916.930284, mm^3
-# Measure EstimatedTotalIntraCranialVol, eTIV, Estimated Total Intracranial Volume, 1602572.131295, mm^3
+# Measure EstimatedTotalintracranialVol, eTIV, Estimated Total intracranial Volume, 1602572.131295, mm^3
 # NTableCols 10
 # TableCol  1 ColHeader StructName
 # TableCol  1 FieldName Structure Name

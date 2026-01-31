@@ -7,7 +7,7 @@
 position_brain(position = "horizontal")
 }
 \arguments{
-\item{position}{formula describing the rows ~ columns organisation.}
+\item{position}{formula describing the rows ~ columns organization.}
 }
 \value{
 a ggproto object

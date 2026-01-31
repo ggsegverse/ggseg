@@ -13,7 +13,6 @@
 #' @importFrom dplyr is.grouped_df full_join as_tibble
 #' @importFrom tidyr nest unnest
 #' @importFrom sf st_as_sf
-#' @importFrom utils capture.output
 #' @examples
 #' someData = data.frame(
 #'     region = c("transverse temporal", "insula",
@@ -24,48 +23,47 @@
 #' brain_join(someData, dk)
 #' brain_join(someData, dk, "region")
 #'
-brain_join <- function(data, atlas, by = NULL){
+brain_join <- function(data, atlas, by = NULL) {
   atlas <- as.data.frame(atlas)
 
-  if(is.null(by)){
+  if (is.null(by)) {
     by <- names(data)[names(data) %in% names(atlas)]
-    cli::cli_alert_info(paste0("merging atlas and data by ",
-                   paste(sapply(by, function(x) paste0("'", x, "'")),
-                         collapse = ", ")))
+    message(paste0(
+      "merging atlas and data by ",
+      paste(sapply(by, function(x) paste0("'", x, "'")), collapse = ", ")
+    ))
   }
 
-  if(is.grouped_df(data)){
-
+  if (is.grouped_df(data)) {
     data2 <- nest(data)
-    data2$data <- lapply(1:nrow(data2),
-                         function(x) full_join(atlas,
-                                               data2$data[[x]],
-                                               by = by))
+    data2$data <- lapply(1:nrow(data2), function(x) {
+      full_join(atlas, data2$data[[x]], by = by)
+    })
 
     dt <- unnest(data2, data)
-
-  }else{
-    dt <- full_join(atlas,
-                    data,
-                    by = by)
+  } else {
+    dt <- full_join(atlas, data, by = by)
   }
 
-  errs <- dt[is.na(dt$atlas),]
+  errs <- dt[is.na(dt$atlas), ]
 
-  if(nrow(errs) > 0){
+  if (nrow(errs) > 0) {
     errs <- dplyr::select(errs, -starts_with("."))
     errs <- dplyr::as_tibble(errs)
 
-    cli::cli_warn(sprintf(
-      "Some data not merged properly. Check for naming errors in data: \n %s",
-      paste0(capture.output(errs)[-1], collapse = "\n"), sep = "\n")
-      )
+    warning(
+      paste(
+        "Some data not merged properly. Check for naming errors in data:",
+        paste0(capture.output(errs)[-1], collapse = "\n"),
+        sep = "\n"
+      ),
+      call. = FALSE
+    )
   }
 
-  if("geometry" %in% names(dt)){
+  if ("geometry" %in% names(dt)) {
     st_as_sf(dt)
-  }else{
+  } else {
     as_tibble(dt)
   }
 }
-
