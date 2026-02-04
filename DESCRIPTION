@@ -23,8 +23,7 @@ License: MIT + file LICENSE
 Encoding: UTF-8
 RoxygenNote: 7.3.3
 Depends: 
-    R (>= 3.3),
-    ggseg.formats
+    R (>= 3.3)
 Imports:
     ggplot2 (>= 3.3),
     dplyr (>= 1.0.0),
@@ -32,9 +31,11 @@ Imports:
     sf,
     stats,
     grid,
+    ggseg.formats,
     utils,
-    vctrs,
-    cli
+    cli,
+    lifecycle,
+    vctrs
 Suggests:
     knitr,
     here,
