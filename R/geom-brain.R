@@ -7,7 +7,10 @@
 #' @param data data.frame with data to plot
 #' @param atlas object of type brain_atlas to plot
 #' @param hemi hemisphere to plot. Defaults to everything in the atlas.
-#' @param side slice to plot, as recorded in the "side" column in the atlas data. Defaults to all.
+#' @param view view to plot, as recorded in the "view" column in the atlas data.
+#'        For cortical atlases: "lateral", "medial", "superior", "inferior".
+#'        For subcortical atlases: slice identifiers like "axial_130_130_130".
+#'        Defaults to all views.
 #' @param position position of the data. Default is "identity" but can be
 #'        changed by \code{\link{position_brain}}.
 #' @param show.legend logical. Should legend be added or not.
@@ -23,18 +26,30 @@
 #' library(ggplot2)
 #'
 #' ggplot() +
-#'  geom_brain(atlas = dk)
+#'   geom_brain(atlas = dk)
 geom_brain <- function(
   mapping = aes(),
   data = NULL,
   atlas,
   hemi = NULL,
-  side = NULL,
+  view = NULL,
   position = position_brain(),
   show.legend = NA,
   inherit.aes = TRUE,
   ...
 ) {
+  dots <- list(...)
+  if ("side" %in% names(dots)) {
+    cli::cli_warn(c(
+      "The {.arg side} argument is deprecated.",
+      "i" = "Use {.arg view} instead. Your value has been passed to view."
+    ))
+    if (is.null(view)) {
+      view <- dots$side
+    }
+    dots$side <- NULL
+  }
+
   c(
     layer_brain(
       geom = GeomBrain,
@@ -44,7 +59,10 @@ geom_brain <- function(
       position = position,
       show.legend = show.legend,
       inherit.aes = inherit.aes,
-      params = list(na.rm = FALSE, atlas = atlas, hemi = hemi, side = side, ...)
+      params = c(
+        list(na.rm = FALSE, atlas = atlas, hemi = hemi, view = view),
+        dots
+      )
     ),
     coord_sf(default = TRUE, clip = "off")
   )
@@ -69,12 +87,11 @@ GeomBrain <- ggproto(
     alpha = NA,
     stroke = 0.5
   ),
-
   draw_panel = function(
     data,
     atlas,
     hemi,
-    side,
+    view,
     panel_params,
     coord,
     legend = NULL,
@@ -96,18 +113,10 @@ GeomBrain <- ggproto(
       na.rm = na.rm
     )
   },
-
   draw_key = function(data, params, size) {
     draw_key_polygon(data, params, size)
   }
 )
-
-
-# helpers ----
-#' @noRd
-default_aesthetics <- function(type) {
-  modify_list(GeomPolygon$default_aes, list(fill = "grey90", colour = "grey35"))
-}
 
 
 # adapted from ggplot2::sf_grob
@@ -119,10 +128,7 @@ brain_grob <- function(
   linemitre = 10,
   na.rm = TRUE
 ) {
-  type <- "other"
-  names(type) <- "MULTIPOLYGON"
-  is_other <- type == "other"
-
+  # nolint: object_name_linter
   defaults <- modify_list(
     GeomPolygon$default_aes,
     list(colour = "grey35", size = 0.2)
@@ -134,7 +140,6 @@ brain_grob <- function(
   fill <- if (!is.null(x$fill)) x$fill else defaults$fill
   fill <- alpha(fill, alpha)
   size <- if (!is.null(x$size)) x$size else defaults$size
-  point_size <- size
 
   lwd <- size * .pt
   lty <- if (!is.null(x$linetype)) x$linetype else defaults$linetype
@@ -151,12 +156,6 @@ brain_grob <- function(
 }
 
 #' @noRd
-detect_missing <- function(df, vars, finite = FALSE) {
-  vars <- intersect(vars, names(df))
-  !cases(df[, vars, drop = FALSE], if (finite) is_finite else is_complete)
-}
-
-#' @noRd
 modify_list <- function(old, new) {
   for (i in names(new)) {
     old[[i]] <- new[[i]]
@@ -170,11 +169,7 @@ if (getRversion() >= "2.15.1") {
     "GeomPolygon",
     ".stroke",
     ".pt",
-    "cases",
-    "is_finite",
-    "is_complete",
     "coord_sf",
-    "warn",
     "GeomBrain"
   ))
 }

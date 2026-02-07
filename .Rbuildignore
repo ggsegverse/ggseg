@@ -22,3 +22,4 @@ vignettes/geom-sf*
 dev
 ^CRAN-SUBMISSION$
 .lintr
+.claude/

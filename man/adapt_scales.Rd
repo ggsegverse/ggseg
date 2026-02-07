@@ -9,9 +9,11 @@ adapt_scales(geobrain, position = "dispersed", aesthetics = "labs")
 \arguments{
 \item{geobrain}{a data.frame containing atlas information.}
 
-\item{position}{String choosing how to view the data. Either "dispersed"[default] or "stacked".}
+\item{position}{String choosing how to view the data.
+Either "dispersed"[default] or "stacked".}
 
-\item{aesthetics}{String of which aesthetics to adapt scale of, either "x","y", or "labs".}
+\item{aesthetics}{String of which aesthetics to adapt scale of,
+either "x","y", or "labs".}
 }
 \value{
 nested list with coordinates for labels

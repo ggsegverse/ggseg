@@ -15,102 +15,55 @@ knitr::opts_chunk$set(
 )
 ```
 
-
-While the new workflow in *ggseg* using the simple features type `geom_brain` works well, it struggles with integration with other very useful simple feature geoms, like labels. 
-Since `geom_brain` can alter the position of slices through the `position` argument, and since the atlas is provided as a separate argument rather than integrated in the data itself, the geoms for sf-labels are not possible to implement. 
-We also found it too tricky, with too many re-iterations of the same arguments, to implement a specialized brain-label geom. 
-
-Because of these issues, we here provide an alternate workflow for those users wanting to implement other simple-feature geoms to the ggseg-plots. 
-This workflow means not using the `geom_brain` function, but pre-joining and fixing the data _before_ providing it to `ggplot`. 
-In many ways, this workflow mimics what happens behind the scenes in `ggseg()` and within the `geom_brain` functions.
-
-
-# Explore the atlas
-
-Firstly, you need to make sure that the atlas you are working on had simple features (sf) geometry column in it. 
-The easiest way to do this is to simply call the atlas in the R terminal and look for information on `use` in the console printout.
-The dk-atlas has `use: ggplot() + geom_brain()` letting us know that it is set up to work with simple features.
+`geom_brain()` handles atlas data automatically, but this limits integration with other sf geoms like `geom_sf_label()`.
+This vignette shows an alternative workflow: pre-join your data with the atlas, then use standard sf geoms.
 
 ```{r setup}
 library(ggseg)
 library(ggplot2)
-
-dk
+library(dplyr)
 ```
 
-You can have a look at the atlas and make sure it is what you expect
+## When to use this workflow
+
+Use the sf workflow when you need:
+
+- Region labels with `geom_sf_label()` or `geom_sf_text()`
+- Repelled labels with `ggrepel::geom_sf_label_repel()`
+- Other sf geoms layered on the brain
+- Full control over the simple features data
+
+## Checking atlas compatibility
+
+Brain atlases contain simple features geometry in their `data` slot:
 
 ```{r}
-plot(dk)
-```
-
-If you take an even closer look, you will see that the brain-atlas class is actually a list of four, where the `data` contains a simple features geometry column.
-```{r}
-dk$atlas
-dk$type
-dk$palette
 dk$data
 ```
 
+The `geometry` column holds the polygon data.
 
-## If the atlas is not a simple-features version
-We can force the dk brain-atlas into the original ggseg-atlas class and see how it looks different when the type is not set up with simple-features.
+## Joining data with brain_join
 
-```{r}
-dk2 <- as_ggseg_atlas(dk)
-dk2
-```
-
-If the ggseg-atlas is set up correctly, we should be able to convert it into a simple-features atlas.
+Use `brain_join()` to merge your data with the atlas while preserving atlas structure:
 
 ```{r}
-dk2 <- as_brain_atlas(dk2)
-dk2
-```
-
-
-# Joining the atlas with data
-
-In most cases, users want to plot their own data projected onto the brain. 
-In this workflow, you will need to get all the data, including having joined the atlas data, _before_ calling `ggplot`. 
-This will then become the same workflow as any other simple-featured plotting, and many new possibilities of specialized sf-geoms opens to you. 
-
-First, let's make up some data that we want to plot. Here a data.frame of 4 brain regions, with p-values connected to them.
-
-```{r}
-library(dplyr)
-
 some_data <- tibble(
   region = c(
-    "transverse temporal",
-    "insula",
-    "precentral",
-    "superior parietal"
+    "transverse temporal", "insula", "precentral", "superior parietal"
   ),
   p = sample(seq(0, .5, .001), 4)
 )
 
-some_data
-
-```
-
-To join a data.frame to an atlas object, you should use the specialized `brain_join` function. 
-This makes sure that atlas information is preserved while joining. 
-
-```{r}
 some_data |>
   brain_join(dk)
 ```
 
-The output is a standard sf-object, and can therefore also be plotted as one. 
+The result is a standard sf object.
 
-```{r}
-some_data |>
-  brain_join(dk) |>
-  plot()
-```
+## Plotting with geom_sf
 
-To use ggplot for plotting the new sf-object, use standard ggplot-syntax with the `geom_sf` geom.
+Plot the joined data using `geom_sf()`:
 
 ```{r}
 some_data |>
@@ -119,8 +72,10 @@ some_data |>
   geom_sf(aes(fill = p))
 ```
 
+## Repositioning slices
 
-If you want to reposition the slices, so that they are more to you liking, use the `reposition_brain` function (not to be confused with the ggproto-function `position_brain`!)
+Use `reposition_brain()` (not `position_brain()`) to rearrange slices before plotting:
+
 ```{r}
 some_data |>
   brain_join(dk) |>
@@ -129,8 +84,11 @@ some_data |>
   geom_sf(aes(fill = p))
 ```
 
+The function takes the same formula syntax as `position_brain()`.
 
-Once your data is plotted as a geom_sf, you can add geoms like `geom_sf_label` to add labels to the regions.
+## Adding labels
+
+Now you can layer sf geoms like labels:
 
 ```{r}
 some_data |>
@@ -145,32 +103,28 @@ some_data |>
   )
 ```
 
-If you want a version where the labels do not overlap each other, you can try the `geom_sf_label_repel` function from the `ggrepel` package. 
+For non-overlapping labels, use `ggrepel::geom_sf_label_repel()`.
 
-## Faceting groups
+## Faceting with groups
 
-If your data includes groups, and you want to facet the output, you need to group the data _before_ calling `brain_join`.
+Group your data before calling `brain_join()`:
 
 ```{r}
 some_data <- tibble(
-  region = rep(
-    c("transverse temporal", "insula", "precentral", "superior parietal"),
-    2
-  ),
+  region = rep(c(
+    "transverse temporal", "insula", "precentral", "superior parietal"
+  ), 2),
   p = sample(seq(0, .5, .001), 8),
-  groups = c(rep("g1", 4), rep("g2", 4))
+  group = c(rep("A", 4), rep("B", 4))
 )
-some_data
-```
 
-
-```{r}
 some_data |>
-  group_by(groups) |>
+  group_by(group) |>
   brain_join(dk) |>
   reposition_brain(hemi ~ side) |>
   ggplot(aes(fill = p)) +
   geom_sf(show.legend = FALSE) +
-  facet_wrap(~groups) +
-  ggtitle("correct facetting")
+  facet_wrap(~group)
 ```
+
+The grouping ensures each facet gets the complete atlas.

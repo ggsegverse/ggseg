@@ -6,35 +6,30 @@
 \alias{ggseg}
 \title{ggseg: Plot brain segmentations with ggplot}
 \usage{
-ggseg(
-  .data = NULL,
-  atlas = dk,
-  position = "dispersed",
-  view = NULL,
-  hemisphere = NULL,
-  adapt_scales = TRUE,
-  ...
-)
+ggseg(...)
 }
 \arguments{
+\item{...}{other options sent to geom_polygon for plotting, including
+mapping aes (cannot include x, y, and group aesthetics).}
+
 \item{.data}{A .data.frame to use for plot aesthetics. Should include a
 column called "region" corresponding to aparc regions.}
 
 \item{atlas}{Either a string with the name of atlas to use,
 or a .data.frame containing atlas information (i.e. pre-loaded atlas).}
 
-\item{position}{String choosing how to view the .data. Either "dispersed"[default] or "stacked".}
+\item{hemisphere}{String to choose hemisphere to plot.
+Any of c("left","right")[default].}
 
-\item{view}{String to choose view of the .data. Any of c("lateral","medial")[default].}
+\item{view}{String to choose view of the .data.
+Any of c("lateral","medial")[default].}
 
-\item{hemisphere}{String to choose hemisphere to plot. Any of c("left","right")[default].}
+\item{position}{String choosing how to view the .data.
+Either "dispersed"[default] or "stacked".}
 
 \item{adapt_scales}{if \code{TRUE}, then the axes will
 be hemisphere without ticks.  If \code{FALSE}, then will be latitude
 longitude values.  Also affected by \code{position} argument}
-
-\item{...}{other options sent to geom_polygon for plotting, including
-mapping aes (cannot include x, y, and group aesthetics).}
 }
 \value{
 a ggplot object
@@ -57,18 +52,23 @@ a brain-plot wither with ggplot (2D polygons).
 \describe{
 
 \item{`dk`}{
-The Desikan-Killiany Cortical Atlas [default], FreeSurfer cortical segmentations.}
+The Desikan-Killiany Cortical Atlas [default],
+FreeSurfer cortical segmentations.}
 
 \item{`aseg`}{
 FreeSurfer automatic subcortical segmentation of a brain volume}
 }
 }
 \examples{
+\dontrun{
 library(ggplot2)
 ggseg()
-ggseg(mapping=aes(fill=region))
-\dontrun{
-ggseg(colour="black", size=.7, mapping=aes(fill=region)) + theme_void()
+ggseg(mapping = aes(fill = region))
+ggseg(
+  colour = "black",
+  size = .7,
+  mapping = aes(fill = region)
+) + theme_void()
 ggseg(position = "stacked")
 ggseg(adapt_scales = FALSE)
 }

@@ -24,7 +24,8 @@ scale_labs_brain(atlas = dk, position = "dispersed", aesthetics = "labs")
 
 \item{position}{Character of either "dispersed" or "stacked".}
 
-\item{aesthetics}{String vector of which aesthetics to scale "x", "y", or "labs".}
+\item{aesthetics}{String vector of which aesthetics to scale
+"x", "y", or "labs".}
 
 \item{...}{additional arguments to pass to \code{\link{adapt_scales}}}
 }
@@ -32,8 +33,9 @@ scale_labs_brain(atlas = dk, position = "dispersed", aesthetics = "labs")
 a scaling function to alter continuous axes labels in ggplot2
 }
 \description{
-The `brain` axis and label scales provides scales for the different atlases in the
-package. These add axis labels and tick labels corresponding to the different atlases.
+The `brain` axis and label scales provides scales for
+the different atlases in the package. These add axis
+labels and tick labels corresponding to the different atlases.
 }
 \examples{
 \dontrun{

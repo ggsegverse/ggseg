@@ -11,7 +11,7 @@ geom_brain(
   data = NULL,
   atlas,
   hemi = NULL,
-  side = NULL,
+  view = NULL,
   position = position_brain(),
   show.legend = NA,
   inherit.aes = TRUE,
@@ -28,7 +28,10 @@ variables from the supplied data to the plot}
 
 \item{hemi}{hemisphere to plot. Defaults to everything in the atlas.}
 
-\item{side}{slice to plot, as recorded in the "side" column in the atlas data. Defaults to all.}
+\item{view}{view to plot, as recorded in the "view" column in the atlas data.
+For cortical atlases: "lateral", "medial", "superior", "inferior".
+For subcortical atlases: slice identifiers like "axial_130_130_130".
+Defaults to all views.}
 
 \item{position}{position of the data. Default is "identity" but can be
 changed by \code{\link{position_brain}}.}
@@ -50,6 +53,6 @@ call to \code{\link[ggplot2]{geom_sf}}
 library(ggplot2)
 
 ggplot() +
- geom_brain(atlas = dk)
+  geom_brain(atlas = dk)
 }
 \keyword{datasets}

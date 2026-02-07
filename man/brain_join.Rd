@@ -22,11 +22,14 @@ Joins data frame with a brain-atlas
 object.
 }
 \examples{
-someData = data.frame(
-    region = c("transverse temporal", "insula",
-                "precentral","superior parietal"),
-    p = sample(seq(0,.5,.001), 4),
-    stringsAsFactors = FALSE)
+someData <- data.frame(
+  region = c(
+    "transverse temporal", "insula",
+    "precentral", "superior parietal"
+  ),
+  p = sample(seq(0, .5, .001), 4),
+  stringsAsFactors = FALSE
+)
 
 brain_join(someData, dk)
 brain_join(someData, dk, "region")

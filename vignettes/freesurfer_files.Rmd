@@ -1,8 +1,8 @@
 ---
-title: "Read in files from FreeSurfer"
+title: "Reading FreeSurfer files"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Read in files from FreeSurfer}
+  %\VignetteIndexEntry{Reading FreeSurfer files}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -10,130 +10,100 @@ vignette: >
 ```{r, include = FALSE}
 knitr::opts_chunk$set(
   collapse = TRUE,
-  comment = "#>"
+  comment = "#>",
+  eval = FALSE
 )
-
-library(ggseg)
-devtools::load_all(".")
-subject_dir <- here::here("tests/testthat/data/")
-
-stats_file <- paste0(subject_dir, "bert/stats/lh.aparc.stats")
 ```
 
-
-FreeSurfer already have files that are compatible with `ggseg` in some extent.
-There are naming conventions and file-formats that are different, and as such it can at times be a little tricky to get data directly from FreeSurfer into R, and subsequently plotting in ggseg.
-
-# Raw stats files
-## Read in single raw stats file
-If `recon-all` from FreeSurfer has been run, each participant should have a `stats` folder, with various parcellation data and summary statistics for those parcellations and measures. 
-These have many header lines before the data actually start, and can have some formatting difficult to handle in R.
-
-The function `read_freesurfer_stats` is made to easily read in raw stats tables from each individual, without needing to go through FreeSurfer's internal converters.
-When using this file, remembering which hemisphere is read in is important, as this information must be added to the `label` column for `ggseg` to recognize the region labels.
-
-```{r, eval=FALSE}
-library(ggseg)
-library(ggplot2)
-
-subjects_dir <- "/Applications/freesurfer/subjects/"
-```
-
-```{r, echo = FALSE}
-library(ggseg)
-library(ggplot2)
-
-subjects_dir <- here::here("tests/testthat/data")
-```
+ggseg includes functions to read FreeSurfer stats files directly into R for plotting.
+This avoids manual conversion steps and preserves the data structure ggseg expects.
 
 ```{r}
+library(ggseg)
+library(ggplot2)
+library(dplyr)
+```
+
+## Reading individual stats files
+
+After running `recon-all`, each subject has a `stats/` folder with parcellation data.
+Use `read_freesurfer_stats()` to read these files:
+```{r}
+subjects_dir <- Sys.getenv("SUBJECTS_DIR")
 stats_file <- file.path(subjects_dir, "bert/stats/lh.aparc.stats")
+
 data <- read_freesurfer_stats(stats_file)
 data
 ```
 
-This data should be well-suited for use with ggseg. 
+The hemisphere is encoded in the filename (`lh.` or `rh.`).
+Add it to the label column for ggseg to match regions correctly:
 
 ```{r}
-library(dplyr)
 data |>
   mutate(label = paste0("lh_", label)) |>
   ggseg(atlas = dk, mapping = aes(fill = ThickAvg))
 ```
 
+## Reading stats files for all subjects
 
-## Read in raw stats files for an atlas for all subjects
-
-A convenience function also exists for those wanting to circumvent the `aparcstats2table` and `asegstats2table` from freesurfer for creating larger datasets of all subjects for a specific parcellation and metric. 
-Using the function `read_freesurfer_stats`, `read_atlas_files` uses regular expression for the atlas you want to extract data from, and grabs this data from all available subjects. 
-Be careful with your pattern matching to be sure you get exactly the atlas you want. 
-For instance, there are several atlases with with string `aparc` in them. 
-So in order to get only the default aparc stats, we need to specify `aparc.stats$`, which will only read those files ending with that particular string. 
-This function _can_ throw warnings, which is most cases can be ignored.
+`read_atlas_files()` reads stats files across all subjects for a specific atlas.
+Use a regular expression to match the files you want:
 
 ```{r}
-dat <- read_atlas_files(subject_dir, "aparc.stats$")
+dat <- read_atlas_files(subjects_dir, "aparc.stats$")
 dat
 ```
 
-Since all files are read in, the hemisphere in the label is already fixed, so it is easy to plot.
+The `$` ensures you get only files ending with `aparc.stats`, not variants like `aparc.a2009s.stats`.
+
+The function adds hemisphere prefixes automatically:
 
 ```{r}
 ggseg(dat, mapping = aes(fill = ThickStd))
 ```
 
+Plot all metrics at once using facets:
 
-With this data, we can even have a look at all the metrics at once.
-
-```{r out.width="100%", fig.width=10}
-library(dplyr)
+```{r, fig.width = 10}
 library(tidyr)
 
 dat |>
-  gather(stat, val, -subject, -label) |>
+  pivot_longer(-c(subject, label), names_to = "stat", values_to = "val") |>
   group_by(stat) |>
   ggseg(mapping = aes(fill = val)) +
   facet_wrap(~stat)
 ```
 
-# FreeSurfer stats tables
-FreeSurfer has internal functions to convert their raw stats files into tables, gather subject into a single data file with particular metric.
-It is quite common to use these files, but again the formatting is not something R is very happy with.
-The function `read_freesurfer_table()` is for easier import of these files, particularly for further plotting with ggseg. 
+## Reading FreeSurfer stats tables
+
+FreeSurfer's `aparcstats2table` and `asegstats2table` create summary tables across subjects.
+Read these with `read_freesurfer_table()`:
 
 ```{r}
-# Path to our particular file, yours will be wherever you have saved it
-table_path <- here::here("tests/testthat/data/aparc.volume.table")
-table_path
-```
+table_path <- "path/to/aparc.volume.table"
 
-```{r}
 read_freesurfer_table(table_path)
 ```
 
-The file is read and has three columns only. The subject column, the label column, and a column with the values of the metric.
-Since the stats tables can contain different measures, and these are handled somewhat differently, we for convenience leave the default reading of the table this way.
-To work with ggseg, though, the labels usually (but not always) need a little cleaning. 
-In this case we read in a `volume` table, and as such all labels end with "_volume". 
-ggseg will _not_ recognize this matching the atlas, and will therefore not plot. 
+The output has three columns: subject, label, and value.
 
-Easiest way to clean, is by using the `measure` argument for the function.
+## Cleaning label suffixes
+
+Stats tables append the measure name to labels (e.g., `lh_bankssts_volume`).
+Use the `measure` argument to clean this:
 
 ```{r}
 dat <- read_freesurfer_table(table_path, measure = "volume")
 dat
 ```
 
-This will do two things: 1) remove the label suffix, and 2) rename the `value` column to the measure supplied.
-Alternatively, you will need to do string manipulation on the label column your self, we recommend the [stringr](https://stringr.tidyverse.org/index.html) package in that case.
+This removes the `_volume` suffix and renames the value column.
 
-```{r, eval = FALSE}
-dat |>
-  ggseg(mapping = aes(fill = volume))
-```
+## Filtering non-region rows
 
-An error will be thrown because the FreeSurfer tables also include measures of total volume/region/thickness, estimated intracranial volume etc, which will not merge into the atlas, and the internal ggseg atlas-merging function throws a warning. 
-To avoid this, you can remove those labels before plotting.
+FreeSurfer tables include summary measures (total volume, ICV) that don't match atlas regions.
+Filter these before plotting:
 
 ```{r}
 dat |>
@@ -141,3 +111,4 @@ dat |>
   ggseg(mapping = aes(fill = volume))
 ```
 
+The `grepl("lh|rh", label)` pattern keeps only hemisphere-specific regions.

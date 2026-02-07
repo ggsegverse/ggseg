@@ -14,11 +14,14 @@
 #' @importFrom tidyr nest unnest
 #' @importFrom sf st_as_sf
 #' @examples
-#' someData = data.frame(
-#'     region = c("transverse temporal", "insula",
-#'                 "precentral","superior parietal"),
-#'     p = sample(seq(0,.5,.001), 4),
-#'     stringsAsFactors = FALSE)
+#' someData <- data.frame(
+#'   region = c(
+#'     "transverse temporal", "insula",
+#'     "precentral", "superior parietal"
+#'   ),
+#'   p = sample(seq(0, .5, .001), 4),
+#'   stringsAsFactors = FALSE
+#' )
 #'
 #' brain_join(someData, dk)
 #' brain_join(someData, dk, "region")
@@ -30,13 +33,14 @@ brain_join <- function(data, atlas, by = NULL) {
     by <- names(data)[names(data) %in% names(atlas)]
     message(paste0(
       "merging atlas and data by ",
-      paste(sapply(by, function(x) paste0("'", x, "'")), collapse = ", ")
+      paste(vapply(by, function(x) paste0("'", x, "'"), character(1)),
+            collapse = ", ")
     ))
   }
 
   if (is.grouped_df(data)) {
     data2 <- nest(data)
-    data2$data <- lapply(1:nrow(data2), function(x) {
+    data2$data <- lapply(seq_len(nrow(data2)), function(x) {
       full_join(atlas, data2$data[[x]], by = by)
     })
 

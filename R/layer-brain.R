@@ -16,92 +16,115 @@ layer_brain <- function(geom = NULL, stat = NULL,
 
 #' @noRd
 LayerBrain <- ggproto("LayerBrain", ggplot2:::Layer,
+  setup_layer = function(self, data, plot) {
+    dt <- ggproto_parent(ggplot2:::Layer, self)$setup_layer(data, plot)
 
-                      setup_layer = function(self, data, plot) {
-                        # process generic layer setup first
-                        dt <- ggproto_parent(ggplot2:::Layer, self)$setup_layer(data, plot)
+    atlas_obj <- self$geom_params$atlas
 
-                        atlas <- as.data.frame(self$geom_params$atlas)
-                        if(is.null(atlas) | nrow(atlas) == 0)
-                          cli::cli_abort("No atlas supplied, please provide a brain atlas to the geom.")
+    if (is.null(atlas_obj)) {
+      cli::cli_abort(
+        "No atlas supplied, please provide a brain atlas to the geom."
+      )
+    }
 
-                        if(!is.null(self$geom_params$hemi)){
-                          hemi <- match.arg(self$geom_params$hemi, unique(atlas$hemi))
-                          atlas <- atlas[atlas$hemi %in% hemi,]
-                        }
+    atlas <- as.data.frame(atlas_obj)
 
-                        if(!is.null(self$geom_params$side)){
-                          side <- match.arg(self$geom_params$side, unique(atlas$side))
-                          atlas <- atlas[atlas$side %in% side,]
-                        }
+    if (nrow(atlas) == 0) {
+      cli::cli_abort("Atlas has no data to plot.")
+    }
 
-                        if(class(dt)[1] != "waiver"){
+    if (!is.null(self$geom_params$hemi)) {
+      hemi <- self$geom_params$hemi
+      invalid <- setdiff(hemi, unique(atlas$hemi))
+      if (length(invalid) > 0) {
+        avail <- unique(atlas$hemi)
+        cli::cli_abort(
+          "Invalid hemisphere(s): {.val {invalid}}. Available: {.val {avail}}"
+        )
+      }
+      atlas <- atlas[atlas$hemi %in% hemi, ]
+    }
 
-                          data <- brain_join(dt, atlas)
+    if (!is.null(self$geom_params$view)) {
+      view <- self$geom_params$view
+      invalid <- setdiff(view, unique(atlas$view))
+      if (length(invalid) > 0) {
+        avail <- unique(atlas$view)
+        cli::cli_abort(
+          "Invalid view(s): {.val {invalid}}. Available: {.val {avail}}"
+        )
+      }
+      atlas <- atlas[atlas$view %in% view, ]
+    }
 
-                          merge_errs <- sapply(data$geometry,
-                                               function(x) ifelse(length(!is.na(x)) > 0,
-                                                                  TRUE, FALSE))
+    if (class(dt)[1] != "waiver") {
+      data <- brain_join(dt, atlas)
 
-                          if(any(!merge_errs)){
-                            k <- data[!merge_errs,]
-                            k <- k[,apply(k, 2, function(x) all(!is.na(x)))]
-                            k$geometry <- NULL
-                            k <- paste(utils::capture.output(k), collapse="\n")
+      merge_errs <- vapply(
+        data$geometry,
+        function(x) length(!is.na(x)) > 0,
+        logical(1)
+      )
 
-                            cli::cli_warn(sprintf("Some data not merged. Check for spelling mistakes in:\n%s",
-                                                  k))
-                            data <- data[merge_errs,]
-                          }
-                        }else{
-                          data <- atlas
-                        }
+      if (any(!merge_errs)) {
+        k <- data[!merge_errs, ]
+        k <- k[, apply(k, 2, function(x) all(!is.na(x)))]
+        k$geometry <- NULL
+        k <- paste(utils::capture.output(k), collapse = "\n")
 
-                        data <- sf::st_as_sf(data)
+        cli::cli_warn(sprintf(
+          "Some data not merged. Check for spelling mistakes in:\n%s",
+          k
+        ))
+        data <- data[merge_errs, ]
+      }
+    } else {
+      data <- atlas
+    }
 
-                        # automatically determine the name of the geometry column
-                        # and add the mapping if it doesn't exist
-                        if ((isTRUE(self$inherit.aes) && is.null(self$computed_mapping$geometry) && is.null(plot$computed_mapping$geometry)) ||
-                            (!isTRUE(self$inherit.aes) && is.null(self$computed_mapping$geometry))) {
-                          if (ggplot2:::is_sf(data)) {
-                            geometry_col <- attr(data, "sf_column")
-                            self$computed_mapping$geometry <- as.name(geometry_col)
-                          }
-                        }
+    data <- sf::st_as_sf(data)
 
-                        if ((isTRUE(self$inherit.aes) && is.null(self$computed_mapping$hemi) && is.null(plot$computed_mapping$hemi)) ||
-                            (!isTRUE(self$inherit.aes) && is.null(self$computed_mapping$hemi))) {
-                          self$computed_mapping$hemi <- as.name("hemi")
-                        }
+    needs_mapping <- function(aes_name) {
+      self_map <- self$computed_mapping[[aes_name]]
+      plot_map <- plot$computed_mapping[[aes_name]]
+      if (isTRUE(self$inherit.aes)) {
+        is.null(self_map) && is.null(plot_map)
+      } else {
+        is.null(self_map)
+      }
+    }
 
-                        if ((isTRUE(self$inherit.aes) && is.null(self$computed_mapping$side) && is.null(plot$computed_mapping$side)) ||
-                            (!isTRUE(self$inherit.aes) && is.null(self$computed_mapping$side))) {
-                          self$computed_mapping$side <- as.name("side")
-                        }
+    if (needs_mapping("geometry") && ggplot2:::is_sf(data)) {
+      geometry_col <- attr(data, "sf_column")
+      self$computed_mapping$geometry <- as.name(geometry_col)
+    }
 
-                        if ((isTRUE(self$inherit.aes) && is.null(self$computed_mapping$type) && is.null(plot$computed_mapping$type)) ||
-                            (!isTRUE(self$inherit.aes) && is.null(self$computed_mapping$type))) {
-                          self$computed_mapping$type <- as.name("type")
-                        }
+    if (needs_mapping("hemi")) {
+      self$computed_mapping$hemi <- as.name("hemi")
+    }
 
-                        if ((isTRUE(self$inherit.aes) && is.null(self$computed_mapping$fill) && is.null(plot$computed_mapping$fill)) ||
-                            (!isTRUE(self$inherit.aes) && is.null(self$computed_mapping$fill))) {
-                          self$computed_mapping$fill <- as.name("region")
-                        }
+    if (needs_mapping("view")) {
+      self$computed_mapping$view <- as.name("view")
+    }
 
-                        # work around for later merging.
-                        # shitty solution
-                        self$computed_mapping$label <- as.name("label")
+    if (needs_mapping("type")) {
+      self$computed_mapping$type <- as.name("type")
+    }
 
-                        # automatically determine the legend type
-                        self$geom_params$legend <- "polygon"
+    if (needs_mapping("fill")) {
+      self$computed_mapping$fill <- as.name("region")
+    }
 
-                        data
-                      }
+    self$computed_mapping$label <- as.name("label")
+
+    self$geom_params$legend <- "polygon"
+
+    data
+  }
 )
 
 
 # quiets concerns of R CMD check
-if(getRversion() >= "2.15.1"){
+if (getRversion() >= "2.15.1") {
   utils::globalVariables(c("layer"))
 }

@@ -86,18 +86,22 @@ While default atlas plots will give you an idea of how the atlases look, you wil
 ```{r}
 library(dplyr)
 some_data <- tibble(
-  region = rep(c("transverse temporal", "insula",
-           "precentral","superior parietal"), 2), 
-  p = sample(seq(0,.5,.001), 8),
+  region = rep(c(
+    "transverse temporal", "insula",
+    "precentral", "superior parietal"
+  ), 2),
+  p = sample(seq(0, .5, .001), 8),
   groups = c(rep("g1", 4), rep("g2", 4))
 )
 
 some_data |>
   group_by(groups) |>
   ggplot() +
-  geom_brain(atlas = dk, 
-             position = position_brain(hemi ~ side),
-             aes(fill = p)) +
+  geom_brain(
+    atlas = dk,
+    position = position_brain(hemi ~ side),
+    aes(fill = p)
+  ) +
   facet_wrap(~groups)
 ```
 

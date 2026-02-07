@@ -30,7 +30,8 @@ theme_brain2(
 
 \item{text.family}{Specify font family}
 
-\item{plot.background}{Specify fill of plot background (`theme_custombrain` only)}
+\item{plot.background}{Specify fill of plot background
+(`theme_custombrain` only)}
 
 \item{text.colour}{Specify colour of plot text}
 }
@@ -38,7 +39,7 @@ theme_brain2(
 function that alters the themeing of a ggplot object
 }
 \description{
-a set of themes created for the ggseg plots. Use theme() to tweak.
+A set of themes created for the ggseg plots. Use theme() to tweak.
 }
 \details{
 \describe{
@@ -68,7 +69,8 @@ p +
 
 }
 \seealso{
-[ggplot()], [aes()], [geom_polygon()], [coord_fixed()] from the ggplot2 package
+[ggplot()], [aes()], [geom_polygon()], [coord_fixed()]
+  from the ggplot2 package
 }
 \author{
 Athanasia Mo Mowinckel

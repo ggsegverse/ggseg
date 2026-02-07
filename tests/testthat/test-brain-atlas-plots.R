@@ -7,13 +7,13 @@ test_that("brain atlas plots work", {
   )
   expect_doppelganger(
     "brain atlas dk plot position",
-    plot(dk, position = position_brain(hemi ~ side))
+    plot(dk, position = position_brain(hemi ~ view))
   )
   #
   #   expect_doppelganger("brain atlas aseg plot",
   #                       plot(aseg))
 
   k <- dk
-  k$data$geometry <- NULL
+  k$data$sf <- NULL
   expect_error(plot(k), "cannot be plotted")
 })

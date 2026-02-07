@@ -61,7 +61,7 @@ test_that("Check that plotting non ggseg_atlas-class tries conversion", {
 })
 
 test_that("Check brain stacking", {
-  expect_error(ggseg(position = "rr"), 'should be one of')
+  expect_error(ggseg(position = "rr"), "should be one of")
 
   expect_doppelganger("ggseg dk stack", ggseg(position = "stack"))
 
@@ -75,4 +75,9 @@ test_that("Check brain stacking", {
     "ggseg aseg stacked",
     ggseg(atlas = aseg, position = "stacked")
   )
+})
+
+test_that("ggseg works with character atlas name", {
+  p <- ggseg(atlas = "dk")
+  expect_s3_class(p, "gg")
 })

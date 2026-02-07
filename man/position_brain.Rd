@@ -4,10 +4,25 @@
 \alias{position_brain}
 \title{Alter brain atlas position}
 \usage{
-position_brain(position = "horizontal")
+position_brain(position = "horizontal", nrow = NULL, ncol = NULL, views = NULL)
 }
 \arguments{
-\item{position}{formula describing the rows ~ columns organization.}
+\item{position}{Formula describing the rows ~ columns organisation for
+cortical atlases (e.g., `hemi ~ view`). For subcortical/tract atlases,
+can be "horizontal", "vertical", or a formula with `type ~ .` where type
+is extracted from view names like "axial_1" -> "axial".}
+
+\item{nrow}{Number of rows for grid layout. If NULL (default), calculated
+automatically. Only used for subcortical/tract atlases when position is
+not a formula.}
+
+\item{ncol}{Number of columns for grid layout. If NULL (default), calculated
+automatically. Only used for subcortical/tract atlases when position is
+not a formula.}
+
+\item{views}{Character vector specifying which views to include and their
+order. If NULL (default), all views are included in their original order.
+Only applies to subcortical/tract atlases.}
 }
 \value{
 a ggproto object
@@ -18,13 +33,45 @@ to alter the position of the brain slice/views.
 }
 \examples{
 library(ggplot2)
+
+# Cortical atlas with formula
 ggplot() +
-  geom_brain(atlas = dk, aes(fill = region),
-             position = position_brain(. ~ side + hemi ),
-             show.legend = FALSE)
+  geom_brain(
+    atlas = dk, aes(fill = region),
+    position = position_brain(. ~ view + hemi),
+    show.legend = FALSE
+  )
 
 ggplot() +
-  geom_brain(atlas = dk, aes(fill = region),
-             position = position_brain(side ~ hemi ),
-             show.legend = FALSE)
+  geom_brain(
+    atlas = dk, aes(fill = region),
+    position = position_brain(view ~ hemi),
+    show.legend = FALSE
+  )
+
+\dontrun{
+# Subcortical atlas with grid layout
+ggplot() +
+  geom_brain(
+    atlas = aseg, aes(fill = region),
+    position = position_brain(nrow = 2)
+  )
+
+# Subcortical with specific view order
+ggplot() +
+  geom_brain(
+    atlas = aseg, aes(fill = region),
+    position = position_brain(
+      views = c("sagittal", "axial_3", "coronal_2"),
+      nrow = 1
+    )
+  )
+
+# Subcortical with type-based formula (axial/coronal/sagittal)
+ggplot() +
+  geom_brain(
+    atlas = aseg, aes(fill = region),
+    position = position_brain(type ~ .)
+  )
+}
 }

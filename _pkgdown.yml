@@ -1,5 +1,61 @@
-destination: docs
-url: https://lcbc-uio.github.io/ggseg/
+url: https://ggseg.github.io/ggseg/
+
 template:
-  params:
-    bootswatch: cerulean
+  bootstrap: 5
+
+articles:
+  - title: Getting Started
+    navbar: ~
+    contents:
+      - ggseg
+      - externalData
+
+  - title: Advanced Usage
+    contents:
+      - geom-sf
+      - freesurfer_files
+
+reference:
+  - title: Plotting
+    desc: Functions for plotting brain atlases
+    contents:
+      - geom_brain
+      - position_brain
+      - reposition_brain
+
+  - title: Atlas Utilities
+    desc: Working with brain atlas data
+    contents:
+      - brain_join
+      - brain_regions
+      - brain_labels
+
+  - title: Scales
+    desc: Colour scales for brain plots
+    contents:
+      - scale_brain
+      - scale_brain2
+      - scale_fill_brain
+      - scale_colour_brain
+      - scale_color_brain
+
+  - title: Themes
+    desc: ggplot themes for brain plots
+    contents:
+      - theme_brain
+      - theme_brain2
+      - theme_darkbrain
+      - theme_custombrain
+
+  - title: FreeSurfer Data
+    desc: Functions for reading FreeSurfer files
+    contents:
+      - read_freesurfer_stats
+      - read_freesurfer_table
+      - read_atlas_files
+
+  - title: Data
+    desc: Built-in atlases
+    contents:
+      - dk
+      - aseg
