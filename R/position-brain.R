@@ -38,11 +38,11 @@
 #' reposition_brain(aseg_data, views = c("sagittal", "axial_3"))
 #' }
 reposition_brain <- function(
-    data,
-    position = "horizontal",
-    nrow = NULL,
-    ncol = NULL,
-    views = NULL
+  data,
+  position = "horizontal",
+  nrow = NULL,
+  ncol = NULL,
+  views = NULL
 ) {
   data <- as.data.frame(data, stringsAsFactors = FALSE)
   frame_2_position(data, position, nrow = nrow, ncol = ncol, views = views)
@@ -115,10 +115,10 @@ reposition_brain <- function(
 #'   )
 #' }
 position_brain <- function(
-    position = "horizontal",
-    nrow = NULL,
-    ncol = NULL,
-    views = NULL
+  position = "horizontal",
+  nrow = NULL,
+  ncol = NULL,
+  views = NULL
 ) {
   ggproto(
     NULL,
@@ -131,7 +131,8 @@ position_brain <- function(
 }
 
 PositionBrain <- ggplot2::ggproto(
- "PositionBrain", ggplot2:::Position,
+  "PositionBrain",
+  ggplot2:::Position,
   position = hemi + view ~ .,
   nrow = NULL,
   ncol = NULL,
@@ -191,9 +192,7 @@ position_formula <- function(pos, data) {
       ))
     }
     position <- if (length(grep("\\+", pos)) > 0) {
-      ifelse(grep("^\\.", pos) == 2,
-        "columns", "rows"
-      )
+      ifelse(grep("^\\.", pos) == 2, "columns", "rows")
     } else {
       chosen
     }
@@ -204,14 +203,10 @@ position_formula <- function(pos, data) {
     }
 
     if (length(chosen) == 1) {
-      position <- if (length(grep("\\+", pos)) > 0) {
-        ifelse(grep("^\\.", pos) == 2, "columns", "rows")
-      } else if (grepl("~\\s*\\.", deparse(pos))) {
+      position <- if (grepl("~\\s*\\.", deparse(pos))) {
         "rows"
-      } else if (grepl("^\\.", deparse(pos))) {
-        "columns"
       } else {
-        chosen
+        "columns"
       }
     } else {
       position <- chosen
@@ -235,14 +230,25 @@ position_formula <- function(pos, data) {
 
 
 extract_view_type <- function(views) {
-  vapply(views, function(v) {
-    parts <- strsplit(v, "_")[[1]]
-    if (length(parts) >= 1) parts[1] else v
-  }, character(1), USE.NAMES = FALSE)
+  vapply(
+    views,
+    function(v) {
+      parts <- strsplit(v, "_")[[1]]
+      if (length(parts) >= 1) parts[1] else v # nocov
+    },
+    character(1),
+    USE.NAMES = FALSE
+  )
 }
 
 
-frame_2_position <- function(data, pos, nrow = NULL, ncol = NULL, views = NULL) {
+frame_2_position <- function(
+  data,
+  pos,
+  nrow = NULL,
+  ncol = NULL,
+  views = NULL
+) {
   if (!is.null(views)) {
     data <- data[data$view %in% views, , drop = FALSE]
     data$view <- factor(data$view, levels = views)
@@ -259,10 +265,11 @@ frame_2_position <- function(data, pos, nrow = NULL, ncol = NULL, views = NULL) 
   df2 <- lapply(dfpos$data, gather_geometry)
   posi <- ifelse(length(dfpos$position) > 1, "grid", dfpos$position)
 
-  df3 <- switch(posi,
-    rows    = stack_vertical(df2),
+  df3 <- switch(
+    posi,
+    rows = stack_vertical(df2),
     columns = stack_horizontal(df2),
-    grid    = stack_grid(df2, dfpos$position[1], dfpos$position[2])
+    grid = stack_grid(df2, dfpos$position[1], dfpos$position[2])
   )
 
   df4 <- st_as_sf(df3$df)
@@ -394,21 +401,8 @@ stack_grid <- function(df, rows, columns) {
     if (is.numeric(val)) as.character(val) else val
   }
 
-  row_vals <- tryCatch(
-    unique(vapply(df, get_unique, character(1), rows)),
-    error = function(e) {
-      unique(unlist(lapply(df, function(x) unique(x[[rows]]))))
-    }
-  )
-  col_vals <- tryCatch(
-    unique(vapply(df, get_unique, character(1), columns)),
-    error = function(e) {
-      unique(unlist(lapply(df, function(x) unique(x[[columns]]))))
-    }
-  )
-
-  if (is.numeric(row_vals)) row_vals <- sort(row_vals)
-  if (is.numeric(col_vals)) col_vals <- sort(col_vals)
+  row_vals <- unique(vapply(df, get_unique, character(1), rows))
+  col_vals <- unique(vapply(df, get_unique, character(1), columns))
 
   df_ordered <- list()
   for (r in seq_along(row_vals)) {
@@ -438,7 +432,15 @@ stack_grid <- function(df, rows, columns) {
   bx <- lapply(df_positioned, function(x) sf::st_bbox(x$geometry))
   result_df <- do.call(rbind, df_positioned)
 
-  cols_to_remove <- c("xmin", "xmax", "ymin", "ymax", ".grid_row", ".grid_col", ".view_type")
+  cols_to_remove <- c(
+    "xmin",
+    "xmax",
+    "ymin",
+    "ymax",
+    ".grid_row",
+    ".grid_col",
+    ".view_type"
+  )
   cols_to_remove <- cols_to_remove[cols_to_remove %in% names(result_df)]
   if (length(cols_to_remove) > 0) {
     result_df[, cols_to_remove] <- NULL
@@ -454,7 +456,8 @@ get_box <- function(bx) {
   bx <- do.call(rbind, bx)
   pad <- max(bx) * .01
   bx <- c(
-    -pad, -pad,
+    -pad,
+    -pad,
     max(bx[, "xmax"]) + pad,
     max(bx[, "ymax"]) + pad
   )

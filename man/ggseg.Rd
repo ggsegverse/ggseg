@@ -4,74 +4,30 @@
 \name{ggseg}
 \alias{ggseg-package}
 \alias{ggseg}
-\title{ggseg: Plot brain segmentations with ggplot}
+\title{ggseg: Visualise brain atlas data with ggplot2}
 \usage{
 ggseg(...)
 }
 \arguments{
-\item{...}{other options sent to geom_polygon for plotting, including
-mapping aes (cannot include x, y, and group aesthetics).}
-
-\item{.data}{A .data.frame to use for plot aesthetics. Should include a
-column called "region" corresponding to aparc regions.}
-
-\item{atlas}{Either a string with the name of atlas to use,
-or a .data.frame containing atlas information (i.e. pre-loaded atlas).}
-
-\item{hemisphere}{String to choose hemisphere to plot.
-Any of c("left","right")[default].}
-
-\item{view}{String to choose view of the .data.
-Any of c("lateral","medial")[default].}
-
-\item{position}{String choosing how to view the .data.
-Either "dispersed"[default] or "stacked".}
-
-\item{adapt_scales}{if \code{TRUE}, then the axes will
-be hemisphere without ticks.  If \code{FALSE}, then will be latitude
-longitude values.  Also affected by \code{position} argument}
+\item{...}{Ignored.}
 }
 \value{
-a ggplot object
+Does not return; always raises an error.
 }
 \description{
-Plotting results from analyses done on data derived from brain
-segmentations is a common need, but may be quite laborious.
-Results from such analyses are usually easier to interpret if
-the plot can mimic the shape and position in the brain it
-represents.
+Provides a ggplot2 geom and position for visualising brain region data on
+cortical, subcortical, and white matter tract atlases. Brain atlas
+geometries are stored as simple features (sf), enabling seamless
+integration with the ggplot2 ecosystem including faceting, custom scales,
+and themes.
 
-\code{ggseg} plots and returns a ggplot object of plotted
-aparc regions. Is superseded by the new \code{\link{geom_brain}}.
+`ggseg()` is defunct as of version 2.0.0. Use
+`ggplot() + geom_brain()` instead.
 }
 \details{
-This package contains data from various brain parcellations,
-with convenient functions to inspect the results directly on
-a brain-plot wither with ggplot (2D polygons).
-
-\describe{
-
-\item{`dk`}{
-The Desikan-Killiany Cortical Atlas [default],
-FreeSurfer cortical segmentations.}
-
-\item{`aseg`}{
-FreeSurfer automatic subcortical segmentation of a brain volume}
-}
-}
-\examples{
-\dontrun{
-library(ggplot2)
-ggseg()
-ggseg(mapping = aes(fill = region))
-ggseg(
-  colour = "black",
-  size = .7,
-  mapping = aes(fill = region)
-) + theme_void()
-ggseg(position = "stacked")
-ggseg(adapt_scales = FALSE)
-}
+The main entry point is [geom_brain()], which accepts a `brain_atlas`
+object and optional user data. Use [position_brain()] to control the
+layout of brain slices/views.
 }
 \seealso{
 Useful links:
@@ -81,8 +37,7 @@ Useful links:
 }
 
 
-[ggplot2][ggplot], [aes][aes],
-[geom_polygon][geom_polygon], [coord_fixed][coord_fixed]
+[geom_brain()] for the replacement API.
 }
 \author{
 \strong{Maintainer}: Athanasia Mo Mowinckel \email{a.m.mowinckel@psykologi.uio.no} (\href{https://orcid.org/0000-0002-5756-0223}{ORCID})
@@ -93,7 +48,5 @@ Authors:
   \item Ramiro Magno \email{ramiro.magno@gmail.com} (\href{https://orcid.org/0000-0001-5226-3441}{ORCID})
 }
 
-
-Athanasia Mo Mowinckel and Didac Vidal-Piñeiro
 }
 \keyword{internal}

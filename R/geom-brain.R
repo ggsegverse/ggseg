@@ -1,24 +1,26 @@
-#' Brain geom
+#' Plot brain atlas regions
 #'
-#' call to \code{\link[ggplot2]{geom_sf}}
+#' A ggplot2 geom for rendering brain atlas regions as filled polygons,
+#' built on top of [ggplot2::geom_sf()]. Accepts a `brain_atlas` object and
+#' automatically joins user data to atlas geometry for visualisation.
 #'
-#' @param mapping argument to pass to \code{\link[ggplot2]{aes}} to map
-#'        variables from the supplied data to the plot
-#' @param data data.frame with data to plot
-#' @param atlas object of type brain_atlas to plot
-#' @param hemi hemisphere to plot. Defaults to everything in the atlas.
-#' @param view view to plot, as recorded in the "view" column in the atlas data.
-#'        For cortical atlases: "lateral", "medial", "superior", "inferior".
-#'        For subcortical atlases: slice identifiers like "axial_130_130_130".
-#'        Defaults to all views.
-#' @param position position of the data. Default is "identity" but can be
-#'        changed by \code{\link{position_brain}}.
-#' @param show.legend logical. Should legend be added or not.
-#' @param inherit.aes logical. if aes should be inherited from the
-#'        main ggplot call or not
-#' @param ... arguments to \code{\link[ggplot2]{geom_sf}}
+#' @param mapping Set of aesthetic mappings created by [ggplot2::aes()].
+#' @param data A data.frame containing variables to map. If `NULL`, the atlas
+#'   is plotted without user data.
+#' @param atlas A `brain_atlas` object (e.g. `dk`, `aseg`, `tracula`).
+#' @param hemi Character vector of hemispheres to include (e.g. `"left"`,
+#'   `"right"`). Defaults to all hemispheres in the atlas.
+#' @param view Character vector of views to include, as recorded in the atlas
+#'   data. For cortical atlases: `"lateral"`, `"medial"`. For subcortical/tract
+#'   atlases: slice identifiers like `"axial_3"`. Defaults to all views.
+#' @param position Position adjustment, either as a string or the result of
+#'   a call to [position_brain()].
+#' @param show.legend Logical. Should this layer be included in the legends?
+#' @param inherit.aes Logical. If `FALSE`, overrides the default aesthetics
+#'   rather than combining with them.
+#' @param ... Additional arguments passed to [ggplot2::geom_sf()].
 #'
-#' @return ggplot object
+#' @return A list of ggplot2 layer and coord objects.
 #' @rdname ggbrain
 #' @export
 #'
@@ -69,7 +71,11 @@ geom_brain <- function(
 }
 
 
-# geom ----
+#' @section GeomBrain ggproto:
+#' `GeomBrain` is a [ggplot2::Geom] ggproto object that handles rendering
+#' of brain atlas polygons. It is used internally by [geom_brain()] and
+#' should not typically be called directly.
+#'
 #' @export
 #' @rdname ggbrain
 #' @usage NULL
@@ -163,13 +169,3 @@ modify_list <- function(old, new) {
   old
 }
 
-# quiets concerns of R CMD check
-if (getRversion() >= "2.15.1") {
-  utils::globalVariables(c(
-    "GeomPolygon",
-    ".stroke",
-    ".pt",
-    "coord_sf",
-    "GeomBrain"
-  ))
-}

@@ -1,26 +1,18 @@
 # Colour and fill ----
-#' Colour and fill scales from the ggseg atlases
+#' Colour and fill scales from brain atlas palettes
 #'
 #' @description
-#' The `brain` palette scales provides scales for the different atlases in the
-#' package. Colours are according to the colours used in the papers where the
-#' atlases where first introduced.
+#' Apply atlas-specific colour palettes to brain plots. Colours correspond to
+#' the region colours used in the original atlas publications. Palettes are
+#' looked up by atlas name via [ggseg.formats::brain_pal()].
 #'
-#' @section Palettes:
-#' The following palettes are available for use with these scales:
-#' \describe{
-#'   \item{ggseg - }{dk, aseg}
-#'   \item{ggsegExtra - }{tracula, jhu, yeo7, yeo17, glasser, chenAr, chenTh,}
-#' }
+#' @param name String name of the atlas palette (e.g. `"dk"`, `"aseg"`).
+#' @param na.value Colour for `NA` entries (default: `"grey"`).
+#' @param aesthetics Which aesthetic to scale: `"fill"`, `"colour"`, or
+#'   `"color"`.
+#' @param ... Additional arguments passed to [ggseg.formats::brain_pal()].
 #'
-#' @param name String name of atlas
-#' @param na.value String name or hex for the colour of NA entries
-#' @param aesthetics String vector of which aesthetics to scale
-#'   c("colour", "color", "fill").
-#' @param ... additional arguments to pass to
-#'   \code{\link[ggseg.formats]{brain_pal}}
-#'
-#' @return scaling function for altering colour of ggplot aesthetics
+#' @return A ggplot2 scale object.
 #' @rdname scale_brain
 #' @export
 #' @examples
@@ -32,13 +24,15 @@
 #' @importFrom ggplot2 scale_color_manual scale_colour_manual scale_fill_manual
 #' @importFrom ggseg.formats brain_pal
 scale_brain <- function(
-    name = "dk",
-    na.value = "grey",
-    ...,
-    aesthetics = c("fill", "colour", "color")) {
+  name = "dk",
+  na.value = "grey",
+  ...,
+  aesthetics = c("fill", "colour", "color")
+) {
   pal <- brain_pal(name = name, ...)
   aesthetics <- match.arg(aesthetics)
-  func <- switch(aesthetics,
+  func <- switch(
+    aesthetics,
     color = scale_color_manual,
     colour = scale_colour_manual,
     fill = scale_fill_manual
@@ -64,41 +58,39 @@ scale_fill_brain <- function(...) {
   scale_brain(..., aesthetics = "fill")
 }
 
-#' Colour and fill scales from the ggseg atlases
+#' Custom colour and fill scales for brain plots
 #'
 #' @description
-#' The `brain` palette scales provides scales for the different atlases in the
-#' package. Colours are according to the colours used in the papers where the
-#' atlases where first introduced.
+#' Apply a custom named colour palette to brain atlas plots. Unlike
+#' [scale_brain()] which looks up palettes by atlas name, `scale_brain2()`
+#' accepts a pre-built named character vector mapping region names to colours.
 #'
-#' @section Palettes:
-#' The following palettes are available for use with these scales:
-#' \describe{
-#'   \item{ggseg - }{dk, aseg}
-#'   \item{ggsegExtra - }{tracula, jhu, yeo7, yeo17, glasser, chenAr, chenTh,}
-#' }
+#' @param palette Named character vector mapping region names to colours.
+#' @param na.value Colour for `NA` entries (default: `"grey"`).
+#' @param aesthetics Which aesthetic to scale: `"fill"`, `"colour"`, or
+#'   `"color"`.
+#' @param ... Additional arguments (unused).
 #'
-#' @param palette named character vector of regions and colours
-#' @param na.value String name or hex for the colour of NA entries
-#' @param aesthetics String vector of which aesthetics to scale
-#'   c("colour", "color", "fill").
-#' @param ... additional arguments (unused)
-#' @return scaling function for altering colour of ggplot aesthetics
-#'
+#' @return A ggplot2 scale object.
 #' @rdname scale_brain2
 #' @export
 #' @examples
-#' scale_brain()
-#' scale_colour_brain()
-#' scale_fill_brain()
+#' library(ggplot2)
+#'
+#' pal <- c("insula" = "red", "precentral" = "blue")
+#' ggplot() +
+#'   geom_brain(atlas = dk, aes(fill = region), show.legend = FALSE) +
+#'   scale_fill_brain2(palette = pal)
 #'
 scale_brain2 <- function(
-    palette,
-    na.value = "grey",
-    ...,
-    aesthetics = c("fill", "colour", "color")) {
+  palette,
+  na.value = "grey",
+  ...,
+  aesthetics = c("fill", "colour", "color")
+) {
   aesthetics <- match.arg(aesthetics)
-  func <- switch(aesthetics,
+  func <- switch(
+    aesthetics,
     color = ggplot2::scale_color_manual,
     colour = ggplot2::scale_colour_manual,
     fill = ggplot2::scale_fill_manual
@@ -126,35 +118,41 @@ scale_fill_brain2 <- function(...) {
 
 
 # Axis scales ----
-#' Axis and label scales from the ggseg atlases
+#' Axis and label scales for brain atlas plots
 #'
 #' @description
-#' The `brain` axis and label scales provides scales for
-#' the different atlases in the package. These add axis
-#' labels and tick labels corresponding to the different atlases.
+#' Add axis labels and tick labels corresponding to brain atlas regions.
+#' These scales add hemisphere or view labels to the x and y axes based on
+#' the atlas layout.
 #'
-#' @param atlas data.frame containing the atlas
-#' @param position Character of either "dispersed" or "stacked".
-#' @param aesthetics String vector of which aesthetics to scale
-#'   "x", "y", or "labs".
-#' @param ... additional arguments to pass to \code{\link{adapt_scales}}
-#' @return a scaling function to alter continuous axes labels in ggplot2
+#' @param atlas A `brain_atlas` object or data.frame containing atlas data.
+#' @param position Layout style: `"dispersed"` (default) or `"stacked"`.
+#' @param aesthetics Which axis to scale: `"x"`, `"y"`, or `"labs"`.
+#' @param ... Additional arguments passed to [adapt_scales()].
+#'
+#' @return A ggplot2 scale or labs object.
 #' @rdname scale_continous_brain
 #' @export
 #' @examples
 #' \dontrun{
-#' scale_x_brain()
-#' scale_y_brain()
-#' scale_labs_brain()
+#' library(ggplot2)
+#'
+#' ggplot() +
+#'   geom_brain(atlas = dk) +
+#'   scale_x_brain() +
+#'   scale_y_brain() +
+#'   scale_labs_brain()
 #' }
 #'
 scale_continous_brain <- function(
-    atlas = dk,
-    position = "dispersed",
-    aesthetics = c("y", "x")) {
+  atlas = dk,
+  position = "dispersed",
+  aesthetics = c("y", "x")
+) {
   positions <- adapt_scales(atlas, position, aesthetics)
   aesthetics <- match.arg(aesthetics)
-  func <- switch(aesthetics,
+  func <- switch(
+    aesthetics,
     y = ggplot2::scale_y_continuous,
     x = ggplot2::scale_x_continuous
   )
@@ -177,14 +175,13 @@ scale_y_brain <- function(...) {
 #' @rdname scale_continous_brain
 #' @importFrom ggplot2 labs
 scale_labs_brain <- function(
-    atlas = dk,
-    position = "dispersed",
-    aesthetics = "labs") {
+  atlas = dk,
+  position = "dispersed",
+  aesthetics = "labs"
+) {
   positions <- adapt_scales(atlas, position, aesthetics)
 
   aesthetics <- match.arg(aesthetics)
-  func <- switch(aesthetics,
-    labs = labs
-  )
+  func <- switch(aesthetics, labs = labs)
   func(x = positions$x, y = positions$y)
 }

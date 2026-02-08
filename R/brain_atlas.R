@@ -1,6 +1,18 @@
-#' @importFrom ggplot2 aes ggplot labs
+#' Plot a brain atlas
+#'
+#' Plots a brain atlas using [geom_brain()], coloured by region label. If the
+#' atlas contains a palette, it is applied via [ggplot2::scale_fill_manual()].
+#'
+#' @param x A `brain_atlas` object.
+#' @param ... Additional arguments passed to [geom_brain()].
+#'
+#' @return A [ggplot2::ggplot] object.
+#' @importFrom ggplot2 aes ggplot labs scale_fill_manual
 #' @importFrom stats setNames
 #' @export
+#' @examples
+#' plot(dk)
+#' plot(aseg)
 plot.brain_atlas <- function(x, ...) {
   sf_data <- if (inherits(x$data, "brain_atlas_data") && !is.null(x$data$sf)) {
     x$data$sf
@@ -18,6 +30,7 @@ plot.brain_atlas <- function(x, ...) {
   p <- ggplot() +
     geom_brain(
       atlas = x,
+      aes(fill = label), # nolint [object_usage_linter]
       ...
     ) +
     labs(title = paste(x$atlas, x$type, "atlas"))
@@ -31,5 +44,3 @@ plot.brain_atlas <- function(x, ...) {
   p
 }
 
-## quiets concerns of R CMD checks
-utils::globalVariables(c("region", "lab"))

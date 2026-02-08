@@ -2,23 +2,23 @@
 % Please edit documentation in R/adapt_scales.R
 \name{adapt_scales}
 \alias{adapt_scales}
-\title{Scale ggseg plot axes.}
+\title{Compute axis scale positions for brain atlas plots}
 \usage{
 adapt_scales(geobrain, position = "dispersed", aesthetics = "labs")
 }
 \arguments{
-\item{geobrain}{a data.frame containing atlas information.}
+\item{geobrain}{A data.frame containing atlas information with columns
+`hemi`, `view`, `type`, `.lat`, and `.long`.}
 
-\item{position}{String choosing how to view the data.
-Either "dispersed"[default] or "stacked".}
+\item{position}{Layout style: `"dispersed"` (default) or `"stacked"`.}
 
-\item{aesthetics}{String of which aesthetics to adapt scale of,
-either "x","y", or "labs".}
+\item{aesthetics}{Which scale to compute: `"x"`, `"y"`, or `"labs"`.}
 }
 \value{
-nested list with coordinates for labels
+A list with scale components (breaks, labels, or axis titles).
 }
 \description{
-\code{adapt_scales} returns a list of coordinate breaks and labels
-for axes or axes label manipulation of the ggseg brain atlases.
+Returns axis breaks, labels, and lab strings based on atlas layout.
+Used internally by [scale_continous_brain()] and related functions.
 }
+\keyword{internal}

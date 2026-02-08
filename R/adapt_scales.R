@@ -1,19 +1,21 @@
-#' Scale ggseg plot axes.
+#' Compute axis scale positions for brain atlas plots
 #'
-#' \code{adapt_scales} returns a list of coordinate breaks and labels
-#' for axes or axes label manipulation of the ggseg brain atlases.
+#' Returns axis breaks, labels, and lab strings based on atlas layout.
+#' Used internally by [scale_continous_brain()] and related functions.
 #'
-#' @param geobrain a data.frame containing atlas information.
-#' @param position String choosing how to view the data.
-#'   Either "dispersed"[default] or "stacked".
-#' @param aesthetics String of which aesthetics to adapt scale of,
-#'   either "x","y", or "labs".
+#' @param geobrain A data.frame containing atlas information with columns
+#'   `hemi`, `view`, `type`, `.lat`, and `.long`.
+#' @param position Layout style: `"dispersed"` (default) or `"stacked"`.
+#' @param aesthetics Which scale to compute: `"x"`, `"y"`, or `"labs"`.
 #'
+#' @return A list with scale components (breaks, labels, or axis titles).
+#' @keywords internal
 #' @importFrom dplyr group_by summarise
-#' @return nested list with coordinates for labels
-adapt_scales <- function(geobrain,
-                         position = "dispersed",
-                         aesthetics = "labs") {
+adapt_scales <- function(
+  geobrain,
+  position = "dispersed",
+  aesthetics = "labs"
+) {
   if (unique(geobrain$type) == "cortical") {
     y <- dplyr::group_by(geobrain, hemi)
     y <- dplyr::summarise(y, val = gap(.lat))
@@ -74,25 +76,3 @@ adapt_scales <- function(geobrain,
 }
 
 
-## quiets concerns of R CMD checks
-utils::globalVariables(c(
-  "area",
-  "atlas",
-  "colour",
-  "group",
-  "hemi",
-  ".lat",
-  ".long",
-  ".id",
-  "view",
-  "x",
-  ".data",
-  "dkt",
-  ".lat_sd",
-  ".long_sd",
-  "data",
-  "tt",
-  "atlas_scale_positions",
-  ".long_min",
-  "L2"
-))

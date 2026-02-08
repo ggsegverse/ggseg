@@ -5,7 +5,7 @@
 \alias{scale_colour_brain}
 \alias{scale_color_brain}
 \alias{scale_fill_brain}
-\title{Colour and fill scales from the ggseg atlases}
+\title{Colour and fill scales from brain atlas palettes}
 \usage{
 scale_brain(
   name = "dk",
@@ -21,33 +21,23 @@ scale_color_brain(...)
 scale_fill_brain(...)
 }
 \arguments{
-\item{name}{String name of atlas}
+\item{name}{String name of the atlas palette (e.g. `"dk"`, `"aseg"`).}
 
-\item{na.value}{String name or hex for the colour of NA entries}
+\item{na.value}{Colour for `NA` entries (default: `"grey"`).}
 
-\item{...}{additional arguments to pass to
-\code{\link[ggseg.formats]{brain_pal}}}
+\item{...}{Additional arguments passed to [ggseg.formats::brain_pal()].}
 
-\item{aesthetics}{String vector of which aesthetics to scale
-c("colour", "color", "fill").}
+\item{aesthetics}{Which aesthetic to scale: `"fill"`, `"colour"`, or
+`"color"`.}
 }
 \value{
-scaling function for altering colour of ggplot aesthetics
+A ggplot2 scale object.
 }
 \description{
-The `brain` palette scales provides scales for the different atlases in the
-package. Colours are according to the colours used in the papers where the
-atlases where first introduced.
+Apply atlas-specific colour palettes to brain plots. Colours correspond to
+the region colours used in the original atlas publications. Palettes are
+looked up by atlas name via [ggseg.formats::brain_pal()].
 }
-\section{Palettes}{
-
-The following palettes are available for use with these scales:
-\describe{
-  \item{ggseg - }{dk, aseg}
-  \item{ggsegExtra - }{tracula, jhu, yeo7, yeo17, glasser, chenAr, chenTh,}
-}
-}
-
 \examples{
 scale_brain()
 scale_colour_brain()

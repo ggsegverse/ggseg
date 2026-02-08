@@ -1,31 +1,34 @@
-#' ggseg plot theme
+#' Themes for brain atlas plots
 #'
 #' @description
-#' A set of themes created for the ggseg plots. Use theme() to tweak.
-#' @author Athanasia Mo Mowinckel
+#' A set of ggplot2 themes designed for brain atlas visualisations. All themes
+#' remove axis ticks and grid lines for a clean presentation.
 #'
-#' @param text.size Specify size of plot text
-#' @param text.colour Specify colour of plot text
-#' @param text.family Specify font family
-#' @param plot.background Specify fill of plot background
-#'   (`theme_custombrain` only)
+#' @param text.size Text size in points (default: `12`).
+#' @param text.colour Text colour (`theme_custombrain` and `theme_brain2` only).
+#' @param text.family Font family (default: `"mono"`).
+#' @param plot.background Background fill colour (`theme_custombrain` and
+#'   `theme_brain2` only).
 #'
 #' @details
 #' \describe{
 #'
 #' \item{`theme_brain`}{
-#' Default theme for ggseg. Transparent background, no axis lines, and no grid.}
+#' Default theme. Transparent background, no axes, no grid.}
 #'
 #' \item{`theme_darkbrain`}{
-#' Dark equivalent to theme_brain, with black background, and light text.}
+#' Dark theme with black background and light text.}
 #'
 #' \item{`theme_custombrain`}{
-#' Theme for easy customization of the brain themes.}
+#' Fully customisable background, text colour, size, and font.}
+#'
+#' \item{`theme_brain2`}{
+#' Like `theme_custombrain` but with axis text removed entirely.}
 #'
 #' }
-#' @return function that alters the themeing of a ggplot object
-#' @seealso [ggplot()], [aes()], [geom_polygon()], [coord_fixed()]
-#'   from the ggplot2 package
+#'
+#' @return A [ggplot2::theme] object.
+#' @seealso [geom_brain()], [ggplot2::theme()]
 #' @export
 #' @importFrom ggplot2 theme element_blank element_rect element_text
 #' @examples
@@ -79,10 +82,11 @@ theme_darkbrain <- function(text.size = 12, text.family = "mono") {
 #' @rdname theme_brain
 #' @importFrom ggplot2 theme element_blank element_rect element_text
 theme_custombrain <- function(
-    plot.background = "white",
-    text.colour = "darkgrey",
-    text.size = 12,
-    text.family = "mono") {
+  plot.background = "white",
+  text.colour = "darkgrey",
+  text.size = 12,
+  text.family = "mono"
+) {
   theme(
     axis.ticks = element_blank(),
     panel.grid = element_blank(),
@@ -106,10 +110,11 @@ theme_custombrain <- function(
 #' @rdname theme_brain
 #' @importFrom ggplot2 theme element_blank element_rect element_text
 theme_brain2 <- function(
-    plot.background = "white",
-    text.colour = "darkgrey",
-    text.size = 12,
-    text.family = "mono") {
+  plot.background = "white",
+  text.colour = "darkgrey",
+  text.size = 12,
+  text.family = "mono"
+) {
   theme(
     axis.ticks = element_blank(),
     panel.grid = element_blank(),

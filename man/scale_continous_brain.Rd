@@ -5,7 +5,7 @@
 \alias{scale_x_brain}
 \alias{scale_y_brain}
 \alias{scale_labs_brain}
-\title{Axis and label scales from the ggseg atlases}
+\title{Axis and label scales for brain atlas plots}
 \usage{
 scale_continous_brain(
   atlas = dk,
@@ -20,28 +20,31 @@ scale_y_brain(...)
 scale_labs_brain(atlas = dk, position = "dispersed", aesthetics = "labs")
 }
 \arguments{
-\item{atlas}{data.frame containing the atlas}
+\item{atlas}{A `brain_atlas` object or data.frame containing atlas data.}
 
-\item{position}{Character of either "dispersed" or "stacked".}
+\item{position}{Layout style: `"dispersed"` (default) or `"stacked"`.}
 
-\item{aesthetics}{String vector of which aesthetics to scale
-"x", "y", or "labs".}
+\item{aesthetics}{Which axis to scale: `"x"`, `"y"`, or `"labs"`.}
 
-\item{...}{additional arguments to pass to \code{\link{adapt_scales}}}
+\item{...}{Additional arguments passed to [adapt_scales()].}
 }
 \value{
-a scaling function to alter continuous axes labels in ggplot2
+A ggplot2 scale or labs object.
 }
 \description{
-The `brain` axis and label scales provides scales for
-the different atlases in the package. These add axis
-labels and tick labels corresponding to the different atlases.
+Add axis labels and tick labels corresponding to brain atlas regions.
+These scales add hemisphere or view labels to the x and y axes based on
+the atlas layout.
 }
 \examples{
 \dontrun{
-scale_x_brain()
-scale_y_brain()
-scale_labs_brain()
+library(ggplot2)
+
+ggplot() +
+  geom_brain(atlas = dk) +
+  scale_x_brain() +
+  scale_y_brain() +
+  scale_labs_brain()
 }
 
 }

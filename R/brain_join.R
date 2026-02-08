@@ -1,14 +1,15 @@
-#' Join atlas and data
+#' Join user data with a brain atlas
 #'
-#' Joins data frame with a brain-atlas
-#' object.
+#' Performs a full join between user data and a brain atlas. Grouped data
+#' is handled automatically, producing one complete atlas per group.
 #'
-#' @param data data.frame
-#' @param atlas atlas data
-#' @param by optional character vector of column to join by
+#' @param data A data.frame with a column matching an atlas column
+#'   (typically `"region"`). Can be grouped with [dplyr::group_by()].
+#' @param atlas A `brain_atlas` object or data.frame containing atlas data.
+#' @param by Character vector of column names to join by. If `NULL` (default),
+#'   columns are detected automatically.
 #'
-#' @return either an sf-object (if brain atlas) or a tibble (if ggseg-atlas)
-#'         with merged atlas and data
+#' @return An `sf` object if the atlas contains geometry, otherwise a tibble.
 #' @export
 #' @importFrom dplyr is.grouped_df full_join as_tibble
 #' @importFrom tidyr nest unnest
@@ -33,8 +34,10 @@ brain_join <- function(data, atlas, by = NULL) {
     by <- names(data)[names(data) %in% names(atlas)]
     message(paste0(
       "merging atlas and data by ",
-      paste(vapply(by, function(x) paste0("'", x, "'"), character(1)),
-            collapse = ", ")
+      paste(
+        vapply(by, function(x) paste0("'", x, "'"), character(1)),
+        collapse = ", "
+      )
     ))
   }
 

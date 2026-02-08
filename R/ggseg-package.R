@@ -1,14 +1,14 @@
-#' ggseg: Plot brain segmentations with ggplot
+#' ggseg: Visualise brain atlas data with ggplot2
 #'
-#' Plotting results from analyses done on data derived from brain
-#' segmentations is a common need, but may be quite laborious.
-#' Results from such analyses are usually easier to interpret if
-#' the plot can mimic the shape and position in the brain it
-#' represents.
+#' Provides a ggplot2 geom and position for visualising brain region data on
+#' cortical, subcortical, and white matter tract atlases. Brain atlas
+#' geometries are stored as simple features (sf), enabling seamless
+#' integration with the ggplot2 ecosystem including faceting, custom scales,
+#' and themes.
 #'
-#' This package contains data from various brain parcellations,
-#' with convenient functions to inspect the results directly on
-#' a brain-plot wither with ggplot (2D polygons).
+#' The main entry point is [geom_brain()], which accepts a `brain_atlas`
+#' object and optional user data. Use [position_brain()] to control the
+#' layout of brain slices/views.
 #'
 #' @name ggseg
 #' @docType package
@@ -18,3 +18,18 @@
 #' @importFrom sf st_as_sf st_as_sfc
 #' @importFrom utils capture.output
 "_PACKAGE"
+
+utils::globalVariables(c(
+  ".id",
+  ".lat",
+  ".lat_sd",
+  ".long",
+  ".long_min",
+  ".long_sd",
+  ".subid",
+  "dk",
+  "hemi",
+  "L2",
+  "label",
+  "view"
+))

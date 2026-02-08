@@ -27,7 +27,7 @@ to_coords <- function(x, n) {
 #' @importFrom sf st_polygon st_sfc st_sf st_zm st_cast
 coords2sf <- function(x, vertex_size_limits = NULL) {
   dt <- select(x, starts_with("."))
-  dt <- group_by(dt, .subid, .id)
+  dt <- group_by(dt, .subid, .id) # nolint [object_usage_linter]
   dt <- group_split(dt)
 
   if (!is.null(vertex_size_limits)) {

@@ -1,21 +1,35 @@
 #' @noRd
-layer_brain <- function(geom = NULL, stat = NULL,
-                        data = NULL, mapping = NULL,
-                        position = NULL, params = list(),
-                        inherit.aes = TRUE,
-                        check.aes = TRUE,
-                        check.param = TRUE,
-                        show.legend = NA) {
+layer_brain <- function(
+  geom = NULL,
+  stat = NULL,
+  data = NULL,
+  mapping = NULL,
+  position = NULL,
+  params = list(),
+  inherit.aes = TRUE,
+  check.aes = TRUE,
+  check.param = TRUE,
+  show.legend = NA
+) {
   ggplot2::layer(
-    geom = geom, stat = stat, data = data, mapping = mapping,
-    position = position, params = params, inherit.aes = inherit.aes,
-    check.aes = check.aes, check.param = check.param,
-    show.legend = show.legend, layer_class = LayerBrain
+    geom = geom,
+    stat = stat,
+    data = data,
+    mapping = mapping,
+    position = position,
+    params = params,
+    inherit.aes = inherit.aes,
+    check.aes = check.aes,
+    check.param = check.param,
+    show.legend = show.legend,
+    layer_class = LayerBrain
   )
 }
 
 #' @noRd
-LayerBrain <- ggproto("LayerBrain", ggplot2:::Layer,
+LayerBrain <- ggproto(
+  "LayerBrain",
+  ggplot2:::Layer,
   setup_layer = function(self, data, plot) {
     dt <- ggproto_parent(ggplot2:::Layer, self)$setup_layer(data, plot)
 
@@ -132,8 +146,3 @@ LayerBrain <- ggproto("LayerBrain", ggplot2:::Layer,
   }
 )
 
-
-# quiets concerns of R CMD check
-if (getRversion() >= "2.15.1") {
-  utils::globalVariables(c("layer"))
-}

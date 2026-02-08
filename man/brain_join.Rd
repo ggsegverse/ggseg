@@ -2,24 +2,25 @@
 % Please edit documentation in R/brain_join.R
 \name{brain_join}
 \alias{brain_join}
-\title{Join atlas and data}
+\title{Join user data with a brain atlas}
 \usage{
 brain_join(data, atlas, by = NULL)
 }
 \arguments{
-\item{data}{data.frame}
+\item{data}{A data.frame with a column matching an atlas column
+(typically `"region"`). Can be grouped with [dplyr::group_by()].}
 
-\item{atlas}{atlas data}
+\item{atlas}{A `brain_atlas` object or data.frame containing atlas data.}
 
-\item{by}{optional character vector of column to join by}
+\item{by}{Character vector of column names to join by. If `NULL` (default),
+columns are detected automatically.}
 }
 \value{
-either an sf-object (if brain atlas) or a tibble (if ggseg-atlas)
-        with merged atlas and data
+An `sf` object if the atlas contains geometry, otherwise a tibble.
 }
 \description{
-Joins data frame with a brain-atlas
-object.
+Performs a full join between user data and a brain atlas. Grouped data
+is handled automatically, producing one complete atlas per group.
 }
 \examples{
 someData <- data.frame(
