@@ -1,4 +1,5 @@
 ---
+output: github_document
 format: gfm
 ---
 
