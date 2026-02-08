@@ -16,3 +16,5 @@ revdep/
 
 /.quarto/
 **/*.quarto_ipynb
+*.knit.md
+*html

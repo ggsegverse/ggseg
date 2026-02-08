@@ -4,7 +4,7 @@
 ^pkgdown$
 ^codecov\.yml$
 ^data-raw$
-^README\.Rmd$
+^README\.qmd$
 ^appveyor\.yml$
 ^\.travis\.yml$
 ^LICENSE\.md$
