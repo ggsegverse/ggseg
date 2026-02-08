@@ -1,6 +1,6 @@
 Package: ggseg
 Title: Plotting Tool for Brain Atlases
-Version: 1.6.8.9000
+Version: 1.7.0
 Authors@R: c(
     person("Athanasia Mo", "Mowinckel", 
             email = "a.m.mowinckel@psykologi.uio.no", 
@@ -15,10 +15,12 @@ Authors@R: c(
             role = c("aut"),
         comment = c(ORCID = "0000-0001-5226-3441"))
         )
-Description: Contains 'ggplot2' geom for plotting brain atlases using 
-    simple features. The largest component of the package is the data 
-    for the two built-in atlases. Mowinckel & Vidal-Piñeiro (2020)
-    <doi:10.1177/2515245920928009>.
+Description: Provides a 'ggplot2' geom and position for visualizing brain
+    region data on cortical, subcortical, and white matter tract atlases.
+    Brain atlas geometries are stored as simple features ('sf'), enabling
+    seamless integration with the 'ggplot2' ecosystem including faceting,
+    custom scales, and themes.
+    Mowinckel & Vidal-Piñeiro (2020) <doi:10.1177/2515245920928009>.
 License: MIT + file LICENSE
 Encoding: UTF-8
 RoxygenNote: 7.3.3
@@ -34,8 +36,7 @@ Imports:
     grid,
     utils,
     cli,
-    lifecycle,
-    vctrs
+    lifecycle
 Suggests:
     knitr,
     here,
