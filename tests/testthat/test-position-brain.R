@@ -72,14 +72,14 @@ describe("position_brain", {
 describe("split_data", {
   it("works with horizontal character position", {
     data <- as.data.frame(dk)
-    result <- ggseg:::split_data(data, "horizontal")
+    result <- split_data(data, "horizontal")
     expect_type(result, "list")
     expect_named(result, c("data", "position"))
   })
 
   it("works with vertical character position", {
     data <- as.data.frame(dk)
-    result <- ggseg:::split_data(data, "vertical")
+    result <- split_data(data, "vertical")
     expect_type(result, "list")
     expect_equal(result$position, "rows")
   })
@@ -88,7 +88,7 @@ describe("split_data", {
 describe("default_order", {
   it("returns order for cortical data", {
     data <- as.data.frame(dk)
-    result <- ggseg:::default_order(data)
+    result <- default_order(data)
     expect_type(result, "character")
     expect_true(any(grepl("left", result)))
     expect_true(any(grepl("right", result)))
@@ -96,7 +96,7 @@ describe("default_order", {
 
   it("returns views for subcortical data", {
     data <- as.data.frame(aseg)
-    result <- ggseg:::default_order(data)
+    result <- default_order(data)
     expect_type(result, "character")
   })
 })
@@ -104,7 +104,7 @@ describe("default_order", {
 describe("split_data with subcortical", {
   it("works with subcortical atlas positions", {
     data <- as.data.frame(aseg)
-    result <- ggseg:::split_data(data, "horizontal")
+    result <- split_data(data, "horizontal")
     expect_type(result, "list")
     expect_named(result, c("data", "position"))
   })
@@ -113,9 +113,9 @@ describe("split_data with subcortical", {
 describe("stack_vertical", {
   it("stacks data frames vertically", {
     data <- as.data.frame(dk)
-    split_result <- ggseg:::split_data(data, "vertical")
-    gathered <- lapply(split_result$data, ggseg:::gather_geometry)
-    result <- ggseg:::stack_vertical(gathered)
+    split_result <- split_data(data, "vertical")
+    gathered <- lapply(split_result$data, gather_geometry)
+    result <- stack_vertical(gathered)
     expect_type(result, "list")
     expect_named(result, c("df", "box"))
   })
@@ -125,7 +125,7 @@ describe("position_formula edge cases", {
   it("errors when formula missing '.' for single row/column", {
     data <- as.data.frame(dk)
     expect_error(
-      ggseg:::position_formula(hemi + view ~ foo, data),
+      position_formula(hemi + view ~ foo, data),
       "must contain both"
     )
   })
@@ -163,7 +163,7 @@ describe("position_brain with nrow/ncol", {
 describe("split_data_grid", {
   it("creates grid layout for subcortical data", {
     data <- as.data.frame(aseg)
-    result <- ggseg:::split_data_grid(data, nrow = 2)
+    result <- split_data_grid(data, nrow = 2)
     expect_type(result, "list")
     expect_named(result, c("data", "position"))
     expect_equal(result$position, c(".grid_row", ".grid_col"))
@@ -171,7 +171,7 @@ describe("split_data_grid", {
 
   it("respects ncol parameter", {
     data <- as.data.frame(aseg)
-    result <- ggseg:::split_data_grid(data, ncol = 3)
+    result <- split_data_grid(data, ncol = 3)
     expect_type(result, "list")
     expect_equal(result$position, c(".grid_row", ".grid_col"))
   })
@@ -203,16 +203,84 @@ describe("reposition_brain with subcortical", {
 })
 
 
+describe("position_formula with subcortical", {
+  it("handles type ~ . formula", {
+    data <- as.data.frame(aseg)
+    k <- position_formula(type ~ ., data)
+    expect_true("position" %in% names(k))
+    expect_equal(k$position, "rows")
+  })
+
+  it("handles . ~ type formula", {
+    data <- as.data.frame(aseg)
+    k <- position_formula(. ~ type, data)
+    expect_true("position" %in% names(k))
+    expect_equal(k$position, "columns")
+  })
+
+  it("handles view ~ . formula for subcortical", {
+    data <- as.data.frame(aseg)
+    k <- position_formula(view ~ ., data)
+    expect_equal(k$position, "rows")
+  })
+
+  it("handles . ~ view formula for subcortical", {
+    data <- as.data.frame(aseg)
+    k <- position_formula(. ~ view, data)
+    expect_equal(k$position, "columns")
+  })
+})
+
+describe("split_data_grid with defaults", {
+  it("auto-calculates nrow and ncol when both NULL", {
+    data <- as.data.frame(aseg)
+    result <- split_data_grid(data)
+    expect_type(result, "list")
+    expect_equal(result$position, c(".grid_row", ".grid_col"))
+  })
+})
+
+describe("reposition_brain subcortical formula", {
+  it("works with type ~ . formula", {
+    data <- as.data.frame(aseg)
+    result <- reposition_brain(data, type ~ .)
+    expect_s3_class(result, "sf")
+  })
+
+  it("works with . ~ type formula", {
+    data <- as.data.frame(aseg)
+    result <- reposition_brain(data, . ~ type)
+    expect_s3_class(result, "sf")
+  })
+})
+
+describe("position_formula subcortical multi-var", {
+  it("handles two-variable formula for subcortical", {
+    data <- as.data.frame(aseg)
+    data$hemi <- "left"
+    k <- position_formula(view ~ hemi, data)
+    expect_equal(k$position, c("view", "hemi"))
+  })
+})
+
+describe("stack_grid numeric sorting", {
+  it("works with numeric grid positions", {
+    data <- as.data.frame(aseg)
+    result <- reposition_brain(data, nrow = 2, ncol = 4)
+    expect_s3_class(result, "sf")
+  })
+})
+
 describe("extract_view_type", {
   it("extracts type from view names", {
     views <- c("axial_1", "axial_2", "coronal_1", "sagittal")
-    types <- ggseg:::extract_view_type(views)
+    types <- extract_view_type(views)
     expect_equal(types, c("axial", "axial", "coronal", "sagittal"))
   })
 
   it("handles views without underscore", {
     views <- c("sagittal", "coronal")
-    types <- ggseg:::extract_view_type(views)
+    types <- extract_view_type(views)
     expect_equal(types, c("sagittal", "coronal"))
   })
 })

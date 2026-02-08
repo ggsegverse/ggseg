@@ -1,55 +1,77 @@
-some_data <- data.frame(
-  region = c(
-    "transverse temporal",
-    "insula",
-    "precentral",
-    "superior parietal",
-    "transverse temporal",
-    "insula",
-    "precentral",
-    "superior parietal"
-  ),
-  p = sample(seq(0, .5, .001), 8),
-  Group = c(rep("G1", 4), rep("G2", 4)),
-  stringsAsFactors = FALSE
-) |>
-  group_by(Group)
-
-test_that("Check that merging with grouped data works", {
-  dk2 <- as_ggseg_atlas(dk)
-  expect_message(test_data <- brain_join(some_data, unnest(dk2, cols = ggseg)))
-
-  expect_equal(names(test_data)[1], "Group")
-  expect_equal(unique(test_data$Group), c("G1", "G2"))
-})
-
-test_that("Check that plotting with grouped data works", {
-  expect_warning(
-    pp <- ggseg(.data = some_data, mapping = aes(fill = p)) +
-      facet_wrap(~Group)
+describe("brain_join", {
+  some_data <- data.frame(
+    region = c(
+      "transverse temporal",
+      "insula",
+      "precentral",
+      "superior parietal",
+      "transverse temporal",
+      "insula",
+      "precentral",
+      "superior parietal"
+    ),
+    p = seq(0.1, 0.8, by = 0.1),
+    grp = c(rep("G1", 4), rep("G2", 4)),
+    stringsAsFactors = FALSE
   )
 
-  expect_is(pp, c("gg", "ggplot"))
-  expect_true("Group" %in% names(pp$data))
-})
+  it("joins ungrouped data to atlas", {
+    single <- some_data[some_data$grp == "G1", ]
+    expect_message(
+      result <- brain_join(single, dk),
+      "merging"
+    )
+    expect_s3_class(result, "sf")
+  })
 
-test_that("Check that simple brain_join works", {
-  some_data <- some_data |>
-    dplyr::filter(Group == "G1")
-  dk2 <- as_ggseg_atlas(dk)
+  it("auto-detects join columns", {
+    single <- some_data[some_data$grp == "G1", ]
+    expect_message(
+      brain_join(single, dk),
+      "'region'"
+    )
+  })
 
-  test_data <- brain_join(some_data, unnest(dk2, ggseg))
+  it("respects explicit by argument", {
+    single <- some_data[some_data$grp == "G1", ]
+    result <- brain_join(single, dk, by = "region")
+    expect_s3_class(result, "sf")
+  })
 
-  expect_equal(names(test_data)[1], "Group")
-  expect_equal(unique(test_data$Group), "G1")
-})
+  it("joins grouped data producing one atlas per group", {
+    grouped <- group_by(some_data, grp)
+    expect_message(
+      result <- brain_join(grouped, dk),
+      "merging"
+    )
+    expect_s3_class(result, "sf")
+    expect_true("grp" %in% names(result))
+    expect_equal(sort(unique(result$grp)), c("G1", "G2"))
+    atlas_rows <- nrow(as.data.frame(dk))
+    rows_per_grp <- tapply(result$grp, result$grp, length)
+    expect_true(all(rows_per_grp == atlas_rows))
+  })
 
-test_that("Check that simple-features brain_join works", {
-  some_data <- some_data |>
-    dplyr::filter(Group == "G1")
+  it("warns when data has unmatched regions", {
+    bad_data <- data.frame(
+      region = c("not a real region"),
+      p = 0.5,
+      stringsAsFactors = FALSE
+    )
+    expect_warning(
+      expect_message(brain_join(bad_data, dk)),
+      "not merged"
+    )
+  })
 
-  test_data <- brain_join(some_data, dk)
-  expect_true(inherits(test_data, "sf"))
-  expect_equal(names(test_data)[1], "Group")
-  expect_equal(unique(test_data$Group), "G1")
+  it("returns tibble when atlas has no geometry", {
+    atlas_df <- as.data.frame(dk)
+    atlas_df$geometry <- NULL
+    single <- some_data[some_data$grp == "G1", ]
+    expect_message(
+      result <- brain_join(single, atlas_df),
+      "merging"
+    )
+    expect_s3_class(result, "tbl_df")
+  })
 })
