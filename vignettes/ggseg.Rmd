@@ -1,8 +1,8 @@
 ---
-title: "Plotting brain atlases with geom_brain"
+title: "Getting started with ggseg"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Plotting brain atlases with geom_brain}
+  %\VignetteIndexEntry{Getting started with ggseg}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -15,67 +15,63 @@ knitr::opts_chunk$set(
 )
 ```
 
-ggseg plots brain atlases as ggplot2 layers using simple features geometry.
-The main function, `geom_brain()`, works like any other ggplot geom but handles the atlas data automatically.
+If you work with neuroimaging data, you've probably spent time wrestling
+region-level results into brain plots. ggseg handles that plumbing for you.
+It stores brain atlas geometries as simple features and plots them as ggplot2
+layers, so you get brain figures with the same code you'd use for any other
+ggplot.
 
 ```{r setup}
 library(ggseg)
 library(ggplot2)
 ```
 
-## The brain_atlas class
+## What's in a brain atlas
 
-Brain atlases are stored in a `brain_atlas` object with four components:
-
-```{r}
-dk$atlas
-dk$type
-dk$palette
-dk$data
-```
-
-The `palette` is optional.
-The `data` contains simple features geometry in the `geometry` column.
-
-Call `plot()` on an atlas for a quick overview:
-
-```{r}
-plot(dk)
-```
-
-The print method shows atlas metadata:
+A `brain_atlas` object bundles four things: a name, a type (cortical,
+subcortical, or tract), region geometry stored as simple features, and an
+optional colour palette.
 
 ```{r}
 dk
 ```
 
-Two helper functions extract region and label names:
+The `dk` atlas (Desikan-Killiany) ships with the package. Call `plot()` for a
+quick look:
+
+```{r}
+plot(dk)
+```
+
+Two helpers pull out the names you'll need for matching data:
 
 ```{r}
 brain_regions(dk)
 brain_labels(dk)
 ```
 
-## Basic plotting
+## Your first brain plot
 
-`geom_brain()` plots the atlas with regions filled by the `region` column by default:
+`geom_brain()` works like any ggplot2 geom. Pass it an atlas and it draws
+the regions:
 
 ```{r}
 ggplot() +
   geom_brain(atlas = dk)
 ```
 
-## Positioning slices
+## Arranging views
 
-The `position_brain()` function controls slice arrangement.
-It accepts a formula (like `facet_grid`) or a character vector:
+Brain atlases have multiple views (lateral, medial) and hemispheres.
+`position_brain()` controls how they're laid out, using formula syntax
+borrowed from `facet_grid()`:
 
 ```{r}
 ggplot() +
   geom_brain(atlas = dk, position = position_brain(hemi ~ view))
 ```
 
-Reorder slices with a character vector:
+Or reorder views with a character vector:
 
 ```{r}
 ggplot() +
@@ -88,9 +84,10 @@ ggplot() +
   )
 ```
 
-## Filtering hemispheres and views
+See [Arranging brain views](positioning-views.html) for the full set of layout
+options, including grid layouts for subcortical and tract atlases.
 
-Show only specific hemispheres or views:
+## Showing only certain hemispheres or views
 
 ```{r}
 ggplot() +
@@ -100,19 +97,18 @@ ggplot() +
   geom_brain(atlas = dk, hemi = "left")
 ```
 
-For subcortical atlases, use valid view names from `brain_views()`:
+For subcortical atlases, views are slice identifiers. Check what's available
+with `brain_views()`:
 
 ```{r}
 brain_views(aseg)
-
-ggplot() +
-  geom_brain(atlas = aseg, view = "coronal_3")
 ```
 
-## Plotting your data
+## Plotting your own data
 
-Provide data with at least one column matching the atlas (typically `region` or `label`).
-The geom merges your data with the atlas automatically:
+Create a data frame with at least one column that matches the atlas
+(typically `region` or `label`). `geom_brain()` joins your data to the atlas
+automatically:
 
 ```{r}
 library(dplyr)
@@ -134,9 +130,13 @@ ggplot(some_data) +
   theme_void()
 ```
 
+See [Plotting external data](external-data.html) for more on data preparation
+and matching.
+
 ## Faceting
 
-For faceted plots, group your data before passing to ggplot:
+ggplot2 faceting works as you'd expect. `geom_brain()` detects faceting
+variables and replicates the full atlas in each panel:
 
 ```{r}
 some_data <- tibble(
@@ -147,9 +147,7 @@ some_data <- tibble(
   group = c(rep("A", 4), rep("B", 4))
 )
 
-some_data |>
-  group_by(group) |>
-  ggplot() +
+ggplot(some_data) +
   geom_brain(
     atlas = dk,
     position = position_brain(hemi ~ view),
@@ -158,11 +156,12 @@ some_data |>
   facet_wrap(~group)
 ```
 
-Without grouping, ggplot creates an extra facet for atlas regions without data.
+No `group_by()` needed -- the geom handles it.
 
-## Categorical regions
+## Highlighting specific regions
 
-To highlight specific regions with their atlas colours:
+To colour a few regions with their atlas colours, use two columns: one for
+the join (`region`) and one for the fill aesthetic:
 
 ```{r}
 data <- data.frame(
@@ -175,11 +174,9 @@ ggplot(data) +
   scale_fill_brain2(dk$palette[data$region])
 ```
 
-The trick: one column for merging (`region`), another for the fill aesthetic (`reg_col`).
-
 ## Scales and themes
 
-Built-in scales use the atlas colour palette:
+Built-in scales apply atlas colour palettes:
 
 ```{r, eval=FALSE}
 ggplot() +
@@ -187,7 +184,7 @@ ggplot() +
   scale_fill_brain("dk")
 ```
 
-Built-in themes remove axes and grids:
+Built-in themes strip axes and grids for cleaner figures:
 
 ```{r, eval=FALSE}
 ggplot() +
@@ -195,26 +192,12 @@ ggplot() +
   theme_brain()
 ```
 
-## 2D and 3D from the same atlas
+## Finding more atlases
 
-The `brain_atlas` class works with both ggseg and ggseg3d.
-The same atlas object produces 2D polygon plots with ggseg and interactive 3D visualizations with ggseg3d:
-
-```{r, eval=FALSE}
-library(ggseg3d)
-
-plot(dk)
-
-ggseg3d(atlas = dk)
-```
-
-## Finding atlases
-
-ggseg ships with two atlases: `dk` (Desikan-Killiany cortical) and `aseg` (subcortical).
-Many more are available through the [ggseg r-universe](https://ggseg.r-universe.dev):
+ggseg ships with `dk` (cortical), `aseg` (subcortical), and `tracula`
+(white matter tracts). Many more are available through the
+[ggseg r-universe](https://ggseg.r-universe.dev):
 
 ```{r, eval=FALSE}
 install.packages("ggsegYeo2011", repos = "https://ggseg.r-universe.dev")
 ```
-
-See `ggsegExtra::ggseg_atlas_repos()` for a complete list.

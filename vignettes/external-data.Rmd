@@ -11,8 +11,9 @@ vignette: >
 knitr::opts_chunk$set(eval = TRUE, fig.retina = 3, fig.width = 6)
 ```
 
-To plot your own data on a brain atlas, your data must have at least one column that matches a column in the atlas.
-This vignette covers how to prepare your data for ggseg plotting.
+Most of the time, you're not plotting empty atlases. You have results --
+p-values, cortical thickness, whatever -- and you want them on a brain. This
+vignette covers how to get your data into the right shape for ggseg.
 
 ```{r start}
 library(ggseg)
@@ -20,31 +21,30 @@ library(dplyr)
 library(ggplot2)
 ```
 
-## Inspecting atlas columns
+## How matching works
 
-Brain atlases have several columns you can match against:
+`geom_brain()` joins your data to the atlas by any columns they share.
+That means your data needs at least one column with names that match the
+atlas. The two columns you'll use most:
 
-- **region** - human-readable region name
-- **label** - raw FreeSurfer label (e.g., "lh_bankssts")
-- **hemi** - hemisphere ("left" or "right")
-- **view** - view angle ("lateral", "medial", "sagittal", "coronal")
+- **region** -- human-readable names like "insula" or "precentral"
+- **label** -- FreeSurfer labels like "lh_bankssts"
 
-Check available regions:
+Check what's available:
 
 ```{r}
 brain_regions(dk)
 ```
 
-Or labels:
-
 ```{r}
 brain_labels(dk)
 ```
 
-## Structuring your data
+Names must match exactly, including case and spacing.
 
-Create a data frame with at least one column matching the atlas.
-Column names and values must match exactly (case-sensitive):
+## A minimal example
+
+Three regions, three p-values:
 
 ```{r}
 some_data <- tibble(
@@ -54,21 +54,20 @@ some_data <- tibble(
 some_data
 ```
 
-## Plotting
-
-Pass your data to ggplot and use `geom_brain()` with the atlas:
+Pass the data to `ggplot()` and map `fill` to your variable:
 
 ```{r}
 ggplot(some_data) +
   geom_brain(atlas = dk, mapping = aes(fill = p))
 ```
 
-The data is automatically joined to the atlas by matching columns.
+Regions not in your data appear as `NA` (grey by default). Regions in your
+data that don't match the atlas are silently dropped, so watch your spelling.
 
-## Matching on multiple columns
+## Constraining matches with extra columns
 
-Add more columns to constrain the match.
-For hemisphere-specific data, include `hemi`:
+If your data is hemisphere-specific, add a `hemi` column. The join will use
+both `region` and `hemi`, so values only land on the correct side:
 
 ```{r}
 some_data$hemi <- "left"
@@ -77,11 +76,14 @@ ggplot(some_data) +
   geom_brain(atlas = dk, mapping = aes(fill = p))
 ```
 
-The join now uses both `region` and `hemi`.
+The same works for any atlas column -- adding `view`, for instance, would
+restrict matches to specific views.
 
-## Faceting with groups
+## Faceting across groups
 
-When faceting, group your data before passing to ggplot:
+If your data has a grouping variable, `facet_wrap()` and `facet_grid()` work
+as you'd expect. `geom_brain()` detects the faceting variables and
+replicates the full atlas in each panel:
 
 ```{r}
 some_data <- tibble(
@@ -92,9 +94,7 @@ some_data <- tibble(
   group = c(rep("Young", 4), rep("Old", 4))
 )
 
-some_data |>
-  group_by(group) |>
-  ggplot() +
+ggplot(some_data) +
   geom_brain(atlas = dk, colour = "white", mapping = aes(fill = p)) +
   facet_wrap(~group, ncol = 1) +
   theme(legend.position = "bottom") +
@@ -104,19 +104,21 @@ some_data |>
   )
 ```
 
-Without `group_by()`, you get an extra facet containing regions without data.
+No need to call `group_by()` first -- the geom handles atlas replication
+automatically. (Explicit `group_by()` still works for backward
+compatibility.)
 
-## Pre-merged atlas workflow
+## The pre-merged workflow
 
-For more control over facetting, convert the atlas to a data frame first.
-This merges the atlas geometry with region metadata:
+For full control over faceting or when you need to combine brain data with
+other sf layers, convert the atlas to a data frame and join manually:
 
 ```{r}
 atlas_df <- as.data.frame(dk)
 names(atlas_df)
 ```
 
-Then join your data and use `geom_sf()` directly:
+Then use a standard join and `geom_sf()`:
 
 ```{r}
 some_data <- tibble(
@@ -132,13 +134,16 @@ atlas_df |>
   theme_void()
 ```
 
-This gives you full control over faceting by any column in the atlas.
+See [Working with geom_sf directly](geom-sf.html) for more on this approach.
 
-## Common issues
+## Troubleshooting
 
-**Regions don't show up**: Check that your region names match exactly.
-Use `brain_regions(dk)` to see valid names.
+**Regions don't show up.** Check spelling and case. `brain_regions(dk)`
+gives you the exact strings the atlas expects.
 
-**Wrong hemisphere**: If your data is hemisphere-specific, include a `hemi` column with values "left" or "right".
+**Data lands on both hemispheres.** Add a `hemi` column with `"left"` or
+`"right"` to constrain the match.
 
-**Extra facet panels**: Group your data by faceting variables before calling ggplot.
+**Extra facet panels appear.** This is handled automatically by
+`geom_brain()`. If you're using the `brain_join()` + `geom_sf()` workflow
+directly, `group_by()` your data by the faceting variable before joining.

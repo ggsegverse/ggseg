@@ -1,8 +1,8 @@
 ---
-title: "Using atlases with geom_sf"
+title: "Working with geom_sf directly"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Using atlases with geom_sf}
+  %\VignetteIndexEntry{Working with geom_sf directly}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -15,8 +15,13 @@ knitr::opts_chunk$set(
 )
 ```
 
-`geom_brain()` handles atlas data automatically, but this limits integration with other sf geoms like `geom_sf_label()`.
-This vignette shows an alternative workflow: pre-join your data with the atlas, then use standard sf geoms.
+`geom_brain()` handles data joining and positioning automatically, which
+covers most use cases. But because it owns the data pipeline, you can't
+easily layer other sf geoms on top -- things like `geom_sf_label()` or
+`geom_sf_text()` need direct access to the sf data.
+
+This vignette shows how to work with brain atlases as plain sf objects,
+giving you full control at the cost of a few extra lines.
 
 ```{r setup}
 library(ggseg)
@@ -24,28 +29,33 @@ library(ggplot2)
 library(dplyr)
 ```
 
-## When to use this workflow
+## When you'd want this
 
-Use the sf workflow when you need:
+Use the sf workflow when you need to:
 
-- Region labels with `geom_sf_label()` or `geom_sf_text()`
-- Repelled labels with `ggrepel::geom_sf_label_repel()`
-- Other sf geoms layered on the brain
-- Full control over the simple features data
+- Add region labels with `geom_sf_label()` or `geom_sf_text()`
+- Use `ggrepel::geom_label_repel()` for non-overlapping labels
+- Layer other sf geoms on the brain
+- Have full control over the data before it reaches ggplot
 
-## Checking atlas compatibility
+For everything else, `geom_brain()` is simpler.
 
-Brain atlases contain simple features geometry in their `data` slot:
+## Getting atlas data as sf
+
+A brain atlas stores its geometry in the `data` slot. Convert to a plain
+data frame to see all the columns:
 
 ```{r}
 dk$data
 ```
 
-The `geometry` column holds the polygon data.
+The `geometry` column holds the polygons. This is a standard sf object, so
+any sf-compatible tool works with it.
 
-## Joining data with brain_join
+## Joining your data
 
-Use `brain_join()` to merge your data with the atlas while preserving atlas structure:
+Use `brain_join()` to merge your data with the atlas. It preserves the sf
+geometry and handles column detection:
 
 ```{r}
 some_data <- tibble(
@@ -59,12 +69,10 @@ some_data |>
   brain_join(dk)
 ```
 
-The result is a standard sf object.
+The result is a standard sf object you can pass to `geom_sf()`.
 
 ## Plotting with geom_sf
 
-Plot the joined data using `geom_sf()`:
-
 ```{r}
 some_data |>
   brain_join(dk) |>
@@ -72,28 +80,30 @@ some_data |>
   geom_sf(aes(fill = p))
 ```
 
-## Repositioning slices
+## Repositioning views
 
-Use `reposition_brain()` (not `position_brain()`) to rearrange slices before plotting:
+With `geom_brain()`, you'd use `position_brain()`. In the sf workflow, use
+`reposition_brain()` instead -- it transforms the geometry directly:
 
 ```{r}
 some_data |>
   brain_join(dk) |>
-  reposition_brain(hemi ~ side) |>
+  reposition_brain(hemi ~ view) |>
   ggplot() +
   geom_sf(aes(fill = p))
 ```
 
-The function takes the same formula syntax as `position_brain()`.
+Same formula syntax, same results.
 
 ## Adding labels
 
-Now you can layer sf geoms like labels:
+This is the main reason to use the sf workflow. Once you have repositioned
+sf data, you can layer any sf geom:
 
 ```{r}
 some_data |>
   brain_join(dk) |>
-  reposition_brain(hemi ~ side) |>
+  reposition_brain(hemi ~ view) |>
   ggplot(aes(fill = p)) +
   geom_sf(show.legend = FALSE) +
   geom_sf_label(
@@ -103,11 +113,12 @@ some_data |>
   )
 ```
 
-For non-overlapping labels, use `ggrepel::geom_sf_label_repel()`.
+For crowded plots, `ggrepel::geom_label_repel()` avoids overlapping labels.
 
-## Faceting with groups
+## Faceting with grouped data
 
-Group your data before calling `brain_join()`:
+In the sf workflow, faceting requires `group_by()` before `brain_join()`.
+The grouping tells the join to replicate the atlas for each group:
 
 ```{r}
 some_data <- tibble(
@@ -121,10 +132,11 @@ some_data <- tibble(
 some_data |>
   group_by(group) |>
   brain_join(dk) |>
-  reposition_brain(hemi ~ side) |>
+  reposition_brain(hemi ~ view) |>
   ggplot(aes(fill = p)) +
   geom_sf(show.legend = FALSE) +
   facet_wrap(~group)
 ```
 
-The grouping ensures each facet gets the complete atlas.
+This step is only needed in the sf workflow. `geom_brain()` handles atlas
+replication automatically (see [Plotting external data](external-data.html)).

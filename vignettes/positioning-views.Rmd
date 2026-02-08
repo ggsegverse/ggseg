@@ -1,8 +1,8 @@
 ---
-title: "Positioning Brain Views"
+title: "Arranging brain views"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Positioning Brain Views}
+  %\VignetteIndexEntry{Arranging brain views}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -21,23 +21,21 @@ library(ggseg)
 library(ggplot2)
 ```
 
-The `position_brain()` function controls how brain views are arranged in your
-plot. It works differently for cortical atlases (which have hemisphere and
-view dimensions) versus subcortical/tract atlases (which have slice-based
-views).
-## Cortical Atlases
+A brain atlas typically has several views -- lateral and medial for cortical
+atlases, or axial, coronal, and sagittal slices for subcortical and tract
+atlases. `position_brain()` controls how those views are arranged in the
+final plot.
 
-Cortical atlases like `dk` have two positioning dimensions:
+The function works differently depending on the atlas type, so this vignette
+covers cortical and subcortical/tract atlases separately.
 
-- **hemi**: left or right hemisphere
-- **view**: lateral, medial, etc.
+## Cortical atlases
 
-### Formula Syntax
+Cortical atlases like `dk` have two layout dimensions: **hemi** (left or
+right) and **view** (lateral, medial, etc.). The formula syntax mirrors
+`facet_grid()` -- left side is rows, right side is columns:
 
-Use formula syntax to control rows and columns:
-
-```{r cortical-formulas}
-# Hemisphere as rows, view as columns (default)
+```{r}
 ggplot() +
   geom_brain(
     atlas = dk,
@@ -45,8 +43,11 @@ ggplot() +
     show.legend = FALSE
   ) +
   theme_void()
+```
 
-# View as rows, hemisphere as columns
+Flip the formula to transpose the layout:
+
+```{r}
 ggplot() +
   geom_brain(
     atlas = dk,
@@ -56,42 +57,43 @@ ggplot() +
   theme_void()
 ```
 
-### Stacking All Views
+### Stacking all views
 
-Use `.` with `+` to stack views in a single row or column:
+Use `.` with `+` to collapse everything into a single row or column. This
+is handy for compact figures:
 
-```{r cortical-stacking}
-# All views in a single row
+```{r}
 ggplot() +
   geom_brain(
     atlas = dk,
     position = position_brain(. ~ hemi + view),
     show.legend = FALSE
   ) +
- theme_void()
+  theme_void()
+```
 
-# All views in a single column
+```{r}
 ggplot() +
   geom_brain(
     atlas = dk,
     position = position_brain(hemi + view ~ .),
     show.legend = FALSE
- ) +
+  ) +
   theme_void()
 ```
 
-## Subcortical and Tract Atlases
+## Subcortical and tract atlases
 
-Subcortical atlases like `aseg` and tract atlases have views based on slice
-orientation (axial, coronal, sagittal) rather than hemisphere/view pairs.
-These atlases support additional positioning options.
+Subcortical atlases like `aseg` and tract atlases like `tracula` don't have
+the hemisphere/view pairing that cortical atlases do. Their views are
+individual slices (e.g. `"axial_3"`, `"sagittal"`). That opens up a
+different set of positioning tools.
 
-### Simple Layouts
+### Horizontal and vertical
 
-Use `"horizontal"` (default) or `"vertical"` for basic layouts:
+The simplest options. `"horizontal"` is the default:
 
-```{r subcortical-simple}
-# Horizontal layout (default)
+```{r}
 ggplot() +
   geom_brain(
     atlas = aseg,
@@ -100,7 +102,6 @@ ggplot() +
   ) +
   theme_void()
 
-# Vertical layout
 ggplot() +
   geom_brain(
     atlas = aseg,
@@ -110,12 +111,12 @@ ggplot() +
   theme_void()
 ```
 
-### Grid Layout with nrow/ncol
+### Grid layouts
 
-Control the grid dimensions explicitly:
+When you have many views, a grid keeps things readable. Specify `nrow`,
+`ncol`, or both:
 
-```{r subcortical-grid}
-# 2 rows
+```{r}
 ggplot() +
   geom_brain(
     atlas = aseg,
@@ -124,7 +125,6 @@ ggplot() +
   ) +
   theme_void()
 
-# 3 columns
 ggplot() +
   geom_brain(
     atlas = aseg,
@@ -132,26 +132,18 @@ ggplot() +
     show.legend = FALSE
   ) +
   theme_void()
-
-# Explicit 2x3 grid
-ggplot() +
-  geom_brain(
-    atlas = aseg,
-    position = position_brain(nrow = 2, ncol = 3),
-    show.legend = FALSE
-  ) +
-  theme_void()
 ```
 
-### Selecting and Ordering Views
+### Picking specific views
 
-Use the `views` parameter to select specific views and control their order:
+The `views` parameter lets you select which views to include and in what
+order. Check what's available with `brain_views()`:
 
-```{r subcortical-views}
-# Check available views
+```{r}
 brain_views(aseg)
+```
 
-# Select specific views in custom order
+```{r}
 ggplot() +
   geom_brain(
     atlas = aseg,
@@ -161,8 +153,11 @@ ggplot() +
     show.legend = FALSE
   ) +
   theme_void()
+```
 
-# Combine with grid layout
+Combine `views` with `nrow` or `ncol` for a custom grid:
+
+```{r}
 ggplot() +
   geom_brain(
     atlas = aseg,
@@ -175,12 +170,13 @@ ggplot() +
   theme_void()
 ```
 
-### Type-Based Formula
+### Grouping by slice type
 
-Group views by their type (axial, coronal, sagittal) using the `type` formula:
+The `type ~ .` formula groups views by their orientation -- all axial slices
+together, all coronal slices together, and so on. The type is extracted from
+the view name (everything before the first underscore):
 
-```{r subcortical-type, eval=FALSE}
-# Group by view type (axial/coronal/sagittal as rows)
+```{r, eval=FALSE}
 ggplot() +
   geom_brain(
     atlas = aseg,
@@ -190,55 +186,29 @@ ggplot() +
   theme_void()
 ```
 
-## Using reposition_brain()
-For more control, you can pre-process your data with `reposition_brain()`
-before plotting:
+## Pre-processing with reposition_brain()
 
-```{r reposition}
-# Get atlas data
+If you're using the `geom_sf()` workflow instead of `geom_brain()`, use
+`reposition_brain()` to rearrange the data before plotting. It takes the
+same arguments:
+
+```{r}
 atlas_data <- as.data.frame(aseg)
 
-# Reposition with specific views
 repositioned <- reposition_brain(
   atlas_data,
   views = c("sagittal", "axial_3", "coronal_3"),
   nrow = 1
 )
 
-# Plot the repositioned data
 ggplot(repositioned) +
   geom_sf(aes(fill = region), show.legend = FALSE) +
   theme_void()
 ```
 
-## Combining with ggplot2 Features
+## Quick reference
 
-Position settings work seamlessly with other ggplot2 features:
-
-```{r combining}
-# With faceting
-ggplot() +
-  geom_brain(
-    atlas = dk,
-    aes(fill = region),
-    position = position_brain(hemi ~ view),
-    show.legend = FALSE
-  ) +
-  scale_fill_viridis_d(option = "A") +
-  theme_void() +
-  theme(
-    plot.background = element_rect(fill = "grey20"),
-    panel.background = element_rect(fill = "grey20")
-  )
-```
-
-## Summary
-
-| Atlas Type | Position Options |
-|------------|------------------|
+| Atlas type | Options |
+|---|---|
 | Cortical | `hemi ~ view`, `view ~ hemi`, `. ~ hemi + view`, `hemi + view ~ .` |
-| Subcortical/Tract | `"horizontal"`, `"vertical"`, `nrow`, `ncol`, `views`, `type ~ .` |
-
-The `position_brain()` function provides flexible control over brain view
-arrangement, from simple formula-based layouts for cortical atlases to
-grid-based and view-selection options for subcortical and tract atlases.
+| Subcortical / Tract | `"horizontal"`, `"vertical"`, `nrow`, `ncol`, `views`, `type ~ .` |
