@@ -58,6 +58,15 @@ LayerBrain <- ggproto("LayerBrain", ggplot2:::Layer,
     }
 
     if (class(dt)[1] != "waiver") {
+      if (!dplyr::is.grouped_df(dt)) {
+        facet_vars <- plot$facet$vars()
+        group_vars <- intersect(facet_vars, names(dt))
+        group_vars <- setdiff(group_vars, names(atlas))
+        if (length(group_vars) > 0) {
+          dt <- dplyr::group_by(dt, dplyr::across(dplyr::all_of(group_vars)))
+        }
+      }
+
       data <- brain_join(dt, atlas)
 
       merge_errs <- vapply(
