@@ -7,7 +7,9 @@ vignette: >
   %\VignetteEncoding{UTF-8}
 ---
 
-```{r, include = FALSE}
+```{r}
+#| label: setup
+#| include: false
 knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>",
@@ -16,7 +18,8 @@ knitr::opts_chunk$set(
 )
 ```
 
-```{r setup}
+```{r}
+#| label: load-packages
 library(ggseg)
 library(ggplot2)
 ```
@@ -36,6 +39,8 @@ right) and **view** (lateral, medial, etc.). The formula syntax mirrors
 `facet_grid()` -- left side is rows, right side is columns:
 
 ```{r}
+#| label: fig-hemi-by-view
+#| fig-cap: "Cortical atlas with hemispheres as rows and views as columns."
 ggplot() +
   geom_brain(
     atlas = dk,
@@ -48,6 +53,8 @@ ggplot() +
 Flip the formula to transpose the layout:
 
 ```{r}
+#| label: fig-view-by-hemi
+#| fig-cap: "Transposed layout with views as rows and hemispheres as columns."
 ggplot() +
   geom_brain(
     atlas = dk,
@@ -63,6 +70,8 @@ Use `.` with `+` to collapse everything into a single row or column. This
 is handy for compact figures:
 
 ```{r}
+#| label: fig-single-row
+#| fig-cap: "All brain views stacked in a single row."
 ggplot() +
   geom_brain(
     atlas = dk,
@@ -73,6 +82,8 @@ ggplot() +
 ```
 
 ```{r}
+#| label: fig-single-column
+#| fig-cap: "All brain views stacked in a single column."
 ggplot() +
   geom_brain(
     atlas = dk,
@@ -94,6 +105,8 @@ different set of positioning tools.
 The simplest options. `"horizontal"` is the default:
 
 ```{r}
+#| label: fig-aseg-horizontal
+#| fig-cap: "Subcortical atlas views arranged horizontally."
 ggplot() +
   geom_brain(
     atlas = aseg,
@@ -101,7 +114,11 @@ ggplot() +
     show.legend = FALSE
   ) +
   theme_void()
+```
 
+```{r}
+#| label: fig-aseg-vertical
+#| fig-cap: "Subcortical atlas views arranged vertically."
 ggplot() +
   geom_brain(
     atlas = aseg,
@@ -117,6 +134,8 @@ When you have many views, a grid keeps things readable. Specify `nrow`,
 `ncol`, or both:
 
 ```{r}
+#| label: fig-aseg-nrow
+#| fig-cap: "Subcortical atlas views in a two-row grid."
 ggplot() +
   geom_brain(
     atlas = aseg,
@@ -124,7 +143,11 @@ ggplot() +
     show.legend = FALSE
   ) +
   theme_void()
+```
 
+```{r}
+#| label: fig-aseg-ncol
+#| fig-cap: "Subcortical atlas views in a three-column grid."
 ggplot() +
   geom_brain(
     atlas = aseg,
@@ -140,10 +163,13 @@ The `views` parameter lets you select which views to include and in what
 order. Check what's available with `brain_views()`:
 
 ```{r}
+#| label: aseg-views
 brain_views(aseg)
 ```
 
 ```{r}
+#| label: fig-aseg-select-views
+#| fig-cap: "A subset of subcortical views selected by name."
 ggplot() +
   geom_brain(
     atlas = aseg,
@@ -158,6 +184,8 @@ ggplot() +
 Combine `views` with `nrow` or `ncol` for a custom grid:
 
 ```{r}
+#| label: fig-aseg-custom-grid
+#| fig-cap: "Custom two-row grid with selected subcortical views."
 ggplot() +
   geom_brain(
     atlas = aseg,
@@ -176,7 +204,9 @@ The `type ~ .` formula groups views by their orientation -- all axial slices
 together, all coronal slices together, and so on. The type is extracted from
 the view name (everything before the first underscore):
 
-```{r, eval=FALSE}
+```{r}
+#| label: aseg-type-group
+#| eval: false
 ggplot() +
   geom_brain(
     atlas = aseg,
@@ -193,6 +223,8 @@ If you're using the `geom_sf()` workflow instead of `geom_brain()`, use
 same arguments:
 
 ```{r}
+#| label: fig-reposition-brain
+#| fig-cap: "Repositioned subcortical data plotted with geom_sf()."
 atlas_data <- as.data.frame(aseg)
 
 repositioned <- reposition_brain(

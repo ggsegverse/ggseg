@@ -3,7 +3,9 @@ output: github_document
 format: gfm
 ---
 
-```{r, include = FALSE}
+```{r}
+#| label: setup
+#| include: false
 knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>",
@@ -37,7 +39,9 @@ Advances in Methods and Practices in Psychological Science.
 
 Install from CRAN:
 
-```{r install, eval = FALSE}
+```{r}
+#| label: install
+#| eval: false
 install.packages("ggseg")
 ```
 
@@ -53,7 +57,9 @@ install.packages("ggseg")
 
 ## Quick start
 
-```{r load, message = FALSE}
+```{r}
+#| label: load
+#| message: false
 library(ggseg)
 library(ggplot2)
 ```
@@ -64,7 +70,10 @@ ggseg ships with three atlases: `dk` (Desikan-Killiany cortical
 parcellation), `aseg` (automatic subcortical segmentation), and `tracula`
 (white matter tracts). `plot()` gives you a quick overview:
 
-```{r atlases, out.width='100%'}
+```{r}
+#| label: fig-atlases
+#| fig-cap: "Overview of the dk and aseg built-in brain atlases."
+#| out-width: "100%"
 plot(dk)
 plot(aseg)
 ```
@@ -74,7 +83,10 @@ plot(aseg)
 Pass a data frame to `ggplot()` with a column that matches the atlas
 (typically `region` or `label`). `geom_brain()` handles the join:
 
-```{r external-data, message = FALSE}
+```{r}
+#| label: fig-external-data
+#| fig-cap: "Brain plot coloured by external data, faceted by group."
+#| message: false
 library(dplyr)
 
 some_data <- tibble(
@@ -107,7 +119,9 @@ ggplot(some_data) +
 Many additional atlases are available through the
 [ggseg r-universe](https://ggseg.r-universe.dev):
 
-```{r eval = FALSE}
+```{r}
+#| label: install-extra
+#| eval: false
 install.packages("ggsegYeo2011", repos = "https://ggseg.r-universe.dev")
 ```
 

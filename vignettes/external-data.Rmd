@@ -7,7 +7,9 @@ vignette: >
   %\VignetteEncoding{UTF-8}
 ---
 
-```{r setup, include=FALSE}
+```{r}
+#| label: setup
+#| include: false
 knitr::opts_chunk$set(eval = TRUE, fig.retina = 3, fig.width = 6)
 ```
 
@@ -15,7 +17,8 @@ Most of the time, you're not plotting empty atlases. You have results --
 p-values, cortical thickness, whatever -- and you want them on a brain. This
 vignette covers how to get your data into the right shape for ggseg.
 
-```{r start}
+```{r}
+#| label: load-packages
 library(ggseg)
 library(dplyr)
 library(ggplot2)
@@ -33,10 +36,12 @@ atlas. The two columns you'll use most:
 Check what's available:
 
 ```{r}
+#| label: dk-regions
 brain_regions(dk)
 ```
 
 ```{r}
+#| label: dk-labels
 brain_labels(dk)
 ```
 
@@ -47,6 +52,7 @@ Names must match exactly, including case and spacing.
 Three regions, three p-values:
 
 ```{r}
+#| label: minimal-data
 some_data <- tibble(
   region = c("superior temporal", "precentral", "lateral orbitofrontal"),
   p = c(.03, .6, .05)
@@ -57,6 +63,8 @@ some_data
 Pass the data to `ggplot()` and map `fill` to your variable:
 
 ```{r}
+#| label: fig-minimal-plot
+#| fig-cap: "Brain plot with three regions coloured by p-value."
 ggplot(some_data) +
   geom_brain(atlas = dk, mapping = aes(fill = p))
 ```
@@ -70,6 +78,8 @@ If your data is hemisphere-specific, add a `hemi` column. The join will use
 both `region` and `hemi`, so values only land on the correct side:
 
 ```{r}
+#| label: fig-hemi-constraint
+#| fig-cap: "Brain plot restricted to the left hemisphere using a hemi column."
 some_data$hemi <- "left"
 
 ggplot(some_data) +
@@ -86,6 +96,8 @@ as you'd expect. `geom_brain()` detects the faceting variables and
 replicates the full atlas in each panel:
 
 ```{r}
+#| label: fig-facet-groups
+#| fig-cap: "Brain plots faceted by age group with a custom colour gradient."
 some_data <- tibble(
   region = rep(c(
     "transverse temporal", "insula", "precentral", "superior parietal"
@@ -114,6 +126,7 @@ For full control over faceting or when you need to combine brain data with
 other sf layers, convert the atlas to a data frame and join manually:
 
 ```{r}
+#| label: atlas-columns
 atlas_df <- as.data.frame(dk)
 names(atlas_df)
 ```
@@ -121,6 +134,8 @@ names(atlas_df)
 Then use a standard join and `geom_sf()`:
 
 ```{r}
+#| label: fig-pre-merged
+#| fig-cap: "Brain plot using a manual left_join and geom_sf for full control."
 some_data <- tibble(
   region = c("superior temporal", "precentral", "lateral orbitofrontal"),
   p = c(.03, .6, .05)
