@@ -8,54 +8,33 @@ articles:
     navbar: ~
     contents:
       - ggseg
-      - externalData
+      - external-data
 
   - title: Advanced Usage
     contents:
+      - positioning-views
       - geom-sf
-      - freesurfer_files
+      - freesurfer-files
 
 reference:
   - title: Plotting
-    desc: Functions for plotting brain atlases
+    desc: Core geom and positioning for brain plots
     contents:
       - geom_brain
       - position_brain
       - reposition_brain
 
-  - title: Atlas Utilities
-    desc: Working with brain atlas data
+  - title: Data
+    desc: Joining user data to brain atlases
     contents:
       - brain_join
-      - brain_regions
-      - brain_labels
 
   - title: Scales
     desc: Colour scales for brain plots
     contents:
-      - scale_brain
-      - scale_brain2
-      - scale_fill_brain
-      - scale_colour_brain
-      - scale_color_brain
+      - starts_with("scale")
 
   - title: Themes
     desc: ggplot themes for brain plots
     contents:
-      - theme_brain
-      - theme_brain2
-      - theme_darkbrain
-      - theme_custombrain
-
-  - title: FreeSurfer Data
-    desc: Functions for reading FreeSurfer files
-    contents:
-      - read_freesurfer_stats
-      - read_freesurfer_table
-      - read_atlas_files
-
-  - title: Data
-    desc: Built-in atlases
-    contents:
-      - dk
-      - aseg
+      - starts_with("theme")

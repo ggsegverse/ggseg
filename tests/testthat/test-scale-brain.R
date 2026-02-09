@@ -52,57 +52,77 @@ describe("scale_fill_brain", {
   })
 })
 
-describe("scale_brain2", {
+describe("scale_brain_manual", {
   pal <- c("region1" = "#FF0000", "region2" = "#00FF00")
 
   it("returns a scale for fill by default with custom palette", {
-    scale <- scale_brain2(palette = pal)
+    scale <- scale_brain_manual(palette = pal)
     expect_s3_class(scale, "Scale")
     expect_equal(scale$aesthetics, "fill")
   })
 
   it("returns a scale for colour", {
-    scale <- scale_brain2(palette = pal, aesthetics = "colour")
+    scale <- scale_brain_manual(palette = pal, aesthetics = "colour")
     expect_s3_class(scale, "Scale")
     expect_equal(scale$aesthetics, "colour")
   })
 
   it("returns a scale for color (aliased to colour)", {
-    scale <- scale_brain2(palette = pal, aesthetics = "color")
+    scale <- scale_brain_manual(palette = pal, aesthetics = "color")
     expect_s3_class(scale, "Scale")
     expect_equal(scale$aesthetics, "colour")
   })
 
   it("uses custom na.value", {
-    scale <- scale_brain2(palette = pal, na.value = "blue")
+    scale <- scale_brain_manual(palette = pal, na.value = "blue")
     expect_equal(scale$na.value, "blue")
   })
 })
 
-describe("scale_colour_brain2", {
+describe("scale_colour_brain_manual", {
   it("returns a colour scale", {
     pal <- c("region1" = "#FF0000")
-    scale <- scale_colour_brain2(palette = pal)
+    scale <- scale_colour_brain_manual(palette = pal)
     expect_s3_class(scale, "Scale")
     expect_equal(scale$aesthetics, "colour")
   })
 })
 
-describe("scale_color_brain2", {
+describe("scale_color_brain_manual", {
   it("returns a color scale (aliased to colour)", {
     pal <- c("region1" = "#FF0000")
-    scale <- scale_color_brain2(palette = pal)
+    scale <- scale_color_brain_manual(palette = pal)
     expect_s3_class(scale, "Scale")
     expect_equal(scale$aesthetics, "colour")
   })
 })
 
-describe("scale_fill_brain2", {
+describe("scale_fill_brain_manual", {
   it("returns a fill scale", {
     pal <- c("region1" = "#FF0000")
-    scale <- scale_fill_brain2(palette = pal)
+    scale <- scale_fill_brain_manual(palette = pal)
     expect_s3_class(scale, "Scale")
     expect_equal(scale$aesthetics, "fill")
+  })
+})
+
+describe("deprecated scale_brain2 variants", {
+  pal <- c("region1" = "#FF0000", "region2" = "#00FF00")
+
+  it("scale_brain2 warns and delegates", {
+    lifecycle::expect_deprecated(scale_brain2(palette = pal))
+  })
+
+  it("scale_fill_brain2 warns and delegates", {
+    lifecycle::expect_deprecated(scale_fill_brain2(palette = pal))
+  })
+
+  it("scale_colour_brain2 warns and delegates", {
+    lifecycle::expect_deprecated(scale_colour_brain2(palette = pal))
+  })
+
+  it("scale_color_brain2 warns and delegates", {
+    lifecycle::expect_deprecated(scale_color_brain2(palette = pal))
   })
 })
 

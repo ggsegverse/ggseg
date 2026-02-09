@@ -14,7 +14,7 @@ p <- ggseg(
   size = .2,
   mapping = aes(fill = region)
 ) +
-  scale_fill_brain2(palette = atlas$palette) +
+  scale_fill_brain_manual(palette = atlas$palette) +
   theme_void() +
   theme_transparent()
 

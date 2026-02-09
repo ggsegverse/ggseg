@@ -171,7 +171,7 @@ data <- data.frame(
 
 ggplot(data) +
   geom_brain(atlas = dk, aes(fill = reg_col)) +
-  scale_fill_brain2(dk$palette[data$region])
+  scale_fill_brain_manual(dk$palette[data$region])
 ```
 
 ## Scales and themes

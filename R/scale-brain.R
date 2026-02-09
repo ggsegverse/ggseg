@@ -4,13 +4,13 @@
 #' @description
 #' Apply atlas-specific colour palettes to brain plots. Colours correspond to
 #' the region colours used in the original atlas publications. Palettes are
-#' looked up by atlas name via [ggseg.formats::brain_pal()].
+#' looked up by atlas name via [ggseg.formats::atlas_palette()].
 #'
 #' @param name String name of the atlas palette (e.g. `"dk"`, `"aseg"`).
 #' @param na.value Colour for `NA` entries (default: `"grey"`).
 #' @param aesthetics Which aesthetic to scale: `"fill"`, `"colour"`, or
 #'   `"color"`.
-#' @param ... Additional arguments passed to [ggseg.formats::brain_pal()].
+#' @param ... Additional arguments passed to [ggseg.formats::atlas_palette()].
 #'
 #' @return A ggplot2 scale object.
 #' @rdname scale_brain
@@ -22,14 +22,14 @@
 #'
 
 #' @importFrom ggplot2 scale_color_manual scale_colour_manual scale_fill_manual
-#' @importFrom ggseg.formats brain_pal
+#' @importFrom ggseg.formats atlas_palette
 scale_brain <- function(
   name = "dk",
   na.value = "grey",
   ...,
   aesthetics = c("fill", "colour", "color")
 ) {
-  pal <- brain_pal(name = name, ...)
+  pal <- atlas_palette(name = name, ...)
   aesthetics <- match.arg(aesthetics)
   func <- switch(
     aesthetics,
@@ -58,12 +58,13 @@ scale_fill_brain <- function(...) {
   scale_brain(..., aesthetics = "fill")
 }
 
-#' Custom colour and fill scales for brain plots
+#' Manual colour and fill scales for brain plots
 #'
 #' @description
 #' Apply a custom named colour palette to brain atlas plots. Unlike
-#' [scale_brain()] which looks up palettes by atlas name, `scale_brain2()`
-#' accepts a pre-built named character vector mapping region names to colours.
+#' [scale_brain()] which looks up palettes by atlas name,
+#' `scale_brain_manual()` accepts a pre-built named character vector mapping
+#' region names to colours.
 #'
 #' @param palette Named character vector mapping region names to colours.
 #' @param na.value Colour for `NA` entries (default: `"grey"`).
@@ -72,7 +73,7 @@ scale_fill_brain <- function(...) {
 #' @param ... Additional arguments (unused).
 #'
 #' @return A ggplot2 scale object.
-#' @rdname scale_brain2
+#' @rdname scale_brain_manual
 #' @export
 #' @examples
 #' library(ggplot2)
@@ -80,9 +81,9 @@ scale_fill_brain <- function(...) {
 #' pal <- c("insula" = "red", "precentral" = "blue")
 #' ggplot() +
 #'   geom_brain(atlas = dk, aes(fill = region), show.legend = FALSE) +
-#'   scale_fill_brain2(palette = pal)
+#'   scale_fill_brain_manual(palette = pal)
 #'
-scale_brain2 <- function(
+scale_brain_manual <- function(
   palette,
   na.value = "grey",
   ...,
@@ -98,23 +99,78 @@ scale_brain2 <- function(
   func(values = palette, na.value = na.value)
 }
 
-#' @rdname scale_brain2
+#' @rdname scale_brain_manual
 #' @export
+scale_colour_brain_manual <- function(...) {
+  scale_brain_manual(..., aesthetics = "colour")
+}
+
+#' @rdname scale_brain_manual
+#' @export
+scale_color_brain_manual <- function(...) {
+  scale_brain_manual(..., aesthetics = "color")
+}
+
+#' @export
+#' @rdname scale_brain_manual
+scale_fill_brain_manual <- function(...) {
+  scale_brain_manual(..., aesthetics = "fill")
+}
+
+# Deprecated scale_brain2 variants ----
+#' @rdname scale_brain2-deprecated
+#' @export
+#' @keywords internal
+scale_brain2 <- function(...) {
+  lifecycle::deprecate_warn("1.7.0", "scale_brain2()", "scale_brain_manual()")
+  scale_brain_manual(...)
+}
+
+#' @rdname scale_brain2-deprecated
+#' @export
+#' @keywords internal
 scale_colour_brain2 <- function(...) {
-  scale_brain2(..., aesthetics = "colour")
+  lifecycle::deprecate_warn(
+    "1.7.0", "scale_colour_brain2()", "scale_colour_brain_manual()"
+  )
+  scale_colour_brain_manual(...)
 }
 
-#' @rdname scale_brain2
+#' @rdname scale_brain2-deprecated
 #' @export
+#' @keywords internal
 scale_color_brain2 <- function(...) {
-  scale_brain2(..., aesthetics = "color")
+  lifecycle::deprecate_warn(
+    "1.7.0", "scale_color_brain2()", "scale_color_brain_manual()"
+  )
+  scale_color_brain_manual(...)
 }
 
+#' @rdname scale_brain2-deprecated
 #' @export
-#' @rdname scale_brain2
+#' @keywords internal
 scale_fill_brain2 <- function(...) {
-  scale_brain2(..., aesthetics = "fill")
+  lifecycle::deprecate_warn(
+    "1.7.0", "scale_fill_brain2()", "scale_fill_brain_manual()"
+  )
+  scale_fill_brain_manual(...)
 }
+
+#' Deprecated scale functions
+#'
+#' @description
+#' `r lifecycle::badge("deprecated")`
+#'
+#' These functions have been renamed for clarity:
+#' - `scale_brain2()` -> [scale_brain_manual()]
+#' - `scale_fill_brain2()` -> [scale_fill_brain_manual()]
+#' - `scale_colour_brain2()` -> [scale_colour_brain_manual()]
+#' - `scale_color_brain2()` -> [scale_color_brain_manual()]
+#'
+#' @param ... Arguments passed to the replacement function.
+#' @name scale_brain2-deprecated
+#' @keywords internal
+NULL
 
 
 # Axis scales ----

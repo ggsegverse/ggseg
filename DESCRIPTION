@@ -47,7 +47,7 @@ Suggests:
     testthat (>= 3.0.0),
     spelling
 VignetteBuilder: knitr
-URL: https://github.com/ggseg/ggseg
+URL: https://ggseg.github.io/ggseg/, https://github.com/ggseg/ggseg
 BugReports: https://github.com/ggseg/ggseg/issues
 Language: en-US
 SystemRequirements: 

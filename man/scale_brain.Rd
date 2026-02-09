@@ -25,7 +25,7 @@ scale_fill_brain(...)
 
 \item{na.value}{Colour for `NA` entries (default: `"grey"`).}
 
-\item{...}{Additional arguments passed to [ggseg.formats::brain_pal()].}
+\item{...}{Additional arguments passed to [ggseg.formats::atlas_palette()].}
 
 \item{aesthetics}{Which aesthetic to scale: `"fill"`, `"colour"`, or
 `"color"`.}
@@ -36,7 +36,7 @@ A ggplot2 scale object.
 \description{
 Apply atlas-specific colour palettes to brain plots. Colours correspond to
 the region colours used in the original atlas publications. Palettes are
-looked up by atlas name via [ggseg.formats::brain_pal()].
+looked up by atlas name via [ggseg.formats::atlas_palette()].
 }
 \examples{
 scale_brain()

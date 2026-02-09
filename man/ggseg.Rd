@@ -32,6 +32,7 @@ layout of brain slices/views.
 \seealso{
 Useful links:
 \itemize{
+  \item \url{https://ggseg.github.io/ggseg/}
   \item \url{https://github.com/ggseg/ggseg}
   \item Report bugs at \url{https://github.com/ggseg/ggseg/issues}
 }
