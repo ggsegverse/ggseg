@@ -145,4 +145,3 @@ LayerBrain <- ggproto(
     data
   }
 )
-

@@ -74,5 +74,3 @@ adapt_scales <- function(
 
   ad_scale[[position]][[aesthetics]]
 }
-
-
