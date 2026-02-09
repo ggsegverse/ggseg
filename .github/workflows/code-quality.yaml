@@ -59,7 +59,7 @@ jobs:
         run: |
           checks <- setdiff(
             goodpractice::all_checks(),                 
-            'no_import_package_as_a_whole')
+            'no_import_package_as_a_whole'
           )
 
           gp_result <- goodpractice::gp(checks = checks)
