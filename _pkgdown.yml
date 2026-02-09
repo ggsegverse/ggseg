@@ -2,6 +2,37 @@ url: https://ggseg.github.io/ggseg/
 
 template:
   bootstrap: 5
+  light-switch: true
+  bslib:
+    primary: "#29393e"
+    secondary: "#5e3c58"
+    success: "#478f76"
+    danger: "#CD6689"
+    bg: "#f2f0ef"
+    fg: "#1a2a2e"
+    base_font:
+      google: Inter
+    code_font:
+      google: JetBrains Mono
+    code-bg: "#cec4cc"
+    code-color: "#1a2a2e"
+    link-color: "#29393e"
+    link-hover-color: "#5e3c58"
+    border-color: "#a8c5cb"
+    navbar-bg: "#29393e"
+    navbar-light-color: "#f2f0ef"
+
+navbar:
+  bg: primary
+  type: dark
+  structure:
+    left: [intro, reference, articles, news]
+    right: [search, github, lightswitch]
+  components:
+    github:
+      icon: fa-github
+      href: https://github.com/ggseg/ggseg
+      aria-label: GitHub
 
 articles:
   - title: Getting Started
