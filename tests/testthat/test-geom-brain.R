@@ -50,7 +50,10 @@ describe("geom_brain", {
     p <- ggplot(some_data) +
       geom_brain(atlas = dk, mapping = aes(fill = p))
     expect_s3_class(p, "gg")
-    built <- ggplot_build(p)
+    expect_message(
+      built <- ggplot_build(p),
+      "Merging"
+    )
     expect_true(nrow(built$data[[1]]) > 0)
   })
 
@@ -63,6 +66,10 @@ describe("geom_brain", {
     some_data <- tibble(region = "insula", p = 0.3)
     p <- ggplot(some_data, aes(fill = p)) +
       geom_brain(atlas = dk, inherit.aes = FALSE)
+    expect_message(
+      built <- ggplot_build(p),
+      "Merging"
+    )
     expect_s3_class(p, "gg")
   })
 
@@ -92,7 +99,10 @@ describe("geom_brain faceting", {
     p <- ggplot(some_data) +
       geom_brain(atlas = dk, mapping = aes(fill = p)) +
       facet_wrap(~group)
-    built <- ggplot_build(p)
+    expect_message(
+      built <- ggplot_build(p),
+      "Merging"
+    )
     panels <- unique(built$data[[1]]$PANEL)
     expect_equal(length(panels), 2)
   })
@@ -101,7 +111,10 @@ describe("geom_brain faceting", {
     p <- ggplot(some_data) +
       geom_brain(atlas = dk, mapping = aes(fill = p)) +
       facet_wrap(~group)
-    built <- ggplot_build(p)
+    expect_message(
+      built <- ggplot_build(p),
+      "Merging"
+    )
     atlas_rows <- nrow(as.data.frame(dk))
     rows_per_panel <- tapply(
       built$data[[1]]$PANEL,
@@ -117,7 +130,10 @@ describe("geom_brain faceting", {
       ggplot() +
       geom_brain(atlas = dk, mapping = aes(fill = p)) +
       facet_wrap(~group)
-    built <- ggplot_build(p)
+    expect_message(
+      built <- ggplot_build(p),
+      "Merging"
+    )
     panels <- unique(built$data[[1]]$PANEL)
     expect_equal(length(panels), 2)
   })
@@ -126,7 +142,10 @@ describe("geom_brain faceting", {
     p <- ggplot(some_data) +
       geom_brain(atlas = dk, mapping = aes(fill = p)) +
       facet_grid(rows = vars(group))
-    built <- ggplot_build(p)
+    expect_message(
+      built <- ggplot_build(p),
+      "Merging"
+    )
     panels <- unique(built$data[[1]]$PANEL)
     expect_equal(length(panels), 2)
   })
@@ -140,6 +159,10 @@ describe("geom_brain faceting", {
     p <- ggplot(data_with_hemi) +
       geom_brain(atlas = dk, mapping = aes(fill = p)) +
       facet_wrap(~hemi)
+    expect_message(
+      built <- ggplot_build(p),
+      "Merging"
+    )
     expect_s3_class(p, "gg")
   })
 })

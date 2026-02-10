@@ -130,6 +130,13 @@ position_brain <- function(
   )
 }
 
+#' ggproto Position class for brain atlas layout
+#'
+#' Handles coordinate repositioning of brain views/slices during
+#' the ggplot2 rendering pipeline. Created by [position_brain()].
+#'
+#' @keywords internal
+#' @noRd
 PositionBrain <- ggplot2::ggproto(
   "PositionBrain",
   ggplot2:::Position,
@@ -171,6 +178,18 @@ PositionBrain <- ggplot2::ggproto(
 
 # geometry movers ----
 
+#' Parse a position formula into layout instructions
+#'
+#' Interprets a formula like `hemi ~ view` into row/column
+#' variable names and validates against the atlas type.
+#'
+#' @param pos A formula describing the layout.
+#' @param data Data.frame with atlas columns (`type`, `hemi`, `view`).
+#'
+#' @return A list with `position` (character), `chosen` (variable names),
+#'   and `data` (possibly modified data.frame).
+#' @keywords internal
+#' @noRd
 position_formula <- function(pos, data) {
   chosen <- all.vars(pos, unique = FALSE)
   chosen <- chosen[!grepl("\\.", chosen)]
@@ -229,6 +248,16 @@ position_formula <- function(pos, data) {
 }
 
 
+#' Extract the type prefix from view names
+#'
+#' Splits view names like `"axial_3"` on underscore and returns
+#' the first part (`"axial"`).
+#'
+#' @param views Character vector of view names.
+#'
+#' @return Character vector of type prefixes.
+#' @keywords internal
+#' @noRd
 extract_view_type <- function(views) {
   vapply(
     views,
@@ -241,7 +270,23 @@ extract_view_type <- function(views) {
   )
 }
 
-
+#' Reposition brain views according to layout specification
+#'
+#' Main dispatcher that splits data by view/hemisphere, gathers
+#' geometry, and delegates to the appropriate stacking function.
+#'
+#' @param data Data.frame with atlas columns and `geometry`.
+#' @param pos Position specification: a formula, `"horizontal"`,
+#'   or `"vertical"`.
+#' @param nrow Number of grid rows (optional).
+#' @param ncol Number of grid columns (optional).
+#' @param views Character vector of views to include.
+#'
+#' @return An sf data.frame with repositioned geometry and
+#'   adjusted bounding box.
+#' @importFrom sf st_as_sf
+#' @keywords internal
+#' @noRd
 frame_2_position <- function(
   data,
   pos,
@@ -279,6 +324,19 @@ frame_2_position <- function(
 }
 
 
+#' Split atlas data into a grid of views
+#'
+#' Assigns grid row/column indices to each view and returns
+#' a list of per-view data.frames.
+#'
+#' @param data Data.frame with a `view` column.
+#' @param nrow Number of grid rows (optional, auto-calculated).
+#' @param ncol Number of grid columns (optional, auto-calculated).
+#'
+#' @return A list with `data` (list of data.frames) and
+#'   `position` (column names for grid coordinates).
+#' @keywords internal
+#' @noRd
 split_data_grid <- function(data, nrow = NULL, ncol = NULL) {
   view_list <- unique(data$view)
   n_views <- length(view_list)
@@ -309,6 +367,18 @@ split_data_grid <- function(data, nrow = NULL, ncol = NULL) {
   )
 }
 
+#' Split atlas data by position specification
+#'
+#' Routes to formula-based or string-based splitting depending
+#' on whether `position` is a formula or character.
+#'
+#' @param data Data.frame with atlas columns.
+#' @param position A formula or character layout specification.
+#'
+#' @return A list with `data` (list of data.frames) and
+#'   `position` (layout direction or variable names).
+#' @keywords internal
+#' @noRd
 split_data <- function(data, position) {
   if (inherits(position, "formula")) {
     pos <- position_formula(position, data)
@@ -350,12 +420,33 @@ split_data <- function(data, position) {
   list(data = df2, position = pos)
 }
 
+#' Zero-origin geometry for a single view
+#'
+#' Translates geometry so the bounding box starts at (0, 0).
+#'
+#' @param df Data.frame with a `geometry` column.
+#'
+#' @return Modified data.frame with shifted geometry.
+#' @keywords internal
+#' @noRd
 gather_geometry <- function(df) {
   bbx <- sf::st_bbox(df$geometry)
   df$geometry <- df$geometry - bbx[c("xmin", "ymin")]
   df
 }
 
+#' Center a view within a grid cell
+#'
+#' Offsets geometry so the view is centered inside a cell of
+#' `cell_size` at position `grid_pos`.
+#'
+#' @param df Data.frame with a `geometry` column.
+#' @param cell_size Numeric length-2 vector `c(width, height)`.
+#' @param grid_pos Numeric length-2 vector `c(x, y)` offset.
+#'
+#' @return Modified data.frame with repositioned geometry.
+#' @keywords internal
+#' @noRd
 center_view <- function(df, cell_size, grid_pos) {
   bbox <- sf::st_bbox(df$geometry)
   view_width <- bbox["xmax"] - bbox["xmin"]
@@ -366,6 +457,13 @@ center_view <- function(df, cell_size, grid_pos) {
   df
 }
 
+#' Arrange views in a horizontal row
+#'
+#' @param df List of data.frames, each with a `geometry` column.
+#'
+#' @return A list with `df` (combined data.frame) and `box` (bbox).
+#' @keywords internal
+#' @noRd
 stack_horizontal <- function(df) {
   sep <- get_sep(df)
   cell_size <- sep / 1.2
@@ -379,6 +477,13 @@ stack_horizontal <- function(df) {
   list(df = do.call(rbind, df), box = get_box(bx))
 }
 
+#' Arrange views in a vertical column
+#'
+#' @param df List of data.frames, each with a `geometry` column.
+#'
+#' @return A list with `df` (combined data.frame) and `box` (bbox).
+#' @keywords internal
+#' @noRd
 stack_vertical <- function(df) {
   sep <- get_sep(df)
   cell_size <- sep / 1.2
@@ -392,6 +497,16 @@ stack_vertical <- function(df) {
   list(df = do.call(rbind, df), box = get_box(bx))
 }
 
+#' Arrange views in a row-by-column grid
+#'
+#' @param df List of data.frames, each with a `geometry` column
+#'   and grid assignment columns.
+#' @param rows Column name identifying the row variable.
+#' @param columns Column name identifying the column variable.
+#'
+#' @return A list with `df` (combined data.frame) and `box` (bbox).
+#' @keywords internal
+#' @noRd
 stack_grid <- function(df, rows, columns) {
   bx <- list()
   sep <- get_sep(df)
@@ -452,6 +567,13 @@ stack_grid <- function(df, rows, columns) {
   )
 }
 
+#' Compute a padded bounding box from a list of bboxes
+#'
+#' @param bx List of sf bbox objects.
+#'
+#' @return An sf `bbox` object with 1% padding.
+#' @keywords internal
+#' @noRd
 get_box <- function(bx) {
   bx <- do.call(rbind, bx)
   pad <- max(bx) * .01
@@ -466,6 +588,16 @@ get_box <- function(bx) {
   x
 }
 
+#' Compute cell separation distances
+#'
+#' Determines the x and y spacing between grid cells based on
+#' the maximum bounding-box dimensions across all views.
+#'
+#' @param data List of data.frames, each with a `geometry` column.
+#'
+#' @return Named numeric vector `c(x = ..., y = ...)`.
+#' @keywords internal
+#' @noRd
 get_sep <- function(data) {
   get_bbox <- function(x) sf::st_bbox(x$geometry)
   bboxes <- vapply(data, get_bbox, numeric(4))
@@ -473,6 +605,16 @@ get_sep <- function(data) {
   c("x" = sep[1] + sep[1] * .2, "y" = sep[2] + sep[2] * .2)
 }
 
+#' Generate the default view ordering for an atlas
+#'
+#' For cortical atlases, returns `"hemi view"` pairs (left first).
+#' For subcortical/tract atlases, returns unique views as-is.
+#'
+#' @param data Data.frame with `type`, `view`, and `hemi` columns.
+#'
+#' @return Character vector of ordered view identifiers.
+#' @keywords internal
+#' @noRd
 default_order <- function(data) {
   if (unique(data$type) == "cortical") {
     sides <- unique(data$view)

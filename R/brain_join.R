@@ -14,6 +14,7 @@
 #' @importFrom dplyr is.grouped_df full_join as_tibble
 #' @importFrom tidyr nest unnest
 #' @importFrom sf st_as_sf
+#' @importFrom utils capture.output
 #' @examples
 #' someData <- data.frame(
 #'   region = c(
@@ -32,13 +33,7 @@ brain_join <- function(data, atlas, by = NULL) {
 
   if (is.null(by)) {
     by <- names(data)[names(data) %in% names(atlas)]
-    message(paste0(
-      "merging atlas and data by ",
-      paste(
-        vapply(by, function(x) paste0("'", x, "'"), character(1)),
-        collapse = ", "
-      )
-    ))
+    cli::cli_inform("Merging atlas and data by {.field {by}}.")
   }
 
   if (is.grouped_df(data)) {
@@ -58,14 +53,11 @@ brain_join <- function(data, atlas, by = NULL) {
     errs <- dplyr::select(errs, -starts_with("."))
     errs <- dplyr::as_tibble(errs)
 
-    warning(
-      paste(
-        "Some data not merged properly. Check for naming errors in data:",
-        paste0(capture.output(errs)[-1], collapse = "\n"),
-        sep = "\n"
-      ),
-      call. = FALSE
-    )
+    cli::cli_warn(c(
+      "Some data not merged properly.",
+      "i" = "Check for naming errors in data:",
+      " " = paste0(capture.output(errs)[-1], collapse = "\n")
+    ))
   }
 
   if ("geometry" %in% names(dt)) {

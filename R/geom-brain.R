@@ -107,7 +107,7 @@ GeomBrain <- ggproto(
     na.rm = TRUE
   ) {
     if (!inherits(coord, "CoordSf")) {
-      stop("geom_brain() must be used with coord_sf()", call. = FALSE)
+      cli::cli_abort("{.fn geom_brain} must be used with {.fn coord_sf}.")
     }
 
     coord <- coord$transform(data, panel_params)
@@ -125,7 +125,20 @@ GeomBrain <- ggproto(
 )
 
 
-# adapted from ggplot2::sf_grob
+#' Build a grid grob from transformed brain coordinates
+#'
+#' Adapted from `ggplot2::sf_grob`. Converts transformed coordinate
+#' data into a grid graphical object with polygon fill and stroke.
+#'
+#' @param x Data.frame of transformed coordinates with columns
+#'   `geometry`, `alpha`, `colour`, `fill`, `size`, and `linetype`.
+#' @param lineend Line end style passed to [grid::gpar()].
+#' @param linejoin Line join style passed to [grid::gpar()].
+#' @param linemitre Line mitre limit passed to [grid::gpar()].
+#' @param na.rm If `TRUE`, silently remove missing values.
+#'
+#' @return A grid [grob][grid::grid.grob] object.
+#' @keywords internal
 #' @noRd
 brain_grob <- function(
   x,
@@ -161,6 +174,13 @@ brain_grob <- function(
   sf::st_as_grob(x$geometry, gp = gp)
 }
 
+#' Merge values from one list into another
+#'
+#' @param old List to update.
+#' @param new List whose elements overwrite matching names in `old`.
+#'
+#' @return Updated list.
+#' @keywords internal
 #' @noRd
 modify_list <- function(old, new) {
   for (i in names(new)) {

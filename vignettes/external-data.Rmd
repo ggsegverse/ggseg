@@ -99,9 +99,15 @@ replicates the full atlas in each panel:
 #| label: fig-facet-groups
 #| fig-cap: "Brain plots faceted by age group with a custom colour gradient."
 some_data <- tibble(
-  region = rep(c(
-    "transverse temporal", "insula", "precentral", "superior parietal"
-  ), 2),
+  region = rep(
+    c(
+      "transverse temporal",
+      "insula",
+      "precentral",
+      "superior parietal"
+    ),
+    2
+  ),
   p = sample(seq(0, .5, .001), 8),
   group = c(rep("Young", 4), rep("Old", 4))
 )

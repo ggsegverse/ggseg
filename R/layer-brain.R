@@ -1,3 +1,21 @@
+#' Create a brain atlas ggplot2 layer
+#'
+#' Thin wrapper around [ggplot2::layer()] that substitutes the
+#' custom [LayerBrain] class for atlas-specific setup logic.
+#'
+#' @param geom A ggplot2 Geom ggproto object.
+#' @param stat A ggplot2 Stat ggproto object or string.
+#' @param data Data to display (data.frame or waiver).
+#' @param mapping Set of aesthetic mappings.
+#' @param position Position adjustment.
+#' @param params Additional parameters for the geom/stat.
+#' @param inherit.aes Whether to inherit aesthetics from the plot.
+#' @param check.aes Whether to check aesthetics.
+#' @param check.param Whether to check parameters.
+#' @param show.legend Whether to include in legends.
+#'
+#' @return A [ggplot2::layer()] object of class `LayerBrain`.
+#' @keywords internal
 #' @noRd
 layer_brain <- function(
   geom = NULL,
@@ -26,6 +44,15 @@ layer_brain <- function(
   )
 }
 
+#' Custom ggplot2 Layer for brain atlas data
+#'
+#' A [ggplot2::ggproto()] Layer subclass that handles atlas
+#' validation, hemisphere/view filtering, data joining, and
+#' automatic aesthetic mapping in `setup_layer()`.
+#'
+#' @importFrom utils capture.output
+#' @importFrom sf st_as_sf
+#' @keywords internal
 #' @noRd
 LayerBrain <- ggproto(
   "LayerBrain",

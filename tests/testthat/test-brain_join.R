@@ -19,7 +19,7 @@ describe("brain_join", {
     single <- some_data[some_data$grp == "G1", ]
     expect_message(
       result <- brain_join(single, dk),
-      "merging"
+      "Merging"
     )
     expect_s3_class(result, "sf")
   })
@@ -28,7 +28,7 @@ describe("brain_join", {
     single <- some_data[some_data$grp == "G1", ]
     expect_message(
       brain_join(single, dk),
-      "'region'"
+      "region"
     )
   })
 
@@ -42,7 +42,7 @@ describe("brain_join", {
     grouped <- group_by(some_data, grp)
     expect_message(
       result <- brain_join(grouped, dk),
-      "merging"
+      "Merging"
     )
     expect_s3_class(result, "sf")
     expect_true("grp" %in% names(result))
@@ -70,7 +70,7 @@ describe("brain_join", {
     single <- some_data[some_data$grp == "G1", ]
     expect_message(
       result <- brain_join(single, atlas_df),
-      "merging"
+      "Merging"
     )
     expect_s3_class(result, "tbl_df")
   })
