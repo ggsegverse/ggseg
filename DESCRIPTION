@@ -24,10 +24,10 @@ Description: Provides a 'ggplot2' geom and position for visualizing brain
 License: MIT + file LICENSE
 Encoding: UTF-8
 RoxygenNote: 7.3.3
-Depends: 
-    R (>= 3.3),
-    ggseg.formats
+Depends:
+    R (>= 3.3)
 Imports:
+    ggseg.formats,
     ggplot2 (>= 3.3),
     dplyr (>= 1.0.0),
     tidyr (>= 1.0.0),
@@ -59,3 +59,4 @@ Remotes:
     ggseg/ggseg.formats
 Config/testthat/edition: 3
 Config/testthat/parallel: true
+Config/Needs/website: ggseg/ggseg.docs

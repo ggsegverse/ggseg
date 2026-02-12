@@ -14,6 +14,7 @@
 #' @docType package
 #' @keywords internal
 #' @import ggplot2
+#' @import ggseg.formats
 "_PACKAGE"
 
 utils::globalVariables(c(
@@ -24,7 +25,6 @@ utils::globalVariables(c(
   ".long_min",
   ".long_sd",
   ".subid",
-  "dk",
   "hemi",
   "L2",
   "label",

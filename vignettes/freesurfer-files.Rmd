@@ -21,12 +21,12 @@ FreeSurfer's `recon-all` produces stats files with region-level measures --
 cortical thickness, surface area, volume. ggseg includes readers that pull
 these files directly into data frames shaped for plotting.
 
-All three functions below come from the `ggseg.formats` package, which ggseg
-re-exports.
+All three functions below come from the `ggseg.formats` package.
 
 ```{r}
 #| label: load-packages
 library(ggseg)
+library(ggseg.formats)
 library(ggplot2)
 library(dplyr)
 ```
