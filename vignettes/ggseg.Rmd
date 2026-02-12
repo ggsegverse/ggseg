@@ -26,7 +26,6 @@ ggplot.
 ```{r}
 #| label: load-packages
 library(ggseg)
-library(ggseg.formats)
 library(ggplot2)
 ```
 

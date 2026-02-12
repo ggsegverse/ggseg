@@ -20,7 +20,6 @@ vignette covers how to get your data into the right shape for ggseg.
 ```{r}
 #| label: load-packages
 library(ggseg)
-library(ggseg.formats)
 library(dplyr)
 library(ggplot2)
 ```

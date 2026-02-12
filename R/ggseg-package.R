@@ -14,8 +14,6 @@
 #' @docType package
 #' @keywords internal
 #' @import ggplot2
-#' @import ggseg.formats
-#' @importFrom utils data
 "_PACKAGE"
 
 utils::globalVariables(c(
