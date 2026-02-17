@@ -43,7 +43,7 @@ right) and **view** (lateral, medial, etc.). The formula syntax mirrors
 #| fig-cap: "Cortical atlas with hemispheres as rows and views as columns."
 ggplot() +
   geom_brain(
-    atlas = dk,
+    atlas = dk(),
     position = position_brain(hemi ~ view),
     show.legend = FALSE
   ) +
@@ -57,7 +57,7 @@ Flip the formula to transpose the layout:
 #| fig-cap: "Transposed layout with views as rows and hemispheres as columns."
 ggplot() +
   geom_brain(
-    atlas = dk,
+    atlas = dk(),
     position = position_brain(view ~ hemi),
     show.legend = FALSE
   ) +
@@ -74,7 +74,7 @@ is handy for compact figures:
 #| fig-cap: "All brain views stacked in a single row."
 ggplot() +
   geom_brain(
-    atlas = dk,
+    atlas = dk(),
     position = position_brain(. ~ hemi + view),
     show.legend = FALSE
   ) +
@@ -86,7 +86,7 @@ ggplot() +
 #| fig-cap: "All brain views stacked in a single column."
 ggplot() +
   geom_brain(
-    atlas = dk,
+    atlas = dk(),
     position = position_brain(hemi + view ~ .),
     show.legend = FALSE
   ) +
@@ -109,7 +109,7 @@ The simplest options. `"horizontal"` is the default:
 #| fig-cap: "Subcortical atlas views arranged horizontally."
 ggplot() +
   geom_brain(
-    atlas = aseg,
+    atlas = aseg(),
     position = position_brain("horizontal"),
     show.legend = FALSE
   ) +
@@ -121,7 +121,7 @@ ggplot() +
 #| fig-cap: "Subcortical atlas views arranged vertically."
 ggplot() +
   geom_brain(
-    atlas = aseg,
+    atlas = aseg(),
     position = position_brain("vertical"),
     show.legend = FALSE
   ) +
@@ -138,7 +138,7 @@ When you have many views, a grid keeps things readable. Specify `nrow`,
 #| fig-cap: "Subcortical atlas views in a two-row grid."
 ggplot() +
   geom_brain(
-    atlas = aseg,
+    atlas = aseg(),
     position = position_brain(nrow = 2),
     show.legend = FALSE
   ) +
@@ -150,7 +150,7 @@ ggplot() +
 #| fig-cap: "Subcortical atlas views in a three-column grid."
 ggplot() +
   geom_brain(
-    atlas = aseg,
+    atlas = aseg(),
     position = position_brain(ncol = 3),
     show.legend = FALSE
   ) +
@@ -164,7 +164,7 @@ order. Check what's available with `brain_views()`:
 
 ```{r}
 #| label: aseg-views
-brain_views(aseg)
+brain_views(aseg())
 ```
 
 ```{r}
@@ -172,7 +172,7 @@ brain_views(aseg)
 #| fig-cap: "A subset of subcortical views selected by name."
 ggplot() +
   geom_brain(
-    atlas = aseg,
+    atlas = aseg(),
     position = position_brain(
       views = c("sagittal", "axial_3", "coronal_3")
     ),
@@ -188,7 +188,7 @@ Combine `views` with `nrow` or `ncol` for a custom grid:
 #| fig-cap: "Custom two-row grid with selected subcortical views."
 ggplot() +
   geom_brain(
-    atlas = aseg,
+    atlas = aseg(),
     position = position_brain(
       views = c("sagittal", "axial_3", "axial_5", "coronal_3"),
       nrow = 2
@@ -209,7 +209,7 @@ the view name (everything before the first underscore):
 #| eval: false
 ggplot() +
   geom_brain(
-    atlas = aseg,
+    atlas = aseg(),
     position = position_brain(type ~ .),
     show.legend = FALSE
   ) +
@@ -225,7 +225,7 @@ same arguments:
 ```{r}
 #| label: fig-reposition-brain
 #| fig-cap: "Repositioned subcortical data plotted with geom_sf()."
-atlas_data <- as.data.frame(aseg)
+atlas_data <- as.data.frame(aseg())
 
 repositioned <- reposition_brain(
   atlas_data,
@@ -235,6 +235,54 @@ repositioned <- reposition_brain(
 
 ggplot(repositioned) +
   geom_sf(aes(fill = region), show.legend = FALSE) +
+  theme_void()
+```
+
+## Adding view labels
+
+Use `annotate_brain()` to label each view with its name. For cortical
+atlases the label combines hemisphere and view (e.g. "left lateral"); for
+subcortical and tract atlases it uses the view name directly.
+
+Store the `position_brain()` specification in an object so both layers share
+the same layout:
+
+```{r}
+#| label: fig-dk-view-labels
+#| fig-cap: "Cortical atlas with view labels."
+pos <- position_brain(hemi ~ view)
+ggplot() +
+  geom_brain(atlas = dk(), position = pos, show.legend = FALSE) +
+  annotate_brain(atlas = dk(), position = pos) +
+  theme_void()
+```
+
+It works with any positioning — horizontal, vertical, grid, and formula
+layouts:
+
+```{r}
+#| label: fig-aseg-view-labels
+#| fig-cap: "Subcortical atlas with view labels in a two-row grid."
+pos <- position_brain(nrow = 2)
+ggplot() +
+  geom_brain(atlas = aseg(), position = pos, show.legend = FALSE) +
+  annotate_brain(atlas = aseg(), position = pos) +
+  theme_void()
+```
+
+Text appearance is customisable through standard `annotate()` arguments:
+
+```{r}
+#| label: fig-styled-labels
+#| fig-cap: "View labels with custom styling."
+ggplot() +
+  geom_brain(atlas = dk(), show.legend = FALSE) +
+  annotate_brain(
+    atlas = dk(),
+    size = 2.5,
+    colour = "grey50",
+    fontface = "italic"
+  ) +
   theme_void()
 ```
 
