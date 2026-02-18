@@ -43,6 +43,19 @@ describe("adapt_scales", {
     expect_type(result, "list")
   })
 
+  it("converts atlas object to data.frame automatically", {
+    result <- adapt_scales(dk())
+    expect_type(result, "list")
+    expect_true("y" %in% names(result))
+    expect_true("x" %in% names(result))
+  })
+
+  it("converts subcortical atlas object automatically", {
+    result <- adapt_scales(aseg(), aesthetics = "x")
+    expect_type(result, "list")
+    expect_true("breaks" %in% names(result))
+  })
+
   it("returns labs scale for subcortical atlas", {
     result <- adapt_scales(aseg_geo)
     expect_type(result, "list")

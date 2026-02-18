@@ -46,6 +46,7 @@ reference:
       - geom_brain
       - position_brain
       - reposition_brain
+      - annotate_brain
 
   - title: Data
     desc: Joining user data to brain atlases
