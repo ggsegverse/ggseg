@@ -155,7 +155,7 @@ atlas_df |>
   theme_void()
 ```
 
-See [Working with geom_sf directly](geom-sf.html) for more on this approach.
+See `vignette("geom-sf")` for more on this approach.
 
 ## Troubleshooting
 

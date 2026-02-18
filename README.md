@@ -1,13 +1,16 @@
 
+
 # ggseg <img src="man/figures/logo.png" align="right" alt="" width="138.5" />
 
 <!-- badges: start -->
 
 [![CRAN
-status](https://www.r-pkg.org/badges/version/ggseg)](https://CRAN.R-project.org/package=ggseg)
+status](https://www.r-pkg.org/badges/version/ggseg.png)](https://CRAN.R-project.org/package=ggseg)
 [![R-CMD-check](https://github.com/ggsegverse/ggseg/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/ggsegverse/ggseg/actions/workflows/R-CMD-check.yaml)
-[![Coverage Status](https://raw.githubusercontent.com/ggsegverse/ggseg/coverage/badges/coverage.svg)](https://github.com/ggsegverse/ggseg/actions/workflows/test-coverage.yaml)
-[![downloads](https://cranlogs.r-pkg.org/badges/last-month/ggseg?color=blue)](https://r-pkg.org/pkg/ggseg)
+[![code-quality](https://github.com/ggsegverse/ggseg/actions/workflows/code-quality.yaml/badge.svg)](https://github.com/ggsegverse/ggseg/actions/workflows/code-quality.yaml)
+[![Coverage
+Status](https://raw.githubusercontent.com/ggsegverse/ggseg/coverage/badges/coverage.svg)](https://github.com/ggsegverse/ggseg/actions/workflows/test-coverage.yaml)
+[![downloads](https://cranlogs.r-pkg.org/badges/last-month/ggseg?color=blue.png)](https://r-pkg.org/pkg/ggseg)
 [![Lifecycle:
 stable](https://img.shields.io/badge/lifecycle-stable-brightgreen.svg)](https://lifecycle.r-lib.org/articles/stages.html)
 [![pkgcheck](https://github.com/ggsegverse/ggseg/workflows/pkgcheck/badge.svg)](https://github.com/ggsegverse/ggseg/actions?query=workflow%3Apkgcheck)
@@ -32,7 +35,7 @@ Install from CRAN:
 install.packages("ggseg")
 ```
 
-Or get the development version from the [ggseg
+Or get the development version from the [ggsegverse
 r-universe](https://ggsegverse.r-universe.dev):
 
 ``` r
@@ -57,30 +60,23 @@ parcellation), `aseg` (automatic subcortical segmentation), and
 `tracula` (white matter tracts). `plot()` gives you a quick overview:
 
 ``` r
-plot(dk)
+plot(dk())
+plot(aseg())
 ```
 
-<div class="figure">
+<div id="fig-atlases-1">
 
-<img src="man/figures/README-fig-atlases-1.png" alt="Overview of the dk and aseg built-in brain atlases." width="100%" />
-<p class="caption">
+<img src="man/figures/README-fig-atlases-1.png" style="width:100.0%" />
 
-Overview of the dk and aseg built-in brain atlases.
-</p>
+Figure 1: Overview of the dk and aseg built-in brain atlases.
 
 </div>
 
-``` r
-plot(aseg)
-```
+<div id="fig-atlases-2">
 
-<div class="figure">
+<img src="man/figures/README-fig-atlases-2.png" style="width:100.0%" />
 
-<img src="man/figures/README-fig-atlases-2.png" alt="Overview of the dk and aseg built-in brain atlases." width="100%" />
-<p class="caption">
-
-Overview of the dk and aseg built-in brain atlases.
-</p>
+Figure 2: Overview of the dk and aseg built-in brain atlases.
 
 </div>
 
@@ -108,7 +104,7 @@ some_data <- tibble(
 
 ggplot(some_data) +
   geom_brain(
-    atlas = dk,
+    atlas = dk(),
     position = position_brain(hemi ~ view),
     aes(fill = p)
   ) +
@@ -117,19 +113,18 @@ ggplot(some_data) +
   theme_void()
 ```
 
-<div class="figure">
+<div id="fig-external-data">
 
-<img src="man/figures/README-fig-external-data-1.png" alt="Brain plot coloured by external data, faceted by group." width="100%" />
-<p class="caption">
+<img src="man/figures/README-fig-external-data-1.png"
+style="width:100.0%" />
 
-Brain plot coloured by external data, faceted by group.
-</p>
+Figure 3: Brain plot coloured by external data, faceted by group.
 
 </div>
 
 ## More atlases
 
-Many additional atlases are available through the [ggseg
+Many additional atlases are available through the [ggsegverse
 r-universe](https://ggsegverse.r-universe.dev):
 
 ``` r

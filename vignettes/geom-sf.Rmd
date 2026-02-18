@@ -152,4 +152,4 @@ some_data |>
 ```
 
 This step is only needed in the sf workflow. `geom_brain()` handles atlas
-replication automatically (see [Plotting external data](external-data.html)).
+replication automatically (see `vignette("external-data")`).

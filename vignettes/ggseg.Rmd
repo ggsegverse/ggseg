@@ -97,8 +97,8 @@ ggplot() +
   )
 ```
 
-See [Arranging brain views](positioning-views.html) for the full set of layout
-options, including grid layouts for subcortical and tract atlases.
+See `vignette("positioning-views")` for the full set of layout options,
+including grid layouts for subcortical and tract atlases.
 
 ## Showing only certain hemispheres or views
 
@@ -152,8 +152,7 @@ ggplot(some_data) +
   theme_void()
 ```
 
-See [Plotting external data](external-data.html) for more on data preparation
-and matching.
+See `vignette("external-data")` for more on data preparation and matching.
 
 ## Faceting
 
