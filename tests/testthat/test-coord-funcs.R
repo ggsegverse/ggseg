@@ -1,6 +1,6 @@
 describe("squish_position", {
   it("adjusts right hemisphere positions", {
-    atlas_df <- as.data.frame(dk)
+    atlas_df <- as.data.frame(dk())
     coords <- sf2coords(atlas_df)
     geo <- unnest(coords, ggseg)
     result <- squish_position(geo, "left")
@@ -11,7 +11,7 @@ describe("squish_position", {
 
 describe("stack_brain", {
   it("warns when type is unknown", {
-    atlas_df <- as.data.frame(dk)
+    atlas_df <- as.data.frame(dk())
     coords <- sf2coords(atlas_df)
     geo <- unnest(coords, ggseg)
     geo$type <- "unknown"
@@ -22,7 +22,7 @@ describe("stack_brain", {
   })
 
   it("stacks cortical atlas", {
-    atlas_df <- as.data.frame(dk)
+    atlas_df <- as.data.frame(dk())
     coords <- sf2coords(atlas_df)
     geo <- unnest(coords, ggseg)
     result <- stack_brain(geo)
@@ -30,7 +30,7 @@ describe("stack_brain", {
   })
 
   it("stacks subcortical atlas", {
-    atlas_df <- as.data.frame(aseg)
+    atlas_df <- as.data.frame(aseg())
     coords <- sf2coords(atlas_df)
     geo <- unnest(coords, ggseg)
     result <- stack_brain(geo)
@@ -40,7 +40,7 @@ describe("stack_brain", {
 
 describe("calc_stack", {
   it("returns summary with sd column", {
-    atlas_df <- as.data.frame(dk)
+    atlas_df <- as.data.frame(dk())
     coords <- sf2coords(atlas_df)
     geo <- unnest(coords, ggseg)
     stack <- group_by(geo, hemi, view)

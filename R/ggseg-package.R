@@ -6,7 +6,7 @@
 #' integration with the ggplot2 ecosystem including faceting, custom scales,
 #' and themes.
 #'
-#' The main entry point is [geom_brain()], which accepts a `brain_atlas`
+#' The main entry point is [geom_brain()], which accepts a `ggseg_atlas`
 #' object and optional user data. Use [position_brain()] to control the
 #' layout of brain slices/views.
 #'
@@ -14,7 +14,17 @@
 #' @docType package
 #' @keywords internal
 #' @import ggplot2
+#' @import ggseg.formats
 "_PACKAGE"
+
+#' @export
+ggseg.formats::dk
+
+#' @export
+ggseg.formats::aseg
+
+#' @export
+ggseg.formats::tracula
 
 utils::globalVariables(c(
   ".id",
@@ -24,7 +34,6 @@ utils::globalVariables(c(
   ".long_min",
   ".long_sd",
   ".subid",
-  "dk",
   "hemi",
   "L2",
   "label",

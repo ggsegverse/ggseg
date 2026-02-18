@@ -7,7 +7,7 @@
 #' @param mapping Set of aesthetic mappings created by [ggplot2::aes()].
 #' @param data A data.frame containing variables to map. If `NULL`, the atlas
 #'   is plotted without user data.
-#' @param atlas A `brain_atlas` object (e.g. `dk`, `aseg`, `tracula`).
+#' @param atlas A `ggseg_atlas` object (e.g. `dk()`, `aseg()`, `tracula()`).
 #' @param hemi Character vector of hemispheres to include (e.g. `"left"`,
 #'   `"right"`). Defaults to all hemispheres in the atlas.
 #' @param view Character vector of views to include, as recorded in the atlas
@@ -28,7 +28,7 @@
 #' library(ggplot2)
 #'
 #' ggplot() +
-#'   geom_brain(atlas = dk)
+#'   geom_brain(atlas = dk())
 geom_brain <- function(
   mapping = aes(),
   data = NULL,
@@ -52,7 +52,7 @@ geom_brain <- function(
     dots$side <- NULL
   }
 
-  c(
+  result <- list(
     layer_brain(
       geom = GeomBrain,
       data = data,
@@ -68,6 +68,18 @@ geom_brain <- function(
     ),
     coord_sf(default = TRUE, clip = "off")
   )
+
+  has_fill_aes <- "fill" %in% names(mapping)
+  if (!is.null(atlas$palette) && !has_fill_aes) {
+    result <- c(
+      result,
+      list(
+        scale_fill_manual(values = atlas$palette, na.value = "grey")
+      )
+    )
+  }
+
+  result
 }
 
 

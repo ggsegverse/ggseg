@@ -25,16 +25,21 @@ and themes.
 `ggplot() + geom_brain()` instead.
 }
 \details{
-The main entry point is [geom_brain()], which accepts a `brain_atlas`
+The main entry point is [geom_brain()], which accepts a `ggseg_atlas`
 object and optional user data. Use [position_brain()] to control the
 layout of brain slices/views.
+}
+\examples{
+\dontrun{
+ggseg()
+}
 }
 \seealso{
 Useful links:
 \itemize{
-  \item \url{https://ggseg.github.io/ggseg/}
-  \item \url{https://github.com/ggseg/ggseg}
-  \item Report bugs at \url{https://github.com/ggseg/ggseg/issues}
+  \item \url{https://ggsegverse.github.io/ggseg/}
+  \item \url{https://github.com/ggsegverse/ggseg}
+  \item Report bugs at \url{https://github.com/ggsegverse/ggseg/issues}
 }
 
 

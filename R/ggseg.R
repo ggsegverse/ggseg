@@ -8,6 +8,10 @@
 #' @return Does not return; always raises an error.
 #' @seealso [geom_brain()] for the replacement API.
 #' @export
+#' @examples
+#' \dontrun{
+#' ggseg()
+#' }
 ggseg <- function(
   ...
 ) {

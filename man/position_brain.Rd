@@ -37,40 +37,37 @@ library(ggplot2)
 # Cortical atlas with formula
 ggplot() +
   geom_brain(
-    atlas = dk, aes(fill = region),
+    atlas = dk(), aes(fill = region),
     position = position_brain(. ~ view + hemi),
     show.legend = FALSE
   )
 
 ggplot() +
   geom_brain(
-    atlas = dk, aes(fill = region),
+    atlas = dk(), aes(fill = region),
     position = position_brain(view ~ hemi),
     show.legend = FALSE
   )
 
-\dontrun{
-# Subcortical atlas with grid layout
+\donttest{
 ggplot() +
   geom_brain(
-    atlas = aseg, aes(fill = region),
+    atlas = aseg(), aes(fill = region),
     position = position_brain(nrow = 2)
   )
 
-# Subcortical with specific view order
 ggplot() +
   geom_brain(
-    atlas = aseg, aes(fill = region),
+    atlas = aseg(), aes(fill = region),
     position = position_brain(
       views = c("sagittal", "axial_3", "coronal_2"),
       nrow = 1
     )
   )
 
-# Subcortical with type-based formula (axial/coronal/sagittal)
 ggplot() +
   geom_brain(
-    atlas = aseg, aes(fill = region),
+    atlas = aseg(), aes(fill = region),
     position = position_brain(type ~ .)
   )
 }

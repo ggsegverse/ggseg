@@ -52,7 +52,7 @@ atlas, prepend it to the label column:
 #| label: fig-single-stats
 #| fig-cap: "Brain plot of average cortical thickness from a single stats file."
 ggplot(data |> mutate(label = paste0("lh_", label))) +
-  geom_brain(atlas = dk, mapping = aes(fill = ThickAvg))
+  geom_brain(atlas = dk(), mapping = aes(fill = ThickAvg))
 ```
 
 ## Reading stats files across subjects
@@ -76,7 +76,7 @@ for plotting:
 #| label: fig-atlas-files
 #| fig-cap: "Brain plot of cortical thickness variability across subjects."
 ggplot(dat) +
-  geom_brain(atlas = dk, mapping = aes(fill = ThickStd))
+  geom_brain(atlas = dk(), mapping = aes(fill = ThickStd))
 ```
 
 To show all metrics at once, pivot and facet:
@@ -90,7 +90,7 @@ library(tidyr)
 dat |>
   pivot_longer(-c(subject, label), names_to = "stat", values_to = "val") |>
   ggplot() +
-  geom_brain(atlas = dk, mapping = aes(fill = val)) +
+  geom_brain(atlas = dk(), mapping = aes(fill = val)) +
   facet_wrap(~stat)
 ```
 
@@ -129,7 +129,7 @@ correspond to atlas regions. Filter them before plotting:
 #| label: fig-filtered-table
 #| fig-cap: "Brain plot of volume data after filtering non-region rows."
 ggplot(dat |> filter(grepl("lh|rh", label))) +
-  geom_brain(atlas = dk, mapping = aes(fill = volume))
+  geom_brain(atlas = dk(), mapping = aes(fill = volume))
 ```
 
 The `grepl("lh|rh", label)` pattern keeps only hemisphere-specific rows.

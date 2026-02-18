@@ -10,7 +10,7 @@ brain_join(data, atlas, by = NULL)
 \item{data}{A data.frame with a column matching an atlas column
 (typically `"region"`). Can be grouped with [dplyr::group_by()].}
 
-\item{atlas}{A `brain_atlas` object or data.frame containing atlas data.}
+\item{atlas}{A `ggseg_atlas` object or data.frame containing atlas data.}
 
 \item{by}{Character vector of column names to join by. If `NULL` (default),
 columns are detected automatically.}
@@ -32,7 +32,7 @@ someData <- data.frame(
   stringsAsFactors = FALSE
 )
 
-brain_join(someData, dk)
-brain_join(someData, dk, "region")
+brain_join(someData, dk())
+brain_join(someData, dk(), "region")
 
 }

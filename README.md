@@ -1,16 +1,16 @@
 
-
 # ggseg <img src="man/figures/logo.png" align="right" alt="" width="138.5" />
 
 <!-- badges: start -->
 
 [![CRAN
-status](https://www.r-pkg.org/badges/version/ggseg.png)](https://CRAN.R-project.org/package=ggseg)
-[![R-CMD-check](https://github.com/ggseg/ggseg/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/ggseg/ggseg/actions/workflows/R-CMD-check.yaml)
-[![Codecov](https://codecov.io/gh/ggseg/ggseg/graph/badge.svg)](https://app.codecov.io/gh/ggseg/ggseg)
-[![downloads](https://cranlogs.r-pkg.org/badges/last-month/ggseg?color=blue.png)](https://r-pkg.org/pkg/ggseg)
+status](https://www.r-pkg.org/badges/version/ggseg)](https://CRAN.R-project.org/package=ggseg)
+[![R-CMD-check](https://github.com/ggsegverse/ggseg/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/ggsegverse/ggseg/actions/workflows/R-CMD-check.yaml)
+[![Coverage Status](https://raw.githubusercontent.com/ggsegverse/ggseg/coverage/badges/coverage.svg)](https://github.com/ggsegverse/ggseg/actions/workflows/test-coverage.yaml)
+[![downloads](https://cranlogs.r-pkg.org/badges/last-month/ggseg?color=blue)](https://r-pkg.org/pkg/ggseg)
 [![Lifecycle:
 stable](https://img.shields.io/badge/lifecycle-stable-brightgreen.svg)](https://lifecycle.r-lib.org/articles/stages.html)
+[![pkgcheck](https://github.com/ggsegverse/ggseg/workflows/pkgcheck/badge.svg)](https://github.com/ggsegverse/ggseg/actions?query=workflow%3Apkgcheck)
 <!-- badges: end -->
 
 Neuroimaging analyses produce region-level results – cortical thickness,
@@ -33,11 +33,11 @@ install.packages("ggseg")
 ```
 
 Or get the development version from the [ggseg
-r-universe](https://ggseg.r-universe.dev):
+r-universe](https://ggsegverse.r-universe.dev):
 
 ``` r
 options(repos = c(
-  ggseg = "https://ggseg.r-universe.dev",
+  ggsegverse = "https://ggsegverse.r-universe.dev",
   CRAN = "https://cloud.r-project.org"
 ))
 install.packages("ggseg")
@@ -60,13 +60,29 @@ parcellation), `aseg` (automatic subcortical segmentation), and
 plot(dk)
 ```
 
-<img src="man/figures/README-atlases-1.png" style="width:100.0%" />
+<div class="figure">
+
+<img src="man/figures/README-fig-atlases-1.png" alt="Overview of the dk and aseg built-in brain atlases." width="100%" />
+<p class="caption">
+
+Overview of the dk and aseg built-in brain atlases.
+</p>
+
+</div>
 
 ``` r
 plot(aseg)
 ```
 
-<img src="man/figures/README-atlases-2.png" style="width:100.0%" />
+<div class="figure">
+
+<img src="man/figures/README-fig-atlases-2.png" alt="Overview of the dk and aseg built-in brain atlases." width="100%" />
+<p class="caption">
+
+Overview of the dk and aseg built-in brain atlases.
+</p>
+
+</div>
 
 ### Plotting your own data
 
@@ -101,21 +117,28 @@ ggplot(some_data) +
   theme_void()
 ```
 
-<img src="man/figures/README-external-data-1.png"
-style="width:100.0%" />
+<div class="figure">
+
+<img src="man/figures/README-fig-external-data-1.png" alt="Brain plot coloured by external data, faceted by group." width="100%" />
+<p class="caption">
+
+Brain plot coloured by external data, faceted by group.
+</p>
+
+</div>
 
 ## More atlases
 
 Many additional atlases are available through the [ggseg
-r-universe](https://ggseg.r-universe.dev):
+r-universe](https://ggsegverse.r-universe.dev):
 
 ``` r
-install.packages("ggsegYeo2011", repos = "https://ggseg.r-universe.dev")
+install.packages("ggsegYeo2011", repos = "https://ggsegverse.r-universe.dev")
 ```
 
 ## Learn more
 
-The [package website](https://ggseg.github.io/ggseg/) has vignettes
+The [package website](https://ggsegverse.github.io/ggseg/) has vignettes
 covering external data, view positioning, the `geom_sf()` workflow, and
 reading FreeSurfer stats files.
 

@@ -24,7 +24,7 @@ geom_brain(
 \item{data}{A data.frame containing variables to map. If `NULL`, the atlas
 is plotted without user data.}
 
-\item{atlas}{A `brain_atlas` object (e.g. `dk`, `aseg`, `tracula`).}
+\item{atlas}{A `ggseg_atlas` object (e.g. `dk()`, `aseg()`, `tracula()`).}
 
 \item{hemi}{Character vector of hemispheres to include (e.g. `"left"`,
 `"right"`). Defaults to all hemispheres in the atlas.}
@@ -62,6 +62,6 @@ should not typically be called directly.
 library(ggplot2)
 
 ggplot() +
-  geom_brain(atlas = dk)
+  geom_brain(atlas = dk())
 }
 \keyword{datasets}

@@ -1,5 +1,5 @@
 describe("theme_brain", {
-  p <- ggplot() + geom_brain(atlas = dk, show.legend = FALSE)
+  p <- ggplot() + geom_brain(atlas = dk(), show.legend = FALSE)
 
   it("returns a ggplot theme", {
     expect_s3_class(theme_brain(), "theme")

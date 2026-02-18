@@ -2,9 +2,10 @@
 #' Colour and fill scales from brain atlas palettes
 #'
 #' @description
-#' Apply atlas-specific colour palettes to brain plots. Colours correspond to
-#' the region colours used in the original atlas publications. Palettes are
-#' looked up by atlas name via [ggseg.formats::atlas_palette()].
+#' `r lifecycle::badge("deprecated")`
+#'
+#' Atlas palettes are now applied automatically by [geom_brain()].
+#' Use [scale_fill_brain_manual()] for custom palettes.
 #'
 #' @param name String name of the atlas palette (e.g. `"dk"`, `"aseg"`).
 #' @param na.value Colour for `NA` entries (default: `"grey"`).
@@ -16,11 +17,13 @@
 #' @rdname scale_brain
 #' @export
 #' @examples
-#' scale_brain()
-#' scale_colour_brain()
-#' scale_fill_brain()
+#' \dontrun{
+#' library(ggplot2)
+#' ggplot() +
+#'   geom_brain(atlas = dk(), aes(fill = region), show.legend = FALSE) +
+#'   scale_brain("dk")
+#' }
 #'
-
 #' @importFrom ggplot2 scale_color_manual scale_colour_manual scale_fill_manual
 #' @importFrom ggseg.formats atlas_palette
 scale_brain <- function(
@@ -29,6 +32,11 @@ scale_brain <- function(
   ...,
   aesthetics = c("fill", "colour", "color")
 ) {
+  lifecycle::deprecate_warn(
+    "2.0.0",
+    "scale_brain()",
+    details = "Atlas palettes are now applied automatically by `geom_brain()`."
+  )
   pal <- atlas_palette(name = name, ...)
   aesthetics <- match.arg(aesthetics)
   func <- switch(
@@ -42,29 +50,46 @@ scale_brain <- function(
 
 #' @rdname scale_brain
 #' @export
-scale_colour_brain <- function(...) {
-  scale_brain(..., aesthetics = "colour")
+scale_colour_brain <- function(name = "dk", na.value = "grey", ...) {
+  lifecycle::deprecate_warn(
+    "2.0.0",
+    "scale_colour_brain()",
+    details = "Atlas palettes are now applied automatically by `geom_brain()`."
+  )
+  pal <- atlas_palette(name = name, ...)
+  scale_colour_manual(values = pal, na.value = na.value)
 }
 
 #' @rdname scale_brain
 #' @export
-scale_color_brain <- function(...) {
-  scale_brain(..., aesthetics = "color")
+scale_color_brain <- function(name = "dk", na.value = "grey", ...) {
+  lifecycle::deprecate_warn(
+    "2.0.0",
+    "scale_color_brain()",
+    details = "Atlas palettes are now applied automatically by `geom_brain()`."
+  )
+  pal <- atlas_palette(name = name, ...)
+  scale_color_manual(values = pal, na.value = na.value)
 }
 
 #' @export
 #' @rdname scale_brain
-scale_fill_brain <- function(...) {
-  scale_brain(..., aesthetics = "fill")
+scale_fill_brain <- function(name = "dk", na.value = "grey", ...) {
+  lifecycle::deprecate_warn(
+    "2.0.0",
+    "scale_fill_brain()",
+    details = "Atlas palettes are now applied automatically by `geom_brain()`."
+  )
+  pal <- atlas_palette(name = name, ...)
+  scale_fill_manual(values = pal, na.value = na.value)
 }
 
 #' Manual colour and fill scales for brain plots
 #'
 #' @description
-#' Apply a custom named colour palette to brain atlas plots. Unlike
-#' [scale_brain()] which looks up palettes by atlas name,
-#' `scale_brain_manual()` accepts a pre-built named character vector mapping
-#' region names to colours.
+#' Apply a custom named colour palette to brain atlas plots. Use this
+#' when you want to override the atlas default colours with your own
+#' colour mapping.
 #'
 #' @param palette Named character vector mapping region names to colours.
 #' @param na.value Colour for `NA` entries (default: `"grey"`).
@@ -80,7 +105,7 @@ scale_fill_brain <- function(...) {
 #'
 #' pal <- c("insula" = "red", "precentral" = "blue")
 #' ggplot() +
-#'   geom_brain(atlas = dk, aes(fill = region), show.legend = FALSE) +
+#'   geom_brain(atlas = dk(), aes(fill = region), show.legend = FALSE) +
 #'   scale_fill_brain_manual(palette = pal)
 #'
 scale_brain_manual <- function(
@@ -120,7 +145,6 @@ scale_fill_brain_manual <- function(...) {
 # Deprecated scale_brain2 variants ----
 #' @rdname scale_brain2-deprecated
 #' @export
-#' @keywords internal
 scale_brain2 <- function(...) {
   lifecycle::deprecate_warn("1.7.0", "scale_brain2()", "scale_brain_manual()")
   scale_brain_manual(...)
@@ -128,30 +152,33 @@ scale_brain2 <- function(...) {
 
 #' @rdname scale_brain2-deprecated
 #' @export
-#' @keywords internal
 scale_colour_brain2 <- function(...) {
   lifecycle::deprecate_warn(
-    "1.7.0", "scale_colour_brain2()", "scale_colour_brain_manual()"
+    "1.7.0",
+    "scale_colour_brain2()",
+    "scale_colour_brain_manual()"
   )
   scale_colour_brain_manual(...)
 }
 
 #' @rdname scale_brain2-deprecated
 #' @export
-#' @keywords internal
 scale_color_brain2 <- function(...) {
   lifecycle::deprecate_warn(
-    "1.7.0", "scale_color_brain2()", "scale_color_brain_manual()"
+    "1.7.0",
+    "scale_color_brain2()",
+    "scale_color_brain_manual()"
   )
   scale_color_brain_manual(...)
 }
 
 #' @rdname scale_brain2-deprecated
 #' @export
-#' @keywords internal
 scale_fill_brain2 <- function(...) {
   lifecycle::deprecate_warn(
-    "1.7.0", "scale_fill_brain2()", "scale_fill_brain_manual()"
+    "1.7.0",
+    "scale_fill_brain2()",
+    "scale_fill_brain_manual()"
   )
   scale_fill_brain_manual(...)
 }
@@ -169,7 +196,6 @@ scale_fill_brain2 <- function(...) {
 #'
 #' @param ... Arguments passed to the replacement function.
 #' @name scale_brain2-deprecated
-#' @keywords internal
 NULL
 
 
@@ -181,7 +207,7 @@ NULL
 #' These scales add hemisphere or view labels to the x and y axes based on
 #' the atlas layout.
 #'
-#' @param atlas A `brain_atlas` object or data.frame containing atlas data.
+#' @param atlas A `ggseg_atlas` object or data.frame containing atlas data.
 #' @param position Layout style: `"dispersed"` (default) or `"stacked"`.
 #' @param aesthetics Which axis to scale: `"x"`, `"y"`, or `"labs"`.
 #' @param ... Additional arguments passed to [adapt_scales()].
@@ -190,18 +216,18 @@ NULL
 #' @rdname scale_continous_brain
 #' @export
 #' @examples
-#' \dontrun{
+#' \donttest{
 #' library(ggplot2)
 #'
 #' ggplot() +
-#'   geom_brain(atlas = dk) +
+#'   geom_brain(atlas = dk()) +
 #'   scale_x_brain() +
 #'   scale_y_brain() +
 #'   scale_labs_brain()
 #' }
 #'
 scale_continous_brain <- function(
-  atlas = dk,
+  atlas = dk(),
   position = "dispersed",
   aesthetics = c("y", "x")
 ) {
@@ -231,7 +257,7 @@ scale_y_brain <- function(...) {
 #' @rdname scale_continous_brain
 #' @importFrom ggplot2 labs
 scale_labs_brain <- function(
-  atlas = dk,
+  atlas = dk(),
   position = "dispersed",
   aesthetics = "labs"
 ) {

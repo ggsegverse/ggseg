@@ -2,7 +2,7 @@ describe("position_brain visual", {
   it("dk default horizontal", {
     expect_doppelganger(
       "dk default horizontal",
-      ggplot() + geom_brain(atlas = dk, show.legend = FALSE)
+      ggplot() + geom_brain(atlas = dk(), show.legend = FALSE)
     )
   })
 
@@ -11,7 +11,7 @@ describe("position_brain visual", {
       "dk hemi ~ view",
       ggplot() +
         geom_brain(
-          atlas = dk,
+          atlas = dk(),
           position = position_brain(hemi ~ view),
           show.legend = FALSE
         )
@@ -23,7 +23,7 @@ describe("position_brain visual", {
       "dk view ~ hemi",
       ggplot() +
         geom_brain(
-          atlas = dk,
+          atlas = dk(),
           position = position_brain(view ~ hemi),
           show.legend = FALSE
         )
@@ -35,7 +35,7 @@ describe("position_brain visual", {
       "dk rows hemi+view",
       ggplot() +
         geom_brain(
-          atlas = dk,
+          atlas = dk(),
           position = position_brain(hemi + view ~ .),
           show.legend = FALSE
         )
@@ -47,7 +47,7 @@ describe("position_brain visual", {
       "dk cols hemi+view",
       ggplot() +
         geom_brain(
-          atlas = dk,
+          atlas = dk(),
           position = position_brain(. ~ hemi + view),
           show.legend = FALSE
         )
@@ -59,7 +59,7 @@ describe("position_brain visual", {
       "dk vertical",
       ggplot() +
         geom_brain(
-          atlas = dk,
+          atlas = dk(),
           position = position_brain("vertical"),
           show.legend = FALSE
         )
@@ -71,7 +71,7 @@ describe("position_brain visual", {
       "dk custom view order",
       ggplot() +
         geom_brain(
-          atlas = dk,
+          atlas = dk(),
           position = position_brain(c(
             "right lateral",
             "right medial",
@@ -86,7 +86,7 @@ describe("position_brain visual", {
   it("aseg default horizontal", {
     expect_doppelganger(
       "aseg default horizontal",
-      ggplot() + geom_brain(atlas = aseg, show.legend = FALSE)
+      ggplot() + geom_brain(atlas = aseg(), show.legend = FALSE)
     )
   })
 
@@ -95,7 +95,7 @@ describe("position_brain visual", {
       "aseg vertical",
       ggplot() +
         geom_brain(
-          atlas = aseg,
+          atlas = aseg(),
           position = position_brain("vertical"),
           show.legend = FALSE
         )
@@ -107,7 +107,7 @@ describe("position_brain visual", {
       "aseg nrow 2",
       ggplot() +
         geom_brain(
-          atlas = aseg,
+          atlas = aseg(),
           position = position_brain(nrow = 2),
           show.legend = FALSE
         )
@@ -119,7 +119,7 @@ describe("position_brain visual", {
       "aseg ncol 3",
       ggplot() +
         geom_brain(
-          atlas = aseg,
+          atlas = aseg(),
           position = position_brain(ncol = 3),
           show.legend = FALSE
         )
@@ -131,7 +131,7 @@ describe("position_brain visual", {
       "aseg type rows",
       ggplot() +
         geom_brain(
-          atlas = aseg,
+          atlas = aseg(),
           position = position_brain(type ~ .),
           show.legend = FALSE
         )
@@ -141,7 +141,7 @@ describe("position_brain visual", {
   it("tracula default horizontal", {
     expect_doppelganger(
       "tracula default horizontal",
-      ggplot() + geom_brain(atlas = tracula, show.legend = FALSE)
+      ggplot() + geom_brain(atlas = tracula(), show.legend = FALSE)
     )
   })
 
@@ -150,7 +150,7 @@ describe("position_brain visual", {
       "tracula vertical",
       ggplot() +
         geom_brain(
-          atlas = tracula,
+          atlas = tracula(),
           position = position_brain("vertical"),
           show.legend = FALSE
         )
@@ -162,7 +162,7 @@ describe("position_brain visual", {
       "tracula nrow 2",
       ggplot() +
         geom_brain(
-          atlas = tracula,
+          atlas = tracula(),
           position = position_brain(nrow = 2),
           show.legend = FALSE
         )
@@ -174,7 +174,7 @@ describe("position_brain visual", {
       "tracula ncol 3",
       ggplot() +
         geom_brain(
-          atlas = tracula,
+          atlas = tracula(),
           position = position_brain(ncol = 3),
           show.legend = FALSE
         )
@@ -186,7 +186,7 @@ describe("position_brain visual", {
       "tracula type rows",
       ggplot() +
         geom_brain(
-          atlas = tracula,
+          atlas = tracula(),
           position = position_brain(type ~ .),
           show.legend = FALSE
         )

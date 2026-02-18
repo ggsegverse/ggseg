@@ -33,8 +33,10 @@ describe("compute_label_positions", {
     dk_df <- as.data.frame(dk())
     n_combos <- length(unique(paste(dk_df$hemi, dk_df$view)))
     expect_equal(nrow(label_df), n_combos)
-    expect_true(all(c("left lateral", "left medial",
-                       "right lateral", "right medial") %in% label_df$label))
+    expect_true(all(
+      c("left lateral", "left medial", "right lateral", "right medial") %in%
+        label_df$label
+    ))
   })
 
   it("produces view labels for subcortical", {

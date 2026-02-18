@@ -63,7 +63,7 @@ Like `theme_custombrain` but with axis text removed entirely.}
 library(ggplot2)
 
 p <- ggplot() +
-  geom_brain(atlas = dk)
+  geom_brain(atlas = dk())
 
 p +
   theme_brain()

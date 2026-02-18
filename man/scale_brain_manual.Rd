@@ -34,17 +34,16 @@ scale_fill_brain_manual(...)
 A ggplot2 scale object.
 }
 \description{
-Apply a custom named colour palette to brain atlas plots. Unlike
-[scale_brain()] which looks up palettes by atlas name,
-`scale_brain_manual()` accepts a pre-built named character vector mapping
-region names to colours.
+Apply a custom named colour palette to brain atlas plots. Use this
+when you want to override the atlas default colours with your own
+colour mapping.
 }
 \examples{
 library(ggplot2)
 
 pal <- c("insula" = "red", "precentral" = "blue")
 ggplot() +
-  geom_brain(atlas = dk, aes(fill = region), show.legend = FALSE) +
+  geom_brain(atlas = dk(), aes(fill = region), show.legend = FALSE) +
   scale_fill_brain_manual(palette = pal)
 
 }

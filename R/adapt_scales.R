@@ -10,12 +10,18 @@
 #'
 #' @return A list with scale components (breaks, labels, or axis titles).
 #' @keywords internal
+#' @noRd
 #' @importFrom dplyr group_by summarise
 adapt_scales <- function(
   geobrain,
   position = "dispersed",
   aesthetics = "labs"
 ) {
+  if (!is.data.frame(geobrain)) {
+    geobrain <- sf2coords(as.data.frame(geobrain))
+    geobrain <- tidyr::unnest(geobrain, ggseg)
+  }
+
   if (unique(geobrain$type) == "cortical") {
     y <- dplyr::group_by(geobrain, hemi)
     y <- dplyr::summarise(y, val = gap(.lat))
@@ -39,11 +45,11 @@ adapt_scales <- function(
       ),
       dispersed = list(
         x = list(breaks = disp$.long, labels = disp$hemi),
-        y = list(breaks = NULL, labels = ""),
+        y = list(breaks = NULL, labels = NULL),
         labs = list(y = NULL, x = "hemisphere")
       )
     )
-  } else if (unique(geobrain$type) == "subcortical") {
+  } else if (unique(geobrain$type) %in% c("subcortical", "tract")) {
     y <- group_by(geobrain, view)
     y <- dplyr::summarise(y, val = gap(.lat))
 
@@ -60,13 +66,13 @@ adapt_scales <- function(
 
     ad_scale <- list(
       stacked = list(
-        x = list(breaks = NULL, labels = ""),
+        x = list(breaks = NULL, labels = NULL),
         y = list(breaks = stk$y$val, labels = stk$y$view),
         labs = list(y = "view", x = NULL)
       ),
       dispersed = list(
         x = list(breaks = disp$.long, labels = disp$view),
-        y = list(breaks = NULL, labels = ""),
+        y = list(breaks = NULL, labels = NULL),
         labs = list(y = NULL, x = "view")
       )
     )

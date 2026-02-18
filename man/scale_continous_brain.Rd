@@ -8,7 +8,7 @@
 \title{Axis and label scales for brain atlas plots}
 \usage{
 scale_continous_brain(
-  atlas = dk,
+  atlas = dk(),
   position = "dispersed",
   aesthetics = c("y", "x")
 )
@@ -17,10 +17,10 @@ scale_x_brain(...)
 
 scale_y_brain(...)
 
-scale_labs_brain(atlas = dk, position = "dispersed", aesthetics = "labs")
+scale_labs_brain(atlas = dk(), position = "dispersed", aesthetics = "labs")
 }
 \arguments{
-\item{atlas}{A `brain_atlas` object or data.frame containing atlas data.}
+\item{atlas}{A `ggseg_atlas` object or data.frame containing atlas data.}
 
 \item{position}{Layout style: `"dispersed"` (default) or `"stacked"`.}
 
@@ -37,11 +37,11 @@ These scales add hemisphere or view labels to the x and y axes based on
 the atlas layout.
 }
 \examples{
-\dontrun{
+\donttest{
 library(ggplot2)
 
 ggplot() +
-  geom_brain(atlas = dk) +
+  geom_brain(atlas = dk()) +
   scale_x_brain() +
   scale_y_brain() +
   scale_labs_brain()

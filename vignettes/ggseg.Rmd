@@ -46,15 +46,15 @@ quick look:
 ```{r}
 #| label: fig-dk-plot
 #| fig-cap: "Quick overview of the Desikan-Killiany cortical atlas."
-plot(dk)
+plot(dk())
 ```
 
 Two helpers pull out the names you'll need for matching data:
 
 ```{r}
 #| label: dk-names
-brain_regions(dk)
-brain_labels(dk)
+ggseg.formats::atlas_regions(dk())
+ggseg.formats::atlas_labels(dk())
 ```
 
 ## Your first brain plot
@@ -66,7 +66,7 @@ the regions:
 #| label: fig-basic-brain
 #| fig-cap: "Default brain plot using geom_brain() with the dk atlas."
 ggplot() +
-  geom_brain(atlas = dk)
+  geom_brain(atlas = dk())
 ```
 
 ## Arranging views
@@ -79,7 +79,7 @@ borrowed from `facet_grid()`:
 #| label: fig-position-formula
 #| fig-cap: "Brain views arranged using formula syntax in position_brain()."
 ggplot() +
-  geom_brain(atlas = dk, position = position_brain(hemi ~ view))
+  geom_brain(atlas = dk(), position = position_brain(hemi ~ view))
 ```
 
 Or reorder views with a character vector:
@@ -89,7 +89,7 @@ Or reorder views with a character vector:
 #| fig-cap: "Brain views arranged using a character vector to specify order."
 ggplot() +
   geom_brain(
-    atlas = dk,
+    atlas = dk(),
     position = position_brain(c(
       "right lateral", "right medial",
       "left lateral", "left medial"
@@ -106,22 +106,22 @@ options, including grid layouts for subcortical and tract atlases.
 #| label: fig-filter-lateral
 #| fig-cap: "Brain plot showing only lateral views."
 ggplot() +
-  geom_brain(atlas = dk, view = "lateral")
+  geom_brain(atlas = dk(), view = "lateral")
 ```
 
 ```{r}
 #| label: fig-filter-left
 #| fig-cap: "Brain plot showing only the left hemisphere."
 ggplot() +
-  geom_brain(atlas = dk, hemi = "left")
+  geom_brain(atlas = dk(), hemi = "left")
 ```
 
 For subcortical atlases, views are slice identifiers. Check what's available
-with `brain_views()`:
+with `ggseg.formats::atlas_views()`:
 
 ```{r}
 #| label: aseg-views
-brain_views(aseg)
+ggseg.formats::atlas_views(aseg())
 ```
 
 ## Plotting your own data
@@ -144,7 +144,7 @@ some_data <- tibble(
 
 ggplot(some_data) +
   geom_brain(
-    atlas = dk,
+    atlas = dk(),
     position = position_brain(hemi ~ view),
     aes(fill = p)
   ) +
@@ -173,7 +173,7 @@ some_data <- tibble(
 
 ggplot(some_data) +
   geom_brain(
-    atlas = dk,
+    atlas = dk(),
     position = position_brain(hemi ~ view),
     aes(fill = p)
   ) +
@@ -191,26 +191,19 @@ the join (`region`) and one for the fill aesthetic:
 #| label: fig-highlighting
 #| fig-cap: "Highlighting selected regions using the atlas colour palette."
 data <- data.frame(
-  region = brain_regions(dk)[1:3],
-  reg_col = brain_regions(dk)[1:3]
+  region = ggseg.formats::atlas_regions(dk())[1:3],
+  reg_col = ggseg.formats::atlas_regions(dk())[1:3]
 )
 
 ggplot(data) +
-  geom_brain(atlas = dk, aes(fill = reg_col)) +
-  scale_fill_brain_manual(dk$palette[data$region])
+  geom_brain(atlas = dk(), aes(fill = reg_col)) +
+  scale_fill_brain_manual(dk()$palette[data$region])
 ```
 
 ## Scales and themes
 
-Built-in scales apply atlas colour palettes:
-
-```{r}
-#| label: scales-example
-#| eval: false
-ggplot() +
-  geom_brain(atlas = dk, aes(fill = region)) +
-  scale_fill_brain("dk")
-```
+Atlas colour palettes are applied automatically by `geom_brain()`. For
+custom palettes, use `scale_fill_brain_manual()`.
 
 Built-in themes strip axes and grids for cleaner figures:
 
@@ -218,7 +211,7 @@ Built-in themes strip axes and grids for cleaner figures:
 #| label: themes-example
 #| eval: false
 ggplot() +
-  geom_brain(atlas = dk) +
+  geom_brain(atlas = dk()) +
   theme_brain()
 ```
 
@@ -226,10 +219,10 @@ ggplot() +
 
 ggseg ships with `dk` (cortical), `aseg` (subcortical), and `tracula`
 (white matter tracts). Many more are available through the
-[ggseg r-universe](https://ggseg.r-universe.dev):
+[ggsegverse r-universe](https://ggsegverse.r-universe.dev):
 
 ```{r}
 #| label: install-extra
 #| eval: false
-install.packages("ggsegYeo2011", repos = "https://ggseg.r-universe.dev")
+install.packages("ggsegYeo2011", repos = "https://ggsegverse.r-universe.dev")
 ```

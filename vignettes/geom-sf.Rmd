@@ -50,7 +50,7 @@ data frame to see all the columns:
 
 ```{r}
 #| label: atlas-data
-dk$data
+dk()$data
 ```
 
 The `geometry` column holds the polygons. This is a standard sf object, so
@@ -71,7 +71,7 @@ some_data <- tibble(
 )
 
 some_data |>
-  brain_join(dk)
+  brain_join(dk())
 ```
 
 The result is a standard sf object you can pass to `geom_sf()`.
@@ -82,7 +82,7 @@ The result is a standard sf object you can pass to `geom_sf()`.
 #| label: fig-geom-sf
 #| fig-cap: "Brain plot using geom_sf after brain_join."
 some_data |>
-  brain_join(dk) |>
+  brain_join(dk()) |>
   ggplot() +
   geom_sf(aes(fill = p))
 ```
@@ -96,7 +96,7 @@ With `geom_brain()`, you'd use `position_brain()`. In the sf workflow, use
 #| label: fig-reposition
 #| fig-cap: "Repositioned brain views using reposition_brain() with geom_sf."
 some_data |>
-  brain_join(dk) |>
+  brain_join(dk()) |>
   reposition_brain(hemi ~ view) |>
   ggplot() +
   geom_sf(aes(fill = p))
@@ -113,7 +113,7 @@ sf data, you can layer any sf geom:
 #| label: fig-labels
 #| fig-cap: "Brain regions with text labels overlaid using geom_sf_label."
 some_data |>
-  brain_join(dk) |>
+  brain_join(dk()) |>
   reposition_brain(hemi ~ view) |>
   ggplot(aes(fill = p)) +
   geom_sf(show.legend = FALSE) +
@@ -144,7 +144,7 @@ some_data <- tibble(
 
 some_data |>
   group_by(group) |>
-  brain_join(dk) |>
+  brain_join(dk()) |>
   reposition_brain(hemi ~ view) |>
   ggplot(aes(fill = p)) +
   geom_sf(show.legend = FALSE) +

@@ -28,4 +28,3 @@ These functions have been renamed for clarity:
 - `scale_colour_brain2()` -> [scale_colour_brain_manual()]
 - `scale_color_brain2()` -> [scale_color_brain_manual()]
 }
-\keyword{internal}

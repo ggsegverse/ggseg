@@ -1,44 +1,44 @@
 describe("geom_brain", {
   it("works with basic atlas", {
-    p <- ggplot() + geom_brain(atlas = dk)
+    p <- ggplot() + geom_brain(atlas = dk())
     expect_s3_class(p, "gg")
   })
 
   it("warns when deprecated side argument is used", {
     expect_warning(
-      ggplot() + geom_brain(atlas = dk, side = "lateral"),
+      ggplot() + geom_brain(atlas = dk(), side = "lateral"),
       "side.*deprecated"
     )
   })
 
   it("uses side value for view when view is NULL", {
     expect_warning(
-      p <- ggplot() + geom_brain(atlas = dk, side = "lateral"),
+      p <- ggplot() + geom_brain(atlas = dk(), side = "lateral"),
       "side.*deprecated"
     )
     expect_s3_class(p, "gg")
   })
 
   it("filters by hemisphere", {
-    p <- ggplot() + geom_brain(atlas = dk, hemi = "left")
+    p <- ggplot() + geom_brain(atlas = dk(), hemi = "left")
     expect_s3_class(p, "gg")
     built <- ggplot_build(p)
     expect_true(all(built$plot$layers[[1]]$geom_params$hemi == "left"))
   })
 
   it("filters by view", {
-    p <- ggplot() + geom_brain(atlas = dk, view = "lateral")
+    p <- ggplot() + geom_brain(atlas = dk(), view = "lateral")
     expect_s3_class(p, "gg")
   })
 
   it("works with position_brain", {
     p <- ggplot() +
-      geom_brain(atlas = dk, position = position_brain(hemi ~ view))
+      geom_brain(atlas = dk(), position = position_brain(hemi ~ view))
     expect_s3_class(p, "gg")
   })
 
   it("works with aesthetic mapping", {
-    p <- ggplot() + geom_brain(atlas = dk, mapping = aes(fill = region))
+    p <- ggplot() + geom_brain(atlas = dk(), mapping = aes(fill = region))
     expect_s3_class(p, "gg")
   })
 
@@ -48,7 +48,7 @@ describe("geom_brain", {
       p = c(0.1, 0.5)
     )
     p <- ggplot(some_data) +
-      geom_brain(atlas = dk, mapping = aes(fill = p))
+      geom_brain(atlas = dk(), mapping = aes(fill = p))
     expect_s3_class(p, "gg")
     expect_message(
       built <- ggplot_build(p),
@@ -58,14 +58,14 @@ describe("geom_brain", {
   })
 
   it("works with show.legend FALSE", {
-    p <- ggplot() + geom_brain(atlas = dk, show.legend = FALSE)
+    p <- ggplot() + geom_brain(atlas = dk(), show.legend = FALSE)
     expect_s3_class(p, "gg")
   })
 
   it("works with inherit.aes FALSE", {
     some_data <- tibble(region = "insula", p = 0.3)
     p <- ggplot(some_data, aes(fill = p)) +
-      geom_brain(atlas = dk, inherit.aes = FALSE)
+      geom_brain(atlas = dk(), inherit.aes = FALSE)
     expect_message(
       built <- ggplot_build(p),
       "Merging"
@@ -75,12 +75,12 @@ describe("geom_brain", {
 
   it("passes additional arguments to geom_sf", {
     p <- ggplot() +
-      geom_brain(atlas = dk, colour = "black", size = 0.5)
+      geom_brain(atlas = dk(), colour = "black", size = 0.5)
     expect_s3_class(p, "gg")
   })
 
   it("works with aseg atlas", {
-    p <- ggplot() + geom_brain(atlas = aseg)
+    p <- ggplot() + geom_brain(atlas = aseg())
     expect_s3_class(p, "gg")
   })
 })
@@ -97,7 +97,7 @@ describe("geom_brain faceting", {
 
   it("facet_wrap works without group_by", {
     p <- ggplot(some_data) +
-      geom_brain(atlas = dk, mapping = aes(fill = p)) +
+      geom_brain(atlas = dk(), mapping = aes(fill = p)) +
       facet_wrap(~group)
     expect_message(
       built <- ggplot_build(p),
@@ -109,13 +109,13 @@ describe("geom_brain faceting", {
 
   it("each facet panel has complete atlas rows", {
     p <- ggplot(some_data) +
-      geom_brain(atlas = dk, mapping = aes(fill = p)) +
+      geom_brain(atlas = dk(), mapping = aes(fill = p)) +
       facet_wrap(~group)
     expect_message(
       built <- ggplot_build(p),
       "Merging"
     )
-    atlas_rows <- nrow(as.data.frame(dk))
+    atlas_rows <- nrow(as.data.frame(dk()))
     rows_per_panel <- tapply(
       built$data[[1]]$PANEL,
       built$data[[1]]$PANEL,
@@ -128,7 +128,7 @@ describe("geom_brain faceting", {
     p <- some_data |>
       group_by(group) |>
       ggplot() +
-      geom_brain(atlas = dk, mapping = aes(fill = p)) +
+      geom_brain(atlas = dk(), mapping = aes(fill = p)) +
       facet_wrap(~group)
     expect_message(
       built <- ggplot_build(p),
@@ -140,7 +140,7 @@ describe("geom_brain faceting", {
 
   it("facet_grid works without group_by", {
     p <- ggplot(some_data) +
-      geom_brain(atlas = dk, mapping = aes(fill = p)) +
+      geom_brain(atlas = dk(), mapping = aes(fill = p)) +
       facet_grid(rows = vars(group))
     expect_message(
       built <- ggplot_build(p),
@@ -157,7 +157,7 @@ describe("geom_brain faceting", {
       hemi = c("left", "right")
     )
     p <- ggplot(data_with_hemi) +
-      geom_brain(atlas = dk, mapping = aes(fill = p)) +
+      geom_brain(atlas = dk(), mapping = aes(fill = p)) +
       facet_wrap(~hemi)
     expect_message(
       built <- ggplot_build(p),
@@ -185,7 +185,7 @@ describe("LayerBrain", {
   })
 
   it("errors when atlas has no data", {
-    empty_atlas <- dk
+    empty_atlas <- dk()
     empty_atlas$data$sf <- empty_atlas$data$sf[0, ]
     expect_error(
       ggplot_build(ggplot() + geom_brain(atlas = empty_atlas)),
@@ -195,14 +195,14 @@ describe("LayerBrain", {
 
   it("errors on invalid hemisphere", {
     expect_error(
-      ggplot_build(ggplot() + geom_brain(atlas = dk, hemi = "top")),
+      ggplot_build(ggplot() + geom_brain(atlas = dk(), hemi = "top")),
       "Invalid hemisphere"
     )
   })
 
   it("errors on invalid view", {
     expect_error(
-      ggplot_build(ggplot() + geom_brain(atlas = dk, view = "top")),
+      ggplot_build(ggplot() + geom_brain(atlas = dk(), view = "top")),
       "Invalid view"
     )
   })
@@ -215,7 +215,7 @@ describe("LayerBrain", {
     expect_warning(
       expect_warning(
         ggplot_build(
-          ggplot(bad_data) + geom_brain(atlas = dk, mapping = aes(fill = p))
+          ggplot(bad_data) + geom_brain(atlas = dk(), mapping = aes(fill = p))
         ),
         "not merged properly"
       ),
@@ -224,14 +224,14 @@ describe("LayerBrain", {
   })
 
   it("renders atlas without user data (waiver)", {
-    p <- ggplot() + geom_brain(atlas = dk)
+    p <- ggplot() + geom_brain(atlas = dk())
     built <- ggplot_build(p)
-    atlas_rows <- nrow(as.data.frame(dk))
+    atlas_rows <- nrow(as.data.frame(dk()))
     expect_equal(nrow(built$data[[1]]), atlas_rows)
   })
 
   it("auto-maps geometry, hemi, view, type, fill, label", {
-    p <- ggplot() + geom_brain(atlas = dk)
+    p <- ggplot() + geom_brain(atlas = dk())
     built <- ggplot_build(p)
     expect_true("fill" %in% names(built$data[[1]]))
   })
@@ -260,7 +260,7 @@ describe("GeomBrain", {
 
 describe("brain_grob", {
   it("creates grob from transformed coord data", {
-    p <- ggplot() + geom_brain(atlas = dk)
+    p <- ggplot() + geom_brain(atlas = dk())
     built <- ggplot_build(p)
     gt <- ggplot_gtable(built)
     expect_s3_class(gt, "gtable")

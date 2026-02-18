@@ -1,22 +1,25 @@
 # Workflow derived from https://github.com/r-lib/actions/tree/v2/examples
-# Need help debugging build failures? Start at https://github.com/r-lib/actions#where-to-find-help
+# Badge approach from https://adamhsparks.netlify.app/2026/01/24/look-ma-no-codecov-io/
 on:
   push:
     branches: [main, master]
   pull_request:
+    branches: [main, master]
 
-name: test-coverage.yaml
-
-permissions: read-all
+name: test-coverage
 
 jobs:
   test-coverage:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     env:
       GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
 
     steps:
       - uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
 
       - uses: r-lib/actions/setup-r@v2
         with:
@@ -24,39 +27,72 @@ jobs:
 
       - uses: r-lib/actions/setup-r-dependencies@v2
         with:
-          extra-packages: any::covr, any::xml2
+          extra-packages: any::covr
           needs: coverage
 
       - name: Test coverage
         run: |
-          cov <- covr::package_coverage(
+          coverage <- covr::package_coverage(
             quiet = FALSE,
-            clean = FALSE,
-            install_path = file.path(normalizePath(Sys.getenv("RUNNER_TEMP"), winslash = "/"), "package")
+            commentDonttest = FALSE,
+            commentDontrun = FALSE
           )
-          print(cov)
-          covr::to_cobertura(cov)
+          print(coverage)
+
+          percent_exact <- covr::percent_coverage(coverage)
+          percent <- floor(percent_exact)
+          cat("\nCoverage:", percent_exact, "% (rounded down to", percent, "%)\n")
+
+          if (percent >= 90) {
+            color <- "brightgreen"
+          } else if (percent >= 80) {
+            color <- "green"
+          } else if (percent >= 70) {
+            color <- "yellowgreen"
+          } else if (percent >= 60) {
+            color <- "yellow"
+          } else if (percent >= 50) {
+            color <- "orange"
+          } else {
+            color <- "red"
+          }
+
+          writeLines(as.character(percent), "coverage_percent.txt")
+          writeLines(color, "coverage_color.txt")
         shell: Rscript {0}
 
-      - uses: codecov/codecov-action@v5
-        with:
-          # Fail if error if not on PR, or if on PR and token is given
-          fail_ci_if_error: ${{ github.event_name != 'pull_request' || secrets.CODECOV_TOKEN }}
-          files: ./cobertura.xml
-          plugins: noop
-          disable_search: true
-          token: ${{ secrets.CODECOV_TOKEN }}
-
-      - name: Show testthat output
-        if: always()
+      - name: Generate coverage badge
         run: |
-          ## --------------------------------------------------------------------
-          find '${{ runner.temp }}/package' -name 'testthat.Rout*' -exec cat '{}' \; || true
-        shell: bash
+          COVERAGE=$(cat coverage_percent.txt)
+          COVERAGE_COLOR=$(cat coverage_color.txt)
 
-      - name: Upload test results
-        if: failure()
-        uses: actions/upload-artifact@v4
-        with:
-          name: coverage-test-failures
-          path: ${{ runner.temp }}/package
+          echo "Coverage: $COVERAGE%"
+          echo "Color: $COVERAGE_COLOR"
+
+          mkdir -p badges
+          curl -s "https://raw.githubusercontent.com/pachadotdev/ghacoveragebadge/refs/heads/main/badges/${COVERAGE_COLOR}.svg" > badges/coverage.svg
+          sed -i "s/{{ COVERAGE }}/${COVERAGE}/g" badges/coverage.svg
+
+      - name: Commit coverage badge
+        if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master'
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+
+          cp badges/coverage.svg /tmp/coverage.svg
+
+          git checkout -B coverage
+          git rm -rf . || true
+
+          mkdir -p badges
+          cp /tmp/coverage.svg badges/coverage.svg
+          git add badges/coverage.svg
+
+          if ! git diff --staged --quiet; then
+            git commit -m "Update coverage badge"
+            git push --force origin coverage
+          else
+            echo "No changes to commit"
+          fi
+
+          git checkout ${{ github.ref_name }}

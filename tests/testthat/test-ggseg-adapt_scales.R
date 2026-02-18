@@ -1,9 +1,9 @@
 describe("adapt_scales", {
-  dk_df <- as.data.frame(dk)
+  dk_df <- as.data.frame(dk())
   dk_coords <- sf2coords(dk_df)
   dk_geo <- unnest(dk_coords, ggseg)
 
-  aseg_df <- as.data.frame(aseg)
+  aseg_df <- as.data.frame(aseg())
   aseg_coords <- sf2coords(aseg_df)
   aseg_geo <- unnest(aseg_coords, ggseg)
 

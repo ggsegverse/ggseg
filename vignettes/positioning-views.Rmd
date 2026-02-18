@@ -160,11 +160,11 @@ ggplot() +
 ### Picking specific views
 
 The `views` parameter lets you select which views to include and in what
-order. Check what's available with `brain_views()`:
+order. Check what's available with `ggseg.formats::atlas_views()`:
 
 ```{r}
 #| label: aseg-views
-brain_views(aseg())
+ggseg.formats::atlas_views(aseg())
 ```
 
 ```{r}

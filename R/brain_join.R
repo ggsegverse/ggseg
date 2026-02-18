@@ -5,7 +5,7 @@
 #'
 #' @param data A data.frame with a column matching an atlas column
 #'   (typically `"region"`). Can be grouped with [dplyr::group_by()].
-#' @param atlas A `brain_atlas` object or data.frame containing atlas data.
+#' @param atlas A `ggseg_atlas` object or data.frame containing atlas data.
 #' @param by Character vector of column names to join by. If `NULL` (default),
 #'   columns are detected automatically.
 #'
@@ -25,8 +25,8 @@
 #'   stringsAsFactors = FALSE
 #' )
 #'
-#' brain_join(someData, dk)
-#' brain_join(someData, dk, "region")
+#' brain_join(someData, dk())
+#' brain_join(someData, dk(), "region")
 #'
 brain_join <- function(data, atlas, by = NULL) {
   atlas <- as.data.frame(atlas)

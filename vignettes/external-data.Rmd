@@ -37,12 +37,12 @@ Check what's available:
 
 ```{r}
 #| label: dk-regions
-brain_regions(dk)
+ggseg.formats::atlas_regions(dk())
 ```
 
 ```{r}
 #| label: dk-labels
-brain_labels(dk)
+ggseg.formats::atlas_labels(dk())
 ```
 
 Names must match exactly, including case and spacing.
@@ -66,7 +66,7 @@ Pass the data to `ggplot()` and map `fill` to your variable:
 #| label: fig-minimal-plot
 #| fig-cap: "Brain plot with three regions coloured by p-value."
 ggplot(some_data) +
-  geom_brain(atlas = dk, mapping = aes(fill = p))
+  geom_brain(atlas = dk(), mapping = aes(fill = p))
 ```
 
 Regions not in your data appear as `NA` (grey by default). Regions in your
@@ -83,7 +83,7 @@ both `region` and `hemi`, so values only land on the correct side:
 some_data$hemi <- "left"
 
 ggplot(some_data) +
-  geom_brain(atlas = dk, mapping = aes(fill = p))
+  geom_brain(atlas = dk(), mapping = aes(fill = p))
 ```
 
 The same works for any atlas column -- adding `view`, for instance, would
@@ -113,7 +113,7 @@ some_data <- tibble(
 )
 
 ggplot(some_data) +
-  geom_brain(atlas = dk, colour = "white", mapping = aes(fill = p)) +
+  geom_brain(atlas = dk(), colour = "white", mapping = aes(fill = p)) +
   facet_wrap(~group, ncol = 1) +
   theme(legend.position = "bottom") +
   scale_fill_gradientn(
@@ -133,7 +133,7 @@ other sf layers, convert the atlas to a data frame and join manually:
 
 ```{r}
 #| label: atlas-columns
-atlas_df <- as.data.frame(dk)
+atlas_df <- as.data.frame(dk())
 names(atlas_df)
 ```
 
@@ -159,7 +159,7 @@ See [Working with geom_sf directly](geom-sf.html) for more on this approach.
 
 ## Troubleshooting
 
-**Regions don't show up.** Check spelling and case. `brain_regions(dk)`
+**Regions don't show up.** Check spelling and case. `ggseg.formats::atlas_regions(dk())`
 gives you the exact strings the atlas expects.
 
 **Data lands on both hemispheres.** Add a `hemi` column with `"left"` or

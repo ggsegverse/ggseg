@@ -41,16 +41,13 @@ converted into factors and ordered by wanted
 order of appearance.
 }
 \examples{
-reposition_brain(dk, hemi ~ view)
-reposition_brain(dk, view ~ hemi)
-reposition_brain(dk, hemi + view ~ .)
-reposition_brain(dk, . ~ hemi + view)
+reposition_brain(dk(), hemi ~ view)
+reposition_brain(dk(), view ~ hemi)
+reposition_brain(dk(), hemi + view ~ .)
+reposition_brain(dk(), . ~ hemi + view)
 
-\dontrun{
-# Subcortical with grid layout
-reposition_brain(aseg_data, nrow = 2)
-
-# Subcortical with specific views
-reposition_brain(aseg_data, views = c("sagittal", "axial_3"))
+\donttest{
+reposition_brain(aseg(), nrow = 2)
+reposition_brain(aseg(), views = c("sagittal", "axial_3"))
 }
 }

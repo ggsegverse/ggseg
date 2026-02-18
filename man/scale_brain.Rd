@@ -14,11 +14,11 @@ scale_brain(
   aesthetics = c("fill", "colour", "color")
 )
 
-scale_colour_brain(...)
+scale_colour_brain(name = "dk", na.value = "grey", ...)
 
-scale_color_brain(...)
+scale_color_brain(name = "dk", na.value = "grey", ...)
 
-scale_fill_brain(...)
+scale_fill_brain(name = "dk", na.value = "grey", ...)
 }
 \arguments{
 \item{name}{String name of the atlas palette (e.g. `"dk"`, `"aseg"`).}
@@ -34,13 +34,17 @@ scale_fill_brain(...)
 A ggplot2 scale object.
 }
 \description{
-Apply atlas-specific colour palettes to brain plots. Colours correspond to
-the region colours used in the original atlas publications. Palettes are
-looked up by atlas name via [ggseg.formats::atlas_palette()].
+`r lifecycle::badge("deprecated")`
+
+Atlas palettes are now applied automatically by [geom_brain()].
+Use [scale_fill_brain_manual()] for custom palettes.
 }
 \examples{
-scale_brain()
-scale_colour_brain()
-scale_fill_brain()
+\dontrun{
+library(ggplot2)
+ggplot() +
+  geom_brain(atlas = dk(), aes(fill = region), show.legend = FALSE) +
+  scale_brain("dk")
+}
 
 }
