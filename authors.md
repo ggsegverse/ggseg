@@ -13,7 +13,7 @@
 ## Citation
 
 Source:
-[`inst/CITATION`](https://github.com/ggsegverse/ggseg/blob/main/inst/CITATION)
+[`inst/CITATION`](https://github.com/ggsegverse/ggseg/blob/v2.0.0/inst/CITATION)
 
 Athanasia M. Mowinckel and Didac Vidal-Piñeiro (2019). Visualisation of
 Brain Statistics with R-packages ggseg and ggseg3d. arXiv:1912.08200
