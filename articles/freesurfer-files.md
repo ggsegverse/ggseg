@@ -1,0 +1,105 @@
+# Reading FreeSurfer stats files
+
+FreeSurfer’s `recon-all` produces stats files with region-level measures
+– cortical thickness, surface area, volume. ggseg includes readers that
+pull these files directly into data frames shaped for plotting.
+
+All three functions below come from the `ggseg.formats` package, which
+ggseg re-exports.
+
+``` r
+library(ggseg)
+library(ggplot2)
+library(dplyr)
+```
+
+## Reading a single stats file
+
+After `recon-all` finishes, each subject has a `stats/` folder with
+parcellation data. `read_freesurfer_stats()` reads one file at a time:
+
+``` r
+subjects_dir <- Sys.getenv("SUBJECTS_DIR")
+stats_file <- file.path(subjects_dir, "bert/stats/lh.aparc.stats")
+
+data <- read_freesurfer_stats(stats_file)
+data
+```
+
+The hemisphere is encoded in the filename (`lh.` or `rh.`). To match the
+atlas, prepend it to the label column:
+
+``` r
+ggplot(data |> mutate(label = paste0("lh_", label))) +
+  geom_brain(atlas = dk(), mapping = aes(fill = ThickAvg))
+```
+
+## Reading stats files across subjects
+
+`read_atlas_files()` reads all matching stats files from a subjects
+directory. Pass a regular expression to select the right files:
+
+``` r
+dat <- read_atlas_files(subjects_dir, "aparc.stats$")
+dat
+```
+
+The trailing `$` matters – it ensures you get `aparc.stats` but not
+`aparc.a2009s.stats`.
+
+The function adds hemisphere prefixes automatically, so the data is
+ready for plotting:
+
+``` r
+ggplot(dat) +
+  geom_brain(atlas = dk(), mapping = aes(fill = ThickStd))
+```
+
+To show all metrics at once, pivot and facet:
+
+``` r
+library(tidyr)
+
+dat |>
+  pivot_longer(-c(subject, label), names_to = "stat", values_to = "val") |>
+  ggplot() +
+  geom_brain(atlas = dk(), mapping = aes(fill = val)) +
+  facet_wrap(~stat)
+```
+
+## Reading FreeSurfer stats tables
+
+FreeSurfer’s `aparcstats2table` and `asegstats2table` commands create
+summary tables across subjects. Read these with
+`read_freesurfer_table()`:
+
+``` r
+table_path <- "path/to/aparc.volume.table"
+
+read_freesurfer_table(table_path)
+```
+
+The output has three columns: subject, label, and value.
+
+## Cleaning label suffixes
+
+Stats tables append the measure name to each label
+(e.g. `lh_bankssts_volume`). The `measure` argument strips that suffix
+and renames the value column:
+
+``` r
+dat <- read_freesurfer_table(table_path, measure = "volume")
+dat
+```
+
+## Filtering non-region rows
+
+FreeSurfer tables include summary measures (total volume, ICV) that
+don’t correspond to atlas regions. Filter them before plotting:
+
+``` r
+ggplot(dat |> filter(grepl("lh|rh", label))) +
+  geom_brain(atlas = dk(), mapping = aes(fill = volume))
+```
+
+The `grepl("lh|rh", label)` pattern keeps only hemisphere-specific rows.
