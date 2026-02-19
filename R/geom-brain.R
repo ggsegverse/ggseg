@@ -1,21 +1,26 @@
-#' Brain geom
+#' Plot brain atlas regions
 #'
-#' call to \code{\link[ggplot2]{geom_sf}}
+#' A ggplot2 geom for rendering brain atlas regions as filled polygons,
+#' built on top of [ggplot2::geom_sf()]. Accepts a `brain_atlas` object and
+#' automatically joins user data to atlas geometry for visualisation.
 #'
-#' @param mapping argument to pass to \code{\link[ggplot2]{aes}} to map
-#'        variables from the supplied data to the plot
-#' @param data data.frame with data to plot
-#' @param atlas object of type brain_atlas to plot
-#' @param hemi hemisphere to plot. Defaults to everything in the atlas.
-#' @param side slice to plot, as recorded in the "side" column in the atlas data. Defaults to all.
-#' @param position position of the data. Default is "identity" but can be
-#'        changed by \code{\link{position_brain}}.
-#' @param show.legend logical. Should legend be added or not.
-#' @param inherit.aes logical. if aes should be inherited from the
-#'        main ggplot call or not
-#' @param ... arguments to \code{\link[ggplot2]{geom_sf}}
+#' @param mapping Set of aesthetic mappings created by [ggplot2::aes()].
+#' @param data A data.frame containing variables to map. If `NULL`, the atlas
+#'   is plotted without user data.
+#' @param atlas A `ggseg_atlas` object (e.g. `dk()`, `aseg()`, `tracula()`).
+#' @param hemi Character vector of hemispheres to include (e.g. `"left"`,
+#'   `"right"`). Defaults to all hemispheres in the atlas.
+#' @param view Character vector of views to include, as recorded in the atlas
+#'   data. For cortical atlases: `"lateral"`, `"medial"`. For subcortical/tract
+#'   atlases: slice identifiers like `"axial_3"`. Defaults to all views.
+#' @param position Position adjustment, either as a string or the result of
+#'   a call to [position_brain()].
+#' @param show.legend Logical. Should this layer be included in the legends?
+#' @param inherit.aes Logical. If `FALSE`, overrides the default aesthetics
+#'   rather than combining with them.
+#' @param ... Additional arguments passed to [ggplot2::geom_sf()].
 #'
-#' @return ggplot object
+#' @return A list of ggplot2 layer and coord objects.
 #' @rdname ggbrain
 #' @export
 #'
@@ -23,19 +28,31 @@
 #' library(ggplot2)
 #'
 #' ggplot() +
-#'  geom_brain(atlas = dk)
+#'   geom_brain(atlas = dk())
 geom_brain <- function(
   mapping = aes(),
   data = NULL,
   atlas,
   hemi = NULL,
-  side = NULL,
+  view = NULL,
   position = position_brain(),
   show.legend = NA,
   inherit.aes = TRUE,
   ...
 ) {
-  c(
+  dots <- list(...)
+  if ("side" %in% names(dots)) {
+    cli::cli_warn(c(
+      "The {.arg side} argument is deprecated.",
+      "i" = "Use {.arg view} instead. Your value has been passed to view."
+    ))
+    if (is.null(view)) {
+      view <- dots$side
+    }
+    dots$side <- NULL
+  }
+
+  result <- list(
     layer_brain(
       geom = GeomBrain,
       data = data,
@@ -44,14 +61,33 @@ geom_brain <- function(
       position = position,
       show.legend = show.legend,
       inherit.aes = inherit.aes,
-      params = list(na.rm = FALSE, atlas = atlas, hemi = hemi, side = side, ...)
+      params = c(
+        list(na.rm = FALSE, atlas = atlas, hemi = hemi, view = view),
+        dots
+      )
     ),
     coord_sf(default = TRUE, clip = "off")
   )
+
+  has_fill_aes <- "fill" %in% names(mapping)
+  if (!is.null(atlas$palette) && !has_fill_aes) {
+    result <- c(
+      result,
+      list(
+        scale_fill_manual(values = atlas$palette, na.value = "grey")
+      )
+    )
+  }
+
+  result
 }
 
 
-# geom ----
+#' @section GeomBrain ggproto:
+#' `GeomBrain` is a [ggplot2::Geom] ggproto object that handles rendering
+#' of brain atlas polygons. It is used internally by [geom_brain()] and
+#' should not typically be called directly.
+#'
 #' @export
 #' @rdname ggbrain
 #' @usage NULL
@@ -69,12 +105,11 @@ GeomBrain <- ggproto(
     alpha = NA,
     stroke = 0.5
   ),
-
   draw_panel = function(
     data,
     atlas,
     hemi,
-    side,
+    view,
     panel_params,
     coord,
     legend = NULL,
@@ -84,7 +119,7 @@ GeomBrain <- ggproto(
     na.rm = TRUE
   ) {
     if (!inherits(coord, "CoordSf")) {
-      stop("geom_brain() must be used with coord_sf()", call.. = FALSE)
+      cli::cli_abort("{.fn geom_brain} must be used with {.fn coord_sf}.")
     }
 
     coord <- coord$transform(data, panel_params)
@@ -96,21 +131,26 @@ GeomBrain <- ggproto(
       na.rm = na.rm
     )
   },
-
   draw_key = function(data, params, size) {
     draw_key_polygon(data, params, size)
   }
 )
 
 
-# helpers ----
-#' @noRd
-default_aesthetics <- function(type) {
-  modify_list(GeomPolygon$default_aes, list(fill = "grey90", colour = "grey35"))
-}
-
-
-# adapted from ggplot2::sf_grob
+#' Build a grid grob from transformed brain coordinates
+#'
+#' Adapted from `ggplot2::sf_grob`. Converts transformed coordinate
+#' data into a grid graphical object with polygon fill and stroke.
+#'
+#' @param x Data.frame of transformed coordinates with columns
+#'   `geometry`, `alpha`, `colour`, `fill`, `size`, and `linetype`.
+#' @param lineend Line end style passed to [grid::gpar()].
+#' @param linejoin Line join style passed to [grid::gpar()].
+#' @param linemitre Line mitre limit passed to [grid::gpar()].
+#' @param na.rm If `TRUE`, silently remove missing values.
+#'
+#' @return A grid [grob][grid::grid.grob] object.
+#' @keywords internal
 #' @noRd
 brain_grob <- function(
   x,
@@ -119,10 +159,7 @@ brain_grob <- function(
   linemitre = 10,
   na.rm = TRUE
 ) {
-  type <- "other"
-  names(type) <- "MULTIPOLYGON"
-  is_other <- type == "other"
-
+  # nolint: object_name_linter
   defaults <- modify_list(
     GeomPolygon$default_aes,
     list(colour = "grey35", size = 0.2)
@@ -134,7 +171,6 @@ brain_grob <- function(
   fill <- if (!is.null(x$fill)) x$fill else defaults$fill
   fill <- alpha(fill, alpha)
   size <- if (!is.null(x$size)) x$size else defaults$size
-  point_size <- size
 
   lwd <- size * .pt
   lty <- if (!is.null(x$linetype)) x$linetype else defaults$linetype
@@ -150,31 +186,17 @@ brain_grob <- function(
   sf::st_as_grob(x$geometry, gp = gp)
 }
 
-#' @noRd
-detect_missing <- function(df, vars, finite = FALSE) {
-  vars <- intersect(vars, names(df))
-  !cases(df[, vars, drop = FALSE], if (finite) is_finite else is_complete)
-}
-
+#' Merge values from one list into another
+#'
+#' @param old List to update.
+#' @param new List whose elements overwrite matching names in `old`.
+#'
+#' @return Updated list.
+#' @keywords internal
 #' @noRd
 modify_list <- function(old, new) {
   for (i in names(new)) {
     old[[i]] <- new[[i]]
   }
   old
-}
-
-# quiets concerns of R CMD check
-if (getRversion() >= "2.15.1") {
-  utils::globalVariables(c(
-    "GeomPolygon",
-    ".stroke",
-    ".pt",
-    "cases",
-    "is_finite",
-    "is_complete",
-    "coord_sf",
-    "warn",
-    "GeomBrain"
-  ))
 }

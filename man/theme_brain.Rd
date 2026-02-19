@@ -5,7 +5,7 @@
 \alias{theme_darkbrain}
 \alias{theme_custombrain}
 \alias{theme_brain2}
-\title{ggseg plot theme}
+\title{Themes for brain atlas plots}
 \usage{
 theme_brain(text.size = 12, text.family = "mono")
 
@@ -26,31 +26,36 @@ theme_brain2(
 )
 }
 \arguments{
-\item{text.size}{Specify size of plot text}
+\item{text.size}{Text size in points (default: `12`).}
 
-\item{text.family}{Specify font family}
+\item{text.family}{Font family (default: `"mono"`).}
 
-\item{plot.background}{Specify fill of plot background (`theme_custombrain` only)}
+\item{plot.background}{Background fill colour (`theme_custombrain` and
+`theme_brain2` only).}
 
-\item{text.colour}{Specify colour of plot text}
+\item{text.colour}{Text colour (`theme_custombrain` and `theme_brain2` only).}
 }
 \value{
-function that alters the themeing of a ggplot object
+A [ggplot2::theme] object.
 }
 \description{
-a set of themes created for the ggseg plots. Use theme() to tweak.
+A set of ggplot2 themes designed for brain atlas visualisations. All themes
+remove axis ticks and grid lines for a clean presentation.
 }
 \details{
 \describe{
 
 \item{`theme_brain`}{
-Default theme for ggseg. Transparent background, no axis lines, and no grid.}
+Default theme. Transparent background, no axes, no grid.}
 
 \item{`theme_darkbrain`}{
-Dark equivalent to theme_brain, with black background, and light text.}
+Dark theme with black background and light text.}
 
 \item{`theme_custombrain`}{
-Theme for easy customization of the brain themes.}
+Fully customisable background, text colour, size, and font.}
+
+\item{`theme_brain2`}{
+Like `theme_custombrain` but with axis text removed entirely.}
 
 }
 }
@@ -58,7 +63,7 @@ Theme for easy customization of the brain themes.}
 library(ggplot2)
 
 p <- ggplot() +
-  geom_brain(atlas = dk)
+  geom_brain(atlas = dk())
 
 p +
   theme_brain()
@@ -68,8 +73,5 @@ p +
 
 }
 \seealso{
-[ggplot()], [aes()], [geom_polygon()], [coord_fixed()] from the ggplot2 package
-}
-\author{
-Athanasia Mo Mowinckel
+[geom_brain()], [ggplot2::theme()]
 }

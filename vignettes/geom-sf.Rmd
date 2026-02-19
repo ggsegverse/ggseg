@@ -1,13 +1,15 @@
 ---
-title: "Using atlases with geom_sf"
+title: "Working with geom_sf directly"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Using atlases with geom_sf}
+  %\VignetteIndexEntry{Working with geom_sf directly}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
 
-```{r, include = FALSE}
+```{r}
+#| label: setup
+#| include: false
 knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>",
@@ -15,127 +17,104 @@ knitr::opts_chunk$set(
 )
 ```
 
+`geom_brain()` handles data joining and positioning automatically, which
+covers most use cases. But because it owns the data pipeline, you can't
+easily layer other sf geoms on top -- things like `geom_sf_label()` or
+`geom_sf_text()` need direct access to the sf data.
 
-While the new workflow in *ggseg* using the simple features type `geom_brain` works well, it struggles with integration with other very useful simple feature geoms, like labels. 
-Since `geom_brain` can alter the position of slices through the `position` argument, and since the atlas is provided as a separate argument rather than integrated in the data itself, the geoms for sf-labels are not possible to implement. 
-We also found it too tricky, with too many re-iterations of the same arguments, to implement a specialized brain-label geom. 
+This vignette shows how to work with brain atlases as plain sf objects,
+giving you full control at the cost of a few extra lines.
 
-Because of these issues, we here provide an alternate workflow for those users wanting to implement other simple-feature geoms to the ggseg-plots. 
-This workflow means not using the `geom_brain` function, but pre-joining and fixing the data _before_ providing it to `ggplot`. 
-In many ways, this workflow mimics what happens behind the scenes in `ggseg()` and within the `geom_brain` functions.
-
-
-# Explore the atlas
-
-Firstly, you need to make sure that the atlas you are working on had simple features (sf) geometry column in it. 
-The easiest way to do this is to simply call the atlas in the R terminal and look for information on `use` in the console printout.
-The dk-atlas has `use: ggplot() + geom_brain()` letting us know that it is set up to work with simple features.
-
-```{r setup}
+```{r}
+#| label: load-packages
 library(ggseg)
 library(ggplot2)
-
-dk
-```
-
-You can have a look at the atlas and make sure it is what you expect
-
-```{r}
-plot(dk)
-```
-
-If you take an even closer look, you will see that the brain-atlas class is actually a list of four, where the `data` contains a simple features geometry column.
-```{r}
-dk$atlas
-dk$type
-dk$palette
-dk$data
-```
-
-
-## If the atlas is not a simple-features version
-We can force the dk brain-atlas into the original ggseg-atlas class and see how it looks different when the type is not set up with simple-features.
-
-```{r}
-dk2 <- as_ggseg_atlas(dk)
-dk2
-```
-
-If the ggseg-atlas is set up correctly, we should be able to convert it into a simple-features atlas.
-
-```{r}
-dk2 <- as_brain_atlas(dk2)
-dk2
-```
-
-
-# Joining the atlas with data
-
-In most cases, users want to plot their own data projected onto the brain. 
-In this workflow, you will need to get all the data, including having joined the atlas data, _before_ calling `ggplot`. 
-This will then become the same workflow as any other simple-featured plotting, and many new possibilities of specialized sf-geoms opens to you. 
-
-First, let's make up some data that we want to plot. Here a data.frame of 4 brain regions, with p-values connected to them.
-
-```{r}
 library(dplyr)
+```
 
+## When you'd want this
+
+Use the sf workflow when you need to:
+
+- Add region labels with `geom_sf_label()` or `geom_sf_text()`
+- Use `ggrepel::geom_label_repel()` for non-overlapping labels
+- Layer other sf geoms on the brain
+- Have full control over the data before it reaches ggplot
+
+For everything else, `geom_brain()` is simpler.
+
+## Getting atlas data as sf
+
+A brain atlas stores its geometry in the `data` slot. Convert to a plain
+data frame to see all the columns:
+
+```{r}
+#| label: atlas-data
+dk()$data
+```
+
+The `geometry` column holds the polygons. This is a standard sf object, so
+any sf-compatible tool works with it.
+
+## Joining your data
+
+Use `brain_join()` to merge your data with the atlas. It preserves the sf
+geometry and handles column detection:
+
+```{r}
+#| label: brain-join
 some_data <- tibble(
   region = c(
-    "transverse temporal",
-    "insula",
-    "precentral",
-    "superior parietal"
+    "transverse temporal", "insula", "precentral", "superior parietal"
   ),
   p = sample(seq(0, .5, .001), 4)
 )
 
-some_data
-
+some_data |>
+  brain_join(dk())
 ```
 
-To join a data.frame to an atlas object, you should use the specialized `brain_join` function. 
-This makes sure that atlas information is preserved while joining. 
+The result is a standard sf object you can pass to `geom_sf()`.
+
+## Plotting with geom_sf
 
 ```{r}
+#| label: fig-geom-sf
+#| fig-cap: "Brain plot using geom_sf after brain_join."
 some_data |>
-  brain_join(dk)
-```
-
-The output is a standard sf-object, and can therefore also be plotted as one. 
-
-```{r}
-some_data |>
-  brain_join(dk) |>
-  plot()
-```
-
-To use ggplot for plotting the new sf-object, use standard ggplot-syntax with the `geom_sf` geom.
-
-```{r}
-some_data |>
-  brain_join(dk) |>
+  brain_join(dk()) |>
   ggplot() +
   geom_sf(aes(fill = p))
 ```
 
+## Repositioning views
 
-If you want to reposition the slices, so that they are more to you liking, use the `reposition_brain` function (not to be confused with the ggproto-function `position_brain`!)
+With `geom_brain()`, you'd use `position_brain()`. In the sf workflow, use
+`reposition_brain()` instead -- it transforms the geometry directly:
+
 ```{r}
+#| label: fig-reposition
+#| fig-cap: "Repositioned brain views using reposition_brain() with geom_sf."
 some_data |>
-  brain_join(dk) |>
-  reposition_brain(hemi ~ side) |>
+  brain_join(dk()) |>
+  reposition_brain(hemi ~ view) |>
   ggplot() +
   geom_sf(aes(fill = p))
 ```
 
+Same formula syntax, same results.
 
-Once your data is plotted as a geom_sf, you can add geoms like `geom_sf_label` to add labels to the regions.
+## Adding labels
+
+This is the main reason to use the sf workflow. Once you have repositioned
+sf data, you can layer any sf geom:
 
 ```{r}
+#| label: fig-labels
+#| fig-cap: "Brain regions with text labels overlaid using geom_sf_label."
 some_data |>
-  brain_join(dk) |>
-  reposition_brain(hemi ~ side) |>
+  brain_join(dk()) |>
+  reposition_brain(hemi ~ view) |>
   ggplot(aes(fill = p)) +
   geom_sf(show.legend = FALSE) +
   geom_sf_label(
@@ -145,32 +124,32 @@ some_data |>
   )
 ```
 
-If you want a version where the labels do not overlap each other, you can try the `geom_sf_label_repel` function from the `ggrepel` package. 
+For crowded plots, `ggrepel::geom_label_repel()` avoids overlapping labels.
 
-## Faceting groups
+## Faceting with grouped data
 
-If your data includes groups, and you want to facet the output, you need to group the data _before_ calling `brain_join`.
+In the sf workflow, faceting requires `group_by()` before `brain_join()`.
+The grouping tells the join to replicate the atlas for each group:
 
 ```{r}
+#| label: fig-facet-grouped
+#| fig-cap: "Faceted brain plots using the geom_sf workflow with grouped data."
 some_data <- tibble(
-  region = rep(
-    c("transverse temporal", "insula", "precentral", "superior parietal"),
-    2
-  ),
+  region = rep(c(
+    "transverse temporal", "insula", "precentral", "superior parietal"
+  ), 2),
   p = sample(seq(0, .5, .001), 8),
-  groups = c(rep("g1", 4), rep("g2", 4))
+  group = c(rep("A", 4), rep("B", 4))
 )
-some_data
-```
 
-
-```{r}
 some_data |>
-  group_by(groups) |>
-  brain_join(dk) |>
-  reposition_brain(hemi ~ side) |>
+  group_by(group) |>
+  brain_join(dk()) |>
+  reposition_brain(hemi ~ view) |>
   ggplot(aes(fill = p)) +
   geom_sf(show.legend = FALSE) +
-  facet_wrap(~groups) +
-  ggtitle("correct facetting")
+  facet_wrap(~group)
 ```
+
+This step is only needed in the sf workflow. `geom_brain()` handles atlas
+replication automatically (see `vignette("external-data")`).

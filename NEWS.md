@@ -1,5 +1,66 @@
-# ggseg (development version)
+# ggseg 2.0.0
 
+This is a major release that simplifies the package architecture by moving
+atlas data structures and utilities to the
+[ggseg.formats](https://github.com/ggsegverse/ggseg.formats) package.
+
+## Breaking changes
+
+* `ggseg()` is now defunct and errors immediately. Use
+  `ggplot() + geom_brain()` instead.
+
+* Atlas data (`dk`, `aseg`) is no longer bundled in ggseg. Atlases are now
+  provided by ggseg.formats and re-exported as functions: `dk()`, `aseg()`,
+  `tracula()`. Code using the bare objects (e.g., `atlas = dk`) must be
+  updated to `atlas = dk()`.
+
+* The following functions have been removed and are now in ggseg.formats:
+  `as_brain_atlas()`, `is_brain_atlas()`, `brain_atlas()`, `brain_regions()`,
+  `brain_labels()`, `brain_pal()`, `brain_pals_info()`, `ggseg_atlas()`,
+  `as_ggseg_atlas()`, `is_ggseg_atlas()`, `read_freesurfer_stats()`,
+  `read_freesurfer_table()`, `read_atlas_files()`.
+
+* `scale_brain2()`, `scale_fill_brain2()`, `scale_colour_brain2()`, and
+  `scale_color_brain2()` are deprecated in favour of `scale_brain_manual()`,
+  `scale_fill_brain_manual()`, `scale_colour_brain_manual()`, and
+  `scale_color_brain_manual()`.
+
+* `scale_brain()`, `scale_fill_brain()`, `scale_colour_brain()`, and
+  `scale_color_brain()` are deprecated. Atlas palettes are now applied
+  automatically by `geom_brain()`.
+
+* The `side` argument in `geom_brain()` and `position_brain()` has been
+  renamed to `view`.
+
+## New features
+
+* New `annotate_brain()` function adds view labels (e.g., "left lateral") to
+  brain plots, respecting the layout from `position_brain()`.
+
+* New `scale_brain_manual()` family for applying custom named colour palettes
+  to brain plots.
+
+* `position_brain()` gains `nrow`, `ncol`, and `views` arguments for
+  grid-based layout control of subcortical and tract atlases.
+
+* `adapt_scales()` now accepts atlas objects directly (not just pre-converted
+  coordinate data frames), and handles `"tract"` atlas types alongside
+  subcortical.
+
+* `geom_brain()` now automatically applies the atlas colour palette when no
+  `fill` aesthetic is mapped.
+
+## Improvements
+
+* Messaging uses cli for all user-facing output (`brain_join()` warnings and
+  info messages).
+
+* Rewrote and reorganised all vignettes with updated examples and renamed
+  files for cleaner URLs.
+
+* Added tracula (white matter tract) atlas as a re-export from ggseg.formats.
+
+* Improved documentation throughout with updated roxygen2 docs.
 
 # ggseg 1.6
 

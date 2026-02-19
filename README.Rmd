@@ -3,7 +3,9 @@ output: github_document
 format: gfm
 ---
 
-```{r, include = FALSE}
+```{r}
+#| label: setup
+#| include: false
 knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>",
@@ -12,111 +14,129 @@ knitr::opts_chunk$set(
   fig.retina = 3,
   echo = TRUE
 )
-``` 
- 
+```
 
-# ggseg <img src="man/figures/logo.png" align="right" alt="" width="138.5" />  
+# ggseg <img src="man/figures/logo.png" align="right" alt="" width="138.5" />
 <!-- badges: start -->
-[![R build status](https://github.com/ggseg/ggseg/workflows/R-CMD-check/badge.svg)](https://github.com/ggseg/ggseg/actions)
 [![CRAN status](https://www.r-pkg.org/badges/version/ggseg)](https://CRAN.R-project.org/package=ggseg)
-[![downloads](https://CRANlogs.r-pkg.org/badges/last-month/ggseg?color=blue)](https://r-pkg.org/pkg/ggseg)
-[![codecov](https://codecov.io/gh/ggseg/ggseg/branch/main/graph/badge.svg?token=WtlS6Kk1vo)](https://app.codecov.io/gh/ggseg/ggseg)
-[![Lifecycle: maturing](https://img.shields.io/badge/lifecycle-maturing-blue.svg)](https://lifecycle.r-lib.org/articles/stages.html)
-[![Codecov test coverage](https://codecov.io/gh/ggseg/ggseg/graph/badge.svg)](https://app.codecov.io/gh/ggseg/ggseg)
-[![R-CMD-check](https://github.com/ggseg/ggseg/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/ggseg/ggseg/actions/workflows/R-CMD-check.yaml)
+[![R-CMD-check](https://github.com/ggsegverse/ggseg/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/ggsegverse/ggseg/actions/workflows/R-CMD-check.yaml)
+[![code-quality](https://github.com/ggsegverse/ggseg/actions/workflows/code-quality.yaml/badge.svg)](https://github.com/ggsegverse/ggseg/actions/workflows/code-quality.yaml)
+[![Coverage Status](https://raw.githubusercontent.com/ggsegverse/ggseg/coverage/badges/coverage.svg)](https://github.com/ggsegverse/ggseg/actions/workflows/test-coverage.yaml)
+[![downloads](https://cranlogs.r-pkg.org/badges/last-month/ggseg?color=blue)](https://r-pkg.org/pkg/ggseg)
+[![Lifecycle: stable](https://img.shields.io/badge/lifecycle-stable-brightgreen.svg)](https://lifecycle.r-lib.org/articles/stages.html)
+[![pkgcheck](https://github.com/ggsegverse/ggseg/workflows/pkgcheck/badge.svg)](https://github.com/ggsegverse/ggseg/actions?query=workflow%3Apkgcheck)
 <!-- badges: end -->
 
-Contains ggplot2 geom for plotting brain atlases using simple features. The largest component of the package is the data for the two built-in atlases.
-Plotting results of analyses on regions or networks often involves swapping between statistical tools, like R, and software for brain imaging to correctly visualise analysis results.
+Neuroimaging analyses produce region-level results -- cortical thickness,
+p-values, network assignments -- that need to end up on a brain figure.
+ggseg stores brain atlas geometries as simple features and plots them as
+ggplot2 layers, so you get publication-ready brain figures with the same
+code you'd use for any other ggplot.
 
-This package aims to make it possible to plot results directly through R. 
-
-## Atlases
-There are currently four atlases available in the package:  
-
-1. `dk` - Desikan-Killiany atlas (aparc).   
-2. `aseg` - Automatic subcortical segmentation.  
-
-**Note:** As of version 1.5.3, `ggseg` was split into two packages: one for 2d polygon plots in ggplot, and another for 3d mesh plots through plotly. 
-This was done to reduce package size, dependencies, and also to simplify maintenance. 
-If you want the 3d plotting tool, please go the [ggseg3d repository](https://github.com/ggseg/ggseg3d).
-
-You may find more atlases and functions to create new atlases in the companion package [ggsegExtra](https://github.com/ggseg/ggsegExtra).
+Mowinckel & Vidal-Piñeiro (2020). [*Visualization of Brain Statistics
+With R Packages ggseg and ggseg3d.*](https://doi.org/10.1177/2515245920928009)
+Advances in Methods and Practices in Psychological Science.
 
 ## Installation
-The package can be installed from CRAN.
 
-```{r eval = FALSE}
+Install from CRAN:
+
+```{r}
+#| label: install
+#| eval: false
 install.packages("ggseg")
 ```
 
-Alternatively, ggseg may also be installed through its ggseg r-universe:
+Or get the development version from the [ggsegverse r-universe](https://ggsegverse.r-universe.dev):
 
 ```r
-# Enable this universe
 options(repos = c(
-    ggseg = 'https://ggseg.r-universe.dev',
-    CRAN = 'https://cloud.r-project.org'))
-
-# Install some packages
-install.packages('ggseg')
+  ggsegverse = "https://ggsegverse.r-universe.dev",
+  CRAN = "https://cloud.r-project.org"
+))
+install.packages("ggseg")
 ```
 
-The development version of the package can be installed using devtools. 
-
-```{r eval=FALSE}
-install.packages("remotes")
-remotes::install_github("ggseg/ggseg")
-```
-
-The functions are now installed, and you may load them when you want to use them.
-All functions are documented in standard R fashion.
-
-## Use
-```{r, out.width='100%'}
-library(ggseg)
-library(ggplot2)
-plot(dk)
-plot(aseg)
-```
-
-While default atlas plots will give you an idea of how the atlases look, you will likely want to project your own data onto the plot.
-
+## Quick start
 
 ```{r}
+#| label: load
+#| message: false
+library(ggseg)
+library(ggplot2)
+```
+
+### Built-in atlases
+
+ggseg ships with three atlases: `dk` (Desikan-Killiany cortical
+parcellation), `aseg` (automatic subcortical segmentation), and `tracula`
+(white matter tracts). `plot()` gives you a quick overview:
+
+```{r}
+#| label: fig-atlases
+#| fig-cap: "Overview of the dk and aseg built-in brain atlases."
+#| out-width: "100%"
+plot(dk())
+plot(aseg())
+```
+
+### Plotting your own data
+
+Pass a data frame to `ggplot()` with a column that matches the atlas
+(typically `region` or `label`). `geom_brain()` handles the join:
+
+```{r}
+#| label: fig-external-data
+#| fig-cap: "Brain plot coloured by external data, faceted by group."
+#| message: false
 library(dplyr)
+
 some_data <- tibble(
-  region = rep(c("transverse temporal", "insula",
-           "precentral","superior parietal"), 2), 
-  p = sample(seq(0,.5,.001), 8),
+  region = rep(
+    c(
+      "transverse temporal",
+      "insula",
+      "precentral",
+      "superior parietal"
+    ),
+    2
+  ),
+  p = sample(seq(0, .5, .001), 8),
   groups = c(rep("g1", 4), rep("g2", 4))
 )
 
-some_data |>
-  group_by(groups) |>
-  ggplot() +
-  geom_brain(atlas = dk, 
-             position = position_brain(hemi ~ side),
-             aes(fill = p)) +
-  facet_wrap(~groups)
+ggplot(some_data) +
+  geom_brain(
+    atlas = dk(),
+    position = position_brain(hemi ~ view),
+    aes(fill = p)
+  ) +
+  facet_wrap(~groups) +
+  scale_fill_viridis_c(option = "cividis", direction = -1) +
+  theme_void()
 ```
 
-The package also has several vignettes, to help you get started using it. 
-You can access it [here](https://ggseg.github.io/ggseg/)
+## More atlases
 
-You can also see one of the creators blog for introductions to its use [here](https://drmowinckels.io/blog/2021-03-14-new-ggseg-with-geom/)
+Many additional atlases are available through the
+[ggsegverse r-universe](https://ggsegverse.r-universe.dev):
 
+```{r}
+#| label: install-extra
+#| eval: false
+install.packages("ggsegYeo2011", repos = "https://ggsegverse.r-universe.dev")
+```
 
-### Report bugs or requests  
-Don't hesitate to ask for support using [github issues](https://github.com/ggseg/ggseg/issues), or requesting new atlases. 
-While we would love getting help in creating new atlases, you may also request atlases through the issues, and we will try to get to it. 
+## Learn more
 
-# Funding
-This tool is partly funded by:  
+The [package website](https://ggsegverse.github.io/ggseg/) has vignettes
+covering external data, view positioning, the `geom_sf()` workflow, and
+reading FreeSurfer stats files.
 
-**EU Horizon 2020 Grant:** Healthy minds 0-100 years: Optimising the use of European brain imaging cohorts (Lifebrain).
+## Funding
 
-**Grant agreement number:** 732592.
+This tool is partly funded by:
 
-**Call:** Societal challenges: Health, demographic change and well-being
-
+**EU Horizon 2020 Grant:** Healthy minds 0-100 years: Optimising the use
+of European brain imaging cohorts (Lifebrain). Grant agreement number:
+732592.

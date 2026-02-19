@@ -1,5 +1,64 @@
-destination: docs
-url: https://lcbc-uio.github.io/ggseg/
+url: https://ggsegverse.github.io/ggseg/
+
 template:
-  params:
-    bootswatch: cerulean
+  package: ggseg.docs
+
+navbar:
+  components:
+    github:
+      icon: fa-github
+      href: https://github.com/ggsegverse/ggseg
+      aria-label: GitHub
+    articles:
+      text: Articles
+      menu:
+        - text: Getting Started
+        - text: Introduction
+          href: articles/ggseg.html
+        - text: External Data
+          href: articles/external-data.html
+        - text: -------
+        - text: Advanced Usage
+        - text: Positioning Views
+          href: articles/positioning-views.html
+        - text: Using geom_sf
+          href: articles/geom-sf.html
+        - text: FreeSurfer Files
+          href: articles/freesurfer-files.html
+
+articles:
+  - title: Getting Started
+    navbar: ~
+    contents:
+      - ggseg
+      - external-data
+
+  - title: Advanced Usage
+    contents:
+      - positioning-views
+      - geom-sf
+      - freesurfer-files
+
+reference:
+  - title: Plotting
+    desc: Core geom and positioning for brain plots
+    contents:
+      - geom_brain
+      - position_brain
+      - reposition_brain
+      - annotate_brain
+
+  - title: Data
+    desc: Joining user data to brain atlases
+    contents:
+      - brain_join
+
+  - title: Scales
+    desc: Colour scales for brain plots
+    contents:
+      - starts_with("scale")
+
+  - title: Themes
+    desc: ggplot themes for brain plots
+    contents:
+      - starts_with("theme")

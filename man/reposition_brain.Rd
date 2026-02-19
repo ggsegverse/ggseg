@@ -4,15 +4,29 @@
 \alias{reposition_brain}
 \title{Reposition brain slices}
 \usage{
-reposition_brain(data, position = "horizontal")
+reposition_brain(
+  data,
+  position = "horizontal",
+  nrow = NULL,
+  ncol = NULL,
+  views = NULL
+)
 }
 \arguments{
 \item{data}{sf-data.frame of joined brain atlas and data}
 
-\item{position}{position formula for slices}
+\item{position}{Position formula for slices. For cortical atlases, use
+formulas like `hemi ~ view`. For subcortical/tract atlases, use
+"horizontal", "vertical", or `type ~ .` for type-based layout.}
+
+\item{nrow}{Number of rows for grid layout (subcortical/tract only)}
+
+\item{ncol}{Number of columns for grid layout (subcortical/tract only)}
+
+\item{views}{Character vector specifying view order (subcortical/tract only)}
 }
 \value{
-sf-data.frame with repositioned slices
+sf-data.frame with re-positioned slices
 }
 \description{
 Function for repositioning
@@ -22,13 +36,18 @@ This makes it possible for users to
 reposition the geometry data for the atlas
 for control over final plot layout. For even
 more detailed control over the positioning,
-the "hemi" and "side" columns should be
+the "hemi" and "view" columns should be
 converted into factors and ordered by wanted
 order of appearance.
 }
 \examples{
-reposition_brain(dk, hemi ~ side)
-reposition_brain(dk, side ~ hemi)
-reposition_brain(dk, hemi + side ~ .)
-reposition_brain(dk, . ~ hemi + side)
+reposition_brain(dk(), hemi ~ view)
+reposition_brain(dk(), view ~ hemi)
+reposition_brain(dk(), hemi + view ~ .)
+reposition_brain(dk(), . ~ hemi + view)
+
+\donttest{
+reposition_brain(aseg(), nrow = 2)
+reposition_brain(aseg(), views = c("sagittal", "axial_3"))
+}
 }

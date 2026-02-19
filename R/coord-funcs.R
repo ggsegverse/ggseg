@@ -1,3 +1,12 @@
+#' Reduce horizontal gap between hemispheres
+#'
+#' Shifts right-hemisphere coordinates closer to the left hemisphere
+#' by collapsing the empty space between them.
+#'
+#' @param geobrain Data.frame with `.long` and `hemi` columns.
+#' @param hemisphere Character vector of hemispheres present.
+#'
+#' @return Modified data.frame with adjusted `.long` values.
 #' @importFrom dplyr group_by summarise_at vars mutate
 #' @importFrom stats sd
 #' @keywords internal
@@ -13,58 +22,76 @@ squish_position <- function(geobrain, hemisphere) {
   )
 }
 
+#' Stack brain views into a compact layout
+#'
+#' Repositions cortical or subcortical atlas coordinates so that
+#' hemisphere/view combinations tile without overlap.
+#'
+#' @param atlas Data.frame with columns `hemi`, `view`, `type`,
+#'   `.lat`, and `.long`.
+#'
+#' @return Modified data.frame with repositioned coordinates.
 #' @importFrom dplyr group_by mutate arrange
 #' @keywords internal
 #' @noRd
 stack_brain <- function(atlas) {
   if (unique(atlas$type) == "cortical") {
-    stack <- group_by(atlas, hemi, side)
+    stack <- group_by(atlas, hemi, view)
     stack <- calc_stack(stack)
 
-    atlas = mutate(
+    atlas <- mutate(
       atlas,
       .lat = ifelse(hemi %in% "right", .lat + (stack$.lat_max[1]), .lat),
       .long = ifelse(
-        hemi %in% "right" & side %in% "lateral",
+        hemi %in% "right" & view %in% "lateral",
         .long - stack$.long_min[3],
         .long
       ),
       .long = ifelse(
-        hemi %in% "right" & side %in% "medial",
+        hemi %in% "right" & view %in% "medial",
         .long + (stack$.long_min[2] - stack$.long_min[4]),
         .long
       )
     )
   } else if (unique(atlas$type) == "subcortical") {
-    stack <- group_by(atlas, side)
+    stack <- group_by(atlas, view)
     stack <- calc_stack(stack)
     stack <- arrange(stack, .long_min)
 
-    for (k in 1:nrow(stack)) {
+    for (k in seq_len(nrow(stack))) {
       atlas <- mutate(
         atlas,
         .lat = ifelse(
-          side %in% stack$side[k],
+          view %in% stack$view[k],
           .lat + mean(stack$.lat_max) * k,
           .lat
         ),
         .long = ifelse(
-          side %in% stack$side[k],
+          view %in% stack$view[k],
           .long - stack$.long_mean[k],
           .long
         )
       )
     }
   } else {
-    cat("Atlas '.type' not set, stacking not possible.")
+    cli::cli_warn("Atlas 'type' not set, stacking not possible.")
   }
 
-  return(atlas)
+  atlas
 }
 
+#' Compute stacking offsets for grouped brain views
+#'
+#' Summarises grouped coordinate data to determine bounding-box
+#' statistics used by [stack_brain()].
+#'
+#' @param stack Grouped data.frame with `.long` and `.lat` columns.
+#'
+#' @return Data.frame of per-group min, max, sd, and mean values.
 #' @importFrom dplyr summarise_at mutate
 #' @importFrom ggplot2 vars
 #' @importFrom stats sd
+#' @keywords internal
 #' @noRd
 calc_stack <- function(stack) {
   stack <- summarise_at(
@@ -84,73 +111,11 @@ calc_stack <- function(stack) {
 }
 
 
-#' Turn coordinates to sf polygons
+#' Midpoint of a numeric range
 #'
-#' @param coords lat, long, order, polygon
-#' @param vertex_size_limits size limits of the vertices
+#' @param x Numeric vector.
 #'
-#' @noRd
-#' @importFrom dplyr group_by group_split
-#' @importFrom sf st_polygon st_sfc st_sf st_zm st_cast
-#' @importFrom tidyr unnest
-#' @keywords internal
-coords2sf <- function(coords, vertex_size_limits = NULL) {
-  dt <- unnest(coords, ggseg)
-  dt <- dt[, c(".long", ".lat", ".id", ".subid")]
-  dt <- group_by(dt, .subid, .id)
-  dt <- group_split(dt)
-
-  if (!is.null(vertex_size_limits)) {
-    if (!is.na(vertex_size_limits[1])) {
-      dt <- dt[sapply(dt, function(x) nrow(x) > vertex_size_limits[1])]
-    }
-
-    if (!is.na(vertex_size_limits[2])) {
-      dt <- dt[sapply(dt, function(x) nrow(x) < vertex_size_limits[2])]
-    }
-  }
-
-  dt <- lapply(dt, as.matrix)
-  dt <- lapply(dt, function(x) rbind(x[, 1:4], x[1, 1:4]))
-  dt <- lapply(dt, function(x) matrix(as.numeric(x), ncol = 4))
-
-  dt <- st_polygon(dt)
-  dt <- st_sfc(dt)
-  dt <- st_sf(dt)
-  dt <- st_zm(dt)
-  dt <- st_cast(dt, "MULTIPOLYGON")
-  dt$lab <- coords$lab
-  dt
-}
-
-#' Turn sf polygons to coordinates
-#' @noRd
-sf2coords <- function(x) {
-  x$ggseg <- lapply(1:nrow(x), function(y) to_coords(x$geometry[[y]], y))
-  x$geometry <- NULL
-  x
-}
-
-
-#' @importFrom dplyr as_tibble group_by mutate row_number ungroup
-#' @importFrom sf st_combine st_coordinates
-#' @keywords internal
-#' @noRd
-to_coords <- function(x, n) {
-  k <- st_combine(x)
-  k <- st_coordinates(k)
-  k <- as_tibble(k)
-  k$L2 <- n * 10000 + k$L2
-
-  k <- group_by(k, L2)
-  k <- mutate(k, .order = row_number())
-  k <- ungroup(k)
-
-  names(k) <- c(".long", ".lat", ".subid", ".id", ".poly", ".order")
-
-  k
-}
-
+#' @return Single numeric value, the mean of `min(x)` and `max(x)`.
 #' @keywords internal
 #' @noRd
 gap <- function(x) {
