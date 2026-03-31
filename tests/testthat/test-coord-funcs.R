@@ -36,6 +36,15 @@ describe("stack_brain", {
     result <- stack_brain(geo)
     expect_s3_class(result, "data.frame")
   })
+
+  it("stacks cerebellar atlas using subcortical layout", {
+    atlas_df <- as.data.frame(aseg())
+    coords <- sf2coords(atlas_df)
+    geo <- unnest(coords, ggseg)
+    geo$type <- "cerebellar"
+    result <- stack_brain(geo)
+    expect_s3_class(result, "data.frame")
+  })
 })
 
 describe("calc_stack", {

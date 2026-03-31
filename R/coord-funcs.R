@@ -53,7 +53,7 @@ stack_brain <- function(atlas) {
         .long
       )
     )
-  } else if (unique(atlas$type) == "subcortical") {
+  } else if (unique(atlas$type) %in% c("subcortical", "cerebellar")) {
     stack <- group_by(atlas, view)
     stack <- calc_stack(stack)
     stack <- arrange(stack, .long_min)
