@@ -34,7 +34,18 @@ describe("stack_brain", {
     coords <- sf2coords(atlas_df)
     geo <- unnest(coords, ggseg)
     result <- stack_brain(geo)
-    expect_s3_class(result, "data.frame")
+    expect_false(identical(result$.lat, geo$.lat))
+    expect_false(identical(result$.long, geo$.long))
+  })
+
+  it("stacks cerebellar atlas using subcortical layout", {
+    atlas_df <- as.data.frame(aseg())
+    coords <- sf2coords(atlas_df)
+    geo <- unnest(coords, ggseg)
+    geo$type <- "cerebellar"
+    result <- stack_brain(geo)
+    expect_false(identical(result$.lat, geo$.lat))
+    expect_false(identical(result$.long, geo$.long))
   })
 })
 
