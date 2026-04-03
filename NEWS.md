@@ -1,3 +1,9 @@
+# ggseg 2.1.0
+
+* Support cerebellar atlas type in 2D view stacking. Cerebellar atlases
+  now use the same stacking layout as subcortical atlases in
+  `position_brain()`.
+
 # ggseg 2.0.0
 
 This is a major release that simplifies the package architecture by moving

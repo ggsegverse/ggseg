@@ -35,7 +35,7 @@ squish_position <- function(geobrain, hemisphere) {
 #' @keywords internal
 #' @noRd
 stack_brain <- function(atlas) {
-  if (unique(atlas$type) == "cortical") {
+  if (unique(atlas$type) %in% "cortical") {
     stack <- group_by(atlas, hemi, view)
     stack <- calc_stack(stack)
 
