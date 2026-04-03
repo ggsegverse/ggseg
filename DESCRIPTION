@@ -54,3 +54,18 @@ SystemRequirements:
     GDAL (>= 2.0.1), 
     GEOS (>= 3.4.0), 
     PROJ (>= 4.8.0)
+Collate: 
+    'adapt_scales.R'
+    'annotate-brain.R'
+    'brain_join.R'
+    'coord-funcs.R'
+    'coords.R'
+    'geom-brain.R'
+    'geom-brain-edges.R'
+    'geom-brain-vertices.R'
+    'ggseg-package.R'
+    'ggseg.R'
+    'layer-brain.R'
+    'position-brain.R'
+    'scale-brain.R'
+    'theme-brain.R'

@@ -1,16 +1,16 @@
-#' Plot brain atlas regions as vertex-derived convex hull polygons
+#' Plot brain atlas regions from mesh vertex data
 #'
 #' A ggplot2 geom for rendering cortical brain atlas regions as smooth
-#' filled polygons derived from fsaverage surface mesh vertices. Each region's
-#' convex hull is computed from its 2D-projected vertex positions, producing
-#' a smoother appearance than the polygon-based [geom_brain()].
+#' filled polygons derived from fsaverage surface mesh topology. Each
+#' region's polygon is built by unioning the mesh triangles (faces)
+#' whose vertices all belong to that region, producing boundaries that
+#' follow the actual parcellation on the cortical surface.
 #'
 #' Requires a cortical `brain_atlas` with vertex data (e.g. [dk()]). The
-#' atlas vertices are projected to 2D via an orthographic projection: the
-#' anterior-posterior axis (y) and superior-inferior axis (z) of the inflated
-#' surface are used as the 2D x and y coordinates respectively. Back-face
-#' culling separates lateral from medial views based on the medial-lateral
-#' position (x) of each vertex relative to the hemisphere centre.
+#' mesh faces are projected to 2D via an orthographic projection of the
+#' inflated surface (y → x, z → y). Back-face culling separates lateral
+#' from medial views based on each vertex's x-coordinate relative to the
+#' hemisphere centre.
 #'
 #' @param mapping Set of aesthetic mappings created by [ggplot2::aes()].
 #' @param data A data.frame with variables to map. If `NULL`, the atlas is
@@ -99,8 +99,8 @@ geom_brain_vertices <- function(
 
 #' @section GeomBrainVertices ggproto:
 #' `GeomBrainVertices` is a [ggplot2::Geom] ggproto object that renders
-#' brain atlas regions as convex hull polygons derived from surface vertex
-#' positions. Inherits polygon rendering from [GeomBrain].
+#' brain atlas regions as polygons derived from mesh face topology.
+#' Inherits polygon rendering from [GeomBrain].
 #'
 #' @export
 #' @rdname geom_brain_vertices
@@ -176,7 +176,7 @@ layer_brain_vertices <- function(
 }
 
 
-#' @importFrom sf st_as_sf st_sfc st_multipoint st_convex_hull st_polygon
+#' @importFrom sf st_as_sf st_sfc st_polygon st_union
 #' @keywords internal
 #' @noRd
 LayerBrainVertices <- ggproto(
@@ -281,20 +281,21 @@ LayerBrainVertices <- ggproto(
 )
 
 
-#' Expand atlas vertex indices to sf convex hull POLYGON geometry
+#' Build region polygons from mesh face topology
 #'
-#' For each region and view (lateral/medial), looks up the 3D vertex
-#' coordinates from the brain surface mesh, applies back-face culling
-#' based on x-coordinate, projects to 2D (y, z), and computes the
-#' convex hull as one POLYGON geometry per region.
+#' For each region and view (lateral/medial), finds all mesh triangles
+#' whose three vertices belong to that region, projects them to 2D,
+#' and unions them into a single polygon. This produces boundaries
+#' that follow the actual parcellation on the cortical surface.
 #'
-#' Vertex indices are 0-based and converted to 1-based for R subsetting.
+#' Vertex and face indices are 0-based and converted to 1-based for
+#' R subsetting.
 #'
 #' @param atlas_verts Data.frame from [ggseg.formats::atlas_vertices()].
 #' @param surface Surface type for [ggseg.formats::get_brain_mesh()].
 #' @param brain_meshes Optional custom mesh list.
 #'
-#' @return An sf data.frame with one row per region×view combination.
+#' @return An sf data.frame with one row per region x view combination.
 #' @keywords internal
 #' @noRd
 expand_atlas_vertices_to_sf <- function(
@@ -317,23 +318,38 @@ expand_atlas_vertices_to_sf <- function(
     hv <- atlas_verts[atlas_verts$hemi == h, ]
     if (nrow(hv) == 0) return(NULL)
 
+    faces_1 <- data.frame(
+      i = mesh$faces$i + 1L,
+      j = mesh$faces$j + 1L,
+      k = mesh$faces$k + 1L
+    )
+
+    vertex_to_region <- integer(nrow(mesh$vertices))
+    for (r in seq_len(nrow(hv))) {
+      idx <- hv$vertices[[r]] + 1L
+      idx <- idx[idx >= 1L & idx <= nrow(mesh$vertices)]
+      vertex_to_region[idx] <- r
+    }
+
+    face_region <- ifelse(
+      vertex_to_region[faces_1$i] == vertex_to_region[faces_1$j] &
+        vertex_to_region[faces_1$j] == vertex_to_region[faces_1$k] &
+        vertex_to_region[faces_1$i] > 0L,
+      vertex_to_region[faces_1$i],
+      0L
+    )
+
     center_x <- mean(mesh$vertices$x)
+
     is_lateral <- if (mesh_h == "lh") {
       mesh$vertices$x < center_x
     } else {
       mesh$vertices$x > center_x
     }
 
-    x_margin <- diff(range(mesh$vertices$x)) * 0.05
-    is_lateral_strict <- if (mesh_h == "lh") {
-      mesh$vertices$x < (center_x - x_margin)
-    } else {
-      mesh$vertices$x > (center_x + x_margin)
-    }
-
     lapply(c("lateral", "medial"), function(v) {
       visible <- if (v == "lateral") is_lateral else !is_lateral
-      visible_strict <- if (v == "lateral") is_lateral_strict else !is_lateral_strict
+      face_visible <- visible[faces_1$i] | visible[faces_1$j] | visible[faces_1$k]
 
       flip_y <- (mesh_h == "lh" && v == "lateral") |
         (mesh_h == "rh" && v == "medial")
@@ -342,27 +358,50 @@ expand_atlas_vertices_to_sf <- function(
       proj_y <- y_sign * mesh$vertices$y
       proj_z <- mesh$vertices$z
 
-      geom_list <- lapply(seq_len(nrow(hv)), function(i) {
-        idx <- hv$vertices[[i]] + 1L
-        keep <- idx[idx >= 1L & idx <= nrow(mesh$vertices) & visible_strict[idx]]
-        if (length(keep) == 0L) {
-          return(sf::st_polygon())
-        }
-        pts <- unique(cbind(proj_y[keep], proj_z[keep]))
-        if (nrow(pts) < 3L) {
-          return(sf::st_polygon())
-        }
-        sf::st_convex_hull(sf::st_multipoint(pts))
+      vis_fi <- which(face_visible)
+      if (length(vis_fi) == 0L) return(NULL)
+
+      tri_rings <- lapply(vis_fi, function(fi) {
+        list(matrix(c(
+          proj_y[faces_1$i[fi]], proj_z[faces_1$i[fi]],
+          proj_y[faces_1$j[fi]], proj_z[faces_1$j[fi]],
+          proj_y[faces_1$k[fi]], proj_z[faces_1$k[fi]],
+          proj_y[faces_1$i[fi]], proj_z[faces_1$i[fi]]
+        ), ncol = 2, byrow = TRUE))
       })
 
-      vis_idx <- which(visible)
-      bg_hull <- if (length(vis_idx) >= 3L) {
-        bg_pts <- unique(cbind(proj_y[vis_idx], proj_z[vis_idx]))
-        if (nrow(bg_pts) >= 3L) sf::st_convex_hull(sf::st_multipoint(bg_pts))
-        else sf::st_polygon()
+      all_polys <- sf::st_sfc(lapply(tri_rings, sf::st_polygon))
+      tri_regions <- face_region[vis_fi]
+
+      tri_sf <- sf::st_sf(
+        region_idx = tri_regions,
+        geometry = all_polys,
+        stringsAsFactors = FALSE
+      )
+
+      bg_union <- sf::st_union(all_polys)
+      bg_sfg <- if (inherits(bg_union, "sfc") && length(bg_union) > 0L) {
+        bg_union[[1L]]
+      } else if (inherits(bg_union, "sfg")) {
+        bg_union
       } else {
         sf::st_polygon()
       }
+
+      dissolved <- dplyr::summarise(
+        dplyr::group_by(tri_sf, region_idx),
+        geometry = sf::st_union(geometry),
+        .groups = "drop"
+      )
+
+      region_sfg <- lapply(seq_len(nrow(hv)), function(r) {
+        row <- dissolved[dissolved$region_idx == r, ]
+        if (nrow(row) == 0L) return(sf::st_polygon())
+        g <- row$geometry[[1L]]
+        if (inherits(g, "sfg")) g
+        else if (inherits(g, "sfc") && length(g) > 0L) g[[1L]]
+        else sf::st_polygon()
+      })
 
       rbind(
         sf::st_sf(
@@ -372,7 +411,7 @@ expand_atlas_vertices_to_sf <- function(
           view = v,
           type = "cortical",
           colour = NA_character_,
-          geometry = sf::st_sfc(list(bg_hull)),
+          geometry = sf::st_sfc(bg_sfg),
           stringsAsFactors = FALSE
         ),
         sf::st_sf(
@@ -382,7 +421,7 @@ expand_atlas_vertices_to_sf <- function(
           view = v,
           type = "cortical",
           colour = hv$colour,
-          geometry = sf::st_sfc(geom_list),
+          geometry = sf::st_sfc(region_sfg),
           stringsAsFactors = FALSE
         )
       )

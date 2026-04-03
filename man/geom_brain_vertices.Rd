@@ -4,7 +4,7 @@
 \name{geom_brain_vertices}
 \alias{geom_brain_vertices}
 \alias{GeomBrainVertices}
-\title{Plot brain atlas regions as a vertex point cloud}
+\title{Plot brain atlas regions as vertex-derived convex hull polygons}
 \usage{
 geom_brain_vertices(
   mapping = aes(),
@@ -53,10 +53,10 @@ rather than combining with them.}
 A list of ggplot2 layer and coord objects.
 }
 \description{
-A ggplot2 geom for rendering cortical brain atlas regions as dense point
-clouds derived from the fsaverage surface mesh. Points correspond to actual
-surface vertices projected to 2D, producing a smoother appearance than the
-polygon-based [geom_brain()].
+A ggplot2 geom for rendering cortical brain atlas regions as smooth
+filled polygons derived from fsaverage surface mesh vertices. Each region's
+convex hull is computed from its 2D-projected vertex positions, producing
+a smoother appearance than the polygon-based [geom_brain()].
 }
 \details{
 Requires a cortical `brain_atlas` with vertex data (e.g. [dk()]). The
@@ -69,9 +69,8 @@ position (x) of each vertex relative to the hemisphere centre.
 \section{GeomBrainVertices ggproto}{
 
 `GeomBrainVertices` is a [ggplot2::Geom] ggproto object that renders
-brain atlas vertex point clouds. It inherits rendering logic from
-[GeomBrain] but maps the `fill` aesthetic to `colour` so that sf
-MULTIPOINT geometry is rendered with the correct region colour.
+brain atlas regions as convex hull polygons derived from surface vertex
+positions. Inherits polygon rendering from [GeomBrain].
 }
 
 \examples{
