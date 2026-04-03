@@ -19,6 +19,9 @@ scale_fill_brain2(...)
 \arguments{
 \item{...}{Arguments passed to the replacement function.}
 }
+\value{
+A ggplot2 scale object.
+}
 \description{
 `r lifecycle::badge("deprecated")`
 

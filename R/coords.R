@@ -35,47 +35,6 @@ to_coords <- function(x, n) {
   k
 }
 
-#' Convert coordinate data.frame back to sf geometry
-#'
-#' Rebuilds sf MULTIPOLYGON geometry from a data.frame of vertex
-#' coordinates (columns starting with `.`).
-#'
-#' @param x Data.frame with coordinate columns `.long`, `.lat`,
-#'   `.subid`, `.id`.
-#' @param vertex_size_limits Optional length-2 numeric vector
-#'   `c(min, max)` to filter polygons by vertex count.
-#'
-#' @return An sf data.frame with MULTIPOLYGON geometry.
-#' @importFrom dplyr group_by group_split select starts_with
-#' @importFrom sf st_polygon st_sfc st_sf st_zm st_cast
-#' @keywords internal
-#' @noRd
-coords2sf <- function(x, vertex_size_limits = NULL) {
-  dt <- select(x, starts_with("."))
-  dt <- group_by(dt, .subid, .id) # nolint [object_usage_linter]
-  dt <- group_split(dt)
-
-  if (!is.null(vertex_size_limits)) {
-    min_size <- vertex_size_limits[1]
-    max_size <- vertex_size_limits[2]
-    if (!is.na(min_size)) {
-      dt <- dt[vapply(dt, function(x) nrow(x) > min_size, logical(1))]
-    }
-    if (!is.na(max_size)) {
-      dt <- dt[vapply(dt, function(x) nrow(x) < max_size, logical(1))]
-    }
-  }
-
-  dt <- lapply(dt, as.matrix)
-  dt <- lapply(dt, function(x) matrix(as.numeric(x[, 1:4]), ncol = 4))
-
-  dt <- st_polygon(dt)
-  dt <- st_sfc(dt)
-  dt <- st_sf(dt)
-  dt <- st_zm(dt)
-  st_cast(dt, "MULTIPOLYGON")
-}
-
 #' Convert sf atlas data.frame to coordinate list-column
 #'
 #' Extracts vertex coordinates from each row's geometry into a

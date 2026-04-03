@@ -195,6 +195,8 @@ scale_fill_brain2 <- function(...) {
 #' - `scale_color_brain2()` -> [scale_color_brain_manual()]
 #'
 #' @param ... Arguments passed to the replacement function.
+#'
+#' @return A ggplot2 scale object.
 #' @name scale_brain2-deprecated
 NULL
 
@@ -207,7 +209,7 @@ NULL
 #' These scales add hemisphere or view labels to the x and y axes based on
 #' the atlas layout.
 #'
-#' @param atlas A `ggseg_atlas` object or data.frame containing atlas data.
+#' @inheritParams brain_join
 #' @param position Layout style: `"dispersed"` (default) or `"stacked"`.
 #' @param aesthetics Which axis to scale: `"x"`, `"y"`, or `"labs"`.
 #' @param ... Additional arguments passed to [adapt_scales()].
