@@ -1,5 +1,13 @@
 # Changelog
 
+## ggseg 2.1.0
+
+CRAN release: 2026-04-03
+
+- Support cerebellar atlas type in 2D view stacking. Cerebellar atlases
+  now use the same stacking layout as subcortical atlases in
+  [`position_brain()`](https://ggsegverse.github.io/ggseg/reference/position_brain.md).
+
 ## ggseg 2.0.0
 
 CRAN release: 2026-02-19

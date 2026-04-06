@@ -46,15 +46,20 @@ Useful links:
 ## Author
 
 **Maintainer**: Athanasia Mo Mowinckel <a.m.mowinckel@psykologi.uio.no>
-([ORCID](https://orcid.org/0000-0002-5756-0223))
+([ORCID](https://orcid.org/0000-0002-5756-0223)) \[copyright holder\]
 
 Authors:
 
 - Didac Vidal-Piñeiro <d.v.pineiro@psykologi.uio.no>
-  ([ORCID](https://orcid.org/0000-0001-9997-9156))
+  ([ORCID](https://orcid.org/0000-0001-9997-9156)) \[copyright holder\]
 
 - Ramiro Magno <ramiro.magno@gmail.com>
   ([ORCID](https://orcid.org/0000-0001-5226-3441))
+
+Other contributors:
+
+- Center for Lifespan Changes in Brain and Cognition, University of
+  Oslo, Norway \[copyright holder\]
 
 ## Examples
 

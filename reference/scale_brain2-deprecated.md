@@ -25,3 +25,7 @@ scale_fill_brain2(...)
 - ...:
 
   Arguments passed to the replacement function.
+
+## Value
+
+A ggplot2 scale object.
