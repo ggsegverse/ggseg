@@ -50,7 +50,7 @@ brain_join <- function(data, atlas, by = NULL) {
   errs <- dt[is.na(dt$atlas), ]
 
   if (nrow(errs) > 0) {
-    errs <- dplyr::select(errs, -starts_with("."))
+    errs <- dplyr::select(errs, -dplyr::starts_with("."))
     errs <- dplyr::as_tibble(errs)
 
     cli::cli_warn(c(

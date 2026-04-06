@@ -10,7 +10,7 @@ status](https://www.r-pkg.org/badges/version/ggseg.png)](https://CRAN.R-project.
 [![code-quality](https://github.com/ggsegverse/ggseg/actions/workflows/code-quality.yaml/badge.svg)](https://github.com/ggsegverse/ggseg/actions/workflows/code-quality.yaml)
 [![Coverage
 Status](https://raw.githubusercontent.com/ggsegverse/ggseg/coverage/badges/coverage.svg)](https://github.com/ggsegverse/ggseg/actions/workflows/test-coverage.yaml)
-[![downloads](https://cranlogs.r-pkg.org/badges/last-month/ggseg?color=blue.png)](https://r-pkg.org/pkg/ggseg)
+[![downloads](https://cranlogs.r-pkg.org/badges/last-month/ggseg?color=blue)](https://r-pkg.org/pkg/ggseg)
 [![Lifecycle:
 stable](https://img.shields.io/badge/lifecycle-stable-brightgreen.svg)](https://lifecycle.r-lib.org/articles/stages.html)
 [![pkgcheck](https://github.com/ggsegverse/ggseg/workflows/pkgcheck/badge.svg)](https://github.com/ggsegverse/ggseg/actions?query=workflow%3Apkgcheck)

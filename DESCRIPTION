@@ -1,13 +1,15 @@
 Package: ggseg
 Title: Plotting Tool for Brain Atlases
-Version: 2.0.0
+Version: 2.1.0
 Authors@R: c(
-    person("Athanasia Mo", "Mowinckel", , "a.m.mowinckel@psykologi.uio.no", role = c("aut", "cre"),
+    person("Athanasia Mo", "Mowinckel", , "a.m.mowinckel@psykologi.uio.no", role = c("aut", "cre", "cph"),
            comment = c(ORCID = "0000-0002-5756-0223")),
-    person("Didac", "Vidal-Piñeiro", , "d.v.pineiro@psykologi.uio.no", role = "aut",
+    person("Didac", "Vidal-Piñeiro", , "d.v.pineiro@psykologi.uio.no", role = c("aut", "cph"),
            comment = c(ORCID = "0000-0001-9997-9156")),
     person("Ramiro", "Magno", , "ramiro.magno@gmail.com", role = "aut",
-           comment = c(ORCID = "0000-0001-5226-3441"))
+           comment = c(ORCID = "0000-0001-5226-3441")),
+    person("Center for Lifespan Changes in Brain and Cognition, University of Oslo, Norway",
+           role = "cph")
   )
 Description: Provides a 'ggplot2' geom and position for visualizing brain
     region data on cortical, subcortical, and white matter tract atlases.

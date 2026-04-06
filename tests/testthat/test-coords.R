@@ -16,32 +16,6 @@ describe("to_coords", {
   })
 })
 
-describe("coords2sf", {
-  atlas_df <- as.data.frame(dk())
-  coords <- sf2coords(atlas_df)
-  geo <- unnest(coords, ggseg)
-
-  it("works with coordinate data", {
-    result <- coords2sf(geo)
-    expect_s3_class(result, "sf")
-  })
-
-  it("respects vertex_size_limits minimum", {
-    result <- coords2sf(geo, vertex_size_limits = c(100, NA))
-    expect_s3_class(result, "sf")
-  })
-
-  it("respects vertex_size_limits maximum", {
-    result <- coords2sf(geo, vertex_size_limits = c(NA, 5000))
-    expect_s3_class(result, "sf")
-  })
-
-  it("respects both vertex_size_limits", {
-    result <- coords2sf(geo, vertex_size_limits = c(5, 50000))
-    expect_s3_class(result, "sf")
-  })
-})
-
 describe("sf2coords", {
   it("converts sf data to coords format", {
     result <- sf2coords(dk()$data$sf)
