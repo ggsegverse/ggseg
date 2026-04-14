@@ -52,6 +52,7 @@ layer_brain <- function(
 #'
 #' @importFrom utils capture.output
 #' @importFrom sf st_as_sf
+#' @importFrom ggplot2 ggproto ggproto_parent
 #' @keywords internal
 #' @noRd
 LayerBrain <- ggproto(
