@@ -21,7 +21,7 @@ an optional colour palette.
 dk
 #> function () 
 #> .dk_atlas
-#> <bytecode: 0x5580aac61590>
+#> <bytecode: 0x5613ee55dc00>
 #> <environment: namespace:ggseg.formats>
 ```
 
