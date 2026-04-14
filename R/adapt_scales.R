@@ -62,7 +62,6 @@ adapt_scales_cortical <- function(geobrain, position, aesthetics) {
 #' @noRd
 adapt_scales_subcortical <- function(geobrain, position, aesthetics) {
   stk_y <- dplyr::summarise(dplyr::group_by(geobrain, view), val = gap(.lat))
-  stk_x <- dplyr::summarise(dplyr::group_by(geobrain, view), val = gap(.long))
   disp <- dplyr::summarise_at(
     dplyr::group_by(geobrain, view),
     dplyr::vars(.long, .lat), list(gap)
