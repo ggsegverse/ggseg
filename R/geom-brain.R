@@ -23,6 +23,7 @@
 #' @return A list of ggplot2 layer and coord objects.
 #' @rdname ggbrain
 #' @export
+#' @importFrom ggplot2 aes coord_sf scale_fill_manual
 #'
 #' @examples
 #' library(ggplot2)
@@ -92,7 +93,7 @@ geom_brain <- function(
 #' @rdname ggbrain
 #' @usage NULL
 #' @format NULL
-#' @importFrom ggplot2 Geom aes
+#' @importFrom ggplot2 Geom aes ggproto draw_key_polygon
 GeomBrain <- ggproto(
   "GeomBrain",
   Geom,
@@ -151,6 +152,7 @@ GeomBrain <- ggproto(
 #'
 #' @return A grid [grob][grid::grid.grob] object.
 #' @keywords internal
+#' @importFrom ggplot2 GeomPolygon alpha .pt
 #' @noRd
 brain_grob <- function(
   x,

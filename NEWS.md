@@ -1,3 +1,7 @@
+# ggseg 2.1.1
+
+* Fix minor bug with ggproto
+
 # ggseg 2.1.0
 
 * Support cerebellar atlas type in 2D view stacking. Cerebellar atlases

@@ -130,10 +130,11 @@ position_brain <- function(
 #' the ggplot2 rendering pipeline. Created by [position_brain()].
 #'
 #' @keywords internal
+#' @importFrom ggplot2 ggproto Position
 #' @noRd
-PositionBrain <- ggplot2::ggproto(
+PositionBrain <- ggproto(
   "PositionBrain",
-  ggplot2:::Position,
+  Position,
   position = hemi + view ~ .,
   nrow = NULL,
   ncol = NULL,

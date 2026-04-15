@@ -13,11 +13,6 @@
 #' @name ggseg
 #' @docType package
 #' @keywords internal
-#' @importFrom ggplot2 aes alpha annotate coord_sf draw_key_polygon
-#'   element_blank element_rect element_text Geom geom_sf ggproto labs
-#'   layer scale_color_manual scale_colour_manual scale_fill_manual
-#'   scale_x_continuous scale_y_continuous theme .pt
-#' @importFrom ggplot2 GeomPolygon
 #' @importFrom ggseg.formats atlas_palette dk aseg tracula
 "_PACKAGE"
 

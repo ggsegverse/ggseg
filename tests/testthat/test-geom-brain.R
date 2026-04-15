@@ -214,8 +214,11 @@ describe("LayerBrain", {
     )
     expect_warning(
       expect_warning(
-        ggplot_build(
-          ggplot(bad_data) + geom_brain(atlas = dk(), mapping = aes(fill = p))
+        expect_message(
+          ggplot_build(
+            ggplot(bad_data) + geom_brain(atlas = dk(), mapping = aes(fill = p))
+          ),
+          "Merging atlas and data",
         ),
         "not merged properly"
       ),

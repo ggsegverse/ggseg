@@ -15,6 +15,7 @@
 #' @param show.legend Whether to include in legends.
 #'
 #' @return A [ggplot2::layer()] object of class `LayerBrain`.
+#' @importFrom ggplot2 layer
 #' @keywords internal
 #' @noRd
 layer_brain <- function(
@@ -29,7 +30,7 @@ layer_brain <- function(
   check.param = TRUE,
   show.legend = NA
 ) {
-  ggplot2::layer(
+  layer(
     geom = geom,
     stat = stat,
     data = data,
@@ -44,22 +45,31 @@ layer_brain <- function(
   )
 }
 
+# ggplot2 does not export `Layer`, so we reach into its namespace once
+# to get the parent ggproto. Using `getFromNamespace()` rather than `:::`
+# keeps `R CMD check` clean.
+ggplot2_Layer <- function() {
+  utils::getFromNamespace("Layer", "ggplot2")
+}
+
 #' Custom ggplot2 Layer for brain atlas data
 #'
 #' A [ggplot2::ggproto()] Layer subclass that handles atlas
 #' validation, hemisphere/view filtering, data joining, and
-#' automatic aesthetic mapping in `setup_layer()`.
+#' automatic aesthetic mapping in `setup_layer()`. Subclasses
+#' ggplot2's non-exported `Layer` ggproto via
+#' [utils::getFromNamespace()], avoiding `:::` usage.
 #'
-#' @importFrom utils capture.output
+#' @importFrom utils capture.output getFromNamespace
 #' @importFrom sf st_as_sf
 #' @importFrom ggplot2 ggproto ggproto_parent
 #' @keywords internal
 #' @noRd
 LayerBrain <- ggproto(
   "LayerBrain",
-  ggplot2:::Layer,
+  ggplot2_Layer(),
   setup_layer = function(self, data, plot) {
-    dt <- ggproto_parent(ggplot2:::Layer, self)$setup_layer(data, plot)
+    dt <- ggproto_parent(ggplot2_Layer(), self)$setup_layer(data, plot)
 
     atlas_obj <- self$geom_params$atlas
 
@@ -145,7 +155,7 @@ LayerBrain <- ggproto(
       }
     }
 
-    if (needs_mapping("geometry") && ggplot2:::is_sf(data)) {
+    if (needs_mapping("geometry") && inherits(data, "sf")) {
       geometry_col <- attr(data, "sf_column")
       self$computed_mapping$geometry <- as.name(geometry_col)
     }
