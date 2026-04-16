@@ -30,7 +30,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">ggseg</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">2.1.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">2.1.1</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -108,7 +108,7 @@ features, and an optional colour palette.</p>
 <code class="sourceCode R"><span><span class="va">dk</span></span>
 <span><span class="co">#&gt; function () </span></span>
 <span><span class="co">#&gt; .dk_atlas</span></span>
-<span><span class="co">#&gt; &lt;bytecode: 0x5613ee55dc00&gt;</span></span>
+<span><span class="co">#&gt; &lt;bytecode: 0x558406939420&gt;</span></span>
 <span><span class="co">#&gt; &lt;environment: namespace:ggseg.formats&gt;</span></span></code></pre></div>
 <p>The <code>dk</code> atlas (Desikan-Killiany) ships with the package.
 Call <code><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot()</a></code> for a quick look:</p>
@@ -211,8 +211,10 @@ Brain views arranged using formula syntax in position_brain().
 <span>  <span class="fu"><a href="../reference/ggbrain.html">geom_brain</a></span><span class="op">(</span></span>
 <span>    atlas <span class="op">=</span> <span class="fu"><a href="https://ggsegverse.github.io/ggseg.formats/reference/dk.html">dk</a></span><span class="op">(</span><span class="op">)</span>,</span>
 <span>    position <span class="op">=</span> <span class="fu"><a href="../reference/position_brain.html">position_brain</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span>
-<span>      <span class="st">"right lateral"</span>, <span class="st">"right medial"</span>,</span>
-<span>      <span class="st">"left lateral"</span>, <span class="st">"left medial"</span></span>
+<span>      <span class="st">"right lateral"</span>,</span>
+<span>      <span class="st">"right medial"</span>,</span>
+<span>      <span class="st">"left lateral"</span>,</span>
+<span>      <span class="st">"left medial"</span></span>
 <span>    <span class="op">)</span><span class="op">)</span></span>
 <span>  <span class="op">)</span></span></code></pre></div>
 <div class="figure">
@@ -270,9 +272,12 @@ automatically:</p>
 <span></span>
 <span><span class="va">some_data</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://tibble.tidyverse.org/reference/tibble.html" class="external-link">tibble</a></span><span class="op">(</span></span>
 <span>  region <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span>
-<span>    <span class="st">"transverse temporal"</span>, <span class="st">"insula"</span>, <span class="st">"precentral"</span>, <span class="st">"superior parietal"</span></span>
+<span>    <span class="st">"transverse temporal"</span>,</span>
+<span>    <span class="st">"insula"</span>,</span>
+<span>    <span class="st">"precentral"</span>,</span>
+<span>    <span class="st">"superior parietal"</span></span>
 <span>  <span class="op">)</span>,</span>
-<span>  p <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sample.html" class="external-link">sample</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">.5</span>, <span class="fl">.001</span><span class="op">)</span>, <span class="fl">4</span><span class="op">)</span></span>
+<span>  p <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sample.html" class="external-link">sample</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">0.5</span>, <span class="fl">0.001</span><span class="op">)</span>, <span class="fl">4</span><span class="op">)</span></span>
 <span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="va">some_data</span><span class="op">)</span> <span class="op">+</span></span>
@@ -300,10 +305,16 @@ detects faceting variables and replicates the full atlas in each
 panel:</p>
 <div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">some_data</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://tibble.tidyverse.org/reference/tibble.html" class="external-link">tibble</a></span><span class="op">(</span></span>
-<span>  region <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span>
-<span>    <span class="st">"transverse temporal"</span>, <span class="st">"insula"</span>, <span class="st">"precentral"</span>, <span class="st">"superior parietal"</span></span>
-<span>  <span class="op">)</span>, <span class="fl">2</span><span class="op">)</span>,</span>
-<span>  p <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sample.html" class="external-link">sample</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">.5</span>, <span class="fl">.001</span><span class="op">)</span>, <span class="fl">8</span><span class="op">)</span>,</span>
+<span>  region <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span></span>
+<span>    <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span>
+<span>      <span class="st">"transverse temporal"</span>,</span>
+<span>      <span class="st">"insula"</span>,</span>
+<span>      <span class="st">"precentral"</span>,</span>
+<span>      <span class="st">"superior parietal"</span></span>
+<span>    <span class="op">)</span>,</span>
+<span>    <span class="fl">2</span></span>
+<span>  <span class="op">)</span>,</span>
+<span>  p <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sample.html" class="external-link">sample</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">0.5</span>, <span class="fl">0.001</span><span class="op">)</span>, <span class="fl">8</span><span class="op">)</span>,</span>
 <span>  group <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="st">"A"</span>, <span class="fl">4</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="st">"B"</span>, <span class="fl">4</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="op">)</span></span>
 <span></span>

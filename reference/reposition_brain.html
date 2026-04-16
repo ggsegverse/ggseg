@@ -27,7 +27,7 @@ order of appearance.'><meta property="og:image" content="https://ggsegverse.gith
 
     <a class="navbar-brand me-2" href="../index.html">ggseg</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">2.1.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">2.1.1</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -128,156 +128,13 @@ formulas like `hemi ~ view`. For subcortical/tract atlases, use
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu">reposition_brain</span><span class="op">(</span><span class="fu"><a href="https://ggsegverse.github.io/ggseg.formats/reference/dk.html">dk</a></span><span class="op">(</span><span class="op">)</span>, <span class="va">hemi</span> <span class="op">~</span> <span class="va">view</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Simple feature collection with 191 features and 8 fields</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Geometry type: MULTIPOLYGON</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Dimension:     XY</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Bounding box:  xmin: -29.07095 ymin: -29.07095 xmax: 2936.166 ymax: 974.9328</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> CRS:           NA</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 191 × 9</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    label   view  hemi  region lobe                   geometry atlas type  colour</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  <span style="color: #BCBCBC;">*</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>            <span style="color: #949494; font-style: italic;">&lt;MULTIPOLYGON&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 1</span> lh_unk… infe… left  <span style="color: #BB0000;">NA</span>     <span style="color: #BB0000;">NA</span>    (((283.0321 93.76352, 43… dk    cort… <span style="color: #BB0000;">NA</span>    </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 2</span> lh_ban… infe… left  banks… temp… (((450.3846 295.7177, 47… dk    cort… #1964…</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 3</span> lh_cau… infe… left  cauda… fron… (((188.6943 302.0361, 18… dk    cort… #6419…</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 4</span> lh_cor… infe… left  corpu… whit… (((402.2002 121.1967, 40… dk    cort… #7846…</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 5</span> lh_ent… infe… left  entor… temp… (((274.1602 156.9255, 31… dk    cort… #DC14…</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 6</span> lh_fro… infe… left  front… fron… (((17.16195 122.8896, 26… dk    cort… #6400…</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 7</span> lh_fus… infe… left  fusif… temp… (((559.6909 157.8355, 56… dk    cort… #B4DC…</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 8</span> lh_inf… infe… left  infer… pari… (((467.6347 325.1216, 46… dk    cort… #DC3C…</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 9</span> lh_inf… infe… left  infer… temp… (((245.822 185.0794, 255… dk    cort… #B428…</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">10</span> lh_ins… infe… left  insula insu… (((181.2922 169.843, 191… dk    cort… #FFC0…</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># ℹ 181 more rows</span></span>
 <span class="r-in"><span><span class="fu">reposition_brain</span><span class="op">(</span><span class="fu"><a href="https://ggsegverse.github.io/ggseg.formats/reference/dk.html">dk</a></span><span class="op">(</span><span class="op">)</span>, <span class="va">view</span> <span class="op">~</span> <span class="va">hemi</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Simple feature collection with 191 features and 8 fields</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Geometry type: MULTIPOLYGON</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Dimension:     XY</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Bounding box:  xmin: -19.19707 ymin: -19.19707 xmax: 1409.547 ymax: 1938.904</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> CRS:           NA</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 191 × 9</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    label   view  hemi  region lobe                   geometry atlas type  colour</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  <span style="color: #BCBCBC;">*</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>            <span style="color: #949494; font-style: italic;">&lt;MULTIPOLYGON&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 1</span> lh_unk… infe… left  <span style="color: #BB0000;">NA</span>     <span style="color: #BB0000;">NA</span>    (((283.0321 93.76352, 43… dk    cort… <span style="color: #BB0000;">NA</span>    </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 2</span> lh_ban… infe… left  banks… temp… (((450.3846 295.7177, 47… dk    cort… #1964…</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 3</span> lh_cau… infe… left  cauda… fron… (((188.6943 302.0361, 18… dk    cort… #6419…</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 4</span> lh_cor… infe… left  corpu… whit… (((402.2002 121.1967, 40… dk    cort… #7846…</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 5</span> lh_ent… infe… left  entor… temp… (((274.1602 156.9255, 31… dk    cort… #DC14…</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 6</span> lh_fro… infe… left  front… fron… (((17.16195 122.8896, 26… dk    cort… #6400…</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 7</span> lh_fus… infe… left  fusif… temp… (((559.6909 157.8355, 56… dk    cort… #B4DC…</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 8</span> lh_inf… infe… left  infer… pari… (((467.6347 325.1216, 46… dk    cort… #DC3C…</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 9</span> lh_inf… infe… left  infer… temp… (((245.822 185.0794, 255… dk    cort… #B428…</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">10</span> lh_ins… infe… left  insula insu… (((181.2922 169.843, 191… dk    cort… #FFC0…</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># ℹ 181 more rows</span></span>
 <span class="r-in"><span><span class="fu">reposition_brain</span><span class="op">(</span><span class="fu"><a href="https://ggsegverse.github.io/ggseg.formats/reference/dk.html">dk</a></span><span class="op">(</span><span class="op">)</span>, <span class="va">hemi</span> <span class="op">+</span> <span class="va">view</span> <span class="op">~</span> <span class="va">.</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Simple feature collection with 191 features and 8 fields</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Geometry type: MULTIPOLYGON</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Dimension:     XY</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Bounding box:  xmin: -39.83406 ymin: -39.83406 xmax: 671.8112 ymax: 4023.24</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> CRS:           NA</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 191 × 9</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    label   view  hemi  region lobe                   geometry atlas type  colour</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  <span style="color: #BCBCBC;">*</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>            <span style="color: #949494; font-style: italic;">&lt;MULTIPOLYGON&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 1</span> lh_unk… infe… left  <span style="color: #BB0000;">NA</span>     <span style="color: #BB0000;">NA</span>    (((283.0321 93.76352, 43… dk    cort… <span style="color: #BB0000;">NA</span>    </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 2</span> lh_ban… infe… left  banks… temp… (((450.3846 295.7177, 47… dk    cort… #1964…</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 3</span> lh_cau… infe… left  cauda… fron… (((188.6943 302.0361, 18… dk    cort… #6419…</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 4</span> lh_cor… infe… left  corpu… whit… (((402.2002 121.1967, 40… dk    cort… #7846…</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 5</span> lh_ent… infe… left  entor… temp… (((274.1602 156.9255, 31… dk    cort… #DC14…</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 6</span> lh_fro… infe… left  front… fron… (((17.16195 122.8896, 26… dk    cort… #6400…</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 7</span> lh_fus… infe… left  fusif… temp… (((559.6909 157.8355, 56… dk    cort… #B4DC…</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 8</span> lh_inf… infe… left  infer… pari… (((467.6347 325.1216, 46… dk    cort… #DC3C…</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 9</span> lh_inf… infe… left  infer… temp… (((245.822 185.0794, 255… dk    cort… #B428…</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">10</span> lh_ins… infe… left  insula insu… (((181.2922 169.843, 191… dk    cort… #FFC0…</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># ℹ 181 more rows</span></span>
 <span class="r-in"><span><span class="fu">reposition_brain</span><span class="op">(</span><span class="fu"><a href="https://ggsegverse.github.io/ggseg.formats/reference/dk.html">dk</a></span><span class="op">(</span><span class="op">)</span>, <span class="va">.</span> <span class="op">~</span> <span class="va">hemi</span> <span class="op">+</span> <span class="va">view</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Simple feature collection with 191 features and 8 fields</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Geometry type: MULTIPOLYGON</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Dimension:     XY</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Bounding box:  xmin: -59.40585 ymin: -59.40585 xmax: 5999.991 ymax: 489.3431</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> CRS:           NA</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 191 × 9</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    label   view  hemi  region lobe                   geometry atlas type  colour</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  <span style="color: #BCBCBC;">*</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>            <span style="color: #949494; font-style: italic;">&lt;MULTIPOLYGON&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 1</span> lh_unk… infe… left  <span style="color: #BB0000;">NA</span>     <span style="color: #BB0000;">NA</span>    (((283.0321 93.76352, 43… dk    cort… <span style="color: #BB0000;">NA</span>    </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 2</span> lh_ban… infe… left  banks… temp… (((450.3846 295.7177, 47… dk    cort… #1964…</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 3</span> lh_cau… infe… left  cauda… fron… (((188.6943 302.0361, 18… dk    cort… #6419…</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 4</span> lh_cor… infe… left  corpu… whit… (((402.2002 121.1967, 40… dk    cort… #7846…</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 5</span> lh_ent… infe… left  entor… temp… (((274.1602 156.9255, 31… dk    cort… #DC14…</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 6</span> lh_fro… infe… left  front… fron… (((17.16195 122.8896, 26… dk    cort… #6400…</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 7</span> lh_fus… infe… left  fusif… temp… (((559.6909 157.8355, 56… dk    cort… #B4DC…</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 8</span> lh_inf… infe… left  infer… pari… (((467.6347 325.1216, 46… dk    cort… #DC3C…</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 9</span> lh_inf… infe… left  infer… temp… (((245.822 185.0794, 255… dk    cort… #B428…</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">10</span> lh_ins… infe… left  insula insu… (((181.2922 169.843, 191… dk    cort… #FFC0…</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># ℹ 181 more rows</span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># \donttest{</span></span></span>
 <span class="r-in"><span><span class="fu">reposition_brain</span><span class="op">(</span><span class="fu"><a href="https://ggsegverse.github.io/ggseg.formats/reference/aseg.html">aseg</a></span><span class="op">(</span><span class="op">)</span>, nrow <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Simple feature collection with 262 features and 8 fields</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Geometry type: MULTIPOLYGON</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Dimension:     XY</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Bounding box:  xmin: -12.14948 ymin: -12.14948 xmax: 1227.097 ymax: 611.2467</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> CRS:           NA</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> First 10 features:</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                   label      view hemi         region     structure atlas</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 256             cortex_ coronal_2 &lt;NA&gt;           &lt;NA&gt;          &lt;NA&gt;  aseg</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1            Brain-Stem coronal_2 &lt;NA&gt;     Brain Stem     brainstem  aseg</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 10          CC_Anterior coronal_2 &lt;NA&gt;    cc anterior          &lt;NA&gt;  aseg</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 15           CC_Central coronal_2 &lt;NA&gt;     cc central          &lt;NA&gt;  aseg</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 31  Left-Accumbens-area coronal_2 left accumbens area          &lt;NA&gt;  aseg</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 34        Left-Amygdala coronal_2 left       Amygdala        limbic  aseg</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 35        Left-Amygdala coronal_2 left       Amygdala        limbic  aseg</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 52         Left-Caudate coronal_2 left        Caudate basal ganglia  aseg</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 53         Left-Caudate coronal_2 left        Caudate basal ganglia  aseg</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 70     Left-Hippocampus coronal_2 left    Hippocampus        limbic  aseg</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>            type  colour                       geometry</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 256 subcortical    &lt;NA&gt; MULTIPOLYGON (((144.4187 21...</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1   subcortical #779FB0 MULTIPOLYGON (((125.55 58.9...</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 10  subcortical #0000FF MULTIPOLYGON (((133.3539 14...</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 15  subcortical #0000A0 MULTIPOLYGON (((132.344 150...</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 31  subcortical #FFA500 MULTIPOLYGON (((125.2612 12...</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 34  subcortical #67FFFF MULTIPOLYGON (((89.67841 68...</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 35  subcortical #67FFFF MULTIPOLYGON (((89.67841 68...</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 52  subcortical #7ABADC MULTIPOLYGON (((115.2978 12...</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 53  subcortical #7ABADC MULTIPOLYGON (((115.2978 12...</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 70  subcortical #DCD814 MULTIPOLYGON (((91.13218 68...</span>
 <span class="r-in"><span><span class="fu">reposition_brain</span><span class="op">(</span><span class="fu"><a href="https://ggsegverse.github.io/ggseg.formats/reference/aseg.html">aseg</a></span><span class="op">(</span><span class="op">)</span>, views <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"sagittal"</span>, <span class="st">"axial_3"</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Simple feature collection with 61 features and 8 fields</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Geometry type: MULTIPOLYGON</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Dimension:     XY</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Bounding box:  xmin: -5.66502 ymin: -5.66502 xmax: 572.167 ymax: 262.8586</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> CRS:           NA</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> First 10 features:</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                                  label     view hemi           region</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> X.sagittal..257                cortex_ sagittal &lt;NA&gt;             &lt;NA&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> X.sagittal..6               Brain-Stem sagittal &lt;NA&gt;       Brain Stem</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> X.sagittal..7              CC_Anterior sagittal &lt;NA&gt;      cc anterior</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> X.sagittal..12              CC_Central sagittal &lt;NA&gt;       cc central</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> X.sagittal..18         CC_Mid_Anterior sagittal &lt;NA&gt;  cc mid anterior</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> X.sagittal..20        CC_Mid_Posterior sagittal &lt;NA&gt; cc mid posterior</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> X.sagittal..25            CC_Posterior sagittal &lt;NA&gt;     cc posterior</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> X.sagittal..54  Left-Cerebellum-Cortex sagittal left       Cerebellum</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> X.sagittal..55  Left-Cerebellum-Cortex sagittal left       Cerebellum</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> X.sagittal..120          Left-Thalamus sagittal left         Thalamus</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                     structure atlas        type  colour</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> X.sagittal..257          &lt;NA&gt;  aseg subcortical    &lt;NA&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> X.sagittal..6       brainstem  aseg subcortical #779FB0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> X.sagittal..7            &lt;NA&gt;  aseg subcortical #0000FF</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> X.sagittal..12           &lt;NA&gt;  aseg subcortical #0000A0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> X.sagittal..18           &lt;NA&gt;  aseg subcortical #0000D0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> X.sagittal..20           &lt;NA&gt;  aseg subcortical #000070</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> X.sagittal..25           &lt;NA&gt;  aseg subcortical #000040</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> X.sagittal..54     cerebellum  aseg subcortical #E69422</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> X.sagittal..55     cerebellum  aseg subcortical #E69422</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> X.sagittal..120 basal ganglia  aseg subcortical #00760E</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                                       geometry</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> X.sagittal..257 MULTIPOLYGON (((65.44853 20...</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> X.sagittal..6   MULTIPOLYGON (((92.93022 12...</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> X.sagittal..7   MULTIPOLYGON (((189.3959 11...</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> X.sagittal..12  MULTIPOLYGON (((164.3167 15...</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> X.sagittal..18  MULTIPOLYGON (((188.9379 14...</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> X.sagittal..20  MULTIPOLYGON (((123.7356 15...</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> X.sagittal..25  MULTIPOLYGON (((95.71832 13...</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> X.sagittal..54  MULTIPOLYGON (((62.23099 10...</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> X.sagittal..55  MULTIPOLYGON (((62.23099 10...</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> X.sagittal..120 MULTIPOLYGON (((140.0147 13...</span>
 <span class="r-in"><span><span class="co"># }</span></span></span>
 </code></pre></div>
     </div>

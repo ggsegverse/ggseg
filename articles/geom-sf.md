@@ -82,9 +82,12 @@ handles column detection:
 ``` r
 some_data <- tibble(
   region = c(
-    "transverse temporal", "insula", "precentral", "superior parietal"
+    "transverse temporal",
+    "insula",
+    "precentral",
+    "superior parietal"
   ),
-  p = sample(seq(0, .5, .001), 4)
+  p = sample(seq(0, 0.5, 0.001), 4)
 )
 
 some_data |>
@@ -177,7 +180,7 @@ some_data |>
   geom_sf(show.legend = FALSE) +
   geom_sf_label(
     aes(label = ifelse(!is.na(p), region, NA)),
-    alpha = .8,
+    alpha = 0.8,
     show.legend = FALSE
   )
 #> Merging atlas and data by region.
@@ -203,10 +206,16 @@ The grouping tells the join to replicate the atlas for each group:
 
 ``` r
 some_data <- tibble(
-  region = rep(c(
-    "transverse temporal", "insula", "precentral", "superior parietal"
-  ), 2),
-  p = sample(seq(0, .5, .001), 8),
+  region = rep(
+    c(
+      "transverse temporal",
+      "insula",
+      "precentral",
+      "superior parietal"
+    ),
+    2
+  ),
+  p = sample(seq(0, 0.5, 0.001), 8),
   group = c(rep("A", 4), rep("B", 4))
 )
 

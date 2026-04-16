@@ -1,5 +1,9 @@
 # Changelog
 
+## ggseg 2.1.1
+
+- Fix minor bug with ggproto
+
 ## ggseg 2.1.0
 
 CRAN release: 2026-04-03

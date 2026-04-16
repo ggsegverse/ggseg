@@ -19,7 +19,7 @@ These functions have been renamed for clarity:
 
     <a class="navbar-brand me-2" href="../index.html">ggseg</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">2.1.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">2.1.1</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -95,6 +95,54 @@ These functions have been renamed for clarity:
     <p>A ggplot2 scale object.</p>
     </div>
 
+    <div class="section level2">
+    <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">pal</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"transverse temporal"</span> <span class="op">=</span> <span class="st">"#FF0000"</span>, <span class="st">"insula"</span> <span class="op">=</span> <span class="st">"#00FF00"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/warning.html" class="external-link">suppressWarnings</a></span><span class="op">(</span><span class="fu"><a href="scale_brain_manual.html">scale_fill_brain_manual</a></span><span class="op">(</span>palette <span class="op">=</span> <span class="va">pal</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;ggproto object: Class ScaleDiscrete, Scale, gg&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     aesthetics: fill</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     axis_order: function</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     break_info: function</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     break_positions: function</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     breaks: waiver</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     call: call</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     clone: function</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     dimension: function</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     drop: TRUE</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     expand: waiver</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     fallback_palette: function</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     get_breaks: function</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     get_breaks_minor: function</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     get_labels: function</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     get_limits: function</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     get_transformation: function</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     guide: legend</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     is_discrete: function</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     is_empty: function</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     labels: waiver</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     limits: function</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     make_sec_title: function</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     make_title: function</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     map: function</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     map_df: function</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     minor_breaks: waiver</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     n.breaks.cache: NULL</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     na.translate: TRUE</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     na.value: grey</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     name: waiver</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     palette: function</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     palette.cache: NULL</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     position: left</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     range: environment</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     rescale: function</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     reset: function</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     train: function</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     train_df: function</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     transform: function</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     transform_df: function</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     super:  &lt;ggproto object: Class ScaleDiscrete, Scale, gg&gt;</span>
+</code></pre></div>
+    </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside></div>
 
