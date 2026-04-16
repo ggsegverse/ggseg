@@ -1,5 +1,3 @@
-# position ----
-
 #' Reposition brain slices
 #'
 #' Function for repositioning
@@ -41,8 +39,11 @@ reposition_brain <- function(
   ncol = NULL,
   views = NULL
 ) {
-  data <- as.data.frame(data, stringsAsFactors = FALSE)
-  frame_2_position(data, position, nrow = nrow, ncol = ncol, views = views)
+  data <- as.data.frame(
+    data,
+    stringsAsFactors = FALSE
+  ) |>
+    frame_2_position(position, nrow = nrow, ncol = ncol, views = views)
 }
 
 
@@ -165,13 +166,60 @@ PositionBrain <- ggproto(
       layout$coord$limits$x <- bbx[c(1, 3)]
     }
 
-    data <- df3
-
     df3
   }
 )
 
 # geometry movers ----
+
+#' Extract and validate variable names from a position formula
+#'
+#' @param pos A formula describing the layout.
+#' @return Character vector of variable names (excluding `.`).
+#' @keywords internal
+#' @noRd
+parse_formula_vars <- function(pos) {
+  chosen <- all.vars(pos, unique = FALSE)
+  chosen <- chosen[!grepl(".", chosen, fixed = TRUE)]
+
+  if (anyDuplicated(chosen)) {
+    cli::cli_abort(
+      "Cannot position brain with the same data as columns and rows"
+    )
+  }
+  chosen
+}
+
+#' Detect stacking direction from a formula with `+`
+#'
+#' For formulas like `hemi + view ~ .` or `. ~ hemi + view`,
+#' determines whether the stacked layout is row-based or column-based.
+#'
+#' @param pos A formula containing `+` on one side and `.` on the other.
+#' @return `"rows"` or `"columns"`.
+#' @keywords internal
+#' @noRd
+stacking_direction <- function(pos) {
+  if (grepl("~\\s*\\.", deparse(pos))) "rows" else "columns"
+}
+
+#' Validate that a single-direction formula includes both `.` and `~`
+#'
+#' @param pos A formula.
+#' @param position The resolved position (`"rows"`, `"columns"`, or vars).
+#' @keywords internal
+#' @noRd
+validate_stacking_formula <- function(pos, position) {
+  is_single <- length(position) == 1 && position %in% c("rows", "columns")
+  if (!is_single) return(invisible())
+
+  has_both <- sum(grepl("\\.|~", pos)) == 2
+  if (!has_both) {
+    cli::cli_abort(
+      "Formula for a single row or column must contain both a '.' and '~'"
+    )
+  }
+}
 
 #' Parse a position formula into layout instructions
 #'
@@ -186,60 +234,65 @@ PositionBrain <- ggproto(
 #' @keywords internal
 #' @noRd
 position_formula <- function(pos, data) {
-  chosen <- all.vars(pos, unique = FALSE)
-  chosen <- chosen[!grepl("\\.", chosen)]
-
-  if (any(duplicated(chosen))) {
-    cli::cli_abort(
-      "Cannot position brain with the same data as columns and rows"
-    )
-  }
-
+  chosen <- parse_formula_vars(pos)
   atlas_type <- unique(data$type)[1]
 
   if (atlas_type == "cortical") {
-    if (length(chosen) < 2) {
-      missing_vars <- c("view", "hemi")[!c("view", "hemi") %in% chosen]
-      cli::cli_abort(c(
-        "Position formula not correct.",
-        "x" = paste("Missing:", paste(missing_vars, collapse = " & "))
-      ))
-    }
-    position <- if (length(grep("\\+", pos)) > 0) {
-      ifelse(grep("^\\.", pos) == 2, "columns", "rows")
-    } else {
-      chosen
-    }
+    position <- position_cortical(pos, chosen)
   } else {
-    if ("type" %in% chosen) {
-      data$.view_type <- extract_view_type(data$view)
-      chosen[chosen == "type"] <- ".view_type"
-    }
-
-    if (length(chosen) == 1) {
-      position <- if (grepl("~\\s*\\.", deparse(pos))) {
-        "rows"
-      } else {
-        "columns"
-      }
-    } else {
-      position <- chosen
-    }
+    result <- position_subcortical(pos, chosen, data)
+    position <- result$position
+    chosen <- result$chosen
+    data <- result$data
   }
 
-  has_both <- sum(grepl("\\.|~", pos)) == 2
-  is_single <- position %in% c("rows", "columns")
-  if (all(!has_both & is_single)) {
-    cli::cli_abort(
-      "Formula for a single row or column must contain both a '.' and '~'"
-    )
+  validate_stacking_formula(pos, position)
+  list(position = position, chosen = chosen, data = data)
+}
+
+#' Resolve position for a cortical atlas formula
+#'
+#' @param pos A formula.
+#' @param chosen Character vector of variable names.
+#' @return Position specification: variable names or `"rows"`/`"columns"`.
+#' @keywords internal
+#' @noRd
+position_cortical <- function(pos, chosen) {
+  if (length(chosen) < 2) {
+    missing_vars <- c("view", "hemi")[!c("view", "hemi") %in% chosen]
+    cli::cli_abort(c(
+      "Position formula not correct.",
+      "x" = paste("Missing:", paste(missing_vars, collapse = " & "))
+    ))
+  }
+  if (any(grepl("+", pos, fixed = TRUE))) {
+    stacking_direction(pos)
+  } else {
+    chosen
+  }
+}
+
+#' Resolve position for a subcortical/tract atlas formula
+#'
+#' @param pos A formula.
+#' @param chosen Character vector of variable names.
+#' @param data Data.frame with atlas columns.
+#' @return A list with `position`, `chosen`, and `data`.
+#' @keywords internal
+#' @noRd
+position_subcortical <- function(pos, chosen, data) {
+  if ("type" %in% chosen) {
+    data$.view_type <- extract_view_type(data$view)
+    chosen[chosen == "type"] <- ".view_type"
   }
 
-  list(
-    position = position,
-    chosen = chosen,
-    data = data
-  )
+  position <- if (length(chosen) == 1) {
+    stacking_direction(pos)
+  } else {
+    chosen
+  }
+
+  list(position = position, chosen = chosen, data = data)
 }
 
 
@@ -257,7 +310,7 @@ extract_view_type <- function(views) {
   vapply(
     views,
     function(v) {
-      parts <- strsplit(v, "_")[[1]]
+      parts <- strsplit(v, "_", fixed = TRUE)[[1]]
       if (length(parts) >= 1) parts[1] else v # nocov
     },
     character(1),
@@ -387,11 +440,14 @@ split_data <- function(data, position) {
     layout_direction <- "columns"
     if (length(position) == 1) {
       if (position %in% c("horizontal", "vertical")) {
-        layout_direction <- ifelse(position == "vertical", "rows", "columns")
+        layout_direction <- if (position == "vertical") "rows" else "columns"
         position <- default_order(data)
       }
     }
-    pos <- as.data.frame(strsplit(position, " "), stringsAsFactors = FALSE)
+    pos <- as.data.frame(
+      strsplit(position, " ", fixed = TRUE),
+      stringsAsFactors = FALSE
+    )
     atlas_type <- unique(data$type)[1]
     if (atlas_type == "cortical") {
       k <- cbind(
@@ -399,7 +455,7 @@ split_data <- function(data, position) {
         pos[1, ] %in% data$hemi
       )
       k <- vapply(seq_len(nrow(k)), function(x) sum(k[x, ]), numeric(1))
-      pos <- pos[ifelse(k == 2, TRUE, FALSE)]
+      pos <- pos[k == 2]
 
       df2 <- lapply(pos, function(x) {
         data[data$hemi == x[1] & data$view == x[2], ]
@@ -503,63 +559,78 @@ stack_vertical <- function(df) {
 #' @keywords internal
 #' @noRd
 stack_grid <- function(df, rows, columns) {
-  bx <- list()
   sep <- get_sep(df)
+  lookup <- grid_lookup(df, rows, columns)
 
-  get_unique <- function(x, col) {
-    val <- unique(x[[col]])
-    if (is.numeric(val)) as.character(val) else val
-  }
-
-  row_vals <- unique(vapply(df, get_unique, character(1), rows))
-  col_vals <- unique(vapply(df, get_unique, character(1), columns))
-
-  df_ordered <- list()
-  for (r in seq_along(row_vals)) {
-    for (c in seq_along(col_vals)) {
-      match_fn <- function(x) {
-        row_match <- unique(x[[rows]]) == row_vals[r]
-        col_match <- unique(x[[columns]]) == col_vals[c]
-        isTRUE(row_match) && isTRUE(col_match)
-      }
-      idx <- which(vapply(df, match_fn, logical(1)))
-      if (length(idx) == 1) {
-        df_ordered[[length(df_ordered) + 1]] <- list(
-          data = df[[idx]],
-          row = r,
-          col = c
-        )
-      }
-    }
-  }
+  grid <- expand.grid(
+    col_idx = seq_along(lookup$col_vals),
+    row_idx = seq_along(lookup$row_vals)
+  )
 
   cell_size <- sep / 1.2
-  df_positioned <- lapply(df_ordered, function(item) {
-    grid_pos <- c((item$col - 1) * sep[1], (item$row - 1) * sep[2])
-    center_view(item$data, cell_size, grid_pos)
-  })
+  df_positioned <- Map(
+    function(ri, ci) {
+      idx <- which(
+        lookup$df_rows == lookup$row_vals[ri] &
+          lookup$df_cols == lookup$col_vals[ci]
+      )
+      if (length(idx) != 1) return(NULL)
+      grid_pos <- c((ci - 1) * sep[1], (ri - 1) * sep[2])
+      center_view(df[[idx]], cell_size, grid_pos)
+    },
+    grid$row_idx,
+    grid$col_idx
+  )
 
+  df_positioned <- Filter(Negate(is.null), df_positioned)
   bx <- lapply(df_positioned, function(x) sf::st_bbox(x$geometry))
-  result_df <- do.call(rbind, df_positioned)
+  result_df <- drop_temp_columns(do.call(rbind, df_positioned))
 
-  cols_to_remove <- c(
-    "xmin",
-    "xmax",
-    "ymin",
-    "ymax",
-    ".grid_row",
-    ".grid_col",
-    ".view_type"
-  )
-  cols_to_remove <- cols_to_remove[cols_to_remove %in% names(result_df)]
-  if (length(cols_to_remove) > 0) {
-    result_df[, cols_to_remove] <- NULL
+  list(df = result_df, box = get_box(bx))
+}
+
+#' Build a lookup of row/column values per data.frame element
+#'
+#' @param df List of data.frames from a split atlas.
+#' @param rows Column name for the row variable.
+#' @param columns Column name for the column variable.
+#'
+#' @return A list with `df_rows`, `df_cols` (per-element values),
+#'   and `row_vals`, `col_vals` (unique levels).
+#' @keywords internal
+#' @noRd
+grid_lookup <- function(df, rows, columns) {
+  as_char <- function(x) {
+    if (is.numeric(x)) as.character(x) else x
   }
-
-  list(
-    df = result_df,
-    box = get_box(bx)
+  df_rows <- vapply(
+    df, function(x) as_char(unique(x[[rows]])), character(1)
   )
+  df_cols <- vapply(
+    df, function(x) as_char(unique(x[[columns]])), character(1)
+  )
+  list(
+    df_rows = df_rows,
+    df_cols = df_cols,
+    row_vals = unique(df_rows),
+    col_vals = unique(df_cols)
+  )
+}
+
+#' Remove temporary columns added during grid layout
+#'
+#' @param df A data.frame.
+#' @return The data.frame with temp columns removed.
+#' @keywords internal
+#' @noRd
+drop_temp_columns <- function(df) {
+  temp <- c(
+    "xmin", "xmax", "ymin", "ymax",
+    ".grid_row", ".grid_col", ".view_type"
+  )
+  temp <- temp[temp %in% names(df)]
+  if (length(temp) > 0) df[, temp] <- NULL
+  df
 }
 
 #' Compute a padded bounding box from a list of bboxes
@@ -571,7 +642,7 @@ stack_grid <- function(df, rows, columns) {
 #' @noRd
 get_box <- function(bx) {
   bx <- do.call(rbind, bx)
-  pad <- max(bx) * .01
+  pad <- max(bx) * 0.01
   bx <- c(
     -pad,
     -pad,
@@ -597,7 +668,7 @@ get_sep <- function(data) {
   get_bbox <- function(x) sf::st_bbox(x$geometry)
   bboxes <- vapply(data, get_bbox, numeric(4))
   sep <- c(max(bboxes[3, ]), max(bboxes[4, ]))
-  c("x" = sep[1] + sep[1] * .2, "y" = sep[2] + sep[2] * .2)
+  c("x" = sep[1] + sep[1] * 0.2, "y" = sep[2] + sep[2] * 0.2)
 }
 
 #' Generate the default view ordering for an atlas
@@ -611,13 +682,13 @@ get_sep <- function(data) {
 #' @keywords internal
 #' @noRd
 default_order <- function(data) {
-  if (unique(data$type) == "cortical") {
-    sides <- unique(data$view)
-    left_sides <- sides[sides %in% unique(data$view[data$hemi == "left"])]
-    right_sides <- sides[sides %in% unique(data$view[data$hemi == "right"])]
-    left_views <- paste("left", left_sides)
-    right_views <- paste("right", right_sides)
-    return(c(left_views, right_views))
+  if (unique(data$type) != "cortical") {
+    return(unique(data$view))
   }
-  unique(data$view)
+  sides <- unique(data$view)
+  left_sides <- sides[sides %in% unique(data$view[data$hemi == "left"])]
+  right_sides <- sides[sides %in% unique(data$view[data$hemi == "right"])]
+  left_views <- paste("left", left_sides)
+  right_views <- paste("right", right_sides)
+  c(left_views, right_views)
 }

@@ -46,7 +46,7 @@ describe("brain_join", {
     )
     expect_s3_class(result, "sf")
     expect_true("grp" %in% names(result))
-    expect_equal(sort(unique(result$grp)), c("G1", "G2"))
+    expect_identical(sort(unique(result$grp)), c("G1", "G2"))
     atlas_rows <- nrow(as.data.frame(dk()))
     rows_per_grp <- tapply(result$grp, result$grp, length)
     expect_true(all(rows_per_grp == atlas_rows))
@@ -54,7 +54,7 @@ describe("brain_join", {
 
   it("warns when data has unmatched regions", {
     bad_data <- data.frame(
-      region = c("not a real region"),
+      region = "not a real region",
       p = 0.5,
       stringsAsFactors = FALSE
     )

@@ -18,3 +18,5 @@ revdep/
 **/*.quarto_ipynb
 *.knit.md
 *html
+
+cran-comments.md

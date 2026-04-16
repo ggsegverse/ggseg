@@ -127,9 +127,9 @@ LayerBrain <- ggproto(
         logical(1)
       )
 
-      if (any(!merge_errs)) {
+      if (!all(merge_errs)) {
         k <- data[!merge_errs, ]
-        k <- k[, apply(k, 2, function(x) all(!is.na(x)))]
+        k <- k[, !vapply(k, anyNA, logical(1))]
         k$geometry <- NULL
         k <- paste(utils::capture.output(k), collapse = "\n")
 

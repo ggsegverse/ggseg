@@ -28,7 +28,7 @@ describe("theme_darkbrain", {
 
   it("has black plot background", {
     th <- theme_darkbrain()
-    expect_equal(th$plot.background$fill, "black")
+    expect_identical(th$plot.background$fill, "black")
   })
 
   it("accepts custom text size and family", {
@@ -44,12 +44,12 @@ describe("theme_custombrain", {
 
   it("uses custom background colour", {
     th <- theme_custombrain(plot.background = "pink")
-    expect_equal(th$plot.background$fill, "pink")
+    expect_identical(th$plot.background$fill, "pink")
   })
 
   it("uses custom text colour", {
     th <- theme_custombrain(text.colour = "blue")
-    expect_equal(th$text$colour, "blue")
+    expect_identical(th$text$colour, "blue")
   })
 
   it("accepts all custom parameters", {

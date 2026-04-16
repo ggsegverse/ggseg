@@ -16,6 +16,9 @@
 #' @return A ggplot2 scale object.
 #' @rdname scale_brain
 #' @export
+#'
+#' @importFrom ggplot2 scale_color_manual scale_colour_manual scale_fill_manual
+#' @importFrom ggseg.formats atlas_palette
 #' @examples
 #' \dontrun{
 #' library(ggplot2)
@@ -23,9 +26,6 @@
 #'   geom_brain(atlas = dk(), aes(fill = region), show.legend = FALSE) +
 #'   scale_brain("dk")
 #' }
-#'
-#' @importFrom ggplot2 scale_color_manual scale_colour_manual scale_fill_manual
-#' @importFrom ggseg.formats atlas_palette
 scale_brain <- function(
   name = "dk",
   na.value = "grey",
@@ -198,6 +198,9 @@ scale_fill_brain2 <- function(...) {
 #'
 #' @return A ggplot2 scale object.
 #' @name scale_brain2-deprecated
+#' @examples
+#' pal <- c("transverse temporal" = "#FF0000", "insula" = "#00FF00")
+#' suppressWarnings(scale_fill_brain_manual(palette = pal))
 NULL
 
 

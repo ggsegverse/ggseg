@@ -2,15 +2,15 @@ describe("extract_position_params", {
   it("extracts from PositionBrain object", {
     pos <- position_brain(hemi ~ view, nrow = 2, ncol = 3, views = "lateral")
     params <- extract_position_params(pos)
-    expect_equal(params$position, hemi ~ view)
-    expect_equal(params$nrow, 2)
-    expect_equal(params$ncol, 3)
-    expect_equal(params$views, "lateral")
+    expect_identical(params$position, hemi ~ view)
+    expect_identical(params$nrow, 2)
+    expect_identical(params$ncol, 3)
+    expect_identical(params$views, "lateral")
   })
 
   it("wraps raw string position", {
     params <- extract_position_params("horizontal")
-    expect_equal(params$position, "horizontal")
+    expect_identical(params$position, "horizontal")
     expect_null(params$nrow)
     expect_null(params$ncol)
     expect_null(params$views)
@@ -18,7 +18,7 @@ describe("extract_position_params", {
 
   it("wraps raw formula position", {
     params <- extract_position_params(hemi ~ view)
-    expect_equal(params$position, hemi ~ view)
+    expect_identical(params$position, hemi ~ view)
     expect_null(params$nrow)
   })
 })
@@ -32,7 +32,7 @@ describe("compute_label_positions", {
     expect_named(label_df, c("x", "y", "label"))
     dk_df <- as.data.frame(dk())
     n_combos <- length(unique(paste(dk_df$hemi, dk_df$view)))
-    expect_equal(nrow(label_df), n_combos)
+    expect_identical(nrow(label_df), n_combos)
     expect_true(all(
       c("left lateral", "left medial", "right lateral", "right medial") %in%
         label_df$label
@@ -45,7 +45,7 @@ describe("compute_label_positions", {
 
     expect_s3_class(label_df, "data.frame")
     views <- unique(as.data.frame(aseg())$view)
-    expect_equal(nrow(label_df), length(views))
+    expect_identical(nrow(label_df), length(views))
     expect_true(all(views %in% label_df$label))
   })
 
@@ -54,7 +54,7 @@ describe("compute_label_positions", {
     label_df <- compute_label_positions(repositioned)
 
     views <- unique(as.data.frame(tracula())$view)
-    expect_equal(nrow(label_df), length(views))
+    expect_identical(nrow(label_df), length(views))
     expect_true(all(views %in% label_df$label))
   })
 })

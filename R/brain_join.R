@@ -56,7 +56,7 @@ brain_join <- function(data, atlas, by = NULL) {
     cli::cli_warn(c(
       "Some data not merged properly.",
       "i" = "Check for naming errors in data:",
-      " " = paste0(capture.output(errs)[-1], collapse = "\n")
+      " " = paste(capture.output(errs)[-1], collapse = "\n")
     ))
   }
 

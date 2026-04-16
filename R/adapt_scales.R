@@ -5,9 +5,8 @@
 #'
 #' @param geobrain A data.frame containing atlas information with columns
 #'   `hemi`, `view`, `type`, `.lat`, and `.long`.
-#' @param position Layout style: `"dispersed"` (default) or `"stacked"`.
-#' @param aesthetics Which scale to compute: `"x"`, `"y"`, or `"labs"`.
-#'
+#' @inheritParams reposition_brain
+#' @inheritParams scale_brain
 #' @return A list with scale components (breaks, labels, or axis titles).
 #' @keywords internal
 #' @noRd
@@ -38,7 +37,8 @@ adapt_scales_cortical <- function(geobrain, position, aesthetics) {
   stk_x <- dplyr::summarise(dplyr::group_by(geobrain, view), val = gap(.long))
   disp <- dplyr::summarise_at(
     dplyr::group_by(geobrain, hemi),
-    dplyr::vars(.long, .lat), list(gap)
+    dplyr::vars(.long, .lat),
+    list(gap)
   )
 
   ad_scale <- list(
@@ -64,7 +64,8 @@ adapt_scales_subcortical <- function(geobrain, position, aesthetics) {
   stk_y <- dplyr::summarise(dplyr::group_by(geobrain, view), val = gap(.lat))
   disp <- dplyr::summarise_at(
     dplyr::group_by(geobrain, view),
-    dplyr::vars(.long, .lat), list(gap)
+    dplyr::vars(.long, .lat),
+    list(gap)
   )
 
   ad_scale <- list(
