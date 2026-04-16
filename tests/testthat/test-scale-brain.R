@@ -2,24 +2,24 @@ describe("scale_brain", {
   it("returns a scale for fill by default", {
     lifecycle::expect_deprecated(scale <- scale_brain())
     expect_s3_class(scale, "Scale")
-    expect_equal(scale$aesthetics, "fill")
+    expect_identical(scale$aesthetics, "fill")
   })
 
   it("returns a scale for colour", {
     lifecycle::expect_deprecated(scale <- scale_brain(aesthetics = "colour"))
     expect_s3_class(scale, "Scale")
-    expect_equal(scale$aesthetics, "colour")
+    expect_identical(scale$aesthetics, "colour")
   })
 
   it("returns a scale for color (aliased to colour)", {
     lifecycle::expect_deprecated(scale <- scale_brain(aesthetics = "color"))
     expect_s3_class(scale, "Scale")
-    expect_equal(scale$aesthetics, "colour")
+    expect_identical(scale$aesthetics, "colour")
   })
 
   it("uses custom na.value", {
     lifecycle::expect_deprecated(scale <- scale_brain(na.value = "red"))
-    expect_equal(scale$na.value, "red")
+    expect_identical(scale$na.value, "red")
   })
 
   it("accepts atlas name argument", {
@@ -32,7 +32,7 @@ describe("scale_colour_brain", {
   it("returns a colour scale", {
     lifecycle::expect_deprecated(scale <- scale_colour_brain())
     expect_s3_class(scale, "Scale")
-    expect_equal(scale$aesthetics, "colour")
+    expect_identical(scale$aesthetics, "colour")
   })
 })
 
@@ -40,7 +40,7 @@ describe("scale_color_brain", {
   it("returns a color scale (aliased to colour)", {
     lifecycle::expect_deprecated(scale <- scale_color_brain())
     expect_s3_class(scale, "Scale")
-    expect_equal(scale$aesthetics, "colour")
+    expect_identical(scale$aesthetics, "colour")
   })
 })
 
@@ -48,7 +48,7 @@ describe("scale_fill_brain", {
   it("returns a fill scale", {
     lifecycle::expect_deprecated(scale <- scale_fill_brain())
     expect_s3_class(scale, "Scale")
-    expect_equal(scale$aesthetics, "fill")
+    expect_identical(scale$aesthetics, "fill")
   })
 })
 
@@ -58,24 +58,24 @@ describe("scale_brain_manual", {
   it("returns a scale for fill by default with custom palette", {
     scale <- scale_brain_manual(palette = pal)
     expect_s3_class(scale, "Scale")
-    expect_equal(scale$aesthetics, "fill")
+    expect_identical(scale$aesthetics, "fill")
   })
 
   it("returns a scale for colour", {
     scale <- scale_brain_manual(palette = pal, aesthetics = "colour")
     expect_s3_class(scale, "Scale")
-    expect_equal(scale$aesthetics, "colour")
+    expect_identical(scale$aesthetics, "colour")
   })
 
   it("returns a scale for color (aliased to colour)", {
     scale <- scale_brain_manual(palette = pal, aesthetics = "color")
     expect_s3_class(scale, "Scale")
-    expect_equal(scale$aesthetics, "colour")
+    expect_identical(scale$aesthetics, "colour")
   })
 
   it("uses custom na.value", {
     scale <- scale_brain_manual(palette = pal, na.value = "blue")
-    expect_equal(scale$na.value, "blue")
+    expect_identical(scale$na.value, "blue")
   })
 })
 
@@ -84,7 +84,7 @@ describe("scale_colour_brain_manual", {
     pal <- c("region1" = "#FF0000")
     scale <- scale_colour_brain_manual(palette = pal)
     expect_s3_class(scale, "Scale")
-    expect_equal(scale$aesthetics, "colour")
+    expect_identical(scale$aesthetics, "colour")
   })
 })
 
@@ -93,7 +93,7 @@ describe("scale_color_brain_manual", {
     pal <- c("region1" = "#FF0000")
     scale <- scale_color_brain_manual(palette = pal)
     expect_s3_class(scale, "Scale")
-    expect_equal(scale$aesthetics, "colour")
+    expect_identical(scale$aesthetics, "colour")
   })
 })
 
@@ -102,7 +102,7 @@ describe("scale_fill_brain_manual", {
     pal <- c("region1" = "#FF0000")
     scale <- scale_fill_brain_manual(palette = pal)
     expect_s3_class(scale, "Scale")
-    expect_equal(scale$aesthetics, "fill")
+    expect_identical(scale$aesthetics, "fill")
   })
 })
 

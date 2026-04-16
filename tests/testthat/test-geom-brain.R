@@ -54,7 +54,7 @@ describe("geom_brain", {
       built <- ggplot_build(p),
       "Merging"
     )
-    expect_true(nrow(built$data[[1]]) > 0)
+    expect_gt(nrow(built$data[[1]]), 0)
   })
 
   it("works with show.legend FALSE", {
@@ -104,7 +104,7 @@ describe("geom_brain faceting", {
       "Merging"
     )
     panels <- unique(built$data[[1]]$PANEL)
-    expect_equal(length(panels), 2)
+    expect_length(panels, 2)
   })
 
   it("each facet panel has complete atlas rows", {
@@ -135,7 +135,7 @@ describe("geom_brain faceting", {
       "Merging"
     )
     panels <- unique(built$data[[1]]$PANEL)
-    expect_equal(length(panels), 2)
+    expect_length(panels, 2)
   })
 
   it("facet_grid works without group_by", {
@@ -147,7 +147,7 @@ describe("geom_brain faceting", {
       "Merging"
     )
     panels <- unique(built$data[[1]]$PANEL)
-    expect_equal(length(panels), 2)
+    expect_length(panels, 2)
   })
 
   it("ignores atlas columns in facet vars", {
@@ -209,13 +209,16 @@ describe("LayerBrain", {
 
   it("warns on unmatched region data", {
     bad_data <- tibble(
-      region = c("not a real region"),
+      region = "not a real region",
       p = 0.5
     )
     expect_warning(
       expect_warning(
-        ggplot_build(
-          ggplot(bad_data) + geom_brain(atlas = dk(), mapping = aes(fill = p))
+        expect_message(
+          ggplot_build(
+            ggplot(bad_data) + geom_brain(atlas = dk(), mapping = aes(fill = p))
+          ),
+          "Merging atlas and data"
         ),
         "not merged properly"
       ),
@@ -227,7 +230,7 @@ describe("LayerBrain", {
     p <- ggplot() + geom_brain(atlas = dk())
     built <- ggplot_build(p)
     atlas_rows <- nrow(as.data.frame(dk()))
-    expect_equal(nrow(built$data[[1]]), atlas_rows)
+    expect_identical(nrow(built$data[[1]]), atlas_rows)
   })
 
   it("auto-maps geometry, hemi, view, type, fill, label", {

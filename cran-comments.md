@@ -2,13 +2,9 @@
 
 0 errors | 0 warnings | 0 notes
 
-## Changes since last release (2.0.0 → 2.1.0)
+## Changes since last release (2.1.0 → 2.1.1)
 
-* Added support for cerebellar atlas type in 2D view stacking
-  (`position_brain()`). Cerebellar atlases now use the same layout
-  as subcortical atlases.
-* Removed unused internal functions and replaced whole-package imports
-  with selective `importFrom` calls.
+* Fixed small ggplot2 internal import bug that caused downstream issues in other packages.
 
 ## URL note
 

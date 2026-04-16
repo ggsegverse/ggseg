@@ -2,8 +2,8 @@ test_that("test read_freesurfer_stats works", {
   aseg_file <- test_path("data/bert/stats/aseg.stats")
 
   aseg_stats <- read_freesurfer_stats(aseg_file)
-  expect_equal(
-    names(aseg_stats),
+  expect_named(
+    aseg_stats,
     c(
       "Index",
       "SegId",
@@ -17,10 +17,10 @@ test_that("test read_freesurfer_stats works", {
       "normRange"
     )
   )
-  expect_equal(nrow(aseg_stats), 45)
+  expect_identical(nrow(aseg_stats), 45L)
 
-  expect_equal(
-    names(read_freesurfer_stats(aseg_file, FALSE)),
+  expect_named(
+    read_freesurfer_stats(aseg_file, FALSE),
     c(
       "Index",
       "SegId",
@@ -38,8 +38,8 @@ test_that("test read_freesurfer_stats works", {
   dkt_file <- test_path("data/bert/stats/lh.aparc.stats")
 
   dkt_stats <- read_freesurfer_stats(dkt_file)
-  expect_equal(
-    names(dkt_stats),
+  expect_named(
+    dkt_stats,
     c(
       "label",
       "NumVert",
@@ -53,10 +53,10 @@ test_that("test read_freesurfer_stats works", {
       "CurvInd"
     )
   )
-  expect_equal(nrow(dkt_stats), 34)
+  expect_identical(nrow(dkt_stats), 34L)
 
-  expect_equal(
-    names(read_freesurfer_stats(dkt_file, FALSE)),
+  expect_named(
+    read_freesurfer_stats(dkt_file, FALSE),
     c(
       "StructName",
       "NumVert",
@@ -75,8 +75,8 @@ test_that("test read_freesurfer_stats works", {
 test_that("test that read_atlas_files works", {
   dat <- read_atlas_files(test_path("data"), "aparc")
 
-  expect_equal(
-    names(dat),
+  expect_named(
+    dat,
     c(
       "subject",
       "label",
@@ -91,8 +91,8 @@ test_that("test that read_atlas_files works", {
       "CurvInd"
     )
   )
-  expect_equal(nrow(dat), 68)
-  expect_equal(
+  expect_identical(nrow(dat), 68L)
+  expect_identical(
     unique(dat$label)[1:10],
     c(
       "lh_bankssts",
@@ -113,11 +113,11 @@ test_that("test read_freesurfer_table works", {
   file <- test_path("data/aparc.volume.table")
   dat <- read_freesurfer_table(file)
 
-  expect_equal(names(dat), c("subject", "label", "value"))
-  expect_equal(nrow(dat), 36)
+  expect_named(dat, c("subject", "label", "value"))
+  expect_identical(nrow(dat), 36L)
   expect_true(any(grepl("volume$", dat$label)))
 
   dat <- read_freesurfer_table(file, measure = "volume")
-  expect_equal(names(dat), c("subject", "label", "volume"))
+  expect_named(dat, c("subject", "label", "volume"))
   expect_false(any(grepl("volume$", dat$label)))
 })
