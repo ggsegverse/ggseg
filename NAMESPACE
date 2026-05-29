@@ -2,6 +2,7 @@
 
 export(GeomBrain)
 export(annotate_brain)
+export(annotate_brain_polygon)
 export(aseg)
 export(brain_join)
 export(dk)
