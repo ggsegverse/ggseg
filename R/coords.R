@@ -9,7 +9,6 @@
 #' @return Data.frame with columns `.long`, `.lat`, `.subid`, `.id`,
 #'   `.poly`, and `.order`.
 #' @importFrom dplyr as_tibble group_by mutate row_number ungroup
-#' @importFrom sf st_combine st_coordinates
 #' @keywords internal
 #' @noRd
 to_coords <- function(x, n) {
@@ -23,8 +22,8 @@ to_coords <- function(x, n) {
     return(k)
   }
 
-  k <- st_combine(x)
-  k <- st_coordinates(k)
+  k <- sf::st_combine(x)
+  k <- sf::st_coordinates(k)
   k <- as_tibble(k)
   k$L2 <- n * 10000 + k$L2
   k <- group_by(k, L2)

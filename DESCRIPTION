@@ -31,7 +31,6 @@ Imports:
     grid,
     lifecycle,
     rlang,
-    sf,
     stats,
     tidyr (>= 1.0.0),
     utils
@@ -41,6 +40,7 @@ Suggests:
     here,
     knitr,
     rmarkdown,
+    sf,
     spelling,
     testthat (>= 3.0.0),
     vdiffr
@@ -52,8 +52,3 @@ Config/testthat/parallel: true
 Encoding: UTF-8
 Language: en-US
 RoxygenNote: 7.3.3
-SystemRequirements: 
-    C++17, 
-    GDAL (>= 2.0.1), 
-    GEOS (>= 3.4.0), 
-    PROJ (>= 4.8.0)

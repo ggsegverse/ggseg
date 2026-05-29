@@ -47,6 +47,7 @@ annotate_brain <- function(
   nudge_y = 0,
   ...
 ) {
+  require_sf("annotate_brain()")
   data <- as.data.frame(atlas)
 
   if (!is.null(hemi)) {
@@ -125,14 +126,17 @@ compute_label_positions <- function(repositioned) {
     label_fn <- function(df) unique(df$view)
   }
 
-  do.call(rbind, lapply(groups, function(df) {
-    bbox <- sf::st_bbox(df$geometry)
-    data.frame(
-      x = unname((bbox["xmin"] + bbox["xmax"]) / 2),
-      y = unname(bbox["ymax"]),
-      label = label_fn(df),
-      stringsAsFactors = FALSE,
-      row.names = NULL
-    )
-  }))
+  do.call(
+    rbind,
+    lapply(groups, function(df) {
+      bbox <- sf::st_bbox(df$geometry)
+      data.frame(
+        x = unname((bbox["xmin"] + bbox["xmax"]) / 2),
+        y = unname(bbox["ymax"]),
+        label = label_fn(df),
+        stringsAsFactors = FALSE,
+        row.names = NULL
+      )
+    })
+  )
 }

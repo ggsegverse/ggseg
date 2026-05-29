@@ -27,6 +27,25 @@ and [Epic #128](https://github.com/ggsegverse/ggseg/issues/128).
   Supports the same `position`/`nrow`/`ncol`/`views` interface — string
   shortcuts (`"horizontal"`, `"vertical"`), formula layouts
   (`hemi ~ view`), and grid sizing.
+- New `annotate_brain_polygon()` mirrors `annotate_brain()` for the
+  polygon path. Same interface, sf-free implementation.
+
+## sf moves to Suggests
+
+- **`sf` moves from Imports to Suggests.** The package can now be
+  installed without GDAL / GEOS / PROJ system libraries, enabling
+  wasm builds and air-gapped installs.
+- `SystemRequirements` dropped from DESCRIPTION (those entries were
+  sf's C++17 / GDAL / GEOS / PROJ requirements).
+- New internal helper `require_sf()` guards `geom_brain()`,
+  `position_brain()`, and `annotate_brain()` at entry. Without sf
+  installed, calls to these functions error with a pointer to the
+  polygon-path equivalent (`geom_brain_polygon()` etc.).
+- Bundled atlases continue to carry both `$data$sf` and
+  `$data$polygons`. Users with sf installed see no behavioural change.
+- Implicit dispatch: users hitting `geom_brain()` without sf get a
+  clear error naming the polygon alternative; polygon-path users are
+  unaffected either way.
 
 # ggseg 2.1.1
 

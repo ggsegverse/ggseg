@@ -41,6 +41,7 @@ geom_brain <- function(
   inherit.aes = TRUE,
   ...
 ) {
+  require_sf("geom_brain()")
   dots <- list(...)
   if ("side" %in% names(dots)) {
     cli::cli_warn(c(

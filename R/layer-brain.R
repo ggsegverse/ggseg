@@ -61,7 +61,6 @@ ggplot2_Layer <- function() {
 #' [utils::getFromNamespace()], avoiding `:::` usage.
 #'
 #' @importFrom utils capture.output getFromNamespace
-#' @importFrom sf st_as_sf
 #' @importFrom ggplot2 ggproto ggproto_parent
 #' @keywords internal
 #' @noRd

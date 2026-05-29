@@ -13,7 +13,6 @@
 #' @export
 #' @importFrom dplyr is.grouped_df full_join as_tibble
 #' @importFrom tidyr nest unnest
-#' @importFrom sf st_as_sf
 #' @importFrom utils capture.output
 #' @examples
 #' someData <- data.frame(
@@ -61,7 +60,7 @@ brain_join <- function(data, atlas, by = NULL) {
   }
 
   if ("geometry" %in% names(dt)) {
-    st_as_sf(dt)
+    sf::st_as_sf(dt)
   } else {
     as_tibble(dt)
   }
