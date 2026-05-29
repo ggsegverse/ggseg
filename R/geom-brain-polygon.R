@@ -1,21 +1,22 @@
-# sf-optional ("lite") brain renderer ----
+# sf-optional brain renderer over flat polygon data ----
 #
-# Renders a brain atlas using ggplot2::geom_polygon over the lite polygon
+# Renders a brain atlas using ggplot2::geom_polygon over the polygon
 # representation in atlas$data$polygons (see ggseg.formats). No sf objects,
 # no GDAL/GEOS/PROJ system libraries needed — enables wasm and air-gapped
-# builds. This is the first piece of Epic ggsegverse/ggseg#128.
+# builds. First piece of Epic ggsegverse/ggseg#128.
 #
-# Scope of this iteration: simple per-view stacking for any atlas with
-# multiple views. position_brain() is not yet wired up for the lite path;
-# users wanting custom layouts should keep using geom_brain() for now.
+# Scope of this iteration: simple per-view stacking from the polygons'
+# pre-positioned coordinates. position_brain_sf() is not yet wired up for
+# the polygon path; users wanting custom layouts should keep using
+# geom_brain_sf() for now.
 
-#' Plot brain atlas regions without sf (experimental, sf-optional path)
+#' Plot brain atlas regions from the polygon representation (sf-optional)
 #'
-#' Renders a `ggseg_atlas` via `ggplot2::geom_polygon` using the lite
-#' (sf-optional) polygon representation in `atlas$data$polygons`. Use this
-#' on atlases produced by `ggseg.formats::as_lite_atlas()` — or any atlas
-#' that carries the `$data$polygons` slot — to render without requiring
-#' the `sf` package or its GDAL/GEOS/PROJ system libraries.
+#' Renders a `ggseg_atlas` via `ggplot2::geom_polygon` using the polygon
+#' representation in `atlas$data$polygons`. Use this on atlases produced by
+#' `ggseg.formats::as_polygon_atlas()` — or any atlas carrying a
+#' `$data$polygons` slot — to render without requiring the `sf` package
+#' or its GDAL/GEOS/PROJ system libraries.
 #'
 #' Hole geometry round-trips correctly via the `subgroup` aesthetic
 #' (`grid::pathGrob` even-odd fill).
@@ -38,10 +39,10 @@
 #' @examples
 #' \dontrun{
 #' library(ggplot2)
-#' lite <- ggseg.formats::as_lite_atlas(dk())
-#' ggplot() + geom_brain_lite(atlas = lite)
+#' poly <- ggseg.formats::as_polygon_atlas(dk())
+#' ggplot() + geom_brain_polygon(atlas = poly)
 #' }
-geom_brain_lite <- function(
+geom_brain_polygon <- function(
   mapping = aes(),
   data = NULL,
   atlas,
@@ -51,10 +52,10 @@ geom_brain_lite <- function(
   inherit.aes = TRUE,
   ...
 ) {
-  flat <- prepare_lite_atlas(atlas, hemi = hemi, view = view)
+  flat <- prepare_polygon_atlas(atlas, hemi = hemi, view = view)
 
   if (!is.null(data)) {
-    flat <- brain_join_lite(data, flat)
+    flat <- brain_join_polygon(data, flat)
   }
 
   base_mapping <- aes(
@@ -103,21 +104,21 @@ geom_brain_lite <- function(
 }
 
 
-#' Flatten a lite atlas into a row-per-point data.frame ready for geom_polygon
+#' Flatten a polygon atlas into a row-per-point data.frame for geom_polygon
 #'
 #' Unnests `atlas$data$polygons`, joins with `atlas$core`, applies optional
-#' hemi/view filters, lays out views side by side, and adds the helper columns
-#' `.x`, `.y`, `.feature_id` that the lite geom maps to `group` so each
-#' (label, view, group) polygon piece renders as one ring set.
+#' hemi/view filters, and adds the `.feature_id` helper column that the
+#' polygon renderer maps to `group` so each (label, view, group) polygon
+#' piece renders as one ring set.
 #'
 #' @keywords internal
 #' @noRd
-prepare_lite_atlas <- function(atlas, hemi = NULL, view = NULL) {
+prepare_polygon_atlas <- function(atlas, hemi = NULL, view = NULL) {
   if (is.null(atlas$data$polygons)) {
     cli::cli_abort(c(
       "{.arg atlas} has no {.field polygons} slot.",
-      "i" = "Convert with {.fn ggseg.formats::as_lite_atlas} first, or use
-            {.fn geom_brain} for sf-backed atlases."
+      "i" = "Convert with {.fn ggseg.formats::as_polygon_atlas} first, or use
+            {.fn geom_brain_sf} for sf-backed atlases."
     ))
   }
 
@@ -162,7 +163,7 @@ prepare_lite_atlas <- function(atlas, hemi = NULL, view = NULL) {
 }
 
 
-#' Lite version of `brain_join()` — joins user data onto flat polygon rows
+#' Polygon-path version of `brain_join()` — joins user data onto flat rows
 #'
 #' Matches on `region` (and `hemi` if both data and atlas carry it). Polygon
 #' rows without a matching data row keep `NA` for the joined columns; the
@@ -170,7 +171,7 @@ prepare_lite_atlas <- function(atlas, hemi = NULL, view = NULL) {
 #'
 #' @keywords internal
 #' @noRd
-brain_join_lite <- function(data, flat) {
+brain_join_polygon <- function(data, flat) {
   by <- intersect(c("region", "hemi"), intersect(names(data), names(flat)))
   if (!length(by)) {
     cli::cli_abort(c(

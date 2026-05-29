@@ -6,19 +6,23 @@ First step toward making sf an opt-in dependency — see the
 [sf-optional milestone](https://github.com/ggsegverse/ggseg/milestone/1)
 and [Epic #128](https://github.com/ggsegverse/ggseg/issues/128).
 
-- New `geom_brain_lite()` renders a brain atlas without `sf`, building on
-  `ggplot2::geom_polygon()` over the lite polygon representation in
+- New `geom_brain_polygon()` renders a brain atlas without `sf`, building
+  on `ggplot2::geom_polygon()` over the polygon representation in
   `atlas$data$polygons` (introduced in `ggseg.formats` 0.0.3). Holes
   round-trip through the `subgroup` aesthetic (`grid::pathGrob` even-odd
   fill).
-- Renders correctly when paired with `ggseg.formats::as_lite_atlas()` or
-  any atlas carrying a `$data$polygons` slot. The bundled `dk`, `aseg`,
-  and `tracula` atlases ship with both `sf` and `polygons` slots, so
-  existing `geom_brain()` usage is unchanged.
+- Renders correctly when paired with `ggseg.formats::as_polygon_atlas()`
+  or any atlas carrying a `$data$polygons` slot. The bundled `dk`,
+  `aseg`, and `tracula` atlases ship with both `sf` and `polygons` slots,
+  so existing `geom_brain()` usage is unchanged.
+- Naming convention introduced for the sf-optional milestone: the
+  sf-backed family stays `geom_brain()` / `position_brain()` for
+  backwards compatibility; the new polygon family is suffixed
+  `_polygon`. A follow-up step in the epic will unify under a single
+  `geom_brain()` with backend dispatch.
 - Scope of this iteration: simple per-view layout from the polygons'
-  pre-positioned coordinates. `position_brain()` is not yet wired up for
-  the lite path; keep using `geom_brain()` for custom layouts. Follow-up
-  PR will unify under a single `geom_brain()` with backend dispatch.
+  pre-positioned coordinates. `position_brain()` parity for the polygon
+  path lands in the next PR.
 
 # ggseg 2.1.1
 

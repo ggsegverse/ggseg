@@ -1,8 +1,8 @@
-describe("geom_brain_lite()", {
-  it("renders a lite atlas without requiring sf in the data path", {
+describe("geom_brain_polygon()", {
+  it("renders a polygon atlas without requiring sf in the data path", {
     skip_if_not_installed("vdiffr")
-    lite <- ggseg.formats::as_lite_atlas(dk())
-    p <- ggplot2::ggplot() + geom_brain_lite(atlas = lite)
+    poly <- ggseg.formats::as_polygon_atlas(dk())
+    p <- ggplot2::ggplot() + geom_brain_polygon(atlas = poly)
     g <- ggplot2::ggplot_build(p)
     expect_true(length(g$data) >= 1)
     expect_gt(nrow(g$data[[1]]), 0)
@@ -12,46 +12,48 @@ describe("geom_brain_lite()", {
     sf_dk <- dk()
     sf_dk$data$polygons <- NULL
     expect_error(
-      ggplot2::ggplot() + geom_brain_lite(atlas = sf_dk),
+      ggplot2::ggplot() + geom_brain_polygon(atlas = sf_dk),
       "no.*polygons.*slot"
     )
   })
 
   it("filters by view", {
-    lite <- ggseg.formats::as_lite_atlas(dk())
-    p <- ggplot2::ggplot() + geom_brain_lite(atlas = lite, view = "lateral")
+    poly <- ggseg.formats::as_polygon_atlas(dk())
+    p <- ggplot2::ggplot() +
+      geom_brain_polygon(atlas = poly, view = "lateral")
     g <- ggplot2::ggplot_build(p)
     expect_true(all(g$data[[1]]$view == "lateral" | is.na(g$data[[1]]$view)))
   })
 
   it("rejects invalid views with a clear error", {
-    lite <- ggseg.formats::as_lite_atlas(dk())
+    poly <- ggseg.formats::as_polygon_atlas(dk())
     expect_error(
-      ggplot2::ggplot() + geom_brain_lite(atlas = lite, view = "nope"),
+      ggplot2::ggplot() + geom_brain_polygon(atlas = poly, view = "nope"),
       "Invalid view"
     )
   })
 
   it("filters by hemi", {
-    lite <- ggseg.formats::as_lite_atlas(dk())
-    p <- ggplot2::ggplot() + geom_brain_lite(atlas = lite, hemi = "left")
+    poly <- ggseg.formats::as_polygon_atlas(dk())
+    p <- ggplot2::ggplot() +
+      geom_brain_polygon(atlas = poly, hemi = "left")
     g <- ggplot2::ggplot_build(p)
     hemis <- unique(g$data[[1]]$hemi)
     expect_true(all(hemis %in% c("left", NA)))
   })
 
   it("joins user data on region", {
-    lite <- ggseg.formats::as_lite_atlas(dk())
-    regs <- unique(lite$core$region)
+    poly <- ggseg.formats::as_polygon_atlas(dk())
+    regs <- unique(poly$core$region)
     regs <- regs[!is.na(regs)]
     user <- data.frame(
       region = regs,
       measure = seq_along(regs) / length(regs)
     )
     p <- ggplot2::ggplot() +
-      geom_brain_lite(
+      geom_brain_polygon(
         data = user,
-        atlas = lite,
+        atlas = poly,
         ggplot2::aes(fill = measure)
       )
     g <- ggplot2::ggplot_build(p)
@@ -60,28 +62,28 @@ describe("geom_brain_lite()", {
     )
   })
 
-  it("works on subcortical aseg via the lite path", {
-    lite_aseg <- ggseg.formats::as_lite_atlas(aseg())
-    p <- ggplot2::ggplot() + geom_brain_lite(atlas = lite_aseg)
+  it("works on subcortical aseg via the polygon path", {
+    poly_aseg <- ggseg.formats::as_polygon_atlas(aseg())
+    p <- ggplot2::ggplot() + geom_brain_polygon(atlas = poly_aseg)
     g <- ggplot2::ggplot_build(p)
     expect_gt(nrow(g$data[[1]]), 0)
   })
 })
 
-describe("prepare_lite_atlas()", {
+describe("prepare_polygon_atlas()", {
   it("flattens to row-per-point with the expected columns", {
-    lite <- ggseg.formats::as_lite_atlas(dk())
-    flat <- prepare_lite_atlas(lite)
+    poly <- ggseg.formats::as_polygon_atlas(dk())
+    flat <- prepare_polygon_atlas(poly)
     expect_true(all(
       c("label", "view", "x", "y", "group", "subgroup", ".feature_id") %in%
         names(flat)
     ))
-    expect_gt(nrow(flat), nrow(lite$data$polygons))
+    expect_gt(nrow(flat), nrow(poly$data$polygons))
   })
 
   it("assigns one .feature_id per (label, view, group)", {
-    lite <- ggseg.formats::as_lite_atlas(dk())
-    flat <- prepare_lite_atlas(lite)
+    poly <- ggseg.formats::as_polygon_atlas(dk())
+    flat <- prepare_polygon_atlas(poly)
     keys <- unique(paste(flat$label, flat$view, flat$group, sep = "@@"))
     expect_equal(length(unique(flat$.feature_id)), length(keys))
   })
