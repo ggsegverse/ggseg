@@ -1,6 +1,6 @@
 Package: ggseg
 Title: Plotting Tool for Brain Atlases
-Version: 2.1.1
+Version: 2.2.0.9000
 Authors@R: c(
     person("Athanasia Mo", "Mowinckel", , "a.m.mowinckel@psykologi.uio.no", role = c("aut", "cre", "cph"),
            comment = c(ORCID = "0000-0002-5756-0223")),
@@ -30,6 +30,7 @@ Imports:
     ggseg.formats,
     grid,
     lifecycle,
+    rlang,
     sf,
     stats,
     tidyr (>= 1.0.0),
