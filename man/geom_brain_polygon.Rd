@@ -10,6 +10,7 @@ geom_brain_polygon(
   atlas,
   hemi = NULL,
   view = NULL,
+  position = position_brain_polygon(),
   show.legend = NA,
   inherit.aes = TRUE,
   ...
@@ -26,6 +27,10 @@ atlas is plotted without user data.}
 \item{hemi}{Character vector of hemispheres to include.}
 
 \item{view}{Character vector of views to include.}
+
+\item{position}{Position adjustment. Defaults to [position_brain_lite()],
+which lays views out horizontally without sf. Pass `"identity"` to use
+the polygons' raw coordinates.}
 
 \item{show.legend}{Logical. Should this layer be included in legends?}
 

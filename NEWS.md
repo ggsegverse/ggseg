@@ -20,9 +20,13 @@ and [Epic #128](https://github.com/ggsegverse/ggseg/issues/128).
   backwards compatibility; the new polygon family is suffixed
   `_polygon`. A follow-up step in the epic will unify under a single
   `geom_brain()` with backend dispatch.
-- Scope of this iteration: simple per-view layout from the polygons'
-  pre-positioned coordinates. `position_brain()` parity for the polygon
-  path lands in the next PR.
+- New `position_brain_polygon()` mirrors `position_brain()` for the
+  polygon path. Layouts are applied inside `prepare_polygon_atlas()`
+  (not via a ggproto Position) so the `type`/`view`/`hemi` columns the
+  layout needs don't get stripped by ggplot2's aesthetic machinery.
+  Supports the same `position`/`nrow`/`ncol`/`views` interface — string
+  shortcuts (`"horizontal"`, `"vertical"`), formula layouts
+  (`hemi ~ view`), and grid sizing.
 
 # ggseg 2.1.1
 

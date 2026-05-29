@@ -27,6 +27,9 @@
 #' @param atlas A `ggseg_atlas` object carrying `$data$polygons`.
 #' @param hemi Character vector of hemispheres to include.
 #' @param view Character vector of views to include.
+#' @param position Position adjustment. Defaults to [position_brain_lite()],
+#'   which lays views out horizontally without sf. Pass `"identity"` to use
+#'   the polygons' raw coordinates.
 #' @param show.legend Logical. Should this layer be included in legends?
 #' @param inherit.aes Logical. If `FALSE`, overrides the default aesthetics.
 #' @param ... Additional arguments passed to `ggplot2::geom_polygon()`.
@@ -48,11 +51,17 @@ geom_brain_polygon <- function(
   atlas,
   hemi = NULL,
   view = NULL,
+  position = position_brain_polygon(),
   show.legend = NA,
   inherit.aes = TRUE,
   ...
 ) {
-  flat <- prepare_polygon_atlas(atlas, hemi = hemi, view = view)
+  flat <- prepare_polygon_atlas(
+    atlas,
+    hemi = hemi,
+    view = view,
+    position = position
+  )
 
   if (!is.null(data)) {
     flat <- brain_join_polygon(data, flat)
@@ -84,6 +93,7 @@ geom_brain_polygon <- function(
       list(
         mapping = user_mapping,
         data = flat,
+        position = "identity",
         show.legend = show.legend,
         inherit.aes = inherit.aes
       ),
@@ -113,12 +123,17 @@ geom_brain_polygon <- function(
 #'
 #' @keywords internal
 #' @noRd
-prepare_polygon_atlas <- function(atlas, hemi = NULL, view = NULL) {
+prepare_polygon_atlas <- function(
+  atlas,
+  hemi = NULL,
+  view = NULL,
+  position = NULL
+) {
   if (is.null(atlas$data$polygons)) {
     cli::cli_abort(c(
       "{.arg atlas} has no {.field polygons} slot.",
       "i" = "Convert with {.fn ggseg.formats::as_polygon_atlas} first, or use
-            {.fn geom_brain_sf} for sf-backed atlases."
+            {.fn geom_brain} for sf-backed atlases."
     ))
   }
 
@@ -155,9 +170,37 @@ prepare_polygon_atlas <- function(atlas, hemi = NULL, view = NULL) {
   flat$atlas <- atlas$atlas
   flat$type <- atlas$type
 
+  if (atlas$type == "cortical") {
+    if (!"hemi" %in% names(flat)) {
+      flat$hemi <- NA_character_
+    }
+    missing_hemi <- is.na(flat$hemi)
+    if (any(missing_hemi)) {
+      flat$hemi[missing_hemi] <- ifelse(
+        grepl("^lh[_.]", flat$label[missing_hemi]),
+        "left",
+        ifelse(
+          grepl("^rh[_.]", flat$label[missing_hemi]),
+          "right",
+          NA_character_
+        )
+      )
+    }
+  }
+
   flat$.feature_id <- as.integer(factor(
     paste(flat$label, flat$view, flat$group, sep = "@@")
   ))
+
+  if (is_polygon_position(position)) {
+    flat <- frame_2_position_flat(
+      flat,
+      position$position,
+      nrow = position$nrow,
+      ncol = position$ncol,
+      views = position$views
+    )
+  }
 
   flat
 }
