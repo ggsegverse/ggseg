@@ -14,7 +14,7 @@
 #' same `position` argument should be passed to both [geom_brain_polygon()]
 #' and `annotate_brain_polygon()`.
 #'
-#' @param atlas A `ggseg_atlas` object carrying a `$data$polygons` slot.
+#' @param atlas A `ggseg_atlas` object with 2D geometry (sf or polygons).
 #' @param position A [position_brain_polygon()] spec matching the one used
 #'   in [geom_brain_polygon()].
 #' @param hemi Character vector of hemispheres to include. If `NULL`

@@ -8,12 +8,21 @@ describe("geom_brain_polygon()", {
     expect_gt(nrow(g$data[[1]]), 0)
   })
 
-  it("errors when the atlas has no polygons slot", {
-    sf_dk <- dk()
-    sf_dk$data$polygons <- NULL
+  it("renders an sf-backed atlas via on-the-fly polygon conversion", {
+    sf_atlas <- ggseg.formats::as_sf_atlas(dk())
+    p <- ggplot2::ggplot() + geom_brain_polygon(atlas = sf_atlas)
+    g <- ggplot2::ggplot_build(p)
+    expect_gt(nrow(g$data[[1]]), 0)
+  })
+
+  it("errors when the atlas has no 2D geometry", {
+    no_geom <- dk()
+    no_geom$data$geom <- NULL
+    no_geom$data$sf <- NULL
+    no_geom$data$polygons <- NULL
     expect_error(
-      ggplot2::ggplot() + geom_brain_polygon(atlas = sf_dk),
-      "no.*polygons.*slot"
+      ggplot2::ggplot() + geom_brain_polygon(atlas = no_geom),
+      "no 2D geometry"
     )
   })
 
@@ -78,7 +87,7 @@ describe("prepare_polygon_atlas()", {
       c("label", "view", "x", "y", "group", "subgroup", ".feature_id") %in%
         names(flat)
     ))
-    expect_gt(nrow(flat), nrow(poly$data$polygons))
+    expect_gt(nrow(flat), nrow(ggseg.formats::atlas_polygons(poly)))
   })
 
   it("assigns one .feature_id per (label, view, group)", {

@@ -17,7 +17,7 @@ annotate_brain_polygon(
 )
 }
 \arguments{
-\item{atlas}{A `ggseg_atlas` object carrying a `$data$polygons` slot.}
+\item{atlas}{A `ggseg_atlas` object with 2D geometry (sf or polygons).}
 
 \item{position}{A [position_brain_polygon()] spec matching the one used
 in [geom_brain_polygon()].}

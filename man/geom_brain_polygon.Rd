@@ -22,7 +22,7 @@ geom_brain_polygon(
 \item{data}{A data.frame containing variables to map. If `NULL`, the
 atlas is plotted without user data.}
 
-\item{atlas}{A `ggseg_atlas` object carrying `$data$polygons`.}
+\item{atlas}{A `ggseg_atlas` object with 2D geometry (sf or polygons).}
 
 \item{hemi}{Character vector of hemispheres to include.}
 
@@ -43,10 +43,10 @@ A list of ggplot2 layer and coord objects.
 }
 \description{
 Renders a `ggseg_atlas` via `ggplot2::geom_polygon` using the polygon
-representation in `atlas$data$polygons`. Use this on atlases produced by
-`ggseg.formats::as_polygon_atlas()` — or any atlas carrying a
-`$data$polygons` slot — to render without requiring the `sf` package
-or its GDAL/GEOS/PROJ system libraries.
+representation from `ggseg.formats::atlas_polygons()`. Works on any atlas;
+a polygon-backed atlas (e.g. from `ggseg.formats::as_polygon_atlas()`)
+renders without requiring the `sf` package or its GDAL/GEOS/PROJ system
+libraries.
 }
 \details{
 Hole geometry round-trips correctly via the `subgroup` aesthetic

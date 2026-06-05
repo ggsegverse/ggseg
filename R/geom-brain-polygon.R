@@ -1,9 +1,9 @@
 # sf-optional brain renderer over flat polygon data ----
 #
 # Renders a brain atlas using ggplot2::geom_polygon over the polygon
-# representation in atlas$data$polygons (see ggseg.formats). No sf objects,
-# no GDAL/GEOS/PROJ system libraries needed — enables wasm and air-gapped
-# builds. First piece of Epic ggsegverse/ggseg#128.
+# representation from ggseg.formats::atlas_polygons() (see ggseg.formats). No
+# sf objects, no GDAL/GEOS/PROJ system libraries needed — enables wasm and
+# air-gapped builds. First piece of Epic ggsegverse/ggseg#128.
 #
 # Scope of this iteration: simple per-view stacking from the polygons'
 # pre-positioned coordinates. position_brain_sf() is not yet wired up for
@@ -13,10 +13,10 @@
 #' Plot brain atlas regions from the polygon representation (sf-optional)
 #'
 #' Renders a `ggseg_atlas` via `ggplot2::geom_polygon` using the polygon
-#' representation in `atlas$data$polygons`. Use this on atlases produced by
-#' `ggseg.formats::as_polygon_atlas()` — or any atlas carrying a
-#' `$data$polygons` slot — to render without requiring the `sf` package
-#' or its GDAL/GEOS/PROJ system libraries.
+#' representation from `ggseg.formats::atlas_polygons()`. Works on any atlas;
+#' a polygon-backed atlas (e.g. from `ggseg.formats::as_polygon_atlas()`)
+#' renders without requiring the `sf` package or its GDAL/GEOS/PROJ system
+#' libraries.
 #'
 #' Hole geometry round-trips correctly via the `subgroup` aesthetic
 #' (`grid::pathGrob` even-odd fill).
@@ -24,7 +24,7 @@
 #' @param mapping Set of aesthetic mappings created by `ggplot2::aes()`.
 #' @param data A data.frame containing variables to map. If `NULL`, the
 #'   atlas is plotted without user data.
-#' @param atlas A `ggseg_atlas` object carrying `$data$polygons`.
+#' @param atlas A `ggseg_atlas` object with 2D geometry (sf or polygons).
 #' @param hemi Character vector of hemispheres to include.
 #' @param view Character vector of views to include.
 #' @param position Position adjustment. Defaults to [position_brain_lite()],
@@ -116,7 +116,8 @@ geom_brain_polygon <- function(
 
 #' Flatten a polygon atlas into a row-per-point data.frame for geom_polygon
 #'
-#' Unnests `atlas$data$polygons`, joins with `atlas$core`, applies optional
+#' Unnests `ggseg.formats::atlas_polygons(atlas)`, joins with `atlas$core`,
+#' applies optional
 #' hemi/view filters, and adds the `.feature_id` helper column that the
 #' polygon renderer maps to `group` so each (label, view, group) polygon
 #' piece renders as one ring set.
@@ -129,15 +130,17 @@ prepare_polygon_atlas <- function(
   view = NULL,
   position = NULL
 ) {
-  if (is.null(atlas$data$polygons)) {
+  if (is.null(ggseg.formats::atlas_geom(atlas))) {
     cli::cli_abort(c(
-      "{.arg atlas} has no {.field polygons} slot.",
-      "i" = "Convert with {.fn ggseg.formats::as_polygon_atlas} first, or use
-            {.fn geom_brain} for sf-backed atlases."
+      "{.arg atlas} has no 2D geometry.",
+      "i" = "Provide an atlas with {.field geom} (sf or polygons) in its data."
     ))
   }
 
-  flat <- tidyr::unnest(atlas$data$polygons, cols = "geometry")
+  flat <- tidyr::unnest(
+    ggseg.formats::atlas_polygons(atlas),
+    cols = "geometry"
+  )
   flat <- dplyr::left_join(
     flat,
     atlas$core,
