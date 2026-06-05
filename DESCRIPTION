@@ -44,7 +44,9 @@ Suggests:
     spelling,
     testthat (>= 3.0.0),
     vdiffr
-VignetteBuilder: 
+Remotes:
+    ggsegverse/ggseg.formats@sf-optional-suggests
+VignetteBuilder:
     knitr
 Config/Needs/website: ggsegverse/ggseg.docs
 Config/testthat/edition: 3
