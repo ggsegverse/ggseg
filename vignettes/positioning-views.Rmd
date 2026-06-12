@@ -218,7 +218,7 @@ ggplot() +
 
 ## Adding view labels
 
-Use `annotate_brain_polygon()` to label each view with its name. For cortical
+Use `annotate_brain()` to label each view with its name. For cortical
 atlases the label combines hemisphere and view (e.g. "left lateral"); for
 subcortical and tract atlases it uses the view name directly.
 
@@ -231,7 +231,7 @@ share the same layout:
 pos <- position_brain_polygon(hemi ~ view)
 ggplot() +
   geom_brain_polygon(atlas = dk(), position = pos, show.legend = FALSE) +
-  annotate_brain_polygon(atlas = dk(), position = pos) +
+  annotate_brain(atlas = dk(), position = pos) +
   theme_void()
 ```
 
@@ -244,7 +244,7 @@ layouts:
 pos <- position_brain_polygon(nrow = 2)
 ggplot() +
   geom_brain_polygon(atlas = aseg(), position = pos, show.legend = FALSE) +
-  annotate_brain_polygon(atlas = aseg(), position = pos) +
+  annotate_brain(atlas = aseg(), position = pos) +
   theme_void()
 ```
 
@@ -257,7 +257,7 @@ Labels sit a little above each view by default (`padding = 0.05`). Increase
 #| fig-cap: "View labels with extra padding and custom styling."
 ggplot() +
   geom_brain_polygon(atlas = dk(), show.legend = FALSE) +
-  annotate_brain_polygon(
+  annotate_brain(
     atlas = dk(),
     padding = 0.08,
     size = 2.5,

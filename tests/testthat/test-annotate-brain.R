@@ -59,16 +59,35 @@ describe("compute_label_positions", {
   })
 })
 
-describe("annotate_brain", {
-  it("returns an annotation layer", {
+describe("annotate_brain dispatch", {
+  it("returns a polygon-path layer by default", {
     layer <- annotate_brain(atlas = dk())
+    expect_s3_class(layer, "LayerInstance")
+  })
+
+  it("pairs with geom_brain_polygon() by default", {
+    p <- ggplot() +
+      geom_brain_polygon(atlas = dk(), show.legend = FALSE) +
+      annotate_brain(atlas = dk())
+    expect_silent(ggplot2::ggplot_build(p))
+  })
+
+  it("routes to the sf path when given a position_brain()", {
+    layer <- annotate_brain(atlas = dk(), position = position_brain())
+    expect_s3_class(layer, "LayerInstance")
+  })
+})
+
+describe("annotate_brain (sf path)", {
+  it("returns an annotation layer", {
+    layer <- annotate_brain(atlas = dk(), position = position_brain())
     expect_s3_class(layer, "LayerInstance")
   })
 
   it("builds a valid plot with cortical atlas", {
     p <- ggplot() +
       geom_brain(atlas = dk(), show.legend = FALSE) +
-      annotate_brain(atlas = dk())
+      annotate_brain(atlas = dk(), position = position_brain())
     expect_s3_class(p, "gg")
     expect_silent(ggplot2::ggplot_build(p))
   })
@@ -76,13 +95,17 @@ describe("annotate_brain", {
   it("builds a valid plot with subcortical atlas", {
     p <- ggplot() +
       geom_brain(atlas = aseg(), show.legend = FALSE) +
-      annotate_brain(atlas = aseg())
+      annotate_brain(atlas = aseg(), position = position_brain())
     expect_s3_class(p, "gg")
     expect_silent(ggplot2::ggplot_build(p))
   })
 
   it("respects hemi filtering", {
-    layer <- annotate_brain(atlas = dk(), hemi = "left")
+    layer <- annotate_brain(
+      atlas = dk(),
+      hemi = "left",
+      position = position_brain()
+    )
     built <- ggplot() +
       geom_brain(atlas = dk(), hemi = "left", show.legend = FALSE) +
       layer
@@ -92,7 +115,11 @@ describe("annotate_brain", {
   })
 
   it("respects view filtering", {
-    layer <- annotate_brain(atlas = dk(), view = "lateral")
+    layer <- annotate_brain(
+      atlas = dk(),
+      view = "lateral",
+      position = position_brain()
+    )
     built <- ggplot() +
       geom_brain(atlas = dk(), view = "lateral", show.legend = FALSE) +
       layer
@@ -132,6 +159,7 @@ describe("annotate_brain", {
   it("passes styling arguments", {
     layer <- annotate_brain(
       atlas = dk(),
+      position = position_brain(),
       size = 5,
       colour = "red",
       fontface = "bold"
@@ -146,7 +174,7 @@ describe("annotate_brain visual", {
       "dk default labels",
       ggplot() +
         geom_brain(atlas = dk(), show.legend = FALSE) +
-        annotate_brain(atlas = dk())
+        annotate_brain(atlas = dk(), position = position_brain())
     )
   })
 
@@ -171,7 +199,7 @@ describe("annotate_brain visual", {
       "aseg default labels",
       ggplot() +
         geom_brain(atlas = aseg(), show.legend = FALSE) +
-        annotate_brain(atlas = aseg())
+        annotate_brain(atlas = aseg(), position = position_brain())
     )
   })
 

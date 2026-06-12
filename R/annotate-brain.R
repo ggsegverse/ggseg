@@ -5,13 +5,17 @@
 #' and view (e.g., "left lateral"). For subcortical and tract atlases,
 #' labels show the view name directly (e.g., "axial_1", "sagittal").
 #'
-#' Labels respect the repositioning done by [position_brain()], so the
-#' same `position` argument should be passed to both [geom_brain()] and
-#' `annotate_brain()`.
+#' `annotate_brain()` follows the `position` you give it, so you never pick a
+#' renderer-specific labelling function: a [position_brain_polygon()] (the
+#' default) labels the sf-free polygon path, while a [position_brain()] labels
+#' the sf path. Pass the same `position` to both your geom layer and
+#' `annotate_brain()` so the labels line up.
 #'
 #' @param atlas A `brain_atlas` object (e.g. `dk()`, `aseg()`).
-#' @param position A [position_brain()] object or position specification
-#'   matching the one used in [geom_brain()].
+#' @param position A [position_brain_polygon()] (default) or [position_brain()]
+#'   specification matching the one used in your geom layer. The position type
+#'   selects the renderer: a polygon spec uses the sf-free path, anything else
+#'   uses the sf path.
 #' @param hemi Character vector of hemispheres to include. If `NULL`
 #'   (default), all hemispheres are included.
 #' @param view Character vector of views to include. If `NULL`
@@ -32,15 +36,53 @@
 #' @examples
 #' library(ggplot2)
 #'
-#' pos <- position_brain(hemi ~ view)
+#' pos <- position_brain_polygon(hemi ~ view)
 #' ggplot() +
-#'   geom_brain(atlas = dk(), position = pos, show.legend = FALSE) +
+#'   geom_brain_polygon(atlas = dk(), position = pos, show.legend = FALSE) +
 #'   annotate_brain(atlas = dk(), position = pos)
 #'
 #' ggplot() +
-#'   geom_brain(atlas = dk(), show.legend = FALSE) +
+#'   geom_brain_polygon(atlas = dk(), show.legend = FALSE) +
 #'   annotate_brain(atlas = dk())
 annotate_brain <- function(
+  atlas,
+  position = position_brain_polygon(),
+  hemi = NULL,
+  view = NULL,
+  size = 3,
+  colour = "grey30",
+  family = "mono",
+  padding = 0.05,
+  nudge_y = 0,
+  ...
+) {
+  annotate_fn <- if (is_polygon_position(position)) {
+    annotate_brain_polygon
+  } else {
+    annotate_brain_sf
+  }
+  annotate_fn(
+    atlas,
+    position = position,
+    hemi = hemi,
+    view = view,
+    size = size,
+    colour = colour,
+    family = family,
+    padding = padding,
+    nudge_y = nudge_y,
+    ...
+  )
+}
+
+
+#' sf implementation behind [annotate_brain()]
+#'
+#' @inheritParams annotate_brain
+#' @return A ggplot2 annotation layer.
+#' @keywords internal
+#' @noRd
+annotate_brain_sf <- function(
   atlas,
   position = position_brain(),
   hemi = NULL,

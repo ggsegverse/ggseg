@@ -71,6 +71,11 @@ and [Epic #128](https://github.com/ggsegverse/ggseg/issues/128).
 - `geom_brain_polygon()` data joins now match on `label` as well as
   `region` (and `hemi`), so FreeSurfer label-keyed data (e.g.
   `"lh_bankssts"`) plots without first deriving a `region` column.
+- `annotate_brain()` is now a single entry point that picks the renderer
+  from its `position`: a `position_brain_polygon()` (the default) labels the
+  sf-free polygon path, a `position_brain()` labels the sf path. You no
+  longer choose between `annotate_brain()` and `annotate_brain_polygon()` —
+  pass the same `position` you gave the geom and labels line up.
 - `annotate_brain()` and `annotate_brain_polygon()` gain a `padding`
   argument (fraction of plot height, default 5%) and bottom-anchor their
   labels (`vjust = 0`), so view labels sit clear of the geometry instead of
