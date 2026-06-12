@@ -26,8 +26,8 @@ library(ggplot2)
 
 A brain atlas typically has several views -- lateral and medial for cortical
 atlases, or axial, coronal, and sagittal slices for subcortical and tract
-atlases. `position_brain()` controls how those views are arranged in the
-final plot.
+atlases. `position_brain_polygon()` controls how those views are arranged in
+the final plot.
 
 The function works differently depending on the atlas type, so this vignette
 covers cortical and subcortical/tract atlases separately.
@@ -42,9 +42,9 @@ right) and **view** (lateral, medial, etc.). The formula syntax mirrors
 #| label: fig-hemi-by-view
 #| fig-cap: "Cortical atlas with hemispheres as rows and views as columns."
 ggplot() +
-  geom_brain(
+  geom_brain_polygon(
     atlas = dk(),
-    position = position_brain(hemi ~ view),
+    position = position_brain_polygon(hemi ~ view),
     show.legend = FALSE
   ) +
   theme_void()
@@ -56,9 +56,9 @@ Flip the formula to transpose the layout:
 #| label: fig-view-by-hemi
 #| fig-cap: "Transposed layout with views as rows and hemispheres as columns."
 ggplot() +
-  geom_brain(
+  geom_brain_polygon(
     atlas = dk(),
-    position = position_brain(view ~ hemi),
+    position = position_brain_polygon(view ~ hemi),
     show.legend = FALSE
   ) +
   theme_void()
@@ -73,9 +73,9 @@ is handy for compact figures:
 #| label: fig-single-row
 #| fig-cap: "All brain views stacked in a single row."
 ggplot() +
-  geom_brain(
+  geom_brain_polygon(
     atlas = dk(),
-    position = position_brain(. ~ hemi + view),
+    position = position_brain_polygon(. ~ hemi + view),
     show.legend = FALSE
   ) +
   theme_void()
@@ -85,9 +85,9 @@ ggplot() +
 #| label: fig-single-column
 #| fig-cap: "All brain views stacked in a single column."
 ggplot() +
-  geom_brain(
+  geom_brain_polygon(
     atlas = dk(),
-    position = position_brain(hemi + view ~ .),
+    position = position_brain_polygon(hemi + view ~ .),
     show.legend = FALSE
   ) +
   theme_void()
@@ -108,9 +108,9 @@ The simplest options. `"horizontal"` is the default:
 #| label: fig-aseg-horizontal
 #| fig-cap: "Subcortical atlas views arranged horizontally."
 ggplot() +
-  geom_brain(
+  geom_brain_polygon(
     atlas = aseg(),
-    position = position_brain("horizontal"),
+    position = position_brain_polygon("horizontal"),
     show.legend = FALSE
   ) +
   theme_void()
@@ -120,9 +120,9 @@ ggplot() +
 #| label: fig-aseg-vertical
 #| fig-cap: "Subcortical atlas views arranged vertically."
 ggplot() +
-  geom_brain(
+  geom_brain_polygon(
     atlas = aseg(),
-    position = position_brain("vertical"),
+    position = position_brain_polygon("vertical"),
     show.legend = FALSE
   ) +
   theme_void()
@@ -137,9 +137,9 @@ When you have many views, a grid keeps things readable. Specify `nrow`,
 #| label: fig-aseg-nrow
 #| fig-cap: "Subcortical atlas views in a two-row grid."
 ggplot() +
-  geom_brain(
+  geom_brain_polygon(
     atlas = aseg(),
-    position = position_brain(nrow = 2),
+    position = position_brain_polygon(nrow = 2),
     show.legend = FALSE
   ) +
   theme_void()
@@ -149,9 +149,9 @@ ggplot() +
 #| label: fig-aseg-ncol
 #| fig-cap: "Subcortical atlas views in a three-column grid."
 ggplot() +
-  geom_brain(
+  geom_brain_polygon(
     atlas = aseg(),
-    position = position_brain(ncol = 3),
+    position = position_brain_polygon(ncol = 3),
     show.legend = FALSE
   ) +
   theme_void()
@@ -171,9 +171,9 @@ ggseg.formats::atlas_views(aseg())
 #| label: fig-aseg-select-views
 #| fig-cap: "A subset of subcortical views selected by name."
 ggplot() +
-  geom_brain(
+  geom_brain_polygon(
     atlas = aseg(),
-    position = position_brain(
+    position = position_brain_polygon(
       views = c("sagittal", "axial_3", "coronal_3")
     ),
     show.legend = FALSE
@@ -187,9 +187,9 @@ Combine `views` with `nrow` or `ncol` for a custom grid:
 #| label: fig-aseg-custom-grid
 #| fig-cap: "Custom two-row grid with selected subcortical views."
 ggplot() +
-  geom_brain(
+  geom_brain_polygon(
     atlas = aseg(),
-    position = position_brain(
+    position = position_brain_polygon(
       views = c("sagittal", "axial_3", "axial_5", "coronal_3"),
       nrow = 2
     ),
@@ -208,52 +208,30 @@ the view name (everything before the first underscore):
 #| label: aseg-type-group
 #| eval: false
 ggplot() +
-  geom_brain(
+  geom_brain_polygon(
     atlas = aseg(),
-    position = position_brain(type ~ .),
+    position = position_brain_polygon(type ~ .),
     show.legend = FALSE
   ) +
   theme_void()
 ```
 
-## Pre-processing with reposition_brain()
-
-If you're using the `geom_sf()` workflow instead of `geom_brain()`, use
-`reposition_brain()` to rearrange the data before plotting. It takes the
-same arguments:
-
-```{r}
-#| label: fig-reposition-brain
-#| fig-cap: "Repositioned subcortical data plotted with geom_sf()."
-atlas_data <- as.data.frame(aseg())
-
-repositioned <- reposition_brain(
-  atlas_data,
-  views = c("sagittal", "axial_3", "coronal_3"),
-  nrow = 1
-)
-
-ggplot(repositioned) +
-  geom_sf(aes(fill = region), show.legend = FALSE) +
-  theme_void()
-```
-
 ## Adding view labels
 
-Use `annotate_brain()` to label each view with its name. For cortical
+Use `annotate_brain_polygon()` to label each view with its name. For cortical
 atlases the label combines hemisphere and view (e.g. "left lateral"); for
 subcortical and tract atlases it uses the view name directly.
 
-Store the `position_brain()` specification in an object so both layers share
-the same layout:
+Store the `position_brain_polygon()` specification in an object so both layers
+share the same layout:
 
 ```{r}
 #| label: fig-dk-view-labels
 #| fig-cap: "Cortical atlas with view labels."
-pos <- position_brain(hemi ~ view)
+pos <- position_brain_polygon(hemi ~ view)
 ggplot() +
-  geom_brain(atlas = dk(), position = pos, show.legend = FALSE) +
-  annotate_brain(atlas = dk(), position = pos) +
+  geom_brain_polygon(atlas = dk(), position = pos, show.legend = FALSE) +
+  annotate_brain_polygon(atlas = dk(), position = pos) +
   theme_void()
 ```
 
@@ -263,22 +241,25 @@ layouts:
 ```{r}
 #| label: fig-aseg-view-labels
 #| fig-cap: "Subcortical atlas with view labels in a two-row grid."
-pos <- position_brain(nrow = 2)
+pos <- position_brain_polygon(nrow = 2)
 ggplot() +
-  geom_brain(atlas = aseg(), position = pos, show.legend = FALSE) +
-  annotate_brain(atlas = aseg(), position = pos) +
+  geom_brain_polygon(atlas = aseg(), position = pos, show.legend = FALSE) +
+  annotate_brain_polygon(atlas = aseg(), position = pos) +
   theme_void()
 ```
 
-Text appearance is customisable through standard `annotate()` arguments:
+Labels sit a little above each view by default (`padding = 0.05`). Increase
+`padding` to push them further out, and tune the text through standard
+`annotate()` arguments:
 
 ```{r}
 #| label: fig-styled-labels
-#| fig-cap: "View labels with custom styling."
+#| fig-cap: "View labels with extra padding and custom styling."
 ggplot() +
-  geom_brain(atlas = dk(), show.legend = FALSE) +
-  annotate_brain(
+  geom_brain_polygon(atlas = dk(), show.legend = FALSE) +
+  annotate_brain_polygon(
     atlas = dk(),
+    padding = 0.08,
     size = 2.5,
     colour = "grey50",
     fontface = "italic"
@@ -286,35 +267,7 @@ ggplot() +
   theme_void()
 ```
 
-## The sf-optional renderer: `geom_brain_polygon()`
-
-`geom_brain()` is built on `geom_sf()`, which needs the `sf` package and its
-GDAL/GEOS/PROJ system libraries. `geom_brain_polygon()` is an experimental
-alternative that draws the same atlases with plain `geom_polygon()` and no
-`sf` dependency -- useful for lightweight, WebAssembly, or air-gapped
-installs. It accepts the bundled atlases directly:
-
-```{r}
-#| label: fig-polygon-basic
-#| fig-cap: "Cortical atlas drawn with the sf-free polygon renderer."
-ggplot() +
-  geom_brain_polygon(atlas = dk(), show.legend = FALSE) +
-  theme_void()
-```
-
-By default it colours regions by their `label` (the identifier shared across
-atlas sections), so the atlas palette applies automatically.
-
-### Keeping shapes undistorted with `coord_brain()`
-
-Because the polygon renderer is no longer bound to `coord_sf()`, it bundles
-`coord_brain()` -- a fixed-aspect coordinate system (like
-`ggplot2::coord_fixed()`) that stops the plotting window from stretching the
-brain. You normally never call it yourself; it is added for you and, like
-`coord_sf(default = TRUE)`, steps aside silently if you add your own
-coordinate system.
-
-### Zooming in on regions of interest
+## Zooming in on regions of interest
 
 For "focus" atlases -- where only a few structures carry labels and the rest
 of the brain is grey context -- `position_brain_polygon(zoom = ...)` crops
@@ -322,11 +275,13 @@ each view onto the regions of interest, so they fill the panel while the
 surrounding context becomes a tidy grey frame. Every view keeps the same
 allotted cell.
 
+### Focus on the regions in your data
+
 `zoom = TRUE` focuses on whatever regions your data supplies values for (or,
 with no data, the atlas's labelled regions):
 
 ```{r}
-#| label: fig-polygon-zoom
+#| label: fig-zoom-data
 #| fig-cap: "Each view zoomed onto the regions present in the supplied data."
 my_data <- data.frame(
   region = ggseg.formats::atlas_regions(aseg())[1:3],
@@ -344,26 +299,70 @@ ggplot() +
   theme_void()
 ```
 
-Pass a character vector to choose the focus regions explicitly, and
-`zoom_pad` to control the margin around them (5% by default).
+### Name the focus regions explicitly
 
-### Dropping the grey context
+Pass a character vector to choose exactly which regions each view zooms onto,
+independent of any data you plot:
+
+```{r}
+#| label: fig-zoom-explicit
+#| fig-cap: "Zoom targeted at a named set of regions."
+focus <- c("Thalamus Proper", "Putamen", "Hippocampus")
+
+ggplot() +
+  geom_brain_polygon(
+    atlas = aseg(),
+    position = position_brain_polygon(zoom = focus),
+    show.legend = FALSE
+  ) +
+  theme_void()
+```
+
+### Control the margin with `zoom_pad`
+
+`zoom_pad` sets how much breathing room to leave around the focus regions, as
+a fraction of their size (5% by default). A smaller value crops tighter; a
+larger value keeps more context in frame:
+
+```{r}
+#| label: fig-zoom-tight
+#| fig-cap: "A tighter crop using a small zoom_pad."
+ggplot() +
+  geom_brain_polygon(
+    atlas = aseg(),
+    position = position_brain_polygon(zoom = focus, zoom_pad = 0.01),
+    show.legend = FALSE
+  ) +
+  theme_void()
+```
+
+```{r}
+#| label: fig-zoom-loose
+#| fig-cap: "More surrounding context using a larger zoom_pad."
+ggplot() +
+  geom_brain_polygon(
+    atlas = aseg(),
+    position = position_brain_polygon(zoom = focus, zoom_pad = 0.25),
+    show.legend = FALSE
+  ) +
+  theme_void()
+```
+
+## Dropping the grey context
 
 Set `context = FALSE` to remove the unlabelled context regions entirely. The
 remaining atlas regions are re-gathered into a tighter layout:
 
 ```{r}
-#| label: fig-polygon-no-context
+#| label: fig-no-context
 #| fig-cap: "Subcortical atlas with the grey context regions removed."
 ggplot() +
   geom_brain_polygon(atlas = aseg(), context = FALSE, show.legend = FALSE) +
   theme_void()
 ```
 
-## Quick reference
+## The sf workflow
 
-| Atlas type | Options |
-|---|---|
-| Cortical | `hemi ~ view`, `view ~ hemi`, `. ~ hemi + view`, `hemi + view ~ .` |
-| Subcortical / Tract | `"horizontal"`, `"vertical"`, `nrow`, `ncol`, `views`, `type ~ .` |
-| Polygon renderer | `geom_brain_polygon()`, `position_brain_polygon(zoom = , zoom_pad = )`, `context = `, `coord_brain()` |
+If you work with brain atlases as sf objects -- for example to layer
+`geom_sf()` text labels -- `reposition_brain()` rearranges the sf data using
+the same arguments shown here. See `vignette("geom-sf")` for that workflow.
