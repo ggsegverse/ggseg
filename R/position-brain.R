@@ -655,7 +655,7 @@ drop_temp_columns <- function(df) {
 #'
 #' @param bx List of sf bbox objects.
 #'
-#' @return An sf `bbox` object with 1% padding.
+#' @return An sf `bbox` object with 1\% padding.
 #' @keywords internal
 #' @noRd
 get_box <- function(bx) {

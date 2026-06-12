@@ -40,7 +40,7 @@ polygon clip so context regions become a clean rectangular frame around
 the focus.}
 
 \item{zoom_pad}{Fractional padding added around the focus window when
-`zoom` is active. Defaults to `0.05` (5%).}
+`zoom` is active. Defaults to `0.05` (5\%).}
 }
 \value{
 A `position_brain_polygon_spec` list with the layout parameters.

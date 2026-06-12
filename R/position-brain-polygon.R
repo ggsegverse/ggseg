@@ -178,7 +178,7 @@ stack_grid_flat <- function(df, rows, columns) {
 #' Padded bounding box from a list of flat bboxes
 #'
 #' @param bx List of named numeric vectors with xmin/ymin/xmax/ymax.
-#' @return Named numeric vector `c(xmin, ymin, xmax, ymax)` with 1% padding.
+#' @return Named numeric vector `c(xmin, ymin, xmax, ymax)` with 1\% padding.
 #' @keywords internal
 #' @noRd
 get_box_flat <- function(bx) {
@@ -271,7 +271,7 @@ frame_2_position_flat <- function(
 #'   polygon clip so context regions become a clean rectangular frame around
 #'   the focus.
 #' @param zoom_pad Fractional padding added around the focus window when
-#'   `zoom` is active. Defaults to `0.05` (5%).
+#'   `zoom` is active. Defaults to `0.05` (5\%).
 #' @return A `position_brain_polygon_spec` list with the layout parameters.
 #' @export
 #' @examples
