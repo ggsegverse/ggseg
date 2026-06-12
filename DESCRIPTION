@@ -45,7 +45,7 @@ Suggests:
     testthat (>= 3.0.0),
     vdiffr
 Remotes:
-    ggsegverse/ggseg.formats@sf-optional-suggests
+    ggsegverse/ggseg.formats
 VignetteBuilder:
     knitr
 Config/Needs/website: ggsegverse/ggseg.docs
