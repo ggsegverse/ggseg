@@ -68,6 +68,9 @@ and [Epic #128](https://github.com/ggsegverse/ggseg/issues/128).
   regions included — is replicated in each `facet_wrap()` panel, mirroring
   `geom_brain()`. The internal polygon-ring grouping was renamed to `.group`
   so a user data column named `group` no longer collides on join.
+- `geom_brain_polygon()` data joins now match on `label` as well as
+  `region` (and `hemi`), so FreeSurfer label-keyed data (e.g.
+  `"lh_bankssts"`) plots without first deriving a `region` column.
 - `annotate_brain()` and `annotate_brain_polygon()` gain a `padding`
   argument (fraction of plot height, default 5%) and bottom-anchor their
   labels (`vjust = 0`), so view labels sit clear of the geometry instead of

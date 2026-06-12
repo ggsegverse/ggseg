@@ -192,6 +192,16 @@ describe("brain_join_polygon() faceting", {
     expect_true(any(is.na(a$p)))
   })
 
+  it("joins by label when data carries label but not region", {
+    poly <- ggseg.formats::as_polygon_atlas(dk())
+    flat <- prepare_polygon_atlas(poly)
+    lbl <- ggseg.formats::atlas_labels(dk())[1]
+    data <- data.frame(label = lbl, val = 1.5, stringsAsFactors = FALSE)
+    joined <- brain_join_polygon(data, flat)
+    expect_true("val" %in% names(joined))
+    expect_equal(unique(joined$val[joined$label %in% lbl]), 1.5)
+  })
+
   it("keeps a user column named group without colliding", {
     poly <- ggseg.formats::as_polygon_atlas(dk())
     flat <- prepare_polygon_atlas(poly)

@@ -232,9 +232,9 @@ prepare_polygon_atlas <- function(
 
 #' Polygon-path version of `brain_join()` — joins user data onto flat rows
 #'
-#' Matches on `region` (and `hemi` if both data and atlas carry it). Polygon
-#' rows without a matching data row keep `NA` for the joined columns; the
-#' renderer paints them grey via `na.value` on the fill scale.
+#' Matches on `region` or `label` (and `hemi` if both data and atlas carry
+#' it). Polygon rows without a matching data row keep `NA` for the joined
+#' columns; the renderer paints them grey via `na.value` on the fill scale.
 #'
 #' Grouped data (via [dplyr::group_by()]) is replicated like [brain_join()]:
 #' the full atlas is repeated once per group, with the grouping columns set on
@@ -244,11 +244,14 @@ prepare_polygon_atlas <- function(
 #' @keywords internal
 #' @noRd
 brain_join_polygon <- function(data, flat) {
-  by <- intersect(c("region", "hemi"), intersect(names(data), names(flat)))
+  by <- intersect(
+    c("region", "label", "hemi"),
+    intersect(names(data), names(flat))
+  )
   if (!length(by)) {
     cli::cli_abort(c(
       "{.arg data} has no columns in common with the atlas.",
-      "i" = "Need {.field region} (and optionally {.field hemi})."
+      "i" = "Need {.field region} or {.field label} (and optionally {.field hemi})."
     ))
   }
 
