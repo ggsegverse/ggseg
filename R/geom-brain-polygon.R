@@ -207,8 +207,11 @@ prepare_polygon_atlas <- function(
     }
   }
 
+  # Namespace the polygon-ring grouping as `.group` so a user data column
+  # named `group` (a common facet variable) does not collide on join.
+  names(flat)[names(flat) == "group"] <- ".group"
   flat$.feature_id <- as.integer(factor(
-    paste(flat$label, flat$view, flat$group, sep = "@@")
+    paste(flat$label, flat$view, flat$.group, sep = "@@")
   ))
 
   if (is_polygon_position(position)) {
@@ -233,6 +236,11 @@ prepare_polygon_atlas <- function(
 #' rows without a matching data row keep `NA` for the joined columns; the
 #' renderer paints them grey via `na.value` on the fill scale.
 #'
+#' Grouped data (via [dplyr::group_by()]) is replicated like [brain_join()]:
+#' the full atlas is repeated once per group, with the grouping columns set on
+#' every row — including unmatched context regions — so [ggplot2::facet_wrap()]
+#' shows the complete atlas in each panel.
+#'
 #' @keywords internal
 #' @noRd
 brain_join_polygon <- function(data, flat) {
@@ -243,5 +251,24 @@ brain_join_polygon <- function(data, flat) {
       "i" = "Need {.field region} (and optionally {.field hemi})."
     ))
   }
-  dplyr::left_join(flat, data, by = by, suffix = c("", ".user"))
+
+  if (!dplyr::is.grouped_df(data)) {
+    return(dplyr::left_join(flat, data, by = by, suffix = c("", ".user")))
+  }
+
+  group_cols <- dplyr::group_vars(data)
+  nested <- tidyr::nest(data)
+  pieces <- lapply(seq_len(nrow(nested)), function(i) {
+    piece <- dplyr::left_join(
+      flat,
+      nested$data[[i]],
+      by = by,
+      suffix = c("", ".user")
+    )
+    for (g in group_cols) {
+      piece[[g]] <- nested[[g]][[i]]
+    }
+    piece
+  })
+  dplyr::bind_rows(pieces)
 }

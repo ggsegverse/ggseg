@@ -63,6 +63,15 @@ and [Epic #128](https://github.com/ggsegverse/ggseg/issues/128).
   key) when no `fill` aesthetic is supplied, matching the label-keyed
   `atlas$palette`. This removes a spurious "No shared levels" scale warning
   that previously surfaced whenever filtering left no unlabelled rows.
+- `geom_brain_polygon()` now supports faceting. Pass grouped data
+  (`data = my_data |> dplyr::group_by(group)`) and the full atlas — context
+  regions included — is replicated in each `facet_wrap()` panel, mirroring
+  `geom_brain()`. The internal polygon-ring grouping was renamed to `.group`
+  so a user data column named `group` no longer collides on join.
+- `annotate_brain()` and `annotate_brain_polygon()` gain a `padding`
+  argument (fraction of plot height, default 5%) and bottom-anchor their
+  labels (`vjust = 0`), so view labels sit clear of the geometry instead of
+  overlapping it.
 
 ## sf moves to Suggests
 

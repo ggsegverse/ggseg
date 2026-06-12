@@ -147,16 +147,61 @@ describe("prepare_polygon_atlas()", {
     poly <- ggseg.formats::as_polygon_atlas(dk())
     flat <- prepare_polygon_atlas(poly)
     expect_true(all(
-      c("label", "view", "x", "y", "group", "subgroup", ".feature_id") %in%
+      c("label", "view", "x", "y", ".group", "subgroup", ".feature_id") %in%
         names(flat)
     ))
     expect_gt(nrow(flat), nrow(ggseg.formats::atlas_polygons(poly)))
   })
 
-  it("assigns one .feature_id per (label, view, group)", {
+  it("renames the polygon-ring group to .group to avoid user collision", {
     poly <- ggseg.formats::as_polygon_atlas(dk())
     flat <- prepare_polygon_atlas(poly)
-    keys <- unique(paste(flat$label, flat$view, flat$group, sep = "@@"))
+    expect_false("group" %in% names(flat))
+    expect_true(".group" %in% names(flat))
+  })
+
+  it("assigns one .feature_id per (label, view, .group)", {
+    poly <- ggseg.formats::as_polygon_atlas(dk())
+    flat <- prepare_polygon_atlas(poly)
+    keys <- unique(paste(flat$label, flat$view, flat$.group, sep = "@@"))
     expect_equal(length(unique(flat$.feature_id)), length(keys))
+  })
+})
+
+describe("brain_join_polygon() faceting", {
+  it("replicates the full atlas per group for grouped data", {
+    poly <- ggseg.formats::as_polygon_atlas(dk())
+    flat <- prepare_polygon_atlas(poly)
+    data <- dplyr::group_by(
+      data.frame(
+        region = c("insula", "precentral"),
+        p = c(0.1, 0.2),
+        group = c("A", "B"),
+        stringsAsFactors = FALSE
+      ),
+      group
+    )
+    joined <- brain_join_polygon(data, flat)
+
+    expect_setequal(unique(joined$group), c("A", "B"))
+    a <- joined[joined$group == "A", ]
+    b <- joined[joined$group == "B", ]
+    expect_equal(nrow(a), nrow(flat))
+    expect_equal(nrow(b), nrow(flat))
+    expect_true(any(!is.na(a$p)))
+    expect_true(any(is.na(a$p)))
+  })
+
+  it("keeps a user column named group without colliding", {
+    poly <- ggseg.formats::as_polygon_atlas(dk())
+    flat <- prepare_polygon_atlas(poly)
+    data <- data.frame(
+      region = "insula",
+      group = "cohort1",
+      stringsAsFactors = FALSE
+    )
+    joined <- brain_join_polygon(data, flat)
+    expect_true("group" %in% names(joined))
+    expect_equal(unique(joined$group[joined$region %in% "insula"]), "cohort1")
   })
 })
