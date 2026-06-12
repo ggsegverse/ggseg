@@ -1,5 +1,13 @@
 # ggseg 2.2.0 (development)
 
+## Other changes
+
+- `geom_brain()` now colours by `label` rather than `region` when no `fill`
+  aesthetic is supplied. As `atlas$palette` is keyed by label, the no-data
+  default is now the atlas's colours (previously all grey), and a spurious
+  "No shared levels" scale warning that appeared when filtering by `hemi`
+  or `view` no longer occurs.
+
 ## sf-optional renderer (experimental)
 
 First step toward making sf an opt-in dependency — see the
@@ -29,6 +37,28 @@ and [Epic #128](https://github.com/ggsegverse/ggseg/issues/128).
   (`hemi ~ view`), and grid sizing.
 - New `annotate_brain_polygon()` mirrors `annotate_brain()` for the
   polygon path. Same interface, sf-free implementation.
+- New `coord_brain()` fixes the aspect ratio so brain polygons aren't
+  stretched by the plotting window, mirroring the role `coord_sf()` plays
+  for `geom_brain()`. `geom_brain_polygon()` adds it automatically. Like
+  `coord_sf(default = TRUE)`, it registers as a default coord, so a
+  user-supplied coord (or several stacked `geom_brain_polygon()` layers)
+  replaces it without the "Coordinate system already present" message.
+- `position_brain_polygon()` gains a `zoom` argument for per-view zoom —
+  useful for focus atlases (e.g. a thalamus atlas where only the thalamus
+  carries labels). `zoom = TRUE` crops each view onto its focus regions
+  (the regions present in the user `data`, or the atlas's labelled regions
+  when no data is supplied); a character vector names them explicitly.
+  Context regions become a clean rectangular frame around the focus.
+  Cropping uses an sf-free Sutherland–Hodgman polygon clip and a common
+  window size, so every view keeps the same allotted cell. `zoom_pad`
+  (default 5%) controls the margin.
+- `geom_brain_polygon()` gains a `context` argument. With `context = FALSE`
+  the grey context regions (atlas rows with no `region` label) are dropped
+  and the remaining atlas regions are re-gathered into a tighter layout.
+- `geom_brain_polygon()` now colours by `label` (the cross-section merge
+  key) when no `fill` aesthetic is supplied, matching the label-keyed
+  `atlas$palette`. This removes a spurious "No shared levels" scale warning
+  that previously surfaced whenever filtering left no unlabelled rows.
 
 ## sf moves to Suggests
 

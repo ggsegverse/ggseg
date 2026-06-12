@@ -11,6 +11,7 @@ geom_brain_polygon(
   hemi = NULL,
   view = NULL,
   position = position_brain_polygon(),
+  context = TRUE,
   show.legend = NA,
   inherit.aes = TRUE,
   ...
@@ -28,9 +29,14 @@ atlas is plotted without user data.}
 
 \item{view}{Character vector of views to include.}
 
-\item{position}{Position adjustment. Defaults to [position_brain_lite()],
+\item{position}{Position adjustment. Defaults to [position_brain_polygon()],
 which lays views out horizontally without sf. Pass `"identity"` to use
-the polygons' raw coordinates.}
+the polygons' raw coordinates. Per-view zoom is controlled here via
+[position_brain_polygon()]'s `zoom` argument.}
+
+\item{context}{Logical. When `TRUE` (default), context regions (atlas rows
+with no `region` label, drawn grey) are kept. When `FALSE`, they are
+dropped so only true atlas regions are plotted.}
 
 \item{show.legend}{Logical. Should this layer be included in legends?}
 

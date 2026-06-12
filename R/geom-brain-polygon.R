@@ -27,16 +27,20 @@
 #' @param atlas A `ggseg_atlas` object with 2D geometry (sf or polygons).
 #' @param hemi Character vector of hemispheres to include.
 #' @param view Character vector of views to include.
-#' @param position Position adjustment. Defaults to [position_brain_lite()],
+#' @param position Position adjustment. Defaults to [position_brain_polygon()],
 #'   which lays views out horizontally without sf. Pass `"identity"` to use
-#'   the polygons' raw coordinates.
+#'   the polygons' raw coordinates. Per-view zoom is controlled here via
+#'   [position_brain_polygon()]'s `zoom` argument.
+#' @param context Logical. When `TRUE` (default), context regions (atlas rows
+#'   with no `region` label, drawn grey) are kept. When `FALSE`, they are
+#'   dropped so only true atlas regions are plotted.
 #' @param show.legend Logical. Should this layer be included in legends?
 #' @param inherit.aes Logical. If `FALSE`, overrides the default aesthetics.
 #' @param ... Additional arguments passed to `ggplot2::geom_polygon()`.
 #'
 #' @return A list of ggplot2 layer and coord objects.
 #' @export
-#' @importFrom ggplot2 aes geom_polygon coord_fixed scale_fill_manual
+#' @importFrom ggplot2 aes geom_polygon scale_fill_manual
 #' @importFrom rlang .data
 #'
 #' @examples
@@ -52,15 +56,21 @@ geom_brain_polygon <- function(
   hemi = NULL,
   view = NULL,
   position = position_brain_polygon(),
+  context = TRUE,
   show.legend = NA,
   inherit.aes = TRUE,
   ...
 ) {
+  zoom_spec <- if (is_polygon_position(position)) position$zoom else NULL
+  focus <- resolve_zoom_focus(zoom_spec, data, atlas)
+
   flat <- prepare_polygon_atlas(
     atlas,
     hemi = hemi,
     view = view,
-    position = position
+    position = position,
+    context = context,
+    focus = focus
   )
 
   if (!is.null(data)) {
@@ -74,7 +84,7 @@ geom_brain_polygon <- function(
     subgroup = .data$subgroup
   )
   if (!"fill" %in% names(mapping)) {
-    base_mapping$fill <- quote(.data$region)
+    base_mapping$fill <- quote(.data$label)
   }
   user_mapping <- utils::modifyList(base_mapping, as.list(mapping))
   class(user_mapping) <- "uneval"
@@ -101,7 +111,7 @@ geom_brain_polygon <- function(
     )
   )
 
-  result <- list(layer, coord_fixed(clip = "off"))
+  result <- list(layer, coord_brain())
 
   if (!is.null(atlas$palette) && !"fill" %in% names(mapping)) {
     result <- c(
@@ -128,7 +138,9 @@ prepare_polygon_atlas <- function(
   atlas,
   hemi = NULL,
   view = NULL,
-  position = NULL
+  position = NULL,
+  context = TRUE,
+  focus = NULL
 ) {
   if (is.null(ggseg.formats::atlas_geom(atlas))) {
     cli::cli_abort(c(
@@ -170,6 +182,10 @@ prepare_polygon_atlas <- function(
     flat <- flat[flat$hemi %in% hemi, , drop = FALSE]
   }
 
+  if (!context && "region" %in% names(flat)) {
+    flat <- flat[!is.na(flat$region), , drop = FALSE]
+  }
+
   flat$atlas <- atlas$atlas
   flat$type <- atlas$type
 
@@ -201,7 +217,9 @@ prepare_polygon_atlas <- function(
       position$position,
       nrow = position$nrow,
       ncol = position$ncol,
-      views = position$views
+      views = position$views,
+      focus = focus,
+      zoom_pad = if (is.null(position$zoom_pad)) 0.05 else position$zoom_pad
     )
   }
 

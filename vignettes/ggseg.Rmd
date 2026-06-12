@@ -225,6 +225,25 @@ ggplot() +
   theme_brain()
 ```
 
+## Plotting without sf
+
+`geom_brain()` relies on the `sf` package and its system libraries. If you
+need a lighter-weight install (for example WebAssembly or air-gapped
+environments), `geom_brain_polygon()` draws the same atlases with no `sf`
+dependency, colouring by `label` and preserving brain shapes via
+`coord_brain()`:
+
+```{r}
+#| label: fig-polygon
+#| fig-cap: "The same atlas drawn with the sf-free polygon renderer."
+ggplot() +
+  geom_brain_polygon(atlas = dk(), show.legend = FALSE) +
+  theme_void()
+```
+
+It also supports per-view zoom and context removal -- see
+`vignette("positioning-views")` for the full set of options.
+
 ## Finding more atlases
 
 ggseg ships with `dk` (cortical), `aseg` (subcortical), and `tracula`

@@ -286,9 +286,84 @@ ggplot() +
   theme_void()
 ```
 
+## The sf-optional renderer: `geom_brain_polygon()`
+
+`geom_brain()` is built on `geom_sf()`, which needs the `sf` package and its
+GDAL/GEOS/PROJ system libraries. `geom_brain_polygon()` is an experimental
+alternative that draws the same atlases with plain `geom_polygon()` and no
+`sf` dependency -- useful for lightweight, WebAssembly, or air-gapped
+installs. It accepts the bundled atlases directly:
+
+```{r}
+#| label: fig-polygon-basic
+#| fig-cap: "Cortical atlas drawn with the sf-free polygon renderer."
+ggplot() +
+  geom_brain_polygon(atlas = dk(), show.legend = FALSE) +
+  theme_void()
+```
+
+By default it colours regions by their `label` (the identifier shared across
+atlas sections), so the atlas palette applies automatically.
+
+### Keeping shapes undistorted with `coord_brain()`
+
+Because the polygon renderer is no longer bound to `coord_sf()`, it bundles
+`coord_brain()` -- a fixed-aspect coordinate system (like
+`ggplot2::coord_fixed()`) that stops the plotting window from stretching the
+brain. You normally never call it yourself; it is added for you and, like
+`coord_sf(default = TRUE)`, steps aside silently if you add your own
+coordinate system.
+
+### Zooming in on regions of interest
+
+For "focus" atlases -- where only a few structures carry labels and the rest
+of the brain is grey context -- `position_brain_polygon(zoom = ...)` crops
+each view onto the regions of interest, so they fill the panel while the
+surrounding context becomes a tidy grey frame. Every view keeps the same
+allotted cell.
+
+`zoom = TRUE` focuses on whatever regions your data supplies values for (or,
+with no data, the atlas's labelled regions):
+
+```{r}
+#| label: fig-polygon-zoom
+#| fig-cap: "Each view zoomed onto the regions present in the supplied data."
+my_data <- data.frame(
+  region = ggseg.formats::atlas_regions(aseg())[1:3],
+  value = c(1, 2, 3)
+)
+
+ggplot() +
+  geom_brain_polygon(
+    atlas = aseg(),
+    data = my_data,
+    aes(fill = value),
+    position = position_brain_polygon(zoom = TRUE)
+  ) +
+  scale_fill_viridis_c(na.value = "grey85") +
+  theme_void()
+```
+
+Pass a character vector to choose the focus regions explicitly, and
+`zoom_pad` to control the margin around them (5% by default).
+
+### Dropping the grey context
+
+Set `context = FALSE` to remove the unlabelled context regions entirely. The
+remaining atlas regions are re-gathered into a tighter layout:
+
+```{r}
+#| label: fig-polygon-no-context
+#| fig-cap: "Subcortical atlas with the grey context regions removed."
+ggplot() +
+  geom_brain_polygon(atlas = aseg(), context = FALSE, show.legend = FALSE) +
+  theme_void()
+```
+
 ## Quick reference
 
 | Atlas type | Options |
 |---|---|
 | Cortical | `hemi ~ view`, `view ~ hemi`, `. ~ hemi + view`, `hemi + view ~ .` |
 | Subcortical / Tract | `"horizontal"`, `"vertical"`, `nrow`, `ncol`, `views`, `type ~ .` |
+| Polygon renderer | `geom_brain_polygon()`, `position_brain_polygon(zoom = , zoom_pad = )`, `context = `, `coord_brain()` |

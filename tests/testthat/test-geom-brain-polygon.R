@@ -77,6 +77,69 @@ describe("geom_brain_polygon()", {
     g <- ggplot2::ggplot_build(p)
     expect_gt(nrow(g$data[[1]]), 0)
   })
+
+  it("bundles a fixed-aspect default coord so shapes are not stretched", {
+    poly <- ggseg.formats::as_polygon_atlas(dk())
+    p <- ggplot2::ggplot() + geom_brain_polygon(atlas = poly)
+    expect_equal(p$coordinates$ratio, 1)
+    expect_true(isTRUE(p$coordinates$default))
+  })
+
+  it("lets a user coord override the bundled one without warning", {
+    poly <- ggseg.formats::as_polygon_atlas(dk())
+    p <- ggplot2::ggplot() +
+      geom_brain_polygon(atlas = poly) +
+      ggplot2::coord_fixed(ratio = 2)
+    expect_no_message(ggplot2::ggplot_build(p))
+    expect_equal(p$coordinates$ratio, 2)
+  })
+
+  it("drops context regions when context = FALSE", {
+    poly <- ggseg.formats::as_polygon_atlas(aseg())
+    full <- prepare_polygon_atlas(poly)
+    no_ctx <- prepare_polygon_atlas(poly, context = FALSE)
+    expect_true(any(is.na(full$region)))
+    expect_false(any(is.na(no_ctx$region)))
+    expect_lt(nrow(no_ctx), nrow(full))
+  })
+
+  it("context = FALSE re-gathers views into a tighter extent", {
+    poly <- ggseg.formats::as_polygon_atlas(aseg())
+    rng <- function(p) {
+      diff(range(ggplot2::ggplot_build(p)$data[[1]]$x))
+    }
+    p_full <- ggplot2::ggplot() + geom_brain_polygon(atlas = poly)
+    p_ctx <- ggplot2::ggplot() +
+      geom_brain_polygon(atlas = poly, context = FALSE)
+    expect_lt(rng(p_ctx), rng(p_full))
+  })
+
+  it("zoom = TRUE crops each view onto the focus regions", {
+    poly <- ggseg.formats::as_polygon_atlas(aseg())
+    p_full <- ggplot2::ggplot() + geom_brain_polygon(atlas = poly)
+    p_zoom <- ggplot2::ggplot() +
+      geom_brain_polygon(
+        atlas = poly,
+        position = position_brain_polygon(zoom = TRUE)
+      )
+    span <- function(p) diff(range(ggplot2::ggplot_build(p)$data[[1]]$x))
+    expect_lt(span(p_zoom), span(p_full))
+  })
+
+  it("zoom = TRUE focuses on regions present in user data", {
+    poly <- ggseg.formats::as_polygon_atlas(aseg())
+    regs <- unique(poly$core$region)
+    regs <- regs[!is.na(regs)][1:2]
+    user <- data.frame(region = regs, measure = c(1, 2))
+    p <- ggplot2::ggplot() +
+      geom_brain_polygon(
+        data = user,
+        atlas = poly,
+        ggplot2::aes(fill = measure),
+        position = position_brain_polygon(zoom = TRUE)
+      )
+    expect_gt(nrow(ggplot2::ggplot_build(p)$data[[1]]), 0)
+  })
 })
 
 describe("prepare_polygon_atlas()", {

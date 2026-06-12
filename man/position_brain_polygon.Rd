@@ -8,7 +8,9 @@ position_brain_polygon(
   position = "horizontal",
   nrow = NULL,
   ncol = NULL,
-  views = NULL
+  views = NULL,
+  zoom = NULL,
+  zoom_pad = 0.05
 )
 }
 \arguments{
@@ -28,6 +30,17 @@ not a formula.}
 \item{views}{Character vector specifying which views to include and their
 order. If NULL (default), all views are included in their original order.
 Only applies to subcortical/tract atlases.}
+
+\item{zoom}{Controls per-view zoom. `NULL`/`FALSE` (default) draws each
+view at full extent. `TRUE` zooms each view onto its focus regions —
+the regions present in the user `data` passed to [geom_brain_polygon()],
+or the atlas's labelled regions when no data is supplied. A character
+vector names the focus regions explicitly. Cropping uses an sf-free
+polygon clip so context regions become a clean rectangular frame around
+the focus.}
+
+\item{zoom_pad}{Fractional padding added around the focus window when
+`zoom` is active. Defaults to `0.05` (5%).}
 }
 \value{
 A `position_brain_polygon_spec` list with the layout parameters.
@@ -47,6 +60,14 @@ ggplot() +
   geom_brain_polygon(
     atlas = poly,
     position = position_brain_polygon("vertical")
+  )
+
+# Zoom each view onto the regions present in user data
+ggplot() +
+  geom_brain_polygon(
+    atlas = poly,
+    data = my_data,
+    position = position_brain_polygon(zoom = TRUE)
   )
 }
 }
