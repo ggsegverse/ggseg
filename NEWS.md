@@ -2,6 +2,10 @@
 
 ## Other changes
 
+- Compatibility with the current `ggseg.formats` `atlas_palette()`, which now
+  takes an atlas object rather than an atlas name. The deprecated
+  `scale_brain()` / `scale_fill_brain()` / `scale_colour_brain()` family
+  resolves the atlas name internally so it keeps returning the atlas palette.
 - `geom_brain()` now colours by `label` rather than `region` when no `fill`
   aesthetic is supplied. As `atlas$palette` is keyed by label, the no-data
   default is now the atlas's colours (previously all grey), and a spurious
