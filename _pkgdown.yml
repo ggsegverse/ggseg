@@ -54,6 +54,7 @@ reference:
       - geom_brain_polygon
       - position_brain_polygon
       - annotate_brain_polygon
+      - coord_brain
 
   - title: Data
     desc: Joining user data to brain atlases
