@@ -13,7 +13,7 @@
 #' @name ggseg
 #' @docType package
 #' @keywords internal
-#' @importFrom ggseg.formats atlas_palette dk aseg tracula
+#' @importFrom ggseg.formats atlas_palette dk aseg tracula suit
 "_PACKAGE"
 
 #' @export
@@ -24,6 +24,9 @@ ggseg.formats::aseg
 
 #' @export
 ggseg.formats::tracula
+
+#' @export
+ggseg.formats::suit
 
 utils::globalVariables(c(
   ".id",
