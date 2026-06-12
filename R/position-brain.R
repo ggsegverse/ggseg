@@ -52,26 +52,17 @@ reposition_brain <- function(
 
 #' Alter brain atlas position
 #'
-#' Function to be used in the position argument in geom_brain
-#' to alter the position of the brain slice/views.
+#' Arrange brain atlas views
 #'
-#' @param position Formula describing the rows ~ columns organisation for
-#'   cortical atlases (e.g., `hemi ~ view`). For subcortical/tract atlases,
-#'   can be "horizontal", "vertical", or a formula with `type ~ .` where type
-#'   is extracted from view names like "axial_1" -> "axial".
-#' @param nrow Number of rows for grid layout. If NULL (default), calculated
-#'   automatically. Only used for subcortical/tract atlases when position is
-#'   not a formula.
-#' @param ncol Number of columns for grid layout. If NULL (default), calculated
-#'   automatically. Only used for subcortical/tract atlases when position is
-#'   not a formula.
-#' @param views Character vector specifying which views to include and their
-#'   order. If NULL (default), all views are included in their original order.
-#'   Only applies to subcortical/tract atlases.
+#' Builds the layout specification consumed by [geom_brain()] (and
+#' [annotate_brain()]) to arrange an atlas's views and hemispheres. This is
+#' the sf-free polygon layout: it is an alias of [position_brain_polygon()]
+#' and supports the same per-view `zoom`.
+#'
+#' @inheritParams position_brain_polygon
 #'
 #' @export
-#' @return a ggproto object
-#' @importFrom ggplot2 ggproto
+#' @return A `position_brain_polygon_spec` list with the layout parameters.
 #' @examples
 #' library(ggplot2)
 #'
@@ -116,9 +107,64 @@ position_brain <- function(
   position = "horizontal",
   nrow = NULL,
   ncol = NULL,
+  views = NULL,
+  zoom = NULL,
+  zoom_pad = 0.05
+) {
+  position_brain_polygon(
+    position = position,
+    nrow = nrow,
+    ncol = ncol,
+    views = views,
+    zoom = zoom,
+    zoom_pad = zoom_pad
+  )
+}
+
+#' Deprecated sf brain-view layout
+#'
+#' @description
+#' `r lifecycle::badge("deprecated")`
+#'
+#' The sf rendering path is deprecated. `position_brain_sf()` returns the
+#' legacy `PositionBrain` ggproto for use with [geom_brain_sf()]. For new
+#' code, use [position_brain()] (the polygon default), or convert the atlas
+#' with `as_sf_atlas()` and use [ggplot2::geom_sf()] directly.
+#'
+#' @inheritParams position_brain
+#' @export
+#' @return A `PositionBrain` ggproto object.
+#' @importFrom ggplot2 ggproto
+#' @keywords internal
+position_brain_sf <- function(
+  position = "horizontal",
+  nrow = NULL,
+  ncol = NULL,
   views = NULL
 ) {
-  require_sf("position_brain()")
+  lifecycle::deprecate_warn(
+    "2.2.0",
+    "position_brain_sf()",
+    details = paste(
+      "Use `position_brain()` for the polygon default, or `as_sf_atlas()`",
+      "with `ggplot2::geom_sf()` for an sf workflow."
+    )
+  )
+  require_sf("position_brain_sf()")
+  new_position_brain(position, nrow = nrow, ncol = ncol, views = views)
+}
+
+#' Construct a PositionBrain ggproto without the deprecation warning
+#'
+#' @keywords internal
+#' @noRd
+#' @importFrom ggplot2 ggproto
+new_position_brain <- function(
+  position = "horizontal",
+  nrow = NULL,
+  ncol = NULL,
+  views = NULL
+) {
   ggproto(
     NULL,
     PositionBrain,

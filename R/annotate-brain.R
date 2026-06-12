@@ -46,7 +46,7 @@
 #'   annotate_brain(atlas = dk())
 annotate_brain <- function(
   atlas,
-  position = position_brain_polygon(),
+  position = position_brain(),
   hemi = NULL,
   view = NULL,
   size = 3,
