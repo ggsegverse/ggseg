@@ -12,6 +12,7 @@ annotate_brain(
   size = 3,
   colour = "grey30",
   family = "mono",
+  padding = 0.05,
   nudge_y = 0,
   ...
 )
@@ -34,7 +35,12 @@ matching the one used in [geom_brain()].}
 
 \item{family}{Font family (default: `"mono"`).}
 
-\item{nudge_y}{Additional vertical offset for labels (default: `0`).}
+\item{padding}{Vertical gap between each label and its view, as a
+fraction of the plot's total height (default: `0.05`). Labels are also
+bottom-anchored (`vjust = 0`) so they sit clear of the geometry.}
+
+\item{nudge_y}{Additional absolute vertical offset for labels
+(default: `0`).}
 
 \item{...}{Additional arguments passed to [ggplot2::annotate()].}
 }

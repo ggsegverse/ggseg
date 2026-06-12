@@ -653,13 +653,13 @@
 <path d='M 470.10 215.76 L 469.29 215.66 L 469.13 215.76 L 470.10 215.76 Z' style='fill-rule: evenodd; fill: #00C8DD; stroke-width: 0.43; stroke: #595959; stroke-linecap: butt;' />
 <path d='M 472.47 217.83 L 471.70 217.93 L 471.80 218.21 L 472.47 217.83 Z' style='fill-rule: evenodd; fill: #00C8DD; stroke-width: 0.43; stroke: #595959; stroke-linecap: butt;' />
 <path d='M 480.11 224.34 L 481.78 224.10 L 482.23 223.11 L 481.32 221.59 L 474.93 217.80 L 472.14 219.58 L 476.01 222.76 L 480.11 224.34 Z' style='fill-rule: evenodd; fill: #00C8DD; stroke-width: 0.43; stroke: #595959; stroke-linecap: butt;' />
-<text x='460.29' y='304.43' text-anchor='middle' style='font-size: 8.54px; fill: #4D4D4D; font-family: sans;' textLength='27.05px' lengthAdjust='spacingAndGlyphs'>axial_3</text>
-<text x='296.68' y='136.17' text-anchor='middle' style='font-size: 8.54px; fill: #4D4D4D; font-family: sans;' textLength='27.05px' lengthAdjust='spacingAndGlyphs'>axial_4</text>
-<text x='133.06' y='135.94' text-anchor='middle' style='font-size: 8.54px; fill: #4D4D4D; font-family: sans;' textLength='27.05px' lengthAdjust='spacingAndGlyphs'>axial_5</text>
-<text x='460.29' y='136.78' text-anchor='middle' style='font-size: 8.54px; fill: #4D4D4D; font-family: sans;' textLength='27.05px' lengthAdjust='spacingAndGlyphs'>axial_6</text>
-<text x='623.90' y='322.05' text-anchor='middle' style='font-size: 8.54px; fill: #4D4D4D; font-family: sans;' textLength='37.49px' lengthAdjust='spacingAndGlyphs'>coronal_1</text>
-<text x='133.06' y='320.55' text-anchor='middle' style='font-size: 8.54px; fill: #4D4D4D; font-family: sans;' textLength='37.49px' lengthAdjust='spacingAndGlyphs'>coronal_2</text>
-<text x='296.68' y='310.76' text-anchor='middle' style='font-size: 8.54px; fill: #4D4D4D; font-family: sans;' textLength='27.05px' lengthAdjust='spacingAndGlyphs'>sagittal</text>
+<text x='460.29' y='292.07' text-anchor='middle' style='font-size: 8.54px; fill: #4D4D4D; font-family: sans;' textLength='27.05px' lengthAdjust='spacingAndGlyphs'>axial_3</text>
+<text x='296.68' y='123.81' text-anchor='middle' style='font-size: 8.54px; fill: #4D4D4D; font-family: sans;' textLength='27.05px' lengthAdjust='spacingAndGlyphs'>axial_4</text>
+<text x='133.06' y='123.58' text-anchor='middle' style='font-size: 8.54px; fill: #4D4D4D; font-family: sans;' textLength='27.05px' lengthAdjust='spacingAndGlyphs'>axial_5</text>
+<text x='460.29' y='124.42' text-anchor='middle' style='font-size: 8.54px; fill: #4D4D4D; font-family: sans;' textLength='27.05px' lengthAdjust='spacingAndGlyphs'>axial_6</text>
+<text x='623.90' y='309.69' text-anchor='middle' style='font-size: 8.54px; fill: #4D4D4D; font-family: sans;' textLength='37.49px' lengthAdjust='spacingAndGlyphs'>coronal_1</text>
+<text x='133.06' y='308.19' text-anchor='middle' style='font-size: 8.54px; fill: #4D4D4D; font-family: sans;' textLength='37.49px' lengthAdjust='spacingAndGlyphs'>coronal_2</text>
+<text x='296.68' y='298.40' text-anchor='middle' style='font-size: 8.54px; fill: #4D4D4D; font-family: sans;' textLength='27.05px' lengthAdjust='spacingAndGlyphs'>sagittal</text>
 <rect x='27.54' y='117.45' width='686.98' height='345.58' style='stroke-width: 1.07; stroke: #333333;' />
 <text x='22.61' y='444.23' text-anchor='end' style='font-size: 8.80px; fill: #4D4D4D; font-family: sans;' textLength='12.23px' lengthAdjust='spacingAndGlyphs'>   0</text>
 <text x='22.61' y='393.84' text-anchor='end' style='font-size: 8.80px; fill: #4D4D4D; font-family: sans;' textLength='17.13px' lengthAdjust='spacingAndGlyphs'> 100</text>

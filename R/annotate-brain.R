@@ -19,7 +19,11 @@
 #' @param size Text size in mm (default: `3`).
 #' @param colour Text colour (default: `"grey30"`).
 #' @param family Font family (default: `"mono"`).
-#' @param nudge_y Additional vertical offset for labels (default: `0`).
+#' @param padding Vertical gap between each label and its view, as a
+#'   fraction of the plot's total height (default: `0.05`). Labels are also
+#'   bottom-anchored (`vjust = 0`) so they sit clear of the geometry.
+#' @param nudge_y Additional absolute vertical offset for labels
+#'   (default: `0`).
 #' @param ... Additional arguments passed to [ggplot2::annotate()].
 #'
 #' @return A ggplot2 annotation layer.
@@ -44,6 +48,7 @@ annotate_brain <- function(
   size = 3,
   colour = "grey30",
   family = "mono",
+  padding = 0.05,
   nudge_y = 0,
   ...
 ) {
@@ -70,17 +75,40 @@ annotate_brain <- function(
 
   overall_bbox <- sf::st_bbox(repositioned$geometry)
   y_range <- unname(overall_bbox["ymax"] - overall_bbox["ymin"])
-  label_df$y <- label_df$y + y_range * 0.02 + nudge_y
+  label_df$y <- label_df$y + y_range * padding + nudge_y
 
-  ggplot2::annotate(
-    "text",
-    x = label_df$x,
-    y = label_df$y,
-    label = label_df$label,
-    size = size,
-    colour = colour,
-    family = family,
-    ...
+  annotate_brain_labels(label_df, size, colour, family, ...)
+}
+
+
+#' Build the text-annotation layer shared by the annotate helpers
+#'
+#' @param label_df A data.frame with `x`, `y`, `label` columns.
+#' @param size,colour,family Text styling passed to [ggplot2::annotate()].
+#' @param ... Extra arguments for [ggplot2::annotate()]; `vjust = 0` is the
+#'   default so labels are anchored above their point.
+#' @return A ggplot2 annotation layer.
+#' @keywords internal
+#' @noRd
+annotate_brain_labels <- function(label_df, size, colour, family, ...) {
+  dots <- list(...)
+  if (!"vjust" %in% names(dots)) {
+    dots$vjust <- 0
+  }
+  do.call(
+    ggplot2::annotate,
+    c(
+      list(
+        "text",
+        x = label_df$x,
+        y = label_df$y,
+        label = label_df$label,
+        size = size,
+        colour = colour,
+        family = family
+      ),
+      dots
+    )
   )
 }
 
