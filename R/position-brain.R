@@ -39,11 +39,14 @@ reposition_brain <- function(
   ncol = NULL,
   views = NULL
 ) {
-  data <- as.data.frame(
+  data <- as.data.frame(data, stringsAsFactors = FALSE)
+  frame_2_position(
     data,
-    stringsAsFactors = FALSE
-  ) |>
-    frame_2_position(position, nrow = nrow, ncol = ncol, views = views)
+    position,
+    nrow = nrow,
+    ncol = ncol,
+    views = views
+  )
 }
 
 
