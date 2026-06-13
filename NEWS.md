@@ -1,115 +1,55 @@
 # ggseg 2.2.0 (development)
 
-## Polygon is now the default renderer
+This release makes the **`sf` package optional**. ggseg now draws brains from a
+lightweight polygon representation by default, so it installs and plots even on
+systems where `sf` (and its GDAL / GEOS / PROJ system libraries) is unavailable
+— including WebAssembly and air-gapped setups.
 
-- **`geom_brain()`, `position_brain()`, and `annotate_brain()` now use the
-  sf-free polygon renderer.** `geom_brain()` plots the same atlases without
-  needing sf, `position_brain()` returns the polygon layout spec (and gains
-  per-view `zoom`), and `annotate_brain()` follows whichever `position` you
-  give it. The `*_polygon()` names remain as aliases.
-- **The sf rendering path is deprecated.** `geom_brain_sf()` and
-  `position_brain_sf()` keep the previous sf behaviour for now but warn. For
-  an sf workflow, convert the atlas with `as_sf_atlas()` and use
-  `ggplot2::geom_sf()` directly (region labels, layering other sf geoms) —
-  see `vignette("geom-sf")`.
+## sf is now optional
+
+- **Your plotting code keeps working, without sf.** `geom_brain()`,
+  `position_brain()`, and `annotate_brain()` produce the same figures as
+  before, now drawn without `sf`. `sf` has moved from Imports to Suggests.
+- **Need the full sf toolkit?** To add region labels with `geom_sf_label()`,
+  layer other sf geoms, or wrangle the geometry directly, convert an atlas
+  with `as_sf_atlas()` and use `ggplot2::geom_sf()`. See `vignette("geom-sf")`.
+- The sf-backed `geom_brain_sf()` and `position_brain_sf()` remain for a
+  transition period but are deprecated and will be removed in a future
+  release.
+
+## New plotting features
+
+- **Zoom in on regions of interest.** `position_brain(zoom = ...)` crops each
+  view onto the regions you're highlighting so they fill the panel, with the
+  surrounding brain reduced to a tidy grey frame. Use `zoom = TRUE` to follow
+  the regions in your data, or name them explicitly; `zoom_pad` sets the
+  margin. Especially handy for focus atlases where only a few structures
+  carry values.
+- **Readable view labels.** `annotate_brain()` now places labels clear of the
+  brain instead of on top of it. The new `padding` argument (5% of the plot
+  height by default) controls the gap.
+- **One annotation function.** `annotate_brain()` works with whichever
+  `position` you gave the geom — there's no separate labelling function to
+  remember.
+- **Hide context regions.** `geom_brain(context = FALSE)` drops the grey,
+  unlabelled regions and tightens the layout around the regions you're
+  plotting.
+- **Faceting.** Group your data with `dplyr::group_by()` and `facet_wrap()` /
+  `facet_grid()` draw the full atlas in every panel.
+- **FreeSurfer labels.** Data keyed by `label` (e.g. `"lh_bankssts"`) now joins
+  to the atlas directly, in addition to `region`.
 
 ## Other changes
 
-- Compatibility with the current `ggseg.formats` `atlas_palette()`, which now
-  takes an atlas object rather than an atlas name. The deprecated
-  `scale_brain()` / `scale_fill_brain()` / `scale_colour_brain()` family
-  resolves the atlas name internally so it keeps returning the atlas palette.
-- `geom_brain()` now colours by `label` rather than `region` when no `fill`
-  aesthetic is supplied. As `atlas$palette` is keyed by label, the no-data
-  default is now the atlas's colours (previously all grey), and a spurious
-  "No shared levels" scale warning that appeared when filtering by `hemi`
-  or `view` no longer occurs.
-
-## sf-optional renderer (experimental)
-
-First step toward making sf an opt-in dependency — see the
-[sf-optional milestone](https://github.com/ggsegverse/ggseg/milestone/1)
-and [Epic #128](https://github.com/ggsegverse/ggseg/issues/128).
-
-- New `geom_brain_polygon()` renders a brain atlas without `sf`, building
-  on `ggplot2::geom_polygon()` over the polygon representation in
-  `atlas$data$polygons` (introduced in `ggseg.formats` 0.0.3). Holes
-  round-trip through the `subgroup` aesthetic (`grid::pathGrob` even-odd
-  fill).
-- Renders correctly when paired with `ggseg.formats::as_polygon_atlas()`
-  or any atlas carrying a `$data$polygons` slot. The bundled `dk`,
-  `aseg`, and `tracula` atlases ship with both `sf` and `polygons` slots,
-  so existing `geom_brain()` usage is unchanged.
-- Naming convention introduced for the sf-optional milestone: the
-  sf-backed family stays `geom_brain()` / `position_brain()` for
-  backwards compatibility; the new polygon family is suffixed
-  `_polygon`. A follow-up step in the epic will unify under a single
-  `geom_brain()` with backend dispatch.
-- New `position_brain_polygon()` mirrors `position_brain()` for the
-  polygon path. Layouts are applied inside `prepare_polygon_atlas()`
-  (not via a ggproto Position) so the `type`/`view`/`hemi` columns the
-  layout needs don't get stripped by ggplot2's aesthetic machinery.
-  Supports the same `position`/`nrow`/`ncol`/`views` interface — string
-  shortcuts (`"horizontal"`, `"vertical"`), formula layouts
-  (`hemi ~ view`), and grid sizing.
-- New `annotate_brain_polygon()` mirrors `annotate_brain()` for the
-  polygon path. Same interface, sf-free implementation.
-- New `coord_brain()` fixes the aspect ratio so brain polygons aren't
-  stretched by the plotting window, mirroring the role `coord_sf()` plays
-  for `geom_brain()`. `geom_brain_polygon()` adds it automatically. Like
-  `coord_sf(default = TRUE)`, it registers as a default coord, so a
-  user-supplied coord (or several stacked `geom_brain_polygon()` layers)
-  replaces it without the "Coordinate system already present" message.
-- `position_brain_polygon()` gains a `zoom` argument for per-view zoom —
-  useful for focus atlases (e.g. a thalamus atlas where only the thalamus
-  carries labels). `zoom = TRUE` crops each view onto its focus regions
-  (the regions present in the user `data`, or the atlas's labelled regions
-  when no data is supplied); a character vector names them explicitly.
-  Context regions become a clean rectangular frame around the focus.
-  Cropping uses an sf-free Sutherland–Hodgman polygon clip and a common
-  window size, so every view keeps the same allotted cell. `zoom_pad`
-  (default 5%) controls the margin.
-- `geom_brain_polygon()` gains a `context` argument. With `context = FALSE`
-  the grey context regions (atlas rows with no `region` label) are dropped
-  and the remaining atlas regions are re-gathered into a tighter layout.
-- `geom_brain_polygon()` now colours by `label` (the cross-section merge
-  key) when no `fill` aesthetic is supplied, matching the label-keyed
-  `atlas$palette`. This removes a spurious "No shared levels" scale warning
-  that previously surfaced whenever filtering left no unlabelled rows.
-- `geom_brain_polygon()` now supports faceting. Pass grouped data
-  (`data = my_data |> dplyr::group_by(group)`) and the full atlas — context
-  regions included — is replicated in each `facet_wrap()` panel, mirroring
-  `geom_brain()`. The internal polygon-ring grouping was renamed to `.group`
-  so a user data column named `group` no longer collides on join.
-- `geom_brain_polygon()` data joins now match on `label` as well as
-  `region` (and `hemi`), so FreeSurfer label-keyed data (e.g.
-  `"lh_bankssts"`) plots without first deriving a `region` column.
-- `annotate_brain()` is now a single entry point that picks the renderer
-  from its `position`: a `position_brain_polygon()` (the default) labels the
-  sf-free polygon path, a `position_brain()` labels the sf path. You no
-  longer choose between `annotate_brain()` and `annotate_brain_polygon()` —
-  pass the same `position` you gave the geom and labels line up.
-- `annotate_brain()` and `annotate_brain_polygon()` gain a `padding`
-  argument (fraction of plot height, default 5%) and bottom-anchor their
-  labels (`vjust = 0`), so view labels sit clear of the geometry instead of
-  overlapping it.
-
-## sf moves to Suggests
-
-- **`sf` moves from Imports to Suggests.** The package can now be
-  installed without GDAL / GEOS / PROJ system libraries, enabling
-  wasm builds and air-gapped installs.
-- `SystemRequirements` dropped from DESCRIPTION (those entries were
-  sf's C++17 / GDAL / GEOS / PROJ requirements).
-- New internal helper `require_sf()` guards `geom_brain()`,
-  `position_brain()`, and `annotate_brain()` at entry. Without sf
-  installed, calls to these functions error with a pointer to the
-  polygon-path equivalent (`geom_brain_polygon()` etc.).
-- Bundled atlases continue to carry both `$data$sf` and
-  `$data$polygons`. Users with sf installed see no behavioural change.
-- Implicit dispatch: users hitting `geom_brain()` without sf get a
-  clear error naming the polygon alternative; polygon-path users are
-  unaffected either way.
+- When no `fill` is mapped, `geom_brain()` fills regions with the atlas's own
+  colours, and the stray "No shared levels" warning that appeared when
+  filtering by hemisphere or view is gone.
+- New `coord_brain()` keeps brain proportions undistorted; `geom_brain()`
+  applies it automatically, so you rarely need to add it yourself.
+- The deprecated `scale_brain()` family keeps working with the current
+  `ggseg.formats`.
+- The `suit` cerebellar atlas is re-exported alongside `dk()`, `aseg()`, and
+  `tracula()`.
 
 # ggseg 2.1.1
 

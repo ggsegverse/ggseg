@@ -4,6 +4,8 @@ Colour
 Desikan
 FreeSurfer
 FreeSurfer's
+GDAL
+GEOS
 GeomBrain
 ICV
 Killiany
@@ -12,11 +14,13 @@ Lifecycle
 Neuroimaging
 ORCID
 Optimising
+PROJ
 Piñeiro
-Pre
+PositionBrain
 Subcortical
 Tourville
 Visualise
+WebAssembly
 aes
 aseg
 bankssts
@@ -33,8 +37,11 @@ dk
 dkt
 doi
 dplyr
+eiro
 favour
+flamap
 freesurfer
+gapped
 geoms
 ggplot
 ggproto
@@ -44,6 +51,8 @@ github
 grey
 hemi
 img
+labelled
+labelling
 lh
 lifecycle
 neuroimaging
@@ -56,6 +65,7 @@ postcentral
 pre
 precentral
 readme
+renderer
 reorganised
 repositioned
 roxygen
@@ -65,10 +75,13 @@ sysreq
 testthat
 tibble
 tracula
+undistorted
+unlabelled
 vctrs
 vdiffr
 vis
 visualisation
 visualisations
 visualising
+vjust
 wm
