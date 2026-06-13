@@ -1,6 +1,7 @@
 describe("extract_position_params", {
   it("extracts from PositionBrain object", {
-    pos <- position_brain(hemi ~ view, nrow = 2, ncol = 3, views = "lateral")
+    withr::local_options(lifecycle_verbosity = "quiet")
+    pos <- position_brain_sf(hemi ~ view, nrow = 2, ncol = 3, views = "lateral")
     params <- extract_position_params(pos)
     expect_identical(params$position, hemi ~ view)
     expect_identical(params$nrow, 2)
@@ -72,13 +73,14 @@ describe("annotate_brain dispatch", {
     expect_silent(ggplot2::ggplot_build(p))
   })
 
-  it("routes to the sf path when given a position_brain()", {
-    layer <- annotate_brain(atlas = dk(), position = position_brain())
+  it("routes to the sf path when given a position_brain_sf()", {
+    withr::local_options(lifecycle_verbosity = "quiet")
+    layer <- annotate_brain(atlas = dk(), position = position_brain_sf())
     expect_s3_class(layer, "LayerInstance")
   })
 })
 
-describe("annotate_brain (sf path)", {
+describe("annotate_brain (polygon path)", {
   it("returns an annotation layer", {
     layer <- annotate_brain(atlas = dk(), position = position_brain())
     expect_s3_class(layer, "LayerInstance")

@@ -6,7 +6,7 @@
 \usage{
 annotate_brain(
   atlas,
-  position = position_brain_polygon(),
+  position = position_brain(),
   hemi = NULL,
   view = NULL,
   size = 3,

@@ -48,24 +48,32 @@ describe("reposition_brain", {
 })
 
 describe("position_brain", {
-  it("returns PositionBrain ggproto object", {
+  it("returns a polygon layout spec", {
     pos <- position_brain()
-    expect_s3_class(pos, "PositionBrain")
+    expect_s3_class(pos, "position_brain_polygon_spec")
   })
 
   it("accepts formula position", {
     pos <- position_brain(hemi ~ view)
-    expect_s3_class(pos, "PositionBrain")
+    expect_s3_class(pos, "position_brain_polygon_spec")
   })
 
   it("accepts horizontal position string", {
     pos <- position_brain("horizontal")
-    expect_s3_class(pos, "PositionBrain")
+    expect_s3_class(pos, "position_brain_polygon_spec")
   })
 
   it("accepts vertical position string", {
     pos <- position_brain("vertical")
+    expect_s3_class(pos, "position_brain_polygon_spec")
+  })
+})
+
+describe("position_brain_sf (deprecated)", {
+  it("warns and returns a PositionBrain ggproto", {
+    lifecycle::expect_deprecated(pos <- position_brain_sf(hemi ~ view))
     expect_s3_class(pos, "PositionBrain")
+    expect_identical(pos$position, hemi ~ view)
   })
 })
 
@@ -135,26 +143,26 @@ describe("position_formula edge cases", {
 describe("position_brain with nrow/ncol", {
   it("accepts nrow parameter", {
     pos <- position_brain(nrow = 2)
-    expect_s3_class(pos, "PositionBrain")
+    expect_s3_class(pos, "position_brain_polygon_spec")
     expect_identical(pos$nrow, 2)
   })
 
   it("accepts ncol parameter", {
     pos <- position_brain(ncol = 3)
-    expect_s3_class(pos, "PositionBrain")
+    expect_s3_class(pos, "position_brain_polygon_spec")
     expect_identical(pos$ncol, 3)
   })
 
   it("accepts both nrow and ncol", {
     pos <- position_brain(nrow = 2, ncol = 3)
-    expect_s3_class(pos, "PositionBrain")
+    expect_s3_class(pos, "position_brain_polygon_spec")
     expect_identical(pos$nrow, 2)
     expect_identical(pos$ncol, 3)
   })
 
   it("accepts views parameter", {
     pos <- position_brain(views = c("axial_3", "sagittal"))
-    expect_s3_class(pos, "PositionBrain")
+    expect_s3_class(pos, "position_brain_polygon_spec")
     expect_identical(pos$views, c("axial_3", "sagittal"))
   })
 })

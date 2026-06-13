@@ -153,6 +153,10 @@ prepare_polygon_atlas <- function(
     ggseg.formats::atlas_polygons(atlas),
     cols = "geometry"
   )
+  # Namespace the polygon-ring grouping as `.group` before joining `core`:
+  # some atlases (e.g. tracula) carry their own `group` column in `core`,
+  # which would otherwise collide and suffix this one away.
+  names(flat)[names(flat) == "group"] <- ".group"
   flat <- dplyr::left_join(
     flat,
     atlas$core,
@@ -207,9 +211,6 @@ prepare_polygon_atlas <- function(
     }
   }
 
-  # Namespace the polygon-ring grouping as `.group` so a user data column
-  # named `group` (a common facet variable) does not collide on join.
-  names(flat)[names(flat) == "group"] <- ".group"
   flat$.feature_id <- as.integer(factor(
     paste(flat$label, flat$view, flat$.group, sep = "@@")
   ))

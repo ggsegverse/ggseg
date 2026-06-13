@@ -4,32 +4,38 @@
 \alias{position_brain}
 \title{Alter brain atlas position}
 \usage{
-position_brain(position = "horizontal", nrow = NULL, ncol = NULL, views = NULL)
+position_brain(
+  position = "horizontal",
+  nrow = NULL,
+  ncol = NULL,
+  views = NULL,
+  zoom = NULL,
+  zoom_pad = 0.05
+)
 }
 \arguments{
-\item{position}{Formula describing the rows ~ columns organisation for
-cortical atlases (e.g., `hemi ~ view`). For subcortical/tract atlases,
-can be "horizontal", "vertical", or a formula with `type ~ .` where type
-is extracted from view names like "axial_1" -> "axial".}
+\item{zoom}{Controls per-view zoom. `NULL`/`FALSE` (default) draws each
+view at full extent. `TRUE` zooms each view onto its focus regions —
+the regions present in the user `data` passed to [geom_brain_polygon()],
+or the atlas's labelled regions when no data is supplied. A character
+vector names the focus regions explicitly. Cropping uses an sf-free
+polygon clip so context regions become a clean rectangular frame around
+the focus.}
 
-\item{nrow}{Number of rows for grid layout. If NULL (default), calculated
-automatically. Only used for subcortical/tract atlases when position is
-not a formula.}
-
-\item{ncol}{Number of columns for grid layout. If NULL (default), calculated
-automatically. Only used for subcortical/tract atlases when position is
-not a formula.}
-
-\item{views}{Character vector specifying which views to include and their
-order. If NULL (default), all views are included in their original order.
-Only applies to subcortical/tract atlases.}
+\item{zoom_pad}{Fractional padding added around the focus window when
+`zoom` is active. Defaults to `0.05` (5\%).}
 }
 \value{
-a ggproto object
+A `position_brain_polygon_spec` list with the layout parameters.
 }
 \description{
-Function to be used in the position argument in geom_brain
-to alter the position of the brain slice/views.
+Arrange brain atlas views
+}
+\details{
+Builds the layout specification consumed by [geom_brain()] (and
+[annotate_brain()]) to arrange an atlas's views and hemispheres. This is
+the sf-free polygon layout: it is an alias of [position_brain_polygon()]
+and supports the same per-view `zoom`.
 }
 \examples{
 library(ggplot2)
