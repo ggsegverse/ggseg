@@ -1,6 +1,6 @@
 Package: ggseg
 Title: Plotting Tool for Brain Atlases
-Version: 2.2.0.9001
+Version: 2.1.1.9001
 Authors@R: c(
     person("Athanasia Mo", "Mowinckel", , "a.m.mowinckel@psykologi.uio.no", role = c("aut", "cre"),
            comment = c(ORCID = "0000-0002-5756-0223")),
