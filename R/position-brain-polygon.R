@@ -262,7 +262,19 @@ frame_2_position_flat <- function(
 #' aesthetic machinery — avoiding the column-stripping that would lose the
 #' `type`, `view`, and `hemi` columns the layout needs.
 #'
-#' @inheritParams position_brain
+#' @param position Formula describing the rows ~ columns organisation for
+#'   cortical atlases (e.g., `hemi ~ view`). For subcortical/tract atlases,
+#'   can be "horizontal", "vertical", or a formula with `type ~ .` where type
+#'   is extracted from view names like "axial_1" -> "axial".
+#' @param nrow Number of rows for grid layout. If NULL (default), calculated
+#'   automatically. Only used for subcortical/tract atlases when position is
+#'   not a formula.
+#' @param ncol Number of columns for grid layout. If NULL (default), calculated
+#'   automatically. Only used for subcortical/tract atlases when position is
+#'   not a formula.
+#' @param views Character vector specifying which views to include and their
+#'   order. If NULL (default), all views are included in their original order.
+#'   Only applies to subcortical/tract atlases.
 #' @param zoom Controls per-view zoom. `NULL`/`FALSE` (default) draws each
 #'   view at full extent. `TRUE` zooms each view onto its focus regions —
 #'   the regions present in the user `data` passed to [geom_brain_polygon()],

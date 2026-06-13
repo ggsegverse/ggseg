@@ -43,7 +43,8 @@ Suggests:
     sf,
     spelling,
     testthat (>= 3.0.0),
-    vdiffr
+    vdiffr,
+    withr
 Remotes:
     ggsegverse/ggseg.formats
 VignetteBuilder:
