@@ -52,7 +52,7 @@ atlas, prepend it to the label column:
 #| label: fig-single-stats
 #| fig-cap: "Brain plot of average cortical thickness from a single stats file."
 ggplot() +
-  geom_brain_polygon(
+  geom_brain(
     atlas = dk(),
     data = data |> mutate(label = paste0("lh_", label)),
     mapping = aes(fill = ThickAvg)
@@ -80,7 +80,7 @@ for plotting:
 #| label: fig-atlas-files
 #| fig-cap: "Brain plot of cortical thickness variability across subjects."
 ggplot() +
-  geom_brain_polygon(atlas = dk(), data = dat, mapping = aes(fill = ThickStd))
+  geom_brain(atlas = dk(), data = dat, mapping = aes(fill = ThickStd))
 ```
 
 To show all metrics at once, pivot and facet:
@@ -95,7 +95,7 @@ long <- dat |>
   pivot_longer(-c(subject, label), names_to = "stat", values_to = "val")
 
 ggplot() +
-  geom_brain_polygon(
+  geom_brain(
     atlas = dk(),
     data = group_by(long, stat),
     mapping = aes(fill = val)
@@ -138,7 +138,7 @@ correspond to atlas regions. Filter them before plotting:
 #| label: fig-filtered-table
 #| fig-cap: "Brain plot of volume data after filtering non-region rows."
 ggplot() +
-  geom_brain_polygon(
+  geom_brain(
     atlas = dk(),
     data = dat |> filter(grepl("lh|rh", label)),
     mapping = aes(fill = volume)

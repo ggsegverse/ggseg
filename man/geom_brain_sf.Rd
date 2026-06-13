@@ -53,3 +53,4 @@ The sf rendering path is deprecated. `geom_brain_sf()` renders an atlas via
 `as_sf_atlas()` and use [ggplot2::geom_sf()] directly for the full sf
 toolkit (labels, other sf layers).
 }
+\keyword{internal}

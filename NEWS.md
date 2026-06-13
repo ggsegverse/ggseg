@@ -1,5 +1,18 @@
 # ggseg 2.2.0 (development)
 
+## Polygon is now the default renderer
+
+- **`geom_brain()`, `position_brain()`, and `annotate_brain()` now use the
+  sf-free polygon renderer.** `geom_brain()` plots the same atlases without
+  needing sf, `position_brain()` returns the polygon layout spec (and gains
+  per-view `zoom`), and `annotate_brain()` follows whichever `position` you
+  give it. The `*_polygon()` names remain as aliases.
+- **The sf rendering path is deprecated.** `geom_brain_sf()` and
+  `position_brain_sf()` keep the previous sf behaviour for now but warn. For
+  an sf workflow, convert the atlas with `as_sf_atlas()` and use
+  `ggplot2::geom_sf()` directly (region labels, layering other sf geoms) —
+  see `vignette("geom-sf")`.
+
 ## Other changes
 
 - Compatibility with the current `ggseg.formats` `atlas_palette()`, which now

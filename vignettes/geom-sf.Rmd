@@ -27,7 +27,7 @@ giving you full control at the cost of a few extra lines.
 
 This is the one workflow that needs the **sf** package, which ggseg now
 treats as an optional dependency. Install it with `install.packages("sf")`
-if you don't already have it. Everywhere else, `geom_brain_polygon()` plots
+if you don't already have it. Everywhere else, `geom_brain()` plots
 the same atlases without sf.
 
 ```{r}

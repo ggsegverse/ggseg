@@ -26,7 +26,7 @@ library(ggplot2)
 
 ## How matching works
 
-`geom_brain_polygon()` joins your data to the atlas by `region` (and by
+`geom_brain()` joins your data to the atlas by `region` (and by
 `hemi` too, when both your data and the atlas carry it). That means your data
 needs at least one column with names that match the atlas. The two columns
 you'll use most:
@@ -61,14 +61,14 @@ some_data <- tibble(
 some_data
 ```
 
-Pass the data to `geom_brain_polygon()` through its `data` argument and map
+Pass the data to `geom_brain()` through its `data` argument and map
 `fill` to your variable:
 
 ```{r}
 #| label: fig-minimal-plot
 #| fig-cap: "Brain plot with three regions coloured by p-value."
 ggplot() +
-  geom_brain_polygon(atlas = dk(), data = some_data, mapping = aes(fill = p))
+  geom_brain(atlas = dk(), data = some_data, mapping = aes(fill = p))
 ```
 
 Regions not in your data appear as `NA` (grey by default). Regions in your
@@ -85,7 +85,7 @@ both `region` and `hemi`, so values only land on the correct side:
 some_data$hemi <- "left"
 
 ggplot() +
-  geom_brain_polygon(atlas = dk(), data = some_data, mapping = aes(fill = p))
+  geom_brain(atlas = dk(), data = some_data, mapping = aes(fill = p))
 ```
 
 The same works for any atlas column -- adding `view`, for instance, would
@@ -94,7 +94,7 @@ restrict matches to specific views.
 ## Faceting across groups
 
 If your data has a grouping variable, group by it and `facet_wrap()` /
-`facet_grid()` work as you'd expect. `geom_brain_polygon()` replicates the
+`facet_grid()` work as you'd expect. `geom_brain()` replicates the
 full atlas -- context regions included -- in each panel:
 
 ```{r}
@@ -115,7 +115,7 @@ some_data <- tibble(
 )
 
 ggplot() +
-  geom_brain_polygon(
+  geom_brain(
     atlas = dk(),
     data = group_by(some_data, group),
     colour = "white",

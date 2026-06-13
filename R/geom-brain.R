@@ -90,6 +90,7 @@ geom_brain <- function(
 #' @inheritParams geom_brain
 #' @return A list of ggplot2 layer and coord objects.
 #' @export
+#' @keywords internal
 #' @importFrom ggplot2 aes coord_sf scale_fill_manual
 geom_brain_sf <- function(
   mapping = aes(),

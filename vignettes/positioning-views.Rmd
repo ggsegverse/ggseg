@@ -26,7 +26,7 @@ library(ggplot2)
 
 A brain atlas typically has several views -- lateral and medial for cortical
 atlases, or axial, coronal, and sagittal slices for subcortical and tract
-atlases. `position_brain_polygon()` controls how those views are arranged in
+atlases. `position_brain()` controls how those views are arranged in
 the final plot.
 
 The function works differently depending on the atlas type, so this vignette
@@ -42,9 +42,9 @@ right) and **view** (lateral, medial, etc.). The formula syntax mirrors
 #| label: fig-hemi-by-view
 #| fig-cap: "Cortical atlas with hemispheres as rows and views as columns."
 ggplot() +
-  geom_brain_polygon(
+  geom_brain(
     atlas = dk(),
-    position = position_brain_polygon(hemi ~ view),
+    position = position_brain(hemi ~ view),
     show.legend = FALSE
   ) +
   theme_void()
@@ -56,9 +56,9 @@ Flip the formula to transpose the layout:
 #| label: fig-view-by-hemi
 #| fig-cap: "Transposed layout with views as rows and hemispheres as columns."
 ggplot() +
-  geom_brain_polygon(
+  geom_brain(
     atlas = dk(),
-    position = position_brain_polygon(view ~ hemi),
+    position = position_brain(view ~ hemi),
     show.legend = FALSE
   ) +
   theme_void()
@@ -73,9 +73,9 @@ is handy for compact figures:
 #| label: fig-single-row
 #| fig-cap: "All brain views stacked in a single row."
 ggplot() +
-  geom_brain_polygon(
+  geom_brain(
     atlas = dk(),
-    position = position_brain_polygon(. ~ hemi + view),
+    position = position_brain(. ~ hemi + view),
     show.legend = FALSE
   ) +
   theme_void()
@@ -85,9 +85,9 @@ ggplot() +
 #| label: fig-single-column
 #| fig-cap: "All brain views stacked in a single column."
 ggplot() +
-  geom_brain_polygon(
+  geom_brain(
     atlas = dk(),
-    position = position_brain_polygon(hemi + view ~ .),
+    position = position_brain(hemi + view ~ .),
     show.legend = FALSE
   ) +
   theme_void()
@@ -108,9 +108,9 @@ The simplest options. `"horizontal"` is the default:
 #| label: fig-aseg-horizontal
 #| fig-cap: "Subcortical atlas views arranged horizontally."
 ggplot() +
-  geom_brain_polygon(
+  geom_brain(
     atlas = aseg(),
-    position = position_brain_polygon("horizontal"),
+    position = position_brain("horizontal"),
     show.legend = FALSE
   ) +
   theme_void()
@@ -120,9 +120,9 @@ ggplot() +
 #| label: fig-aseg-vertical
 #| fig-cap: "Subcortical atlas views arranged vertically."
 ggplot() +
-  geom_brain_polygon(
+  geom_brain(
     atlas = aseg(),
-    position = position_brain_polygon("vertical"),
+    position = position_brain("vertical"),
     show.legend = FALSE
   ) +
   theme_void()
@@ -137,9 +137,9 @@ When you have many views, a grid keeps things readable. Specify `nrow`,
 #| label: fig-aseg-nrow
 #| fig-cap: "Subcortical atlas views in a two-row grid."
 ggplot() +
-  geom_brain_polygon(
+  geom_brain(
     atlas = aseg(),
-    position = position_brain_polygon(nrow = 2),
+    position = position_brain(nrow = 2),
     show.legend = FALSE
   ) +
   theme_void()
@@ -149,9 +149,9 @@ ggplot() +
 #| label: fig-aseg-ncol
 #| fig-cap: "Subcortical atlas views in a three-column grid."
 ggplot() +
-  geom_brain_polygon(
+  geom_brain(
     atlas = aseg(),
-    position = position_brain_polygon(ncol = 3),
+    position = position_brain(ncol = 3),
     show.legend = FALSE
   ) +
   theme_void()
@@ -171,9 +171,9 @@ ggseg.formats::atlas_views(aseg())
 #| label: fig-aseg-select-views
 #| fig-cap: "A subset of subcortical views selected by name."
 ggplot() +
-  geom_brain_polygon(
+  geom_brain(
     atlas = aseg(),
-    position = position_brain_polygon(
+    position = position_brain(
       views = c("sagittal", "axial_3", "coronal_3")
     ),
     show.legend = FALSE
@@ -187,9 +187,9 @@ Combine `views` with `nrow` or `ncol` for a custom grid:
 #| label: fig-aseg-custom-grid
 #| fig-cap: "Custom two-row grid with selected subcortical views."
 ggplot() +
-  geom_brain_polygon(
+  geom_brain(
     atlas = aseg(),
-    position = position_brain_polygon(
+    position = position_brain(
       views = c("sagittal", "axial_3", "axial_5", "coronal_3"),
       nrow = 2
     ),
@@ -208,9 +208,9 @@ the view name (everything before the first underscore):
 #| label: aseg-type-group
 #| eval: false
 ggplot() +
-  geom_brain_polygon(
+  geom_brain(
     atlas = aseg(),
-    position = position_brain_polygon(type ~ .),
+    position = position_brain(type ~ .),
     show.legend = FALSE
   ) +
   theme_void()
@@ -222,15 +222,15 @@ Use `annotate_brain()` to label each view with its name. For cortical
 atlases the label combines hemisphere and view (e.g. "left lateral"); for
 subcortical and tract atlases it uses the view name directly.
 
-Store the `position_brain_polygon()` specification in an object so both layers
+Store the `position_brain()` specification in an object so both layers
 share the same layout:
 
 ```{r}
 #| label: fig-dk-view-labels
 #| fig-cap: "Cortical atlas with view labels."
-pos <- position_brain_polygon(hemi ~ view)
+pos <- position_brain(hemi ~ view)
 ggplot() +
-  geom_brain_polygon(atlas = dk(), position = pos, show.legend = FALSE) +
+  geom_brain(atlas = dk(), position = pos, show.legend = FALSE) +
   annotate_brain(atlas = dk(), position = pos) +
   theme_void()
 ```
@@ -241,9 +241,9 @@ layouts:
 ```{r}
 #| label: fig-aseg-view-labels
 #| fig-cap: "Subcortical atlas with view labels in a two-row grid."
-pos <- position_brain_polygon(nrow = 2)
+pos <- position_brain(nrow = 2)
 ggplot() +
-  geom_brain_polygon(atlas = aseg(), position = pos, show.legend = FALSE) +
+  geom_brain(atlas = aseg(), position = pos, show.legend = FALSE) +
   annotate_brain(atlas = aseg(), position = pos) +
   theme_void()
 ```
@@ -256,7 +256,7 @@ Labels sit a little above each view by default (`padding = 0.05`). Increase
 #| label: fig-styled-labels
 #| fig-cap: "View labels with extra padding and custom styling."
 ggplot() +
-  geom_brain_polygon(atlas = dk(), show.legend = FALSE) +
+  geom_brain(atlas = dk(), show.legend = FALSE) +
   annotate_brain(
     atlas = dk(),
     padding = 0.08,
@@ -270,7 +270,7 @@ ggplot() +
 ## Zooming in on regions of interest
 
 For "focus" atlases -- where only a few structures carry labels and the rest
-of the brain is grey context -- `position_brain_polygon(zoom = ...)` crops
+of the brain is grey context -- `position_brain(zoom = ...)` crops
 each view onto the regions of interest, so they fill the panel while the
 surrounding context becomes a tidy grey frame. Every view keeps the same
 allotted cell.
@@ -289,11 +289,11 @@ my_data <- data.frame(
 )
 
 ggplot() +
-  geom_brain_polygon(
+  geom_brain(
     atlas = aseg(),
     data = my_data,
     aes(fill = value),
-    position = position_brain_polygon(zoom = TRUE)
+    position = position_brain(zoom = TRUE)
   ) +
   scale_fill_viridis_c(na.value = "grey85") +
   theme_void()
@@ -310,9 +310,9 @@ independent of any data you plot:
 focus <- c("Thalamus Proper", "Putamen", "Hippocampus")
 
 ggplot() +
-  geom_brain_polygon(
+  geom_brain(
     atlas = aseg(),
-    position = position_brain_polygon(zoom = focus),
+    position = position_brain(zoom = focus),
     show.legend = FALSE
   ) +
   theme_void()
@@ -328,9 +328,9 @@ larger value keeps more context in frame:
 #| label: fig-zoom-tight
 #| fig-cap: "A tighter crop using a small zoom_pad."
 ggplot() +
-  geom_brain_polygon(
+  geom_brain(
     atlas = aseg(),
-    position = position_brain_polygon(zoom = focus, zoom_pad = 0.01),
+    position = position_brain(zoom = focus, zoom_pad = 0.01),
     show.legend = FALSE
   ) +
   theme_void()
@@ -340,9 +340,9 @@ ggplot() +
 #| label: fig-zoom-loose
 #| fig-cap: "More surrounding context using a larger zoom_pad."
 ggplot() +
-  geom_brain_polygon(
+  geom_brain(
     atlas = aseg(),
-    position = position_brain_polygon(zoom = focus, zoom_pad = 0.25),
+    position = position_brain(zoom = focus, zoom_pad = 0.25),
     show.legend = FALSE
   ) +
   theme_void()
@@ -357,7 +357,7 @@ remaining atlas regions are re-gathered into a tighter layout:
 #| label: fig-no-context
 #| fig-cap: "Subcortical atlas with the grey context regions removed."
 ggplot() +
-  geom_brain_polygon(atlas = aseg(), context = FALSE, show.legend = FALSE) +
+  geom_brain(atlas = aseg(), context = FALSE, show.legend = FALSE) +
   theme_void()
 ```
 
