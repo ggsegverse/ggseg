@@ -1,10 +1,9 @@
 #' Ensure the sf package is installed
 #'
-#' Internal guard used at every ggseg entry point that takes the sf
-#' code path. Since the sf-optional milestone moved sf to Suggests,
-#' callers without sf installed should get a clear error pointing to
-#' the polygon alternative (`geom_brain_polygon`, `position_brain_polygon`,
-#' `annotate_brain_polygon`).
+#' Internal guard used by the deprecated sf code path. Since the
+#' sf-optional milestone moved sf to Suggests, callers without sf
+#' installed should get a clear error pointing to the polygon default
+#' (`geom_brain()`, `position_brain()`, `annotate_brain()`).
 #'
 #' @param what Character describing the calling function or operation,
 #'   used in the error message.
@@ -15,7 +14,7 @@ require_sf <- function(what) {
   if (!requireNamespace("sf", quietly = TRUE)) {
     cli::cli_abort(c(
       "{what} requires the {.pkg sf} package, which is not installed.",
-      "i" = "Install with {.run install.packages(\"sf\")}, or use the polygon-path equivalent ({.fn geom_brain_polygon}, {.fn position_brain_polygon}, {.fn annotate_brain_polygon})."
+      "i" = "Install with {.run install.packages(\"sf\")}, or use the polygon default ({.fn geom_brain}, {.fn position_brain}, {.fn annotate_brain})."
     ))
   }
   invisible(TRUE)

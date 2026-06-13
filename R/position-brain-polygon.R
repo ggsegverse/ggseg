@@ -285,7 +285,8 @@ frame_2_position_flat <- function(
 #' @param zoom_pad Fractional padding added around the focus window when
 #'   `zoom` is active. Defaults to `0.05` (5\%).
 #' @return A `position_brain_polygon_spec` list with the layout parameters.
-#' @export
+#' @keywords internal
+#' @noRd
 #' @examples
 #' \dontrun{
 #' library(ggplot2)

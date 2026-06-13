@@ -50,16 +50,30 @@ reposition_brain <- function(
 }
 
 
-#' Alter brain atlas position
-#'
 #' Arrange brain atlas views
 #'
 #' Builds the layout specification consumed by [geom_brain()] (and
 #' [annotate_brain()]) to arrange an atlas's views and hemispheres. This is
-#' the sf-free polygon layout: it is an alias of [position_brain_polygon()]
-#' and supports the same per-view `zoom`.
+#' the sf-free polygon layout and supports per-view `zoom`.
 #'
-#' @inheritParams position_brain_polygon
+#' @param position Formula describing the rows ~ columns organisation for
+#'   cortical atlases (e.g., `hemi ~ view`). For subcortical/tract atlases,
+#'   can be "horizontal", "vertical", or a formula with `type ~ .` where type
+#'   is extracted from view names like "axial_1" -> "axial".
+#' @param nrow Number of rows for grid layout. If NULL (default), calculated
+#'   automatically. Only used for subcortical/tract atlases when position is
+#'   not a formula.
+#' @param ncol Number of columns for grid layout. If NULL (default), calculated
+#'   automatically. Only used for subcortical/tract atlases when position is
+#'   not a formula.
+#' @param views Character vector specifying which views to include and their
+#'   order. If NULL (default), all views are included in their original order.
+#'   Only applies to subcortical/tract atlases.
+#' @param zoom Controls per-view zoom. `NULL`/`FALSE` (default) draws each view
+#'   at full extent. `TRUE` zooms each view onto its focus regions; a character
+#'   vector names the focus regions explicitly.
+#' @param zoom_pad Fractional padding added around the focus window when `zoom`
+#'   is active. Defaults to `0.05` (5\%).
 #'
 #' @export
 #' @return A `position_brain_polygon_spec` list with the layout parameters.

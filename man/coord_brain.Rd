@@ -21,16 +21,16 @@ A ggplot2 coordinate system that registers as a default.
 }
 \description{
 A coordinate system for the sf-optional polygon renderer
-[geom_brain_polygon()]. It fixes the aspect ratio (like
+[geom_brain()]. It fixes the aspect ratio (like
 [ggplot2::coord_fixed()]) so brain shapes are not stretched by the
 plotting window, mirroring the role [ggplot2::coord_sf()] plays for the
 sf-backed [geom_brain()].
 }
 \details{
-`geom_brain_polygon()` adds `coord_brain()` for you, so you rarely need to
+`geom_brain()` adds `coord_brain()` for you, so you rarely need to
 call it directly. Like `coord_sf(default = TRUE)`, it registers as a
 *default* coordinate system: adding your own coord — or stacking several
-`geom_brain_polygon()` layers — replaces it cleanly without ggplot2's
+`geom_brain()` layers — replaces it cleanly without ggplot2's
 "Coordinate system already present" message.
 }
 \examples{
@@ -39,7 +39,7 @@ library(ggplot2)
 poly <- ggseg.formats::as_polygon_atlas(dk())
 # Equivalent to the default; shown explicitly:
 ggplot() +
-  geom_brain_polygon(atlas = poly) +
+  geom_brain(atlas = poly) +
   coord_brain()
 }
 }

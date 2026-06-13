@@ -13,15 +13,15 @@ gap <- function(x) {
 #' Fixed-aspect coordinate system for brain polygons
 #'
 #' A coordinate system for the sf-optional polygon renderer
-#' [geom_brain_polygon()]. It fixes the aspect ratio (like
+#' [geom_brain()]. It fixes the aspect ratio (like
 #' [ggplot2::coord_fixed()]) so brain shapes are not stretched by the
 #' plotting window, mirroring the role [ggplot2::coord_sf()] plays for the
 #' sf-backed [geom_brain()].
 #'
-#' `geom_brain_polygon()` adds `coord_brain()` for you, so you rarely need to
+#' `geom_brain()` adds `coord_brain()` for you, so you rarely need to
 #' call it directly. Like `coord_sf(default = TRUE)`, it registers as a
 #' *default* coordinate system: adding your own coord — or stacking several
-#' `geom_brain_polygon()` layers — replaces it cleanly without ggplot2's
+#' `geom_brain()` layers — replaces it cleanly without ggplot2's
 #' "Coordinate system already present" message.
 #'
 #' @param ratio Aspect ratio, expressed as `y / x`. Defaults to `1`, which
@@ -40,7 +40,7 @@ gap <- function(x) {
 #' poly <- ggseg.formats::as_polygon_atlas(dk())
 #' # Equivalent to the default; shown explicitly:
 #' ggplot() +
-#'   geom_brain_polygon(atlas = poly) +
+#'   geom_brain(atlas = poly) +
 #'   coord_brain()
 #' }
 coord_brain <- function(ratio = 1, clip = "off", ...) {

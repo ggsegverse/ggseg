@@ -32,7 +32,8 @@
 #' @param ... Additional arguments passed to [ggplot2::annotate()].
 #'
 #' @return A ggplot2 annotation layer.
-#' @export
+#' @keywords internal
+#' @noRd
 #' @examples
 #' \dontrun{
 #' library(ggplot2)

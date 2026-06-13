@@ -54,8 +54,7 @@ A list of ggplot2 layer and coord objects.
 \description{
 A ggplot2 geom for rendering brain atlas regions as filled polygons.
 Accepts a `brain_atlas` object and automatically joins user data to the
-atlas geometry for visualisation. This is the sf-free polygon renderer; it
-is an alias of [geom_brain_polygon()].
+atlas geometry for visualisation. This is the sf-free polygon renderer.
 }
 \section{GeomBrain ggproto}{
 

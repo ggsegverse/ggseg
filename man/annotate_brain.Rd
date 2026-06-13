@@ -20,10 +20,9 @@ annotate_brain(
 \arguments{
 \item{atlas}{A `brain_atlas` object (e.g. `dk()`, `aseg()`).}
 
-\item{position}{A [position_brain_polygon()] (default) or [position_brain()]
-specification matching the one used in your geom layer. The position type
-selects the renderer: a polygon spec uses the sf-free path, anything else
-uses the sf path.}
+\item{position}{A [position_brain()] (default) specification matching the
+one used in your geom layer. A deprecated `position_brain_sf()` routes to
+the sf labelling path instead.}
 
 \item{hemi}{Character vector of hemispheres to include. If `NULL`
 (default), all hemispheres are included.}
@@ -57,20 +56,20 @@ labels show the view name directly (e.g., "axial_1", "sagittal").
 }
 \details{
 `annotate_brain()` follows the `position` you give it, so you never pick a
-renderer-specific labelling function: a [position_brain_polygon()] (the
-default) labels the sf-free polygon path, while a [position_brain()] labels
-the sf path. Pass the same `position` to both your geom layer and
+renderer-specific labelling function: a [position_brain()] (the default)
+labels the sf-free polygon path, while a (deprecated) `position_brain_sf()`
+labels the sf path. Pass the same `position` to both your geom layer and
 `annotate_brain()` so the labels line up.
 }
 \examples{
 library(ggplot2)
 
-pos <- position_brain_polygon(hemi ~ view)
+pos <- position_brain(hemi ~ view)
 ggplot() +
-  geom_brain_polygon(atlas = dk(), position = pos, show.legend = FALSE) +
+  geom_brain(atlas = dk(), position = pos, show.legend = FALSE) +
   annotate_brain(atlas = dk(), position = pos)
 
 ggplot() +
-  geom_brain_polygon(atlas = dk(), show.legend = FALSE) +
+  geom_brain(atlas = dk(), show.legend = FALSE) +
   annotate_brain(atlas = dk())
 }

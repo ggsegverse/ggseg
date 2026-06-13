@@ -45,16 +45,9 @@ reference:
     contents:
       - geom_brain
       - position_brain
-      - reposition_brain
       - annotate_brain
-
-  - title: Plotting (sf-optional polygon path)
-    desc: Render atlases from the polygon representation without sf
-    contents:
-      - geom_brain_polygon
-      - position_brain_polygon
-      - annotate_brain_polygon
       - coord_brain
+      - reposition_brain
 
   - title: Data
     desc: Joining user data to brain atlases

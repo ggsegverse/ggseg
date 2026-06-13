@@ -39,7 +39,8 @@
 #' @param ... Additional arguments passed to `ggplot2::geom_polygon()`.
 #'
 #' @return A list of ggplot2 layer and coord objects.
-#' @export
+#' @keywords internal
+#' @noRd
 #' @importFrom ggplot2 aes geom_polygon scale_fill_manual
 #' @importFrom rlang .data
 #'

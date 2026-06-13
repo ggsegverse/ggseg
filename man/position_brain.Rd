@@ -2,7 +2,7 @@
 % Please edit documentation in R/position-brain.R
 \name{position_brain}
 \alias{position_brain}
-\title{Alter brain atlas position}
+\title{Arrange brain atlas views}
 \usage{
 position_brain(
   position = "horizontal",
@@ -31,28 +31,20 @@ not a formula.}
 order. If NULL (default), all views are included in their original order.
 Only applies to subcortical/tract atlases.}
 
-\item{zoom}{Controls per-view zoom. `NULL`/`FALSE` (default) draws each
-view at full extent. `TRUE` zooms each view onto its focus regions —
-the regions present in the user `data` passed to [geom_brain_polygon()],
-or the atlas's labelled regions when no data is supplied. A character
-vector names the focus regions explicitly. Cropping uses an sf-free
-polygon clip so context regions become a clean rectangular frame around
-the focus.}
+\item{zoom}{Controls per-view zoom. `NULL`/`FALSE` (default) draws each view
+at full extent. `TRUE` zooms each view onto its focus regions; a character
+vector names the focus regions explicitly.}
 
-\item{zoom_pad}{Fractional padding added around the focus window when
-`zoom` is active. Defaults to `0.05` (5\%).}
+\item{zoom_pad}{Fractional padding added around the focus window when `zoom`
+is active. Defaults to `0.05` (5\%).}
 }
 \value{
 A `position_brain_polygon_spec` list with the layout parameters.
 }
 \description{
-Arrange brain atlas views
-}
-\details{
 Builds the layout specification consumed by [geom_brain()] (and
 [annotate_brain()]) to arrange an atlas's views and hemispheres. This is
-the sf-free polygon layout: it is an alias of [position_brain_polygon()]
-and supports the same per-view `zoom`.
+the sf-free polygon layout and supports per-view `zoom`.
 }
 \examples{
 library(ggplot2)
