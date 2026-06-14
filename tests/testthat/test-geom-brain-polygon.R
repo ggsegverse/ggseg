@@ -9,6 +9,7 @@ describe("geom_brain_polygon()", {
   })
 
   it("renders an sf-backed atlas via on-the-fly polygon conversion", {
+    skip_if_not_installed("sf")
     sf_atlas <- ggseg.formats::as_sf_atlas(dk())
     p <- ggplot2::ggplot() + geom_brain_polygon(atlas = sf_atlas)
     g <- ggplot2::ggplot_build(p)

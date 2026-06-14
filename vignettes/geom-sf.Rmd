@@ -13,7 +13,10 @@ vignette: >
 knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>",
-  fig.width = 6
+  fig.width = 6,
+  # sf is an optional (Suggests) dependency; only run this vignette's code
+  # when it is available so the package builds without sf installed.
+  eval = requireNamespace("sf", quietly = TRUE)
 )
 ```
 

@@ -1,5 +1,6 @@
 describe("extract_position_params", {
   it("extracts from PositionBrain object", {
+    skip_if_not_installed("sf")
     withr::local_options(lifecycle_verbosity = "quiet")
     pos <- position_brain_sf(hemi ~ view, nrow = 2, ncol = 3, views = "lateral")
     params <- extract_position_params(pos)
@@ -26,6 +27,7 @@ describe("extract_position_params", {
 
 describe("compute_label_positions", {
   it("produces hemi + view labels for cortical", {
+    skip_if_not_installed("sf")
     repositioned <- reposition_brain(dk(), hemi ~ view)
     label_df <- compute_label_positions(repositioned)
 
@@ -41,6 +43,7 @@ describe("compute_label_positions", {
   })
 
   it("produces view labels for subcortical", {
+    skip_if_not_installed("sf")
     repositioned <- reposition_brain(aseg())
     label_df <- compute_label_positions(repositioned)
 
@@ -51,6 +54,7 @@ describe("compute_label_positions", {
   })
 
   it("produces view labels for tract", {
+    skip_if_not_installed("sf")
     repositioned <- reposition_brain(tracula())
     label_df <- compute_label_positions(repositioned)
 
@@ -74,6 +78,7 @@ describe("annotate_brain dispatch", {
   })
 
   it("routes to the sf path when given a position_brain_sf()", {
+    skip_if_not_installed("sf")
     withr::local_options(lifecycle_verbosity = "quiet")
     layer <- annotate_brain(atlas = dk(), position = position_brain_sf())
     expect_s3_class(layer, "LayerInstance")

@@ -7,6 +7,7 @@ describe("to_coords", {
   })
 
   it("converts geometry to coordinate data frame", {
+    skip_if_not_installed("sf")
     atlas_df <- as.data.frame(dk())
     geom <- atlas_df$geometry[[1]]
     result <- to_coords(geom, 1)
@@ -18,6 +19,7 @@ describe("to_coords", {
 
 describe("sf2coords", {
   it("converts sf data to coords format", {
+    skip_if_not_installed("sf")
     result <- sf2coords(dk()$data$sf)
     expect_true("ggseg" %in% names(result))
     expect_type(result$ggseg, "list")
@@ -25,6 +27,7 @@ describe("sf2coords", {
   })
 
   it("removes geometry column", {
+    skip_if_not_installed("sf")
     result <- sf2coords(dk()$data$sf)
     expect_false("geometry" %in% names(result))
   })

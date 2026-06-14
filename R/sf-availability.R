@@ -11,7 +11,7 @@
 #' @keywords internal
 #' @noRd
 require_sf <- function(what) {
-  if (!requireNamespace("sf", quietly = TRUE)) {
+  if (!has_sf()) {
     cli::cli_abort(c(
       "{what} requires the {.pkg sf} package, which is not installed.",
       "i" = paste0(

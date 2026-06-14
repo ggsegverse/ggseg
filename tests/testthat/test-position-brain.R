@@ -32,16 +32,19 @@ test_that("position_formula works", {
 
 describe("reposition_brain", {
   it("converts data to data.frame", {
+    skip_if_not_installed("sf")
     result <- reposition_brain(dk(), hemi ~ view)
     expect_s3_class(result, "sf")
   })
 
   it("works with formula position", {
+    skip_if_not_installed("sf")
     result <- reposition_brain(dk(), view ~ hemi)
     expect_s3_class(result, "sf")
   })
 
   it("works with hemi + view formula", {
+    skip_if_not_installed("sf")
     result <- reposition_brain(dk(), hemi + view ~ .)
     expect_s3_class(result, "sf")
   })
@@ -120,6 +123,7 @@ describe("split_data with subcortical", {
 
 describe("stack_vertical", {
   it("stacks data frames vertically", {
+    skip_if_not_installed("sf")
     data <- as.data.frame(dk())
     split_result <- split_data(data, "vertical")
     gathered <- lapply(split_result$data, gather_geometry)
@@ -188,12 +192,14 @@ describe("split_data_grid", {
 
 describe("reposition_brain with subcortical", {
   it("works with nrow parameter", {
+    skip_if_not_installed("sf")
     data <- as.data.frame(aseg())
     result <- reposition_brain(data, nrow = 2)
     expect_s3_class(result, "sf")
   })
 
   it("works with views parameter", {
+    skip_if_not_installed("sf")
     data <- as.data.frame(aseg())
     views <- unique(data$view)[1:3]
     result <- reposition_brain(data, views = views)
@@ -202,6 +208,7 @@ describe("reposition_brain with subcortical", {
   })
 
   it("respects view order", {
+    skip_if_not_installed("sf")
     data <- as.data.frame(aseg())
     views <- rev(unique(data$view)[1:3])
     result <- reposition_brain(data, views = views)
@@ -250,12 +257,14 @@ describe("split_data_grid with defaults", {
 
 describe("reposition_brain subcortical formula", {
   it("works with type ~ . formula", {
+    skip_if_not_installed("sf")
     data <- as.data.frame(aseg())
     result <- reposition_brain(data, type ~ .)
     expect_s3_class(result, "sf")
   })
 
   it("works with . ~ type formula", {
+    skip_if_not_installed("sf")
     data <- as.data.frame(aseg())
     result <- reposition_brain(data, . ~ type)
     expect_s3_class(result, "sf")
@@ -273,6 +282,7 @@ describe("position_formula subcortical multi-var", {
 
 describe("stack_grid numeric sorting", {
   it("works with numeric grid positions", {
+    skip_if_not_installed("sf")
     data <- as.data.frame(aseg())
     result <- reposition_brain(data, nrow = 2, ncol = 4)
     expect_s3_class(result, "sf")

@@ -16,6 +16,7 @@ describe("brain_join", {
   )
 
   it("joins ungrouped data to atlas", {
+    skip_if_not_installed("sf")
     single <- some_data[some_data$grp == "G1", ]
     expect_message(
       result <- brain_join(single, dk()),
@@ -25,6 +26,7 @@ describe("brain_join", {
   })
 
   it("auto-detects join columns", {
+    skip_if_not_installed("sf")
     single <- some_data[some_data$grp == "G1", ]
     expect_message(
       brain_join(single, dk()),
@@ -33,12 +35,14 @@ describe("brain_join", {
   })
 
   it("respects explicit by argument", {
+    skip_if_not_installed("sf")
     single <- some_data[some_data$grp == "G1", ]
     result <- brain_join(single, dk(), by = "region")
     expect_s3_class(result, "sf")
   })
 
   it("joins grouped data producing one atlas per group", {
+    skip_if_not_installed("sf")
     grouped <- group_by(some_data, grp)
     expect_message(
       result <- brain_join(grouped, dk()),
@@ -53,6 +57,7 @@ describe("brain_join", {
   })
 
   it("warns when data has unmatched regions", {
+    skip_if_not_installed("sf")
     bad_data <- data.frame(
       region = "not a real region",
       p = 0.5,

@@ -23,6 +23,7 @@ Performs a full join between user data and a brain atlas. Grouped data
 is handled automatically, producing one complete atlas per group.
 }
 \examples{
+\dontshow{if (requireNamespace("sf", quietly = TRUE)) withAutoprint(\{ # examplesIf}
 someData <- data.frame(
   region = c(
     "transverse temporal", "insula",
@@ -34,5 +35,5 @@ someData <- data.frame(
 
 brain_join(someData, dk())
 brain_join(someData, dk(), "region")
-
+\dontshow{\}) # examplesIf}
 }

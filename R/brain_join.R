@@ -14,7 +14,7 @@
 #' @importFrom dplyr is.grouped_df full_join as_tibble
 #' @importFrom tidyr nest unnest
 #' @importFrom utils capture.output
-#' @examples
+#' @examplesIf requireNamespace("sf", quietly = TRUE)
 #' someData <- data.frame(
 #'   region = c(
 #'     "transverse temporal", "insula",
@@ -60,6 +60,7 @@ brain_join <- function(data, atlas, by = NULL) {
   }
 
   if ("geometry" %in% names(dt)) {
+    require_sf("brain_join()")
     sf::st_as_sf(dt)
   } else {
     as_tibble(dt)

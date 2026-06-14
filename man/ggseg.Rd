@@ -50,7 +50,7 @@ Useful links:
 
 Authors:
 \itemize{
-  \item Didac Vidal-Pi<U+00F1>eiro \email{d.v.pineiro@psykologi.uio.no} (\href{https://orcid.org/0000-0001-9997-9156}{ORCID})
+  \item Didac Vidal-Piñeiro \email{d.v.pineiro@psykologi.uio.no} (\href{https://orcid.org/0000-0001-9997-9156}{ORCID})
 }
 
 Other contributors:

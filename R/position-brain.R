@@ -1,15 +1,13 @@
 #' Reposition brain slices
 #'
-#' Function for repositioning
-#' pre-joined atlas data (i.e. data and atlas
-#' already joined to a single data frame).
-#' This makes it possible for users to
-#' reposition the geometry data for the atlas
-#' for control over final plot layout. For even
-#' more detailed control over the positioning,
-#' the "hemi" and "view" columns should be
-#' converted into factors and ordered by wanted
-#' order of appearance.
+#' Repositions pre-joined sf atlas data (i.e. data and atlas already joined to
+#' a single sf data frame) for control over final plot layout. For even more
+#' detailed control, convert the "hemi" and "view" columns into factors ordered
+#' by wanted order of appearance.
+#'
+#' This is the sf layout helper. It requires the `sf` package (an optional
+#' dependency); for the sf-free default, build a layout with [position_brain()]
+#' and pass it to [geom_brain()].
 #'
 #' @param data sf-data.frame of joined brain atlas and data
 #' @param position Position formula for slices. For cortical atlases, use
@@ -22,7 +20,7 @@
 #' @return sf-data.frame with re-positioned slices
 #' @export
 #'
-#' @examples
+#' @examplesIf requireNamespace("sf", quietly = TRUE)
 #' reposition_brain(dk(), hemi ~ view)
 #' reposition_brain(dk(), view ~ hemi)
 #' reposition_brain(dk(), hemi + view ~ .)
@@ -39,6 +37,7 @@ reposition_brain <- function(
   ncol = NULL,
   views = NULL
 ) {
+  require_sf("reposition_brain()")
   data <- as.data.frame(data, stringsAsFactors = FALSE)
   frame_2_position(
     data,
