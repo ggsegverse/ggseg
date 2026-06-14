@@ -14,7 +14,11 @@ require_sf <- function(what) {
   if (!requireNamespace("sf", quietly = TRUE)) {
     cli::cli_abort(c(
       "{what} requires the {.pkg sf} package, which is not installed.",
-      "i" = "Install with {.run install.packages(\"sf\")}, or use the polygon default ({.fn geom_brain}, {.fn position_brain}, {.fn annotate_brain})."
+      "i" = paste0(
+        "Install with {.run install.packages(\"sf\")}, or use the ",
+        "polygon default ({.fn geom_brain}, {.fn position_brain}, ",
+        "{.fn annotate_brain})."
+      )
     ))
   }
   invisible(TRUE)

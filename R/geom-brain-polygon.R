@@ -253,7 +253,10 @@ brain_join_polygon <- function(data, flat) {
   if (!length(by)) {
     cli::cli_abort(c(
       "{.arg data} has no columns in common with the atlas.",
-      "i" = "Need {.field region} or {.field label} (and optionally {.field hemi})."
+      "i" = paste0(
+        "Need {.field region} or {.field label} ",
+        "(and optionally {.field hemi})."
+      )
     ))
   }
 
