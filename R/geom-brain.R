@@ -96,7 +96,7 @@ geom_brain_sf <- function(
   atlas,
   hemi = NULL,
   view = NULL,
-  position = new_position_brain(),
+  position = NULL,
   show.legend = NA,
   inherit.aes = TRUE,
   ...
@@ -110,6 +110,9 @@ geom_brain_sf <- function(
     )
   )
   require_sf("geom_brain_sf()")
+  if (is.null(position)) {
+    position <- make_position_brain_sf()
+  }
   dots <- list(...)
   if ("side" %in% names(dots)) {
     cli::cli_warn(c(

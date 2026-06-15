@@ -10,7 +10,7 @@ geom_brain_sf(
   atlas,
   hemi = NULL,
   view = NULL,
-  position = new_position_brain(),
+  position = NULL,
   show.legend = NA,
   inherit.aes = TRUE,
   ...

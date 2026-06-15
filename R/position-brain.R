@@ -164,7 +164,7 @@ position_brain_sf <- function(
     )
   )
   require_sf("position_brain_sf()")
-  new_position_brain(position, nrow = nrow, ncol = ncol, views = views)
+  make_position_brain_sf(position, nrow = nrow, ncol = ncol, views = views)
 }
 
 #' Construct a PositionBrain ggproto without the deprecation warning
@@ -172,7 +172,7 @@ position_brain_sf <- function(
 #' @keywords internal
 #' @noRd
 #' @importFrom ggplot2 ggproto
-new_position_brain <- function(
+make_position_brain_sf <- function(
   position = "horizontal",
   nrow = NULL,
   ncol = NULL,
@@ -331,10 +331,9 @@ position_cortical <- function(pos, chosen) {
     ))
   }
   if (any(grepl("+", pos, fixed = TRUE))) {
-    stacking_direction(pos)
-  } else {
-    chosen
+    chosen <- stacking_direction(pos)
   }
+  chosen
 }
 
 #' Resolve position for a subcortical/tract atlas formula
@@ -357,7 +356,11 @@ position_subcortical <- function(pos, chosen, data) {
     chosen
   }
 
-  list(position = position, chosen = chosen, data = data)
+  list(
+    position = position,
+    chosen = chosen,
+    data = data
+  )
 }
 
 
@@ -413,14 +416,13 @@ frame_2_position <- function(
     data$view <- as.character(data$view)
   }
 
+  dfpos <- split_data(data, pos)
   if (!is.null(nrow) || !is.null(ncol)) {
     dfpos <- split_data_grid(data, nrow, ncol)
-  } else {
-    dfpos <- split_data(data, pos)
   }
 
   df2 <- lapply(dfpos$data, gather_geometry)
-  posi <- ifelse(length(dfpos$position) > 1, "grid", dfpos$position)
+  posi <- if (length(dfpos$position) > 1) "grid" else dfpos$position
 
   df3 <- switch(
     posi,
@@ -493,46 +495,68 @@ split_data_grid <- function(data, nrow = NULL, ncol = NULL) {
 #' @noRd
 split_data <- function(data, position) {
   if (inherits(position, "formula")) {
-    pos <- position_formula(position, data)
-    if (!is.null(pos$data)) {
-      data <- pos$data
-    }
-    df2 <- dplyr::group_by_at(data, pos$chosen)
-    df2 <- dplyr::group_split(df2)
-    pos <- pos$position
+    split_data_formula(data, position)
   } else {
-    layout_direction <- "columns"
-    if (length(position) == 1) {
-      if (position %in% c("horizontal", "vertical")) {
-        layout_direction <- if (position == "vertical") "rows" else "columns"
-        position <- default_order(data)
-      }
-    }
-    pos <- as.data.frame(
-      strsplit(position, " ", fixed = TRUE),
-      stringsAsFactors = FALSE
-    )
-    atlas_type <- unique(data$type)[1]
-    if (atlas_type == "cortical") {
-      k <- cbind(
-        pos[2, ] %in% data$view,
-        pos[1, ] %in% data$hemi
-      )
-      k <- vapply(seq_len(nrow(k)), function(x) sum(k[x, ]), numeric(1))
-      pos <- pos[k == 2]
+    split_data_string(data, position)
+  }
+}
 
-      df2 <- lapply(pos, function(x) {
-        data[data$hemi == x[1] & data$view == x[2], ]
-      })
-    } else {
-      df2 <- lapply(pos, function(x) {
-        data[data$view == x, ]
-      })
-    }
-    pos <- layout_direction
+#' Split atlas data by a position formula (e.g. `hemi ~ view`)
+#'
+#' @return A list with `data` (one data.frame per group) and `position`
+#'   (the resolved layout direction or variable names).
+#' @keywords internal
+#' @noRd
+split_data_formula <- function(data, position) {
+  pos <- position_formula(position, data)
+  if (!is.null(pos$data)) {
+    data <- pos$data
+  }
+  groups <- dplyr::group_split(dplyr::group_by_at(data, pos$chosen))
+  list(data = groups, position = pos$position)
+}
+
+#' Split atlas data by a string layout
+#'
+#' `position` is either `"horizontal"`/`"vertical"` (expanded to the atlas's
+#' default view order) or pre-built `"hemi view"` / `"view"` identifiers.
+#'
+#' @inherit split_data_formula return
+#' @keywords internal
+#' @noRd
+split_data_string <- function(data, position) {
+  layout_direction <- "columns"
+  if (length(position) == 1 && position %in% c("horizontal", "vertical")) {
+    layout_direction <- if (position == "vertical") "rows" else "columns"
+    position <- default_order(data)
   }
 
-  list(data = df2, position = pos)
+  pos <- as.data.frame(
+    strsplit(position, " ", fixed = TRUE),
+    stringsAsFactors = FALSE
+  )
+
+  groups <- if (identical(unique(data$type)[1], "cortical")) {
+    split_cortical_pairs(data, pos)
+  } else {
+    lapply(pos, function(view) data[data$view == view, ])
+  }
+
+  list(data = groups, position = layout_direction)
+}
+
+#' Subset cortical data into its existing hemi/view pairs
+#'
+#' Columns of `pos` are `c(hemi, view)` pairs; keep only the pairs the atlas
+#' actually contains, then subset the data to each.
+#' @keywords internal
+#' @noRd
+split_cortical_pairs <- function(data, pos) {
+  has_pair <- (pos[1, ] %in% data$hemi) & (pos[2, ] %in% data$view)
+  pos <- pos[has_pair]
+  lapply(pos, function(pair) {
+    data[data$hemi == pair[1] & data$view == pair[2], ]
+  })
 }
 
 #' Zero-origin geometry for a single view

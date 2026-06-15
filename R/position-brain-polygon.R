@@ -239,7 +239,7 @@ frame_2_position_flat <- function(
   }
 
   df2 <- lapply(dfpos$data, gather_flat)
-  posi <- ifelse(length(dfpos$position) > 1, "grid", dfpos$position)
+  posi <- if (length(dfpos$position) > 1) "grid" else dfpos$position
 
   df3 <- switch(
     posi,
