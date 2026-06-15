@@ -1,7 +1,10 @@
 #' Join user data with a brain atlas
 #'
-#' Performs a full join between user data and a brain atlas. Grouped data
-#' is handled automatically, producing one complete atlas per group.
+#' Matches your data to a brain atlas by a shared column (usually `region`),
+#' keeping every atlas region whether or not you have a value for it. Grouped
+#' data (via [dplyr::group_by()]) gives one complete atlas per group. You
+#' rarely need this directly -- [geom_brain()] joins your data for you; reach
+#' for `brain_join()` when you want the joined sf object yourself.
 #'
 #' @param data A data.frame with a column matching an atlas column
 #'   (typically `"region"`). Can be grouped with [dplyr::group_by()].
@@ -13,9 +16,8 @@
 #' @export
 #' @importFrom dplyr is.grouped_df full_join as_tibble
 #' @importFrom tidyr nest unnest
-#' @importFrom sf st_as_sf
 #' @importFrom utils capture.output
-#' @examples
+#' @examplesIf requireNamespace("sf", quietly = TRUE)
 #' someData <- data.frame(
 #'   region = c(
 #'     "transverse temporal", "insula",
@@ -61,7 +63,8 @@ brain_join <- function(data, atlas, by = NULL) {
   }
 
   if ("geometry" %in% names(dt)) {
-    st_as_sf(dt)
+    require_sf("brain_join()")
+    sf::st_as_sf(dt)
   } else {
     as_tibble(dt)
   }

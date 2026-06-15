@@ -26,8 +26,8 @@ library(ggplot2)
 
 A brain atlas typically has several views -- lateral and medial for cortical
 atlases, or axial, coronal, and sagittal slices for subcortical and tract
-atlases. `position_brain()` controls how those views are arranged in the
-final plot.
+atlases. `position_brain()` controls how those views are arranged in
+the final plot.
 
 The function works differently depending on the atlas type, so this vignette
 covers cortical and subcortical/tract atlases separately.
@@ -216,36 +216,14 @@ ggplot() +
   theme_void()
 ```
 
-## Pre-processing with reposition_brain()
-
-If you're using the `geom_sf()` workflow instead of `geom_brain()`, use
-`reposition_brain()` to rearrange the data before plotting. It takes the
-same arguments:
-
-```{r}
-#| label: fig-reposition-brain
-#| fig-cap: "Repositioned subcortical data plotted with geom_sf()."
-atlas_data <- as.data.frame(aseg())
-
-repositioned <- reposition_brain(
-  atlas_data,
-  views = c("sagittal", "axial_3", "coronal_3"),
-  nrow = 1
-)
-
-ggplot(repositioned) +
-  geom_sf(aes(fill = region), show.legend = FALSE) +
-  theme_void()
-```
-
 ## Adding view labels
 
 Use `annotate_brain()` to label each view with its name. For cortical
 atlases the label combines hemisphere and view (e.g. "left lateral"); for
 subcortical and tract atlases it uses the view name directly.
 
-Store the `position_brain()` specification in an object so both layers share
-the same layout:
+Store the `position_brain()` specification in an object so both layers
+share the same layout:
 
 ```{r}
 #| label: fig-dk-view-labels
@@ -270,15 +248,18 @@ ggplot() +
   theme_void()
 ```
 
-Text appearance is customisable through standard `annotate()` arguments:
+Labels sit a little above each view by default (`padding = 0.05`). Increase
+`padding` to push them further out, and tune the text through standard
+`annotate()` arguments:
 
 ```{r}
 #| label: fig-styled-labels
-#| fig-cap: "View labels with custom styling."
+#| fig-cap: "View labels with extra padding and custom styling."
 ggplot() +
   geom_brain(atlas = dk(), show.legend = FALSE) +
   annotate_brain(
     atlas = dk(),
+    padding = 0.08,
     size = 2.5,
     colour = "grey50",
     fontface = "italic"
@@ -286,9 +267,102 @@ ggplot() +
   theme_void()
 ```
 
-## Quick reference
+## Zooming in on regions of interest
 
-| Atlas type | Options |
-|---|---|
-| Cortical | `hemi ~ view`, `view ~ hemi`, `. ~ hemi + view`, `hemi + view ~ .` |
-| Subcortical / Tract | `"horizontal"`, `"vertical"`, `nrow`, `ncol`, `views`, `type ~ .` |
+For "focus" atlases -- where only a few structures carry labels and the rest
+of the brain is grey context -- `position_brain(zoom = ...)` crops
+each view onto the regions of interest, so they fill the panel while the
+surrounding context becomes a tidy grey frame. Every view keeps the same
+allotted cell.
+
+### Focus on the regions in your data
+
+`zoom = TRUE` focuses on whatever regions your data supplies values for (or,
+with no data, the atlas's labelled regions):
+
+```{r}
+#| label: fig-zoom-data
+#| fig-cap: "Each view zoomed onto the regions present in the supplied data."
+my_data <- data.frame(
+  region = ggseg.formats::atlas_regions(aseg())[1:3],
+  value = c(1, 2, 3)
+)
+
+ggplot() +
+  geom_brain(
+    atlas = aseg(),
+    data = my_data,
+    aes(fill = value),
+    position = position_brain(zoom = TRUE)
+  ) +
+  scale_fill_viridis_c(na.value = "grey85") +
+  theme_void()
+```
+
+### Name the focus regions explicitly
+
+Pass a character vector to choose exactly which regions each view zooms onto,
+independent of any data you plot:
+
+```{r}
+#| label: fig-zoom-explicit
+#| fig-cap: "Zoom targeted at a named set of regions."
+focus <- c("Thalamus Proper", "Putamen", "Hippocampus")
+
+ggplot() +
+  geom_brain(
+    atlas = aseg(),
+    position = position_brain(zoom = focus),
+    show.legend = FALSE
+  ) +
+  theme_void()
+```
+
+### Control the margin with `zoom_pad`
+
+`zoom_pad` sets how much breathing room to leave around the focus regions, as
+a fraction of their size (5% by default). A smaller value crops tighter; a
+larger value keeps more context in frame:
+
+```{r}
+#| label: fig-zoom-tight
+#| fig-cap: "A tighter crop using a small zoom_pad."
+ggplot() +
+  geom_brain(
+    atlas = aseg(),
+    position = position_brain(zoom = focus, zoom_pad = 0.01),
+    show.legend = FALSE
+  ) +
+  theme_void()
+```
+
+```{r}
+#| label: fig-zoom-loose
+#| fig-cap: "More surrounding context using a larger zoom_pad."
+ggplot() +
+  geom_brain(
+    atlas = aseg(),
+    position = position_brain(zoom = focus, zoom_pad = 0.25),
+    show.legend = FALSE
+  ) +
+  theme_void()
+```
+
+## Dropping the grey context
+
+Set `context = FALSE` to remove the unlabelled context regions entirely. The
+remaining atlas regions are re-gathered into a tighter layout:
+
+```{r}
+#| label: fig-no-context
+#| fig-cap: "Subcortical atlas with the grey context regions removed."
+ggplot() +
+  geom_brain(atlas = aseg(), context = FALSE, show.legend = FALSE) +
+  theme_void()
+```
+
+## The sf workflow
+
+If you work with brain atlases as sf objects -- for example to layer
+`geom_sf()` text labels -- `reposition_brain()` rearranges the sf data using
+the same arguments shown here. See `vignette("geom-sf")` for that workflow.

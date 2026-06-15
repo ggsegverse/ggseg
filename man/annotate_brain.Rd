@@ -12,6 +12,7 @@ annotate_brain(
   size = 3,
   colour = "grey30",
   family = "mono",
+  padding = 0.05,
   nudge_y = 0,
   ...
 )
@@ -19,8 +20,8 @@ annotate_brain(
 \arguments{
 \item{atlas}{A `brain_atlas` object (e.g. `dk()`, `aseg()`).}
 
-\item{position}{A [position_brain()] object or position specification
-matching the one used in [geom_brain()].}
+\item{position}{The same layout you passed to [geom_brain()], from
+[position_brain()].}
 
 \item{hemi}{Character vector of hemispheres to include. If `NULL`
 (default), all hemispheres are included.}
@@ -34,7 +35,12 @@ matching the one used in [geom_brain()].}
 
 \item{family}{Font family (default: `"mono"`).}
 
-\item{nudge_y}{Additional vertical offset for labels (default: `0`).}
+\item{padding}{Vertical gap between each label and its view, as a
+fraction of the plot's total height (default: `0.05`). Labels are also
+bottom-anchored (`vjust = 0`) so they sit clear of the geometry.}
+
+\item{nudge_y}{Additional absolute vertical offset for labels
+(default: `0`).}
 
 \item{...}{Additional arguments passed to [ggplot2::annotate()].}
 }
@@ -48,9 +54,8 @@ and view (e.g., "left lateral"). For subcortical and tract atlases,
 labels show the view name directly (e.g., "axial_1", "sagittal").
 }
 \details{
-Labels respect the repositioning done by [position_brain()], so the
-same `position` argument should be passed to both [geom_brain()] and
-`annotate_brain()`.
+Pass the same `position` you gave [geom_brain()] and the labels line up with
+the views automatically.
 }
 \examples{
 library(ggplot2)

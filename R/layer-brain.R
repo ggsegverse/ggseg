@@ -61,7 +61,6 @@ ggplot2_Layer <- function() {
 #' [utils::getFromNamespace()], avoiding `:::` usage.
 #'
 #' @importFrom utils capture.output getFromNamespace
-#' @importFrom sf st_as_sf
 #' @importFrom ggplot2 ggproto ggproto_parent
 #' @keywords internal
 #' @noRd
@@ -173,7 +172,7 @@ LayerBrain <- ggproto(
     }
 
     if (needs_mapping("fill")) {
-      self$computed_mapping$fill <- as.name("region")
+      self$computed_mapping$fill <- as.name("label")
     }
 
     self$computed_mapping$label <- as.name("label")

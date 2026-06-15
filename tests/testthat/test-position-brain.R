@@ -32,40 +32,51 @@ test_that("position_formula works", {
 
 describe("reposition_brain", {
   it("converts data to data.frame", {
+    skip_if_not_installed("sf")
     result <- reposition_brain(dk(), hemi ~ view)
     expect_s3_class(result, "sf")
   })
 
   it("works with formula position", {
+    skip_if_not_installed("sf")
     result <- reposition_brain(dk(), view ~ hemi)
     expect_s3_class(result, "sf")
   })
 
   it("works with hemi + view formula", {
+    skip_if_not_installed("sf")
     result <- reposition_brain(dk(), hemi + view ~ .)
     expect_s3_class(result, "sf")
   })
 })
 
 describe("position_brain", {
-  it("returns PositionBrain ggproto object", {
+  it("returns a polygon layout spec", {
     pos <- position_brain()
-    expect_s3_class(pos, "PositionBrain")
+    expect_s3_class(pos, "position_brain_polygon_spec")
   })
 
   it("accepts formula position", {
     pos <- position_brain(hemi ~ view)
-    expect_s3_class(pos, "PositionBrain")
+    expect_s3_class(pos, "position_brain_polygon_spec")
   })
 
   it("accepts horizontal position string", {
     pos <- position_brain("horizontal")
-    expect_s3_class(pos, "PositionBrain")
+    expect_s3_class(pos, "position_brain_polygon_spec")
   })
 
   it("accepts vertical position string", {
     pos <- position_brain("vertical")
+    expect_s3_class(pos, "position_brain_polygon_spec")
+  })
+})
+
+describe("position_brain_sf (deprecated)", {
+  it("warns and returns a PositionBrain ggproto", {
+    lifecycle::expect_deprecated(pos <- position_brain_sf(hemi ~ view))
     expect_s3_class(pos, "PositionBrain")
+    expect_identical(pos$position, hemi ~ view)
   })
 })
 
@@ -112,6 +123,7 @@ describe("split_data with subcortical", {
 
 describe("stack_vertical", {
   it("stacks data frames vertically", {
+    skip_if_not_installed("sf")
     data <- as.data.frame(dk())
     split_result <- split_data(data, "vertical")
     gathered <- lapply(split_result$data, gather_geometry)
@@ -135,26 +147,26 @@ describe("position_formula edge cases", {
 describe("position_brain with nrow/ncol", {
   it("accepts nrow parameter", {
     pos <- position_brain(nrow = 2)
-    expect_s3_class(pos, "PositionBrain")
+    expect_s3_class(pos, "position_brain_polygon_spec")
     expect_identical(pos$nrow, 2)
   })
 
   it("accepts ncol parameter", {
     pos <- position_brain(ncol = 3)
-    expect_s3_class(pos, "PositionBrain")
+    expect_s3_class(pos, "position_brain_polygon_spec")
     expect_identical(pos$ncol, 3)
   })
 
   it("accepts both nrow and ncol", {
     pos <- position_brain(nrow = 2, ncol = 3)
-    expect_s3_class(pos, "PositionBrain")
+    expect_s3_class(pos, "position_brain_polygon_spec")
     expect_identical(pos$nrow, 2)
     expect_identical(pos$ncol, 3)
   })
 
   it("accepts views parameter", {
     pos <- position_brain(views = c("axial_3", "sagittal"))
-    expect_s3_class(pos, "PositionBrain")
+    expect_s3_class(pos, "position_brain_polygon_spec")
     expect_identical(pos$views, c("axial_3", "sagittal"))
   })
 })
@@ -180,12 +192,14 @@ describe("split_data_grid", {
 
 describe("reposition_brain with subcortical", {
   it("works with nrow parameter", {
+    skip_if_not_installed("sf")
     data <- as.data.frame(aseg())
     result <- reposition_brain(data, nrow = 2)
     expect_s3_class(result, "sf")
   })
 
   it("works with views parameter", {
+    skip_if_not_installed("sf")
     data <- as.data.frame(aseg())
     views <- unique(data$view)[1:3]
     result <- reposition_brain(data, views = views)
@@ -194,6 +208,7 @@ describe("reposition_brain with subcortical", {
   })
 
   it("respects view order", {
+    skip_if_not_installed("sf")
     data <- as.data.frame(aseg())
     views <- rev(unique(data$view)[1:3])
     result <- reposition_brain(data, views = views)
@@ -242,12 +257,14 @@ describe("split_data_grid with defaults", {
 
 describe("reposition_brain subcortical formula", {
   it("works with type ~ . formula", {
+    skip_if_not_installed("sf")
     data <- as.data.frame(aseg())
     result <- reposition_brain(data, type ~ .)
     expect_s3_class(result, "sf")
   })
 
   it("works with . ~ type formula", {
+    skip_if_not_installed("sf")
     data <- as.data.frame(aseg())
     result <- reposition_brain(data, . ~ type)
     expect_s3_class(result, "sf")
@@ -265,6 +282,7 @@ describe("position_formula subcortical multi-var", {
 
 describe("stack_grid numeric sorting", {
   it("works with numeric grid positions", {
+    skip_if_not_installed("sf")
     data <- as.data.frame(aseg())
     result <- reposition_brain(data, nrow = 2, ncol = 4)
     expect_s3_class(result, "sf")

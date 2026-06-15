@@ -1,3 +1,5 @@
+skip_if_not_installed("sf")
+
 describe("adapt_scales", {
   dk_df <- as.data.frame(dk())
   dk_coords <- sf2coords(dk_df)

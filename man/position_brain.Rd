@@ -2,9 +2,16 @@
 % Please edit documentation in R/position-brain.R
 \name{position_brain}
 \alias{position_brain}
-\title{Alter brain atlas position}
+\title{Arrange brain atlas views}
 \usage{
-position_brain(position = "horizontal", nrow = NULL, ncol = NULL, views = NULL)
+position_brain(
+  position = "horizontal",
+  nrow = NULL,
+  ncol = NULL,
+  views = NULL,
+  zoom = NULL,
+  zoom_pad = 0.05
+)
 }
 \arguments{
 \item{position}{Formula describing the rows ~ columns organisation for
@@ -23,13 +30,23 @@ not a formula.}
 \item{views}{Character vector specifying which views to include and their
 order. If NULL (default), all views are included in their original order.
 Only applies to subcortical/tract atlases.}
+
+\item{zoom}{Controls per-view zoom. `NULL`/`FALSE` (default) draws each view
+at full extent. `TRUE` zooms each view onto its focus regions; a character
+vector names the focus regions explicitly.}
+
+\item{zoom_pad}{Fractional padding added around the focus window when `zoom`
+is active. Defaults to `0.05` (5\%).}
 }
 \value{
-a ggproto object
+A layout specification to hand to [geom_brain()]'s `position`
+  argument.
 }
 \description{
-Function to be used in the position argument in geom_brain
-to alter the position of the brain slice/views.
+Controls how an atlas's hemispheres and views are arranged in the plot --
+side by side, stacked, or in a grid -- and can zoom each view in on the
+regions you care about. Pass the result to the `position` argument of
+[geom_brain()] (or [annotate_brain()]).
 }
 \examples{
 library(ggplot2)
@@ -49,7 +66,6 @@ ggplot() +
     show.legend = FALSE
   )
 
-\donttest{
 ggplot() +
   geom_brain(
     atlas = aseg(), aes(fill = region),
@@ -70,5 +86,4 @@ ggplot() +
     atlas = aseg(), aes(fill = region),
     position = position_brain(type ~ .)
   )
-}
 }

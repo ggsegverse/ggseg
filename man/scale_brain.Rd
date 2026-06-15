@@ -46,5 +46,4 @@ ggplot() +
   geom_brain(atlas = dk(), aes(fill = region), show.legend = FALSE) +
   scale_brain("dk")
 }
-
 }

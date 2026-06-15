@@ -1,54 +1,70 @@
-describe("geom_brain", {
+describe("geom_brain_sf (deprecated sf path)", {
   it("works with basic atlas", {
-    p <- ggplot() + geom_brain(atlas = dk())
+    skip_if_not_installed("sf")
+    withr::local_options(lifecycle_verbosity = "quiet")
+    p <- ggplot() + geom_brain_sf(atlas = dk())
     expect_s3_class(p, "gg")
   })
 
   it("warns when deprecated side argument is used", {
+    skip_if_not_installed("sf")
+    withr::local_options(lifecycle_verbosity = "quiet")
     expect_warning(
-      ggplot() + geom_brain(atlas = dk(), side = "lateral"),
+      ggplot() + geom_brain_sf(atlas = dk(), side = "lateral"),
       "side.*deprecated"
     )
   })
 
   it("uses side value for view when view is NULL", {
+    skip_if_not_installed("sf")
+    withr::local_options(lifecycle_verbosity = "quiet")
     expect_warning(
-      p <- ggplot() + geom_brain(atlas = dk(), side = "lateral"),
+      p <- ggplot() + geom_brain_sf(atlas = dk(), side = "lateral"),
       "side.*deprecated"
     )
     expect_s3_class(p, "gg")
   })
 
   it("filters by hemisphere", {
-    p <- ggplot() + geom_brain(atlas = dk(), hemi = "left")
+    skip_if_not_installed("sf")
+    withr::local_options(lifecycle_verbosity = "quiet")
+    p <- ggplot() + geom_brain_sf(atlas = dk(), hemi = "left")
     expect_s3_class(p, "gg")
     built <- ggplot_build(p)
     expect_true(all(built$plot$layers[[1]]$geom_params$hemi == "left"))
   })
 
   it("filters by view", {
-    p <- ggplot() + geom_brain(atlas = dk(), view = "lateral")
+    skip_if_not_installed("sf")
+    withr::local_options(lifecycle_verbosity = "quiet")
+    p <- ggplot() + geom_brain_sf(atlas = dk(), view = "lateral")
     expect_s3_class(p, "gg")
   })
 
   it("works with position_brain", {
+    skip_if_not_installed("sf")
+    withr::local_options(lifecycle_verbosity = "quiet")
     p <- ggplot() +
-      geom_brain(atlas = dk(), position = position_brain(hemi ~ view))
+      geom_brain_sf(atlas = dk(), position = position_brain_sf(hemi ~ view))
     expect_s3_class(p, "gg")
   })
 
   it("works with aesthetic mapping", {
-    p <- ggplot() + geom_brain(atlas = dk(), mapping = aes(fill = region))
+    skip_if_not_installed("sf")
+    withr::local_options(lifecycle_verbosity = "quiet")
+    p <- ggplot() + geom_brain_sf(atlas = dk(), mapping = aes(fill = region))
     expect_s3_class(p, "gg")
   })
 
   it("works with user data", {
+    skip_if_not_installed("sf")
+    withr::local_options(lifecycle_verbosity = "quiet")
     some_data <- tibble(
       region = c("transverse temporal", "insula"),
       p = c(0.1, 0.5)
     )
     p <- ggplot(some_data) +
-      geom_brain(atlas = dk(), mapping = aes(fill = p))
+      geom_brain_sf(atlas = dk(), mapping = aes(fill = p))
     expect_s3_class(p, "gg")
     expect_message(
       built <- ggplot_build(p),
@@ -58,14 +74,18 @@ describe("geom_brain", {
   })
 
   it("works with show.legend FALSE", {
-    p <- ggplot() + geom_brain(atlas = dk(), show.legend = FALSE)
+    skip_if_not_installed("sf")
+    withr::local_options(lifecycle_verbosity = "quiet")
+    p <- ggplot() + geom_brain_sf(atlas = dk(), show.legend = FALSE)
     expect_s3_class(p, "gg")
   })
 
   it("works with inherit.aes FALSE", {
+    skip_if_not_installed("sf")
+    withr::local_options(lifecycle_verbosity = "quiet")
     some_data <- tibble(region = "insula", p = 0.3)
     p <- ggplot(some_data, aes(fill = p)) +
-      geom_brain(atlas = dk(), inherit.aes = FALSE)
+      geom_brain_sf(atlas = dk(), inherit.aes = FALSE)
     expect_message(
       built <- ggplot_build(p),
       "Merging"
@@ -74,13 +94,17 @@ describe("geom_brain", {
   })
 
   it("passes additional arguments to geom_sf", {
+    skip_if_not_installed("sf")
+    withr::local_options(lifecycle_verbosity = "quiet")
     p <- ggplot() +
-      geom_brain(atlas = dk(), colour = "black", size = 0.5)
+      geom_brain_sf(atlas = dk(), colour = "black", size = 0.5)
     expect_s3_class(p, "gg")
   })
 
   it("works with aseg atlas", {
-    p <- ggplot() + geom_brain(atlas = aseg())
+    skip_if_not_installed("sf")
+    withr::local_options(lifecycle_verbosity = "quiet")
+    p <- ggplot() + geom_brain_sf(atlas = aseg())
     expect_s3_class(p, "gg")
   })
 })
@@ -96,8 +120,10 @@ describe("geom_brain faceting", {
   )
 
   it("facet_wrap works without group_by", {
+    skip_if_not_installed("sf")
+    withr::local_options(lifecycle_verbosity = "quiet")
     p <- ggplot(some_data) +
-      geom_brain(atlas = dk(), mapping = aes(fill = p)) +
+      geom_brain_sf(atlas = dk(), mapping = aes(fill = p)) +
       facet_wrap(~group)
     expect_message(
       built <- ggplot_build(p),
@@ -108,8 +134,10 @@ describe("geom_brain faceting", {
   })
 
   it("each facet panel has complete atlas rows", {
+    skip_if_not_installed("sf")
+    withr::local_options(lifecycle_verbosity = "quiet")
     p <- ggplot(some_data) +
-      geom_brain(atlas = dk(), mapping = aes(fill = p)) +
+      geom_brain_sf(atlas = dk(), mapping = aes(fill = p)) +
       facet_wrap(~group)
     expect_message(
       built <- ggplot_build(p),
@@ -125,10 +153,12 @@ describe("geom_brain faceting", {
   })
 
   it("explicit group_by still works with facet_wrap", {
+    skip_if_not_installed("sf")
+    withr::local_options(lifecycle_verbosity = "quiet")
     p <- some_data |>
       group_by(group) |>
       ggplot() +
-      geom_brain(atlas = dk(), mapping = aes(fill = p)) +
+      geom_brain_sf(atlas = dk(), mapping = aes(fill = p)) +
       facet_wrap(~group)
     expect_message(
       built <- ggplot_build(p),
@@ -139,8 +169,10 @@ describe("geom_brain faceting", {
   })
 
   it("facet_grid works without group_by", {
+    skip_if_not_installed("sf")
+    withr::local_options(lifecycle_verbosity = "quiet")
     p <- ggplot(some_data) +
-      geom_brain(atlas = dk(), mapping = aes(fill = p)) +
+      geom_brain_sf(atlas = dk(), mapping = aes(fill = p)) +
       facet_grid(rows = vars(group))
     expect_message(
       built <- ggplot_build(p),
@@ -151,13 +183,15 @@ describe("geom_brain faceting", {
   })
 
   it("ignores atlas columns in facet vars", {
+    skip_if_not_installed("sf")
+    withr::local_options(lifecycle_verbosity = "quiet")
     data_with_hemi <- tibble(
       region = c("transverse temporal", "insula"),
       p = c(0.1, 0.5),
       hemi = c("left", "right")
     )
     p <- ggplot(data_with_hemi) +
-      geom_brain(atlas = dk(), mapping = aes(fill = p)) +
+      geom_brain_sf(atlas = dk(), mapping = aes(fill = p)) +
       facet_wrap(~hemi)
     expect_message(
       built <- ggplot_build(p),
@@ -169,13 +203,15 @@ describe("geom_brain faceting", {
 
 describe("LayerBrain", {
   it("errors when no atlas is supplied", {
+    skip_if_not_installed("sf")
+    withr::local_options(lifecycle_verbosity = "quiet")
     expect_error(
       ggplot_build(
         ggplot() +
           layer_brain(
             geom = GeomBrain,
             stat = "sf",
-            position = position_brain(),
+            position = position_brain_sf(),
             params = list(na.rm = FALSE, atlas = NULL)
           ) +
           coord_sf()
@@ -185,29 +221,37 @@ describe("LayerBrain", {
   })
 
   it("errors when atlas has no data", {
+    skip_if_not_installed("sf")
+    withr::local_options(lifecycle_verbosity = "quiet")
     empty_atlas <- dk()
     empty_atlas$data$sf <- empty_atlas$data$sf[0, ]
     expect_error(
-      ggplot_build(ggplot() + geom_brain(atlas = empty_atlas)),
+      ggplot_build(ggplot() + geom_brain_sf(atlas = empty_atlas)),
       "no data|no 2D geometry"
     )
   })
 
   it("errors on invalid hemisphere", {
+    skip_if_not_installed("sf")
+    withr::local_options(lifecycle_verbosity = "quiet")
     expect_error(
-      ggplot_build(ggplot() + geom_brain(atlas = dk(), hemi = "top")),
+      ggplot_build(ggplot() + geom_brain_sf(atlas = dk(), hemi = "top")),
       "Invalid hemisphere"
     )
   })
 
   it("errors on invalid view", {
+    skip_if_not_installed("sf")
+    withr::local_options(lifecycle_verbosity = "quiet")
     expect_error(
-      ggplot_build(ggplot() + geom_brain(atlas = dk(), view = "top")),
+      ggplot_build(ggplot() + geom_brain_sf(atlas = dk(), view = "top")),
       "Invalid view"
     )
   })
 
   it("warns on unmatched region data", {
+    skip_if_not_installed("sf")
+    withr::local_options(lifecycle_verbosity = "quiet")
     bad_data <- tibble(
       region = "not a real region",
       p = 0.5
@@ -216,7 +260,8 @@ describe("LayerBrain", {
       expect_warning(
         expect_message(
           ggplot_build(
-            ggplot(bad_data) + geom_brain(atlas = dk(), mapping = aes(fill = p))
+            ggplot(bad_data) +
+              geom_brain_sf(atlas = dk(), mapping = aes(fill = p))
           ),
           "Merging atlas and data"
         ),
@@ -227,14 +272,18 @@ describe("LayerBrain", {
   })
 
   it("renders atlas without user data (waiver)", {
-    p <- ggplot() + geom_brain(atlas = dk())
+    skip_if_not_installed("sf")
+    withr::local_options(lifecycle_verbosity = "quiet")
+    p <- ggplot() + geom_brain_sf(atlas = dk())
     built <- ggplot_build(p)
     atlas_rows <- nrow(as.data.frame(dk()))
     expect_identical(nrow(built$data[[1]]), atlas_rows)
   })
 
   it("auto-maps geometry, hemi, view, type, fill, label", {
-    p <- ggplot() + geom_brain(atlas = dk())
+    skip_if_not_installed("sf")
+    withr::local_options(lifecycle_verbosity = "quiet")
+    p <- ggplot() + geom_brain_sf(atlas = dk())
     built <- ggplot_build(p)
     expect_true("fill" %in% names(built$data[[1]]))
   })
@@ -242,10 +291,14 @@ describe("LayerBrain", {
 
 describe("GeomBrain", {
   it("exists as ggproto object", {
+    skip_if_not_installed("sf")
+    withr::local_options(lifecycle_verbosity = "quiet")
     expect_s3_class(GeomBrain, "Geom")
   })
 
   it("has default aesthetics", {
+    skip_if_not_installed("sf")
+    withr::local_options(lifecycle_verbosity = "quiet")
     expect_true("default_aes" %in% names(GeomBrain))
     defaults <- GeomBrain$default_aes
     expect_true("linetype" %in% names(defaults))
@@ -253,17 +306,23 @@ describe("GeomBrain", {
   })
 
   it("has draw_panel method", {
+    skip_if_not_installed("sf")
+    withr::local_options(lifecycle_verbosity = "quiet")
     expect_true("draw_panel" %in% names(GeomBrain))
   })
 
   it("has draw_key method", {
+    skip_if_not_installed("sf")
+    withr::local_options(lifecycle_verbosity = "quiet")
     expect_true("draw_key" %in% names(GeomBrain))
   })
 })
 
 describe("brain_grob", {
   it("creates grob from transformed coord data", {
-    p <- ggplot() + geom_brain(atlas = dk())
+    skip_if_not_installed("sf")
+    withr::local_options(lifecycle_verbosity = "quiet")
+    p <- ggplot() + geom_brain_sf(atlas = dk())
     built <- ggplot_build(p)
     gt <- ggplot_gtable(built)
     expect_s3_class(gt, "gtable")

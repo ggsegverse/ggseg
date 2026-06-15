@@ -13,7 +13,10 @@ vignette: >
 knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>",
-  fig.width = 6
+  fig.width = 6,
+  # sf is an optional (Suggests) dependency; only run this vignette's code
+  # when it is available so the package builds without sf installed.
+  eval = requireNamespace("sf", quietly = TRUE)
 )
 ```
 
@@ -24,6 +27,11 @@ easily layer other sf geoms on top -- things like `geom_sf_label()` or
 
 This vignette shows how to work with brain atlases as plain sf objects,
 giving you full control at the cost of a few extra lines.
+
+This is the one workflow that needs the **sf** package, which ggseg now
+treats as an optional dependency. Install it with `install.packages("sf")`
+if you don't already have it. Everywhere else, `geom_brain()` plots
+the same atlases without sf.
 
 ```{r}
 #| label: load-packages

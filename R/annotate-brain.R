@@ -5,13 +5,12 @@
 #' and view (e.g., "left lateral"). For subcortical and tract atlases,
 #' labels show the view name directly (e.g., "axial_1", "sagittal").
 #'
-#' Labels respect the repositioning done by [position_brain()], so the
-#' same `position` argument should be passed to both [geom_brain()] and
-#' `annotate_brain()`.
+#' Pass the same `position` you gave [geom_brain()] and the labels line up with
+#' the views automatically.
 #'
 #' @param atlas A `brain_atlas` object (e.g. `dk()`, `aseg()`).
-#' @param position A [position_brain()] object or position specification
-#'   matching the one used in [geom_brain()].
+#' @param position The same layout you passed to [geom_brain()], from
+#'   [position_brain()].
 #' @param hemi Character vector of hemispheres to include. If `NULL`
 #'   (default), all hemispheres are included.
 #' @param view Character vector of views to include. If `NULL`
@@ -19,7 +18,11 @@
 #' @param size Text size in mm (default: `3`).
 #' @param colour Text colour (default: `"grey30"`).
 #' @param family Font family (default: `"mono"`).
-#' @param nudge_y Additional vertical offset for labels (default: `0`).
+#' @param padding Vertical gap between each label and its view, as a
+#'   fraction of the plot's total height (default: `0.05`). Labels are also
+#'   bottom-anchored (`vjust = 0`) so they sit clear of the geometry.
+#' @param nudge_y Additional absolute vertical offset for labels
+#'   (default: `0`).
 #' @param ... Additional arguments passed to [ggplot2::annotate()].
 #'
 #' @return A ggplot2 annotation layer.
@@ -44,9 +47,49 @@ annotate_brain <- function(
   size = 3,
   colour = "grey30",
   family = "mono",
+  padding = 0.05,
   nudge_y = 0,
   ...
 ) {
+  annotate_fn <- if (is_polygon_position(position)) {
+    annotate_brain_polygon
+  } else {
+    annotate_brain_sf
+  }
+  annotate_fn(
+    atlas,
+    position = position,
+    hemi = hemi,
+    view = view,
+    size = size,
+    colour = colour,
+    family = family,
+    padding = padding,
+    nudge_y = nudge_y,
+    ...
+  )
+}
+
+
+#' sf implementation behind [annotate_brain()]
+#'
+#' @inheritParams annotate_brain
+#' @return A ggplot2 annotation layer.
+#' @keywords internal
+#' @noRd
+annotate_brain_sf <- function(
+  atlas,
+  position = position_brain(),
+  hemi = NULL,
+  view = NULL,
+  size = 3,
+  colour = "grey30",
+  family = "mono",
+  padding = 0.05,
+  nudge_y = 0,
+  ...
+) {
+  require_sf("annotate_brain()")
   data <- as.data.frame(atlas)
 
   if (!is.null(hemi)) {
@@ -69,17 +112,40 @@ annotate_brain <- function(
 
   overall_bbox <- sf::st_bbox(repositioned$geometry)
   y_range <- unname(overall_bbox["ymax"] - overall_bbox["ymin"])
-  label_df$y <- label_df$y + y_range * 0.02 + nudge_y
+  label_df$y <- label_df$y + y_range * padding + nudge_y
 
-  ggplot2::annotate(
-    "text",
-    x = label_df$x,
-    y = label_df$y,
-    label = label_df$label,
-    size = size,
-    colour = colour,
-    family = family,
-    ...
+  annotate_brain_labels(label_df, size, colour, family, ...)
+}
+
+
+#' Build the text-annotation layer shared by the annotate helpers
+#'
+#' @param label_df A data.frame with `x`, `y`, `label` columns.
+#' @param size,colour,family Text styling passed to [ggplot2::annotate()].
+#' @param ... Extra arguments for [ggplot2::annotate()]; `vjust = 0` is the
+#'   default so labels are anchored above their point.
+#' @return A ggplot2 annotation layer.
+#' @keywords internal
+#' @noRd
+annotate_brain_labels <- function(label_df, size, colour, family, ...) {
+  dots <- list(...)
+  if (!"vjust" %in% names(dots)) {
+    dots$vjust <- 0
+  }
+  do.call(
+    ggplot2::annotate,
+    c(
+      list(
+        "text",
+        x = label_df$x,
+        y = label_df$y,
+        label = label_df$label,
+        size = size,
+        colour = colour,
+        family = family
+      ),
+      dots
+    )
   )
 }
 
@@ -125,14 +191,17 @@ compute_label_positions <- function(repositioned) {
     label_fn <- function(df) unique(df$view)
   }
 
-  do.call(rbind, lapply(groups, function(df) {
-    bbox <- sf::st_bbox(df$geometry)
-    data.frame(
-      x = unname((bbox["xmin"] + bbox["xmax"]) / 2),
-      y = unname(bbox["ymax"]),
-      label = label_fn(df),
-      stringsAsFactors = FALSE,
-      row.names = NULL
-    )
-  }))
+  do.call(
+    rbind,
+    lapply(groups, function(df) {
+      bbox <- sf::st_bbox(df$geometry)
+      data.frame(
+        x = unname((bbox["xmin"] + bbox["xmax"]) / 2),
+        y = unname(bbox["ymax"]),
+        label = label_fn(df),
+        stringsAsFactors = FALSE,
+        row.names = NULL
+      )
+    })
+  )
 }

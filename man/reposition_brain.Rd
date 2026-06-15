@@ -29,18 +29,18 @@ formulas like `hemi ~ view`. For subcortical/tract atlases, use
 sf-data.frame with re-positioned slices
 }
 \description{
-Function for repositioning
-pre-joined atlas data (i.e. data and atlas
-already joined to a single data frame).
-This makes it possible for users to
-reposition the geometry data for the atlas
-for control over final plot layout. For even
-more detailed control over the positioning,
-the "hemi" and "view" columns should be
-converted into factors and ordered by wanted
-order of appearance.
+Repositions pre-joined sf atlas data (i.e. data and atlas already joined to
+a single sf data frame) for control over final plot layout. For even more
+detailed control, convert the "hemi" and "view" columns into factors ordered
+by wanted order of appearance.
+}
+\details{
+This is the sf layout helper. It requires the `sf` package (an optional
+dependency); for the sf-free default, build a layout with [position_brain()]
+and pass it to [geom_brain()].
 }
 \examples{
+\dontshow{if (requireNamespace("sf", quietly = TRUE)) withAutoprint(\{ # examplesIf}
 reposition_brain(dk(), hemi ~ view)
 reposition_brain(dk(), view ~ hemi)
 reposition_brain(dk(), hemi + view ~ .)
@@ -50,4 +50,5 @@ reposition_brain(dk(), . ~ hemi + view)
 reposition_brain(aseg(), nrow = 2)
 reposition_brain(aseg(), views = c("sagittal", "axial_3"))
 }
+\dontshow{\}) # examplesIf}
 }

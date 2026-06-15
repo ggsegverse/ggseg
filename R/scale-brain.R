@@ -37,7 +37,7 @@ scale_brain <- function(
     "scale_brain()",
     details = "Atlas palettes are now applied automatically by `geom_brain()`."
   )
-  pal <- atlas_palette(name = name, ...)
+  pal <- atlas_palette_by_name(name, ...)
   aesthetics <- match.arg(aesthetics)
   func <- switch(
     aesthetics,
@@ -56,7 +56,7 @@ scale_colour_brain <- function(name = "dk", na.value = "grey", ...) {
     "scale_colour_brain()",
     details = "Atlas palettes are now applied automatically by `geom_brain()`."
   )
-  pal <- atlas_palette(name = name, ...)
+  pal <- atlas_palette_by_name(name, ...)
   scale_colour_manual(values = pal, na.value = na.value)
 }
 
@@ -68,7 +68,7 @@ scale_color_brain <- function(name = "dk", na.value = "grey", ...) {
     "scale_color_brain()",
     details = "Atlas palettes are now applied automatically by `geom_brain()`."
   )
-  pal <- atlas_palette(name = name, ...)
+  pal <- atlas_palette_by_name(name, ...)
   scale_color_manual(values = pal, na.value = na.value)
 }
 
@@ -80,8 +80,12 @@ scale_fill_brain <- function(name = "dk", na.value = "grey", ...) {
     "scale_fill_brain()",
     details = "Atlas palettes are now applied automatically by `geom_brain()`."
   )
-  pal <- atlas_palette(name = name, ...)
+  pal <- atlas_palette_by_name(name, ...)
   scale_fill_manual(values = pal, na.value = na.value)
+}
+
+atlas_palette_by_name <- function(name, ...) {
+  atlas_palette(match.fun(name)(), ...)
 }
 
 #' Manual colour and fill scales for brain plots

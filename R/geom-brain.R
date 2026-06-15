@@ -1,12 +1,12 @@
 #' Plot brain atlas regions
 #'
-#' A ggplot2 geom for rendering brain atlas regions as filled polygons,
-#' built on top of [ggplot2::geom_sf()]. Accepts a `brain_atlas` object and
-#' automatically joins user data to atlas geometry for visualisation.
+#' Colour brain regions by your own values. Give `geom_brain()` an atlas like
+#' `dk()` and a data frame, and it matches your values to the right regions and
+#' lays out the brain views for you. No data? It just draws the atlas.
 #'
 #' @param mapping Set of aesthetic mappings created by [ggplot2::aes()].
 #' @param data A data.frame containing variables to map. If `NULL`, the atlas
-#'   is plotted without user data.
+#'   is plotted without user data. Group it with [dplyr::group_by()] to facet.
 #' @param atlas A `ggseg_atlas` object (e.g. `dk()`, `aseg()`, `tracula()`).
 #' @param hemi Character vector of hemispheres to include (e.g. `"left"`,
 #'   `"right"`). Defaults to all hemispheres in the atlas.
@@ -15,15 +15,16 @@
 #'   atlases: slice identifiers like `"axial_3"`. Defaults to all views.
 #' @param position Position adjustment, either as a string or the result of
 #'   a call to [position_brain()].
+#' @param context Keep the rest of the brain as a soft grey backdrop (`TRUE`,
+#'   the default), or show only the regions you're plotting (`FALSE`).
 #' @param show.legend Logical. Should this layer be included in the legends?
 #' @param inherit.aes Logical. If `FALSE`, overrides the default aesthetics
 #'   rather than combining with them.
-#' @param ... Additional arguments passed to [ggplot2::geom_sf()].
+#' @param ... Additional arguments passed to [ggplot2::geom_polygon()].
 #'
 #' @return A list of ggplot2 layer and coord objects.
 #' @rdname ggbrain
 #' @export
-#' @importFrom ggplot2 aes coord_sf scale_fill_manual
 #'
 #' @examples
 #' library(ggplot2)
@@ -37,10 +38,78 @@ geom_brain <- function(
   hemi = NULL,
   view = NULL,
   position = position_brain(),
+  context = TRUE,
   show.legend = NA,
   inherit.aes = TRUE,
   ...
 ) {
+  dots <- list(...)
+  if ("side" %in% names(dots)) {
+    cli::cli_warn(c(
+      "The {.arg side} argument is deprecated.",
+      "i" = "Use {.arg view} instead. Your value has been passed to view."
+    ))
+    if (is.null(view)) {
+      view <- dots$side
+    }
+    dots$side <- NULL
+  }
+
+  do.call(
+    geom_brain_polygon,
+    c(
+      list(
+        mapping = mapping,
+        data = data,
+        atlas = atlas,
+        hemi = hemi,
+        view = view,
+        position = position,
+        context = context,
+        show.legend = show.legend,
+        inherit.aes = inherit.aes
+      ),
+      dots
+    )
+  )
+}
+
+#' Deprecated sf brain geom
+#'
+#' @description
+#' `r lifecycle::badge("deprecated")`
+#'
+#' The sf rendering path is deprecated. `geom_brain_sf()` renders an atlas via
+#' [ggplot2::geom_sf()] and [coord_sf()][ggplot2::coord_sf]. For new code, use
+#' [geom_brain()] (the polygon default), or convert the atlas with
+#' `as_sf_atlas()` and use [ggplot2::geom_sf()] directly for the full sf
+#' toolkit (labels, other sf layers).
+#'
+#' @inheritParams geom_brain
+#' @return A list of ggplot2 layer and coord objects.
+#' @export
+#' @keywords internal
+#' @importFrom ggplot2 aes coord_sf scale_fill_manual
+geom_brain_sf <- function(
+  mapping = aes(),
+  data = NULL,
+  atlas,
+  hemi = NULL,
+  view = NULL,
+  position = new_position_brain(),
+  show.legend = NA,
+  inherit.aes = TRUE,
+  ...
+) {
+  lifecycle::deprecate_warn(
+    "2.2.0",
+    "geom_brain_sf()",
+    details = paste(
+      "Use `geom_brain()` for the polygon default, or `as_sf_atlas()` with",
+      "`ggplot2::geom_sf()` for an sf workflow."
+    )
+  )
+  require_sf("geom_brain_sf()")
   dots <- list(...)
   if ("side" %in% names(dots)) {
     cli::cli_warn(c(

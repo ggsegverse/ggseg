@@ -127,16 +127,16 @@ describe("deprecated scale_brain2 variants", {
 })
 
 describe("scale_continous_brain", {
-  dk_df <- as.data.frame(dk())
-  dk_coords <- sf2coords(dk_df)
-  atlas <- unnest(dk_coords, ggseg)
-
   it("returns y scale by default", {
+    skip_if_not_installed("sf")
+    atlas <- unnest(sf2coords(as.data.frame(dk())), ggseg)
     scale <- scale_continous_brain(atlas = atlas)
     expect_s3_class(scale, "Scale")
   })
 
   it("returns x scale", {
+    skip_if_not_installed("sf")
+    atlas <- unnest(sf2coords(as.data.frame(dk())), ggseg)
     scale <- scale_continous_brain(atlas = atlas, aesthetics = "x")
     expect_s3_class(scale, "Scale")
   })
@@ -144,6 +144,7 @@ describe("scale_continous_brain", {
 
 describe("scale_x_brain", {
   it("returns x scale", {
+    skip_if_not_installed("sf")
     dk_df <- as.data.frame(dk())
     dk_coords <- sf2coords(dk_df)
     atlas <- unnest(dk_coords, ggseg)
@@ -154,6 +155,7 @@ describe("scale_x_brain", {
 
 describe("scale_y_brain", {
   it("returns y scale", {
+    skip_if_not_installed("sf")
     dk_df <- as.data.frame(dk())
     dk_coords <- sf2coords(dk_df)
     atlas <- unnest(dk_coords, ggseg)
@@ -164,6 +166,7 @@ describe("scale_y_brain", {
 
 describe("scale_labs_brain", {
   it("returns labs scale", {
+    skip_if_not_installed("sf")
     dk_df <- as.data.frame(dk())
     dk_coords <- sf2coords(dk_df)
     atlas <- unnest(dk_coords, ggseg)

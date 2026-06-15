@@ -26,9 +26,10 @@ library(ggplot2)
 
 ## How matching works
 
-`geom_brain()` joins your data to the atlas by any columns they share.
-That means your data needs at least one column with names that match the
-atlas. The two columns you'll use most:
+`geom_brain()` joins your data to the atlas by `region` (and by
+`hemi` too, when both your data and the atlas carry it). That means your data
+needs at least one column with names that match the atlas. The two columns
+you'll use most:
 
 - **region** -- human-readable names like "insula" or "precentral"
 - **label** -- FreeSurfer labels like "lh_bankssts"
@@ -60,13 +61,14 @@ some_data <- tibble(
 some_data
 ```
 
-Pass the data to `ggplot()` and map `fill` to your variable:
+Pass the data to `geom_brain()` through its `data` argument and map
+`fill` to your variable:
 
 ```{r}
 #| label: fig-minimal-plot
 #| fig-cap: "Brain plot with three regions coloured by p-value."
-ggplot(some_data) +
-  geom_brain(atlas = dk(), mapping = aes(fill = p))
+ggplot() +
+  geom_brain(atlas = dk(), data = some_data, mapping = aes(fill = p))
 ```
 
 Regions not in your data appear as `NA` (grey by default). Regions in your
@@ -82,8 +84,8 @@ both `region` and `hemi`, so values only land on the correct side:
 #| fig-cap: "Brain plot restricted to the left hemisphere using a hemi column."
 some_data$hemi <- "left"
 
-ggplot(some_data) +
-  geom_brain(atlas = dk(), mapping = aes(fill = p))
+ggplot() +
+  geom_brain(atlas = dk(), data = some_data, mapping = aes(fill = p))
 ```
 
 The same works for any atlas column -- adding `view`, for instance, would
@@ -91,9 +93,9 @@ restrict matches to specific views.
 
 ## Faceting across groups
 
-If your data has a grouping variable, `facet_wrap()` and `facet_grid()` work
-as you'd expect. `geom_brain()` detects the faceting variables and
-replicates the full atlas in each panel:
+If your data has a grouping variable, group by it and `facet_wrap()` /
+`facet_grid()` work as you'd expect. `geom_brain()` replicates the
+full atlas -- context regions included -- in each panel:
 
 ```{r}
 #| label: fig-facet-groups
@@ -112,8 +114,13 @@ some_data <- tibble(
   group = c(rep("Young", 4), rep("Old", 4))
 )
 
-ggplot(some_data) +
-  geom_brain(atlas = dk(), colour = "white", mapping = aes(fill = p)) +
+ggplot() +
+  geom_brain(
+    atlas = dk(),
+    data = group_by(some_data, group),
+    colour = "white",
+    mapping = aes(fill = p)
+  ) +
   facet_wrap(~group, ncol = 1) +
   theme(legend.position = "bottom") +
   scale_fill_gradientn(
@@ -122,40 +129,8 @@ ggplot(some_data) +
   )
 ```
 
-No need to call `group_by()` first -- the geom handles atlas replication
-automatically. (Explicit `group_by()` still works for backward
-compatibility.)
-
-## The pre-merged workflow
-
-For full control over faceting or when you need to combine brain data with
-other sf layers, convert the atlas to a data frame and join manually:
-
-```{r}
-#| label: atlas-columns
-atlas_df <- as.data.frame(dk())
-names(atlas_df)
-```
-
-Then use a standard join and `geom_sf()`:
-
-```{r}
-#| label: fig-pre-merged
-#| fig-cap: "Brain plot using a manual left_join and geom_sf for full control."
-some_data <- tibble(
-  region = c("superior temporal", "precentral", "lateral orbitofrontal"),
-  p = c(0.03, 0.6, 0.05)
-)
-
-atlas_df |>
-  left_join(some_data, by = "region") |>
-  ggplot() +
-  geom_sf(aes(fill = p), colour = "white") +
-  facet_grid(hemi ~ view) +
-  theme_void()
-```
-
-See `vignette("geom-sf")` for more on this approach.
+Grouping the data is what tells the geom how many copies of the atlas to
+make -- one per group.
 
 ## Troubleshooting
 
@@ -165,6 +140,12 @@ gives you the exact strings the atlas expects.
 **Data lands on both hemispheres.** Add a `hemi` column with `"left"` or
 `"right"` to constrain the match.
 
-**Extra facet panels appear.** This is handled automatically by
-`geom_brain()`. If you're using the `brain_join()` + `geom_sf()` workflow
-directly, `group_by()` your data by the faceting variable before joining.
+**A facet panel is missing context.** Group your data by the faceting
+variable before plotting (`data = my_data |> group_by(group)`) so the full
+atlas is replicated in every panel.
+
+## Full control with sf
+
+When you need to layer brain data with other sf geoms, or join the atlas
+manually before plotting, work with the atlas as an sf object instead. See
+`vignette("geom-sf")` for that workflow.
