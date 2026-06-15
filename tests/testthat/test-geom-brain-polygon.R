@@ -216,3 +216,27 @@ describe("brain_join_polygon() faceting", {
     expect_equal(unique(joined$group[joined$region %in% "insula"]), "cohort1")
   })
 })
+
+describe("geom_brain() backwards-compatibility with sf atlases", {
+  # The polygon flip kept geom_brain() working on atlas objects that pre-date
+  # the polygon representation: it decomposes their sf geometry on the fly.
+  # These lock that in so a later refactor can't silently break it.
+  it("renders a legacy ggseg_atlas object", {
+    skip_if_not_installed("sf")
+    legacy <- ggseg.formats::as_ggseg_atlas(dk())
+    expect_s3_class(legacy, "ggseg_atlas")
+    p <- ggplot2::ggplot() + geom_brain(atlas = legacy, show.legend = FALSE)
+    g <- ggplot2::ggplot_build(p)
+    expect_gt(nrow(g$data[[1]]), 0)
+  })
+
+  it("renders an sf-only atlas (no polygon representation)", {
+    skip_if_not_installed("sf")
+    sf_only <- ggseg.formats::as_sf_atlas(dk())
+    expect_true(ggseg.formats::is_atlas_sf(sf_only))
+    expect_false(ggseg.formats::is_atlas_polygon(sf_only))
+    p <- ggplot2::ggplot() + geom_brain(atlas = sf_only, show.legend = FALSE)
+    g <- ggplot2::ggplot_build(p)
+    expect_gt(nrow(g$data[[1]]), 0)
+  })
+})
