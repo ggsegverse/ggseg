@@ -98,18 +98,14 @@ geom_brain_polygon <- function(
     dots$linewidth <- 0.2
   }
 
-  layer <- do.call(
+  layer <- rlang::exec(
     geom_polygon,
-    c(
-      list(
-        mapping = user_mapping,
-        data = flat,
-        position = "identity",
-        show.legend = show.legend,
-        inherit.aes = inherit.aes
-      ),
-      dots
-    )
+    mapping = user_mapping,
+    data = flat,
+    position = "identity",
+    show.legend = show.legend,
+    inherit.aes = inherit.aes,
+    !!!dots
   )
 
   result <- list(layer, coord_brain())
@@ -199,17 +195,11 @@ prepare_polygon_atlas <- function(
       flat$hemi <- NA_character_
     }
     missing_hemi <- is.na(flat$hemi)
-    if (any(missing_hemi)) {
-      flat$hemi[missing_hemi] <- ifelse(
-        grepl("^lh[_.]", flat$label[missing_hemi]),
-        "left",
-        ifelse(
-          grepl("^rh[_.]", flat$label[missing_hemi]),
-          "right",
-          NA_character_
-        )
-      )
-    }
+    flat$hemi[missing_hemi] <- dplyr::case_when(
+      grepl("^lh[_.]", flat$label[missing_hemi]) ~ "left",
+      grepl("^rh[_.]", flat$label[missing_hemi]) ~ "right",
+      .default = NA_character_
+    )
   }
 
   flat$.feature_id <- as.integer(factor(
