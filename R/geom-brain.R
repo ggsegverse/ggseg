@@ -1,8 +1,8 @@
 #' Plot brain atlas regions
 #'
-#' A ggplot2 geom for rendering brain atlas regions as filled polygons.
-#' Accepts a `brain_atlas` object and automatically joins user data to the
-#' atlas geometry for visualisation. This is the sf-free polygon renderer.
+#' Colour brain regions by your own values. Give `geom_brain()` an atlas like
+#' `dk()` and a data frame, and it matches your values to the right regions and
+#' lays out the brain views for you. No data? It just draws the atlas.
 #'
 #' @param mapping Set of aesthetic mappings created by [ggplot2::aes()].
 #' @param data A data.frame containing variables to map. If `NULL`, the atlas
@@ -15,9 +15,8 @@
 #'   atlases: slice identifiers like `"axial_3"`. Defaults to all views.
 #' @param position Position adjustment, either as a string or the result of
 #'   a call to [position_brain()].
-#' @param context Logical. When `TRUE` (default), context regions (atlas rows
-#'   with no `region` label, drawn grey) are kept. When `FALSE`, they are
-#'   dropped so only true atlas regions are plotted.
+#' @param context Keep the rest of the brain as a soft grey backdrop (`TRUE`,
+#'   the default), or show only the regions you're plotting (`FALSE`).
 #' @param show.legend Logical. Should this layer be included in the legends?
 #' @param inherit.aes Logical. If `FALSE`, overrides the default aesthetics
 #'   rather than combining with them.

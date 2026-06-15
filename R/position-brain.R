@@ -51,9 +51,10 @@ reposition_brain <- function(
 
 #' Arrange brain atlas views
 #'
-#' Builds the layout specification consumed by [geom_brain()] (and
-#' [annotate_brain()]) to arrange an atlas's views and hemispheres. This is
-#' the sf-free polygon layout and supports per-view `zoom`.
+#' Controls how an atlas's hemispheres and views are arranged in the plot --
+#' side by side, stacked, or in a grid -- and can zoom each view in on the
+#' regions you care about. Pass the result to the `position` argument of
+#' [geom_brain()] (or [annotate_brain()]).
 #'
 #' @param position Formula describing the rows ~ columns organisation for
 #'   cortical atlases (e.g., `hemi ~ view`). For subcortical/tract atlases,
@@ -75,7 +76,8 @@ reposition_brain <- function(
 #'   is active. Defaults to `0.05` (5\%).
 #'
 #' @export
-#' @return A `position_brain_polygon_spec` list with the layout parameters.
+#' @return A layout specification to hand to [geom_brain()]'s `position`
+#'   argument.
 #' @examples
 #' library(ggplot2)
 #'
@@ -94,7 +96,6 @@ reposition_brain <- function(
 #'     show.legend = FALSE
 #'   )
 #'
-#' \donttest{
 #' ggplot() +
 #'   geom_brain(
 #'     atlas = aseg(), aes(fill = region),
@@ -115,7 +116,6 @@ reposition_brain <- function(
 #'     atlas = aseg(), aes(fill = region),
 #'     position = position_brain(type ~ .)
 #'   )
-#' }
 position_brain <- function(
   position = "horizontal",
   nrow = NULL,

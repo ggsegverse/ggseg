@@ -5,16 +5,12 @@
 #' and view (e.g., "left lateral"). For subcortical and tract atlases,
 #' labels show the view name directly (e.g., "axial_1", "sagittal").
 #'
-#' `annotate_brain()` follows the `position` you give it, so you never pick a
-#' renderer-specific labelling function: a [position_brain()] (the default)
-#' labels the sf-free polygon path, while a (deprecated) `position_brain_sf()`
-#' labels the sf path. Pass the same `position` to both your geom layer and
-#' `annotate_brain()` so the labels line up.
+#' Pass the same `position` you gave [geom_brain()] and the labels line up with
+#' the views automatically.
 #'
 #' @param atlas A `brain_atlas` object (e.g. `dk()`, `aseg()`).
-#' @param position A [position_brain()] (default) specification matching the
-#'   one used in your geom layer. A deprecated `position_brain_sf()` routes to
-#'   the sf labelling path instead.
+#' @param position The same layout you passed to [geom_brain()], from
+#'   [position_brain()].
 #' @param hemi Character vector of hemispheres to include. If `NULL`
 #'   (default), all hemispheres are included.
 #' @param view Character vector of views to include. If `NULL`

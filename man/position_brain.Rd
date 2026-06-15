@@ -39,12 +39,14 @@ vector names the focus regions explicitly.}
 is active. Defaults to `0.05` (5\%).}
 }
 \value{
-A `position_brain_polygon_spec` list with the layout parameters.
+A layout specification to hand to [geom_brain()]'s `position`
+  argument.
 }
 \description{
-Builds the layout specification consumed by [geom_brain()] (and
-[annotate_brain()]) to arrange an atlas's views and hemispheres. This is
-the sf-free polygon layout and supports per-view `zoom`.
+Controls how an atlas's hemispheres and views are arranged in the plot --
+side by side, stacked, or in a grid -- and can zoom each view in on the
+regions you care about. Pass the result to the `position` argument of
+[geom_brain()] (or [annotate_brain()]).
 }
 \examples{
 library(ggplot2)
@@ -64,7 +66,6 @@ ggplot() +
     show.legend = FALSE
   )
 
-\donttest{
 ggplot() +
   geom_brain(
     atlas = aseg(), aes(fill = region),
@@ -85,5 +86,4 @@ ggplot() +
     atlas = aseg(), aes(fill = region),
     position = position_brain(type ~ .)
   )
-}
 }

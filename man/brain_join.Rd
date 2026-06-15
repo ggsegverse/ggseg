@@ -19,8 +19,11 @@ columns are detected automatically.}
 An `sf` object if the atlas contains geometry, otherwise a tibble.
 }
 \description{
-Performs a full join between user data and a brain atlas. Grouped data
-is handled automatically, producing one complete atlas per group.
+Matches your data to a brain atlas by a shared column (usually `region`),
+keeping every atlas region whether or not you have a value for it. Grouped
+data (via [dplyr::group_by()]) gives one complete atlas per group. You
+rarely need this directly -- [geom_brain()] joins your data for you; reach
+for `brain_join()` when you want the joined sf object yourself.
 }
 \examples{
 \dontshow{if (requireNamespace("sf", quietly = TRUE)) withAutoprint(\{ # examplesIf}
