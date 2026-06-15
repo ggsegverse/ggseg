@@ -1,6 +1,91 @@
 # Changelog
 
+## ggseg 2.2.0 (development)
+
+This release makes the **`sf` package optional**. ggseg now draws brains
+from a lightweight polygon representation by default, so it installs and
+plots even on systems where `sf` (and its GDAL / GEOS / PROJ system
+libraries) is unavailable — including WebAssembly and air-gapped setups.
+
+### sf is now optional
+
+- **Your plotting code keeps working, without sf.**
+  [`geom_brain()`](https://ggsegverse.github.io/ggseg/reference/ggbrain.md),
+  [`position_brain()`](https://ggsegverse.github.io/ggseg/reference/position_brain.md),
+  and
+  [`annotate_brain()`](https://ggsegverse.github.io/ggseg/reference/annotate_brain.md)
+  produce the same figures as before, now drawn without `sf`. `sf` has
+  moved from Imports to Suggests.
+- **Need the full sf toolkit?** To add region labels with
+  [`geom_sf_label()`](https://ggplot2.tidyverse.org/reference/ggsf.html),
+  layer other sf geoms, or wrangle the geometry directly, convert an
+  atlas with
+  [`as_sf_atlas()`](https://ggsegverse.github.io/ggseg.formats/reference/as_sf_atlas.html)
+  and use
+  [`ggplot2::geom_sf()`](https://ggplot2.tidyverse.org/reference/ggsf.html).
+  See
+  [`vignette("geom-sf")`](https://ggsegverse.github.io/ggseg/articles/geom-sf.md).
+- The sf-backed
+  [`geom_brain_sf()`](https://ggsegverse.github.io/ggseg/reference/geom_brain_sf.md)
+  and
+  [`position_brain_sf()`](https://ggsegverse.github.io/ggseg/reference/position_brain_sf.md)
+  remain for a transition period but are deprecated and will be removed
+  in a future release.
+
+### New plotting features
+
+- **Zoom in on regions of interest.** `position_brain(zoom = ...)` crops
+  each view onto the regions you’re highlighting so they fill the panel,
+  with the surrounding brain reduced to a tidy grey frame. Use
+  `zoom = TRUE` to follow the regions in your data, or name them
+  explicitly; `zoom_pad` sets the margin. Especially handy for focus
+  atlases where only a few structures carry values.
+- **Readable view labels.**
+  [`annotate_brain()`](https://ggsegverse.github.io/ggseg/reference/annotate_brain.md)
+  now places labels clear of the brain instead of on top of it. The new
+  `padding` argument (5% of the plot height by default) controls the
+  gap.
+- **One annotation function.**
+  [`annotate_brain()`](https://ggsegverse.github.io/ggseg/reference/annotate_brain.md)
+  works with whichever `position` you gave the geom — there’s no
+  separate labelling function to remember.
+- **Hide context regions.** `geom_brain(context = FALSE)` drops the
+  grey, unlabelled regions and tightens the layout around the regions
+  you’re plotting.
+- **Faceting.** Group your data with
+  [`dplyr::group_by()`](https://dplyr.tidyverse.org/reference/group_by.html)
+  and
+  [`facet_wrap()`](https://ggplot2.tidyverse.org/reference/facet_wrap.html)
+  /
+  [`facet_grid()`](https://ggplot2.tidyverse.org/reference/facet_grid.html)
+  draw the full atlas in every panel.
+- **FreeSurfer labels.** Data keyed by `label` (e.g. `"lh_bankssts"`)
+  now joins to the atlas directly, in addition to `region`.
+
+### Other changes
+
+- When no `fill` is mapped,
+  [`geom_brain()`](https://ggsegverse.github.io/ggseg/reference/ggbrain.md)
+  fills regions with the atlas’s own colours, and the stray “No shared
+  levels” warning that appeared when filtering by hemisphere or view is
+  gone.
+- New
+  [`coord_brain()`](https://ggsegverse.github.io/ggseg/reference/coord_brain.md)
+  keeps brain proportions undistorted;
+  [`geom_brain()`](https://ggsegverse.github.io/ggseg/reference/ggbrain.md)
+  applies it automatically, so you rarely need to add it yourself.
+- The deprecated
+  [`scale_brain()`](https://ggsegverse.github.io/ggseg/reference/scale_brain.md)
+  family keeps working with the current `ggseg.formats`.
+- The `suit` cerebellar atlas is re-exported alongside
+  [`dk()`](https://ggsegverse.github.io/ggseg.formats/reference/dk.html),
+  [`aseg()`](https://ggsegverse.github.io/ggseg.formats/reference/aseg.html),
+  and
+  [`tracula()`](https://ggsegverse.github.io/ggseg.formats/reference/tracula.html).
+
 ## ggseg 2.1.1
+
+CRAN release: 2026-04-16
 
 - Fix minor bug with ggproto
 
@@ -35,11 +120,19 @@ moving atlas data structures and utilities to the
   `atlas = dk()`.
 
 - The following functions have been removed and are now in
-  ggseg.formats: `as_brain_atlas()`, `is_brain_atlas()`,
-  `brain_atlas()`, `brain_regions()`, `brain_labels()`, `brain_pal()`,
-  `brain_pals_info()`, `ggseg_atlas()`, `as_ggseg_atlas()`,
-  `is_ggseg_atlas()`, `read_freesurfer_stats()`,
-  `read_freesurfer_table()`, `read_atlas_files()`.
+  ggseg.formats:
+  [`as_brain_atlas()`](https://ggsegverse.github.io/ggseg.formats/reference/as_ggseg_atlas.html),
+  [`is_brain_atlas()`](https://ggsegverse.github.io/ggseg.formats/reference/is_ggseg_atlas.html),
+  [`brain_atlas()`](https://ggsegverse.github.io/ggseg.formats/reference/ggseg_atlas.html),
+  [`brain_regions()`](https://ggsegverse.github.io/ggseg.formats/reference/atlas_regions.html),
+  [`brain_labels()`](https://ggsegverse.github.io/ggseg.formats/reference/atlas_labels.html),
+  `brain_pal()`, `brain_pals_info()`,
+  [`ggseg_atlas()`](https://ggsegverse.github.io/ggseg.formats/reference/ggseg_atlas.html),
+  [`as_ggseg_atlas()`](https://ggsegverse.github.io/ggseg.formats/reference/as_ggseg_atlas.html),
+  [`is_ggseg_atlas()`](https://ggsegverse.github.io/ggseg.formats/reference/is_ggseg_atlas.html),
+  [`read_freesurfer_stats()`](https://ggsegverse.github.io/ggseg.formats/reference/read_freesurfer_stats.html),
+  [`read_freesurfer_table()`](https://ggsegverse.github.io/ggseg.formats/reference/read_freesurfer_table.html),
+  [`read_atlas_files()`](https://ggsegverse.github.io/ggseg.formats/reference/read_atlas_files.html).
 
 - [`scale_brain2()`](https://ggsegverse.github.io/ggseg/reference/scale_brain2-deprecated.md),
   [`scale_fill_brain2()`](https://ggsegverse.github.io/ggseg/reference/scale_brain2-deprecated.md),
@@ -147,7 +240,7 @@ moving atlas data structures and utilities to the
 
 ### 1.6.3.01
 
-- fixed broken geom after changes to ggplot2 internals  
+- fixed broken geom after changes to ggplot2 internals
 - fixed spelling mistakes in docs
 
 ### ggseg 1.6.3
@@ -182,21 +275,20 @@ introduction of the brain sf geom, which improved speed, and
 adaptability of the plots.
 
 - [`ggseg()`](https://ggsegverse.github.io/ggseg/reference/ggseg.md)
-  will stay for a while, but is superseded by a simple features geom  
+  will stay for a while, but is superseded by a simple features geom
 - `geom_brain` introduced as a new function to plot the atlas data
-  - an sf geom provides a lot of new features to the package  
+  - an sf geom provides a lot of new features to the package
   - more control over display of the slices through
-    [`position_brain()`](https://ggsegverse.github.io/ggseg/reference/position_brain.md)  
-  - improved capabilities for atlases with regions that have holes  
-- new atlas class `brain_atlas` which contains simple features data  
-- new functions to allow compatibility between sf and polygon data  
+    [`position_brain()`](https://ggsegverse.github.io/ggseg/reference/position_brain.md)
+  - improved capabilities for atlases with regions that have holes
+- new atlas class `brain_atlas` which contains simple features data
+- new functions to allow compatibility between sf and polygon data
 - utility functions to use on the atlas data for easy access to
   information
   - [`plot()`](https://rdrr.io/r/graphics/plot.default.html) functions
-    for ggseg_atlas and brain_atlas classes for a quick look at
-    atlases  
+    for ggseg_atlas and brain_atlas classes for a quick look at atlases
   - `brain_regions` functions to easily extract the unique names of
-    regions for an atlas  
+    regions for an atlas
   - improved `print` method for atlases classes ggseg_atlas and
     brain_atlas
 
@@ -205,7 +297,7 @@ adaptability of the plots.
 ### ggseg 1.5.5
 
 - dk atlas regions renamed to better reflect correct naming
-  - pre central and post central are precentral and postcentral  
+  - pre central and post central are precentral and postcentral
 - dk atlas now also includes the corpus callosum, as the original atlas
   contains
 
@@ -214,9 +306,9 @@ adaptability of the plots.
 ## ggseg 1.5.4
 
 - dkt renamed to dk
-  - the dkt (Desikan-Killiany-Tourville) atlas is not yet available  
+  - the dkt (Desikan-Killiany-Tourville) atlas is not yet available
 - atlas columns `area` renamed to `region`
-  - to avoid confusion with the calculation of cortical/surface area  
+  - to avoid confusion with the calculation of cortical/surface area
 - dk atlas region name “medial orbito frontal” changed to “medial
   orbitofrontal”
 

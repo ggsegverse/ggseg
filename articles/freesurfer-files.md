@@ -8,6 +8,7 @@ All three functions below come from the `ggseg.formats` package, which
 ggseg re-exports.
 
 ``` r
+
 library(ggseg)
 library(ggplot2)
 library(dplyr)
@@ -19,6 +20,7 @@ After `recon-all` finishes, each subject has a `stats/` folder with
 parcellation data. `read_freesurfer_stats()` reads one file at a time:
 
 ``` r
+
 subjects_dir <- Sys.getenv("SUBJECTS_DIR")
 stats_file <- file.path(subjects_dir, "bert/stats/lh.aparc.stats")
 
@@ -30,8 +32,13 @@ The hemisphere is encoded in the filename (`lh.` or `rh.`). To match the
 atlas, prepend it to the label column:
 
 ``` r
-ggplot(data |> mutate(label = paste0("lh_", label))) +
-  geom_brain(atlas = dk(), mapping = aes(fill = ThickAvg))
+
+ggplot() +
+  geom_brain(
+    atlas = dk(),
+    data = data |> mutate(label = paste0("lh_", label)),
+    mapping = aes(fill = ThickAvg)
+  )
 ```
 
 ## Reading stats files across subjects
@@ -40,6 +47,7 @@ ggplot(data |> mutate(label = paste0("lh_", label))) +
 directory. Pass a regular expression to select the right files:
 
 ``` r
+
 dat <- read_atlas_files(subjects_dir, "aparc.stats$")
 dat
 ```
@@ -51,19 +59,26 @@ The function adds hemisphere prefixes automatically, so the data is
 ready for plotting:
 
 ``` r
-ggplot(dat) +
-  geom_brain(atlas = dk(), mapping = aes(fill = ThickStd))
+
+ggplot() +
+  geom_brain(atlas = dk(), data = dat, mapping = aes(fill = ThickStd))
 ```
 
 To show all metrics at once, pivot and facet:
 
 ``` r
+
 library(tidyr)
 
-dat |>
-  pivot_longer(-c(subject, label), names_to = "stat", values_to = "val") |>
-  ggplot() +
-  geom_brain(atlas = dk(), mapping = aes(fill = val)) +
+long <- dat |>
+  pivot_longer(-c(subject, label), names_to = "stat", values_to = "val")
+
+ggplot() +
+  geom_brain(
+    atlas = dk(),
+    data = group_by(long, stat),
+    mapping = aes(fill = val)
+  ) +
   facet_wrap(~stat)
 ```
 
@@ -74,6 +89,7 @@ summary tables across subjects. Read these with
 `read_freesurfer_table()`:
 
 ``` r
+
 table_path <- "path/to/aparc.volume.table"
 
 read_freesurfer_table(table_path)
@@ -88,6 +104,7 @@ Stats tables append the measure name to each label
 and renames the value column:
 
 ``` r
+
 dat <- read_freesurfer_table(table_path, measure = "volume")
 dat
 ```
@@ -98,8 +115,13 @@ FreeSurfer tables include summary measures (total volume, ICV) that
 don’t correspond to atlas regions. Filter them before plotting:
 
 ``` r
-ggplot(dat |> filter(grepl("lh|rh", label))) +
-  geom_brain(atlas = dk(), mapping = aes(fill = volume))
+
+ggplot() +
+  geom_brain(
+    atlas = dk(),
+    data = dat |> filter(grepl("lh|rh", label)),
+    mapping = aes(fill = volume)
+  )
 ```
 
 The `grepl("lh|rh", label)` pattern keeps only hemisphere-specific rows.

@@ -14,10 +14,13 @@
 <url><loc>https://ggsegverse.github.io/ggseg/news/index.html</loc></url>
 <url><loc>https://ggsegverse.github.io/ggseg/reference/annotate_brain.html</loc></url>
 <url><loc>https://ggsegverse.github.io/ggseg/reference/brain_join.html</loc></url>
+<url><loc>https://ggsegverse.github.io/ggseg/reference/coord_brain.html</loc></url>
+<url><loc>https://ggsegverse.github.io/ggseg/reference/geom_brain_sf.html</loc></url>
 <url><loc>https://ggsegverse.github.io/ggseg/reference/ggbrain.html</loc></url>
 <url><loc>https://ggsegverse.github.io/ggseg/reference/ggseg.html</loc></url>
 <url><loc>https://ggsegverse.github.io/ggseg/reference/index.html</loc></url>
 <url><loc>https://ggsegverse.github.io/ggseg/reference/position_brain.html</loc></url>
+<url><loc>https://ggsegverse.github.io/ggseg/reference/position_brain_sf.html</loc></url>
 <url><loc>https://ggsegverse.github.io/ggseg/reference/reexports.html</loc></url>
 <url><loc>https://ggsegverse.github.io/ggseg/reference/reposition_brain.html</loc></url>
 <url><loc>https://ggsegverse.github.io/ggseg/reference/scale_brain.html</loc></url>

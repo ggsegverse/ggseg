@@ -12,8 +12,8 @@
 <link rel="icon" sizes="any" href="../favicon.ico">
 <link rel="manifest" href="../site.webmanifest">
 <script src="../lightswitch.js"></script><script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<link href="../deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet">
-<script src="../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="../deps/Inter-0.4.10/font.css" rel="stylesheet">
+<link href="../deps/bootstrap-5.3.8/bootstrap.min.css" rel="stylesheet">
+<script src="../deps/bootstrap-5.3.8/bootstrap.bundle.min.js"></script><link href="../deps/Inter-0.4.10/font.css" rel="stylesheet">
 <link href="../deps/Fira_Code-0.4.10/font.css" rel="stylesheet">
 <link href="../deps/Montserrat-0.4.10/font.css" rel="stylesheet">
 <link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
@@ -30,7 +30,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">ggseg</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">2.1.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">2.1.1.9001</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -84,7 +84,7 @@
       <img src="../logo.png" class="logo" alt=""><h1>Arranging brain views</h1>
             
       
-      <small class="dont-index">Source: <a href="https://github.com/ggsegverse/ggseg/blob/v2.1.1/vignettes/positioning-views.Rmd" class="external-link"><code>vignettes/positioning-views.Rmd</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/ggsegverse/ggseg/blob/main/vignettes/positioning-views.Rmd" class="external-link"><code>vignettes/positioning-views.Rmd</code></a></small>
       <div class="d-none name"><code>positioning-views.Rmd</code></div>
     </div>
 
@@ -300,30 +300,6 @@ underscore):</p>
 </div>
 </div>
 <div class="section level2">
-<h2 id="pre-processing-with-reposition_brain">Pre-processing with reposition_brain()<a class="anchor" aria-label="anchor" href="#pre-processing-with-reposition_brain"></a>
-</h2>
-<p>If you’re using the <code><a href="https://ggplot2.tidyverse.org/reference/ggsf.html" class="external-link">geom_sf()</a></code> workflow instead of
-<code><a href="../reference/ggbrain.html">geom_brain()</a></code>, use <code><a href="../reference/reposition_brain.html">reposition_brain()</a></code> to
-rearrange the data before plotting. It takes the same arguments:</p>
-<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">atlas_data</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/as.data.frame.html" class="external-link">as.data.frame</a></span><span class="op">(</span><span class="fu"><a href="https://ggsegverse.github.io/ggseg.formats/reference/aseg.html">aseg</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span>
-<span></span>
-<span><span class="va">repositioned</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/reposition_brain.html">reposition_brain</a></span><span class="op">(</span></span>
-<span>  <span class="va">atlas_data</span>,</span>
-<span>  views <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"sagittal"</span>, <span class="st">"axial_3"</span>, <span class="st">"coronal_3"</span><span class="op">)</span>,</span>
-<span>  nrow <span class="op">=</span> <span class="fl">1</span></span>
-<span><span class="op">)</span></span>
-<span></span>
-<span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="va">repositioned</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggsf.html" class="external-link">geom_sf</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>fill <span class="op">=</span> <span class="va">region</span><span class="op">)</span>, show.legend <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html" class="external-link">theme_void</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
-<div class="figure">
-<img src="positioning-views_files/figure-html/fig-reposition-brain-1.png" class="r-plt" alt="Repositioned subcortical data plotted with geom_sf()." width="672"><p class="caption">
-Repositioned subcortical data plotted with geom_sf().
-</p>
-</div>
-</div>
-<div class="section level2">
 <h2 id="adding-view-labels">Adding view labels<a class="anchor" aria-label="anchor" href="#adding-view-labels"></a>
 </h2>
 <p>Use <code><a href="../reference/annotate_brain.html">annotate_brain()</a></code> to label each view with its name.
@@ -332,7 +308,7 @@ lateral”); for subcortical and tract atlases it uses the view name
 directly.</p>
 <p>Store the <code><a href="../reference/position_brain.html">position_brain()</a></code> specification in an object so
 both layers share the same layout:</p>
-<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">pos</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/position_brain.html">position_brain</a></span><span class="op">(</span><span class="va">hemi</span> <span class="op">~</span> <span class="va">view</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="../reference/ggbrain.html">geom_brain</a></span><span class="op">(</span>atlas <span class="op">=</span> <span class="fu"><a href="https://ggsegverse.github.io/ggseg.formats/reference/dk.html">dk</a></span><span class="op">(</span><span class="op">)</span>, position <span class="op">=</span> <span class="va">pos</span>, show.legend <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span> <span class="op">+</span></span>
@@ -345,7 +321,7 @@ Cortical atlas with view labels.
 </div>
 <p>It works with any positioning — horizontal, vertical, grid, and
 formula layouts:</p>
-<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">pos</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/position_brain.html">position_brain</a></span><span class="op">(</span>nrow <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="../reference/ggbrain.html">geom_brain</a></span><span class="op">(</span>atlas <span class="op">=</span> <span class="fu"><a href="https://ggsegverse.github.io/ggseg.formats/reference/aseg.html">aseg</a></span><span class="op">(</span><span class="op">)</span>, position <span class="op">=</span> <span class="va">pos</span>, show.legend <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span> <span class="op">+</span></span>
@@ -356,54 +332,141 @@ formula layouts:</p>
 Subcortical atlas with view labels in a two-row grid.
 </p>
 </div>
-<p>Text appearance is customisable through standard
+<p>Labels sit a little above each view by default
+(<code>padding = 0.05</code>). Increase <code>padding</code> to push
+them further out, and tune the text through standard
 <code><a href="https://ggplot2.tidyverse.org/reference/annotate.html" class="external-link">annotate()</a></code> arguments:</p>
-<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="../reference/ggbrain.html">geom_brain</a></span><span class="op">(</span>atlas <span class="op">=</span> <span class="fu"><a href="https://ggsegverse.github.io/ggseg.formats/reference/dk.html">dk</a></span><span class="op">(</span><span class="op">)</span>, show.legend <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="../reference/annotate_brain.html">annotate_brain</a></span><span class="op">(</span></span>
 <span>    atlas <span class="op">=</span> <span class="fu"><a href="https://ggsegverse.github.io/ggseg.formats/reference/dk.html">dk</a></span><span class="op">(</span><span class="op">)</span>,</span>
+<span>    padding <span class="op">=</span> <span class="fl">0.08</span>,</span>
 <span>    size <span class="op">=</span> <span class="fl">2.5</span>,</span>
 <span>    colour <span class="op">=</span> <span class="st">"grey50"</span>,</span>
 <span>    fontface <span class="op">=</span> <span class="st">"italic"</span></span>
 <span>  <span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html" class="external-link">theme_void</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <div class="figure">
-<img src="positioning-views_files/figure-html/fig-styled-labels-1.png" class="r-plt" alt="View labels with custom styling." width="672"><p class="caption">
-View labels with custom styling.
+<img src="positioning-views_files/figure-html/fig-styled-labels-1.png" class="r-plt" alt="View labels with extra padding and custom styling." width="672"><p class="caption">
+View labels with extra padding and custom styling.
 </p>
 </div>
 </div>
 <div class="section level2">
-<h2 id="quick-reference">Quick reference<a class="anchor" aria-label="anchor" href="#quick-reference"></a>
+<h2 id="zooming-in-on-regions-of-interest">Zooming in on regions of interest<a class="anchor" aria-label="anchor" href="#zooming-in-on-regions-of-interest"></a>
 </h2>
-<table class="table">
-<colgroup>
-<col width="50%">
-<col width="50%">
-</colgroup>
-<thead><tr class="header">
-<th>Atlas type</th>
-<th>Options</th>
-</tr></thead>
-<tbody>
-<tr class="odd">
-<td>Cortical</td>
-<td>
-<code>hemi ~ view</code>, <code>view ~ hemi</code>,
-<code>. ~ hemi + view</code>, <code>hemi + view ~ .</code>
-</td>
-</tr>
-<tr class="even">
-<td>Subcortical / Tract</td>
-<td>
-<code>"horizontal"</code>, <code>"vertical"</code>,
-<code>nrow</code>, <code>ncol</code>, <code>views</code>,
-<code>type ~ .</code>
-</td>
-</tr>
-</tbody>
-</table>
+<p>For “focus” atlases – where only a few structures carry labels and
+the rest of the brain is grey context –
+<code>position_brain(zoom = ...)</code> crops each view onto the regions
+of interest, so they fill the panel while the surrounding context
+becomes a tidy grey frame. Every view keeps the same allotted cell.</p>
+<div class="section level3">
+<h3 id="focus-on-the-regions-in-your-data">Focus on the regions in your data<a class="anchor" aria-label="anchor" href="#focus-on-the-regions-in-your-data"></a>
+</h3>
+<p><code>zoom = TRUE</code> focuses on whatever regions your data
+supplies values for (or, with no data, the atlas’s labelled
+regions):</p>
+<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">my_data</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span></span>
+<span>  region <span class="op">=</span> <span class="fu">ggseg.formats</span><span class="fu">::</span><span class="fu"><a href="https://ggsegverse.github.io/ggseg.formats/reference/atlas_regions.html">atlas_regions</a></span><span class="op">(</span><span class="fu"><a href="https://ggsegverse.github.io/ggseg.formats/reference/aseg.html">aseg</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">3</span><span class="op">]</span>,</span>
+<span>  value <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">2</span>, <span class="fl">3</span><span class="op">)</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="../reference/ggbrain.html">geom_brain</a></span><span class="op">(</span></span>
+<span>    atlas <span class="op">=</span> <span class="fu"><a href="https://ggsegverse.github.io/ggseg.formats/reference/aseg.html">aseg</a></span><span class="op">(</span><span class="op">)</span>,</span>
+<span>    data <span class="op">=</span> <span class="va">my_data</span>,</span>
+<span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>fill <span class="op">=</span> <span class="va">value</span><span class="op">)</span>,</span>
+<span>    position <span class="op">=</span> <span class="fu"><a href="../reference/position_brain.html">position_brain</a></span><span class="op">(</span>zoom <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span>  <span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_viridis.html" class="external-link">scale_fill_viridis_c</a></span><span class="op">(</span>na.value <span class="op">=</span> <span class="st">"grey85"</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html" class="external-link">theme_void</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
+<div class="figure">
+<img src="positioning-views_files/figure-html/fig-zoom-data-1.png" class="r-plt" alt="Each view zoomed onto the regions present in the supplied data." width="672"><p class="caption">
+Each view zoomed onto the regions present in the supplied data.
+</p>
+</div>
+</div>
+<div class="section level3">
+<h3 id="name-the-focus-regions-explicitly">Name the focus regions explicitly<a class="anchor" aria-label="anchor" href="#name-the-focus-regions-explicitly"></a>
+</h3>
+<p>Pass a character vector to choose exactly which regions each view
+zooms onto, independent of any data you plot:</p>
+<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">focus</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Thalamus Proper"</span>, <span class="st">"Putamen"</span>, <span class="st">"Hippocampus"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="../reference/ggbrain.html">geom_brain</a></span><span class="op">(</span></span>
+<span>    atlas <span class="op">=</span> <span class="fu"><a href="https://ggsegverse.github.io/ggseg.formats/reference/aseg.html">aseg</a></span><span class="op">(</span><span class="op">)</span>,</span>
+<span>    position <span class="op">=</span> <span class="fu"><a href="../reference/position_brain.html">position_brain</a></span><span class="op">(</span>zoom <span class="op">=</span> <span class="va">focus</span><span class="op">)</span>,</span>
+<span>    show.legend <span class="op">=</span> <span class="cn">FALSE</span></span>
+<span>  <span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html" class="external-link">theme_void</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
+<div class="figure">
+<img src="positioning-views_files/figure-html/fig-zoom-explicit-1.png" class="r-plt" alt="Zoom targeted at a named set of regions." width="672"><p class="caption">
+Zoom targeted at a named set of regions.
+</p>
+</div>
+</div>
+<div class="section level3">
+<h3 id="control-the-margin-with-zoom_pad">Control the margin with <code>zoom_pad</code><a class="anchor" aria-label="anchor" href="#control-the-margin-with-zoom_pad"></a>
+</h3>
+<p><code>zoom_pad</code> sets how much breathing room to leave around
+the focus regions, as a fraction of their size (5% by default). A
+smaller value crops tighter; a larger value keeps more context in
+frame:</p>
+<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="../reference/ggbrain.html">geom_brain</a></span><span class="op">(</span></span>
+<span>    atlas <span class="op">=</span> <span class="fu"><a href="https://ggsegverse.github.io/ggseg.formats/reference/aseg.html">aseg</a></span><span class="op">(</span><span class="op">)</span>,</span>
+<span>    position <span class="op">=</span> <span class="fu"><a href="../reference/position_brain.html">position_brain</a></span><span class="op">(</span>zoom <span class="op">=</span> <span class="va">focus</span>, zoom_pad <span class="op">=</span> <span class="fl">0.01</span><span class="op">)</span>,</span>
+<span>    show.legend <span class="op">=</span> <span class="cn">FALSE</span></span>
+<span>  <span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html" class="external-link">theme_void</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
+<div class="figure">
+<img src="positioning-views_files/figure-html/fig-zoom-tight-1.png" class="r-plt" alt="A tighter crop using a small zoom_pad." width="672"><p class="caption">
+A tighter crop using a small zoom_pad.
+</p>
+</div>
+<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="../reference/ggbrain.html">geom_brain</a></span><span class="op">(</span></span>
+<span>    atlas <span class="op">=</span> <span class="fu"><a href="https://ggsegverse.github.io/ggseg.formats/reference/aseg.html">aseg</a></span><span class="op">(</span><span class="op">)</span>,</span>
+<span>    position <span class="op">=</span> <span class="fu"><a href="../reference/position_brain.html">position_brain</a></span><span class="op">(</span>zoom <span class="op">=</span> <span class="va">focus</span>, zoom_pad <span class="op">=</span> <span class="fl">0.25</span><span class="op">)</span>,</span>
+<span>    show.legend <span class="op">=</span> <span class="cn">FALSE</span></span>
+<span>  <span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html" class="external-link">theme_void</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
+<div class="figure">
+<img src="positioning-views_files/figure-html/fig-zoom-loose-1.png" class="r-plt" alt="More surrounding context using a larger zoom_pad." width="672"><p class="caption">
+More surrounding context using a larger zoom_pad.
+</p>
+</div>
+</div>
+</div>
+<div class="section level2">
+<h2 id="dropping-the-grey-context">Dropping the grey context<a class="anchor" aria-label="anchor" href="#dropping-the-grey-context"></a>
+</h2>
+<p>Set <code>context = FALSE</code> to remove the unlabelled context
+regions entirely. The remaining atlas regions are re-gathered into a
+tighter layout:</p>
+<div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="../reference/ggbrain.html">geom_brain</a></span><span class="op">(</span>atlas <span class="op">=</span> <span class="fu"><a href="https://ggsegverse.github.io/ggseg.formats/reference/aseg.html">aseg</a></span><span class="op">(</span><span class="op">)</span>, context <span class="op">=</span> <span class="cn">FALSE</span>, show.legend <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html" class="external-link">theme_void</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
+<div class="figure">
+<img src="positioning-views_files/figure-html/fig-no-context-1.png" class="r-plt" alt="Subcortical atlas with the grey context regions removed." width="672"><p class="caption">
+Subcortical atlas with the grey context regions removed.
+</p>
+</div>
+</div>
+<div class="section level2">
+<h2 id="the-sf-workflow">The sf workflow<a class="anchor" aria-label="anchor" href="#the-sf-workflow"></a>
+</h2>
+<p>If you work with brain atlases as sf objects – for example to layer
+<code><a href="https://ggplot2.tidyverse.org/reference/ggsf.html" class="external-link">geom_sf()</a></code> text labels – <code><a href="../reference/reposition_brain.html">reposition_brain()</a></code>
+rearranges the sf data using the same arguments shown here. See
+<code><a href="../articles/geom-sf.html">vignette("geom-sf")</a></code> for that workflow.</p>
 </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside>

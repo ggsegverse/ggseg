@@ -11,7 +11,14 @@ need direct access to the sf data.
 This vignette shows how to work with brain atlases as plain sf objects,
 giving you full control at the cost of a few extra lines.
 
+This is the one workflow that needs the **sf** package, which ggseg now
+treats as an optional dependency. Install it with
+`install.packages("sf")` if you don’t already have it. Everywhere else,
+[`geom_brain()`](https://ggsegverse.github.io/ggseg/reference/ggbrain.md)
+plots the same atlases without sf.
+
 ``` r
+
 library(ggseg)
 library(ggplot2)
 library(dplyr)
@@ -47,11 +54,12 @@ A brain atlas stores its geometry in the `data` slot. Convert to a plain
 data frame to see all the columns:
 
 ``` r
+
 dk()$data
 #> 
 #> ── ggseg_data_cortical ──
 #> 
-#> 2D (ggseg): 72 labels, views: inferior, lateral, medial, superior
+#> 2D (ggseg): 72 labels (sf), views: inferior, lateral, medial, superior
 #> 3D (ggseg3d): vertex indices
 #> # A tibble: 70 × 2
 #>    label                      vertices   
@@ -80,6 +88,7 @@ to merge your data with the atlas. It preserves the sf geometry and
 handles column detection:
 
 ``` r
+
 some_data <- tibble(
   region = c(
     "transverse temporal",
@@ -129,6 +138,7 @@ The result is a standard sf object you can pass to
 ## Plotting with geom_sf
 
 ``` r
+
 some_data |>
   brain_join(dk()) |>
   ggplot() +
@@ -152,6 +162,7 @@ In the sf workflow, use
 instead – it transforms the geometry directly:
 
 ``` r
+
 some_data |>
   brain_join(dk()) |>
   reposition_brain(hemi ~ view) |>
@@ -173,6 +184,7 @@ This is the main reason to use the sf workflow. Once you have
 repositioned sf data, you can layer any sf geom:
 
 ``` r
+
 some_data |>
   brain_join(dk()) |>
   reposition_brain(hemi ~ view) |>
@@ -205,6 +217,7 @@ before
 The grouping tells the join to replicate the atlas for each group:
 
 ``` r
+
 some_data <- tibble(
   region = rep(
     c(

@@ -16,6 +16,7 @@ annotate_brain(
   size = 3,
   colour = "grey30",
   family = "mono",
+  padding = 0.05,
   nudge_y = 0,
   ...
 )
@@ -29,8 +30,8 @@ annotate_brain(
 
 - position:
 
-  A \[position_brain()\] object or position specification matching the
-  one used in \[geom_brain()\].
+  The same layout you passed to \[geom_brain()\], from
+  \[position_brain()\].
 
 - hemi:
 
@@ -54,9 +55,15 @@ annotate_brain(
 
   Font family (default: \`"mono"\`).
 
+- padding:
+
+  Vertical gap between each label and its view, as a fraction of the
+  plot's total height (default: \`0.05\`). Labels are also
+  bottom-anchored (\`vjust = 0\`) so they sit clear of the geometry.
+
 - nudge_y:
 
-  Additional vertical offset for labels (default: \`0\`).
+  Additional absolute vertical offset for labels (default: \`0\`).
 
 - ...:
 
@@ -68,9 +75,8 @@ A ggplot2 annotation layer.
 
 ## Details
 
-Labels respect the repositioning done by \[position_brain()\], so the
-same \`position\` argument should be passed to both \[geom_brain()\] and
-\`annotate_brain()\`.
+Pass the same \`position\` you gave \[geom_brain()\] and the labels line
+up with the views automatically.
 
 ## Examples
 

@@ -1,8 +1,9 @@
 # Plot brain atlas regions
 
-A ggplot2 geom for rendering brain atlas regions as filled polygons,
-built on top of \[ggplot2::geom_sf()\]. Accepts a \`brain_atlas\` object
-and automatically joins user data to atlas geometry for visualisation.
+Colour brain regions by your own values. Give \`geom_brain()\` an atlas
+like \`dk()\` and a data frame, and it matches your values to the right
+regions and lays out the brain views for you. No data? It just draws the
+atlas.
 
 ## Usage
 
@@ -14,6 +15,7 @@ geom_brain(
   hemi = NULL,
   view = NULL,
   position = position_brain(),
+  context = TRUE,
   show.legend = NA,
   inherit.aes = TRUE,
   ...
@@ -29,7 +31,8 @@ geom_brain(
 - data:
 
   A data.frame containing variables to map. If \`NULL\`, the atlas is
-  plotted without user data.
+  plotted without user data. Group it with \[dplyr::group_by()\] to
+  facet.
 
 - atlas:
 
@@ -52,6 +55,11 @@ geom_brain(
   Position adjustment, either as a string or the result of a call to
   \[position_brain()\].
 
+- context:
+
+  Keep the rest of the brain as a soft grey backdrop (\`TRUE\`, the
+  default), or show only the regions you're plotting (\`FALSE\`).
+
 - show.legend:
 
   Logical. Should this layer be included in the legends?
@@ -63,7 +71,7 @@ geom_brain(
 
 - ...:
 
-  Additional arguments passed to \[ggplot2::geom_sf()\].
+  Additional arguments passed to \[ggplot2::geom_polygon()\].
 
 ## Value
 

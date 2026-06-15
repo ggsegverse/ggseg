@@ -1,6 +1,7 @@
 # Arranging brain views
 
 ``` r
+
 library(ggseg)
 library(ggplot2)
 ```
@@ -22,6 +23,7 @@ right) and **view** (lateral, medial, etc.). The formula syntax mirrors
 – left side is rows, right side is columns:
 
 ``` r
+
 ggplot() +
   geom_brain(
     atlas = dk(),
@@ -39,6 +41,7 @@ Cortical atlas with hemispheres as rows and views as columns.
 Flip the formula to transpose the layout:
 
 ``` r
+
 ggplot() +
   geom_brain(
     atlas = dk(),
@@ -59,6 +62,7 @@ Use `.` with `+` to collapse everything into a single row or column.
 This is handy for compact figures:
 
 ``` r
+
 ggplot() +
   geom_brain(
     atlas = dk(),
@@ -74,6 +78,7 @@ row.](positioning-views_files/figure-html/fig-single-row-1.png)
 All brain views stacked in a single row.
 
 ``` r
+
 ggplot() +
   geom_brain(
     atlas = dk(),
@@ -100,6 +105,7 @@ different set of positioning tools.
 The simplest options. `"horizontal"` is the default:
 
 ``` r
+
 ggplot() +
   geom_brain(
     atlas = aseg(),
@@ -115,6 +121,7 @@ horizontally.](positioning-views_files/figure-html/fig-aseg-horizontal-1.png)
 Subcortical atlas views arranged horizontally.
 
 ``` r
+
 ggplot() +
   geom_brain(
     atlas = aseg(),
@@ -135,6 +142,7 @@ When you have many views, a grid keeps things readable. Specify `nrow`,
 `ncol`, or both:
 
 ``` r
+
 ggplot() +
   geom_brain(
     atlas = aseg(),
@@ -150,6 +158,7 @@ grid.](positioning-views_files/figure-html/fig-aseg-nrow-1.png)
 Subcortical atlas views in a two-row grid.
 
 ``` r
+
 ggplot() +
   geom_brain(
     atlas = aseg(),
@@ -171,12 +180,14 @@ order. Check what’s available with
 [`ggseg.formats::atlas_views()`](https://ggsegverse.github.io/ggseg.formats/reference/atlas_views.html):
 
 ``` r
+
 ggseg.formats::atlas_views(aseg())
 #> [1] "axial_3"   "axial_4"   "axial_5"   "axial_6"   "coronal_1" "coronal_2"
 #> [7] "sagittal"
 ```
 
 ``` r
+
 ggplot() +
   geom_brain(
     atlas = aseg(),
@@ -196,6 +207,7 @@ A subset of subcortical views selected by name.
 Combine `views` with `nrow` or `ncol` for a custom grid:
 
 ``` r
+
 ggplot() +
   geom_brain(
     atlas = aseg(),
@@ -220,6 +232,7 @@ slices together, all coronal slices together, and so on. The type is
 extracted from the view name (everything before the first underscore):
 
 ``` r
+
 ggplot() +
   geom_brain(
     atlas = aseg(),
@@ -228,35 +241,6 @@ ggplot() +
   ) +
   theme_void()
 ```
-
-## Pre-processing with reposition_brain()
-
-If you’re using the
-[`geom_sf()`](https://ggplot2.tidyverse.org/reference/ggsf.html)
-workflow instead of
-[`geom_brain()`](https://ggsegverse.github.io/ggseg/reference/ggbrain.md),
-use
-[`reposition_brain()`](https://ggsegverse.github.io/ggseg/reference/reposition_brain.md)
-to rearrange the data before plotting. It takes the same arguments:
-
-``` r
-atlas_data <- as.data.frame(aseg())
-
-repositioned <- reposition_brain(
-  atlas_data,
-  views = c("sagittal", "axial_3", "coronal_3"),
-  nrow = 1
-)
-
-ggplot(repositioned) +
-  geom_sf(aes(fill = region), show.legend = FALSE) +
-  theme_void()
-```
-
-![Repositioned subcortical data plotted with
-geom_sf().](positioning-views_files/figure-html/fig-reposition-brain-1.png)
-
-Repositioned subcortical data plotted with geom_sf().
 
 ## Adding view labels
 
@@ -271,6 +255,7 @@ Store the
 specification in an object so both layers share the same layout:
 
 ``` r
+
 pos <- position_brain(hemi ~ view)
 ggplot() +
   geom_brain(atlas = dk(), position = pos, show.legend = FALSE) +
@@ -287,6 +272,7 @@ It works with any positioning — horizontal, vertical, grid, and formula
 layouts:
 
 ``` r
+
 pos <- position_brain(nrow = 2)
 ggplot() +
   geom_brain(atlas = aseg(), position = pos, show.legend = FALSE) +
@@ -299,15 +285,19 @@ grid.](positioning-views_files/figure-html/fig-aseg-view-labels-1.png)
 
 Subcortical atlas with view labels in a two-row grid.
 
-Text appearance is customisable through standard
+Labels sit a little above each view by default (`padding = 0.05`).
+Increase `padding` to push them further out, and tune the text through
+standard
 [`annotate()`](https://ggplot2.tidyverse.org/reference/annotate.html)
 arguments:
 
 ``` r
+
 ggplot() +
   geom_brain(atlas = dk(), show.legend = FALSE) +
   annotate_brain(
     atlas = dk(),
+    padding = 0.08,
     size = 2.5,
     colour = "grey50",
     fontface = "italic"
@@ -315,14 +305,131 @@ ggplot() +
   theme_void()
 ```
 
-![View labels with custom
+![View labels with extra padding and custom
 styling.](positioning-views_files/figure-html/fig-styled-labels-1.png)
 
-View labels with custom styling.
+View labels with extra padding and custom styling.
 
-## Quick reference
+## Zooming in on regions of interest
 
-| Atlas type          | Options                                                            |
-|---------------------|--------------------------------------------------------------------|
-| Cortical            | `hemi ~ view`, `view ~ hemi`, `. ~ hemi + view`, `hemi + view ~ .` |
-| Subcortical / Tract | `"horizontal"`, `"vertical"`, `nrow`, `ncol`, `views`, `type ~ .`  |
+For “focus” atlases – where only a few structures carry labels and the
+rest of the brain is grey context – `position_brain(zoom = ...)` crops
+each view onto the regions of interest, so they fill the panel while the
+surrounding context becomes a tidy grey frame. Every view keeps the same
+allotted cell.
+
+### Focus on the regions in your data
+
+`zoom = TRUE` focuses on whatever regions your data supplies values for
+(or, with no data, the atlas’s labelled regions):
+
+``` r
+
+my_data <- data.frame(
+  region = ggseg.formats::atlas_regions(aseg())[1:3],
+  value = c(1, 2, 3)
+)
+
+ggplot() +
+  geom_brain(
+    atlas = aseg(),
+    data = my_data,
+    aes(fill = value),
+    position = position_brain(zoom = TRUE)
+  ) +
+  scale_fill_viridis_c(na.value = "grey85") +
+  theme_void()
+```
+
+![Each view zoomed onto the regions present in the supplied
+data.](positioning-views_files/figure-html/fig-zoom-data-1.png)
+
+Each view zoomed onto the regions present in the supplied data.
+
+### Name the focus regions explicitly
+
+Pass a character vector to choose exactly which regions each view zooms
+onto, independent of any data you plot:
+
+``` r
+
+focus <- c("Thalamus Proper", "Putamen", "Hippocampus")
+
+ggplot() +
+  geom_brain(
+    atlas = aseg(),
+    position = position_brain(zoom = focus),
+    show.legend = FALSE
+  ) +
+  theme_void()
+```
+
+![Zoom targeted at a named set of
+regions.](positioning-views_files/figure-html/fig-zoom-explicit-1.png)
+
+Zoom targeted at a named set of regions.
+
+### Control the margin with `zoom_pad`
+
+`zoom_pad` sets how much breathing room to leave around the focus
+regions, as a fraction of their size (5% by default). A smaller value
+crops tighter; a larger value keeps more context in frame:
+
+``` r
+
+ggplot() +
+  geom_brain(
+    atlas = aseg(),
+    position = position_brain(zoom = focus, zoom_pad = 0.01),
+    show.legend = FALSE
+  ) +
+  theme_void()
+```
+
+![A tighter crop using a small
+zoom_pad.](positioning-views_files/figure-html/fig-zoom-tight-1.png)
+
+A tighter crop using a small zoom_pad.
+
+``` r
+
+ggplot() +
+  geom_brain(
+    atlas = aseg(),
+    position = position_brain(zoom = focus, zoom_pad = 0.25),
+    show.legend = FALSE
+  ) +
+  theme_void()
+```
+
+![More surrounding context using a larger
+zoom_pad.](positioning-views_files/figure-html/fig-zoom-loose-1.png)
+
+More surrounding context using a larger zoom_pad.
+
+## Dropping the grey context
+
+Set `context = FALSE` to remove the unlabelled context regions entirely.
+The remaining atlas regions are re-gathered into a tighter layout:
+
+``` r
+
+ggplot() +
+  geom_brain(atlas = aseg(), context = FALSE, show.legend = FALSE) +
+  theme_void()
+```
+
+![Subcortical atlas with the grey context regions
+removed.](positioning-views_files/figure-html/fig-no-context-1.png)
+
+Subcortical atlas with the grey context regions removed.
+
+## The sf workflow
+
+If you work with brain atlases as sf objects – for example to layer
+[`geom_sf()`](https://ggplot2.tidyverse.org/reference/ggsf.html) text
+labels –
+[`reposition_brain()`](https://ggsegverse.github.io/ggseg/reference/reposition_brain.md)
+rearranges the sf data using the same arguments shown here. See
+[`vignette("geom-sf")`](https://ggsegverse.github.io/ggseg/articles/geom-sf.md)
+for that workflow.

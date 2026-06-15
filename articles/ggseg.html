@@ -12,8 +12,8 @@
 <link rel="icon" sizes="any" href="../favicon.ico">
 <link rel="manifest" href="../site.webmanifest">
 <script src="../lightswitch.js"></script><script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<link href="../deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet">
-<script src="../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="../deps/Inter-0.4.10/font.css" rel="stylesheet">
+<link href="../deps/bootstrap-5.3.8/bootstrap.min.css" rel="stylesheet">
+<script src="../deps/bootstrap-5.3.8/bootstrap.bundle.min.js"></script><link href="../deps/Inter-0.4.10/font.css" rel="stylesheet">
 <link href="../deps/Fira_Code-0.4.10/font.css" rel="stylesheet">
 <link href="../deps/Montserrat-0.4.10/font.css" rel="stylesheet">
 <link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
@@ -30,7 +30,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">ggseg</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">2.1.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">2.1.1.9001</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -84,7 +84,7 @@
       <img src="../logo.png" class="logo" alt=""><h1>Getting started with ggseg</h1>
             
       
-      <small class="dont-index">Source: <a href="https://github.com/ggsegverse/ggseg/blob/v2.1.1/vignettes/ggseg.Rmd" class="external-link"><code>vignettes/ggseg.Rmd</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/ggsegverse/ggseg/blob/main/vignettes/ggseg.Rmd" class="external-link"><code>vignettes/ggseg.Rmd</code></a></small>
       <div class="d-none name"><code>ggseg.Rmd</code></div>
     </div>
 
@@ -92,9 +92,9 @@
     
 <p>If you work with neuroimaging data, you’ve probably spent time
 wrestling region-level results into brain plots. ggseg handles that
-plumbing for you. It stores brain atlas geometries as simple features
-and plots them as ggplot2 layers, so you get brain figures with the same
-code you’d use for any other ggplot.</p>
+plumbing for you. It stores brain atlas geometries and plots them as
+ggplot2 layers, so you get brain figures with the same code you’d use
+for any other ggplot.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://ggsegverse.github.io/ggseg/">ggseg</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://ggplot2.tidyverse.org" class="external-link">ggplot2</a></span><span class="op">)</span></span></code></pre></div>
@@ -102,14 +102,43 @@ code you’d use for any other ggplot.</p>
 <h2 id="whats-in-a-brain-atlas">What’s in a brain atlas<a class="anchor" aria-label="anchor" href="#whats-in-a-brain-atlas"></a>
 </h2>
 <p>A <code>brain_atlas</code> object bundles four things: a name, a type
-(cortical, subcortical, or tract), region geometry stored as simple
-features, and an optional colour palette.</p>
+(cortical, subcortical, or tract), region geometry, and an optional
+colour palette.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">dk</span></span>
-<span><span class="co">#&gt; function () </span></span>
-<span><span class="co">#&gt; .dk_atlas</span></span>
-<span><span class="co">#&gt; &lt;bytecode: 0x55ea66fed3f0&gt;</span></span>
-<span><span class="co">#&gt; &lt;environment: namespace:ggseg.formats&gt;</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="https://ggsegverse.github.io/ggseg.formats/reference/dk.html">dk</a></span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">──</span> <span style="font-weight: bold;">dk ggseg atlas</span> <span style="color: #00BBBB;">──────────────────────────────────────────────────────────────</span></span></span>
+<span><span class="co">#&gt; <span style="font-weight: bold;">Type: cortical</span></span></span>
+<span><span class="co">#&gt; <span style="font-weight: bold;">Regions:</span> 35</span></span>
+<span><span class="co">#&gt; <span style="font-weight: bold;">Hemispheres:</span> left, right</span></span>
+<span><span class="co">#&gt; <span style="font-weight: bold;">Views:</span> inferior, lateral, medial, superior</span></span>
+<span><span class="co">#&gt; <span style="font-weight: bold;">Palette:</span> <span style="color: #00BB00;">✔</span></span></span>
+<span><span class="co">#&gt; <span style="font-weight: bold;">Rendering:</span> <span style="color: #00BB00;">✔</span> ggseg</span></span>
+<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> ggseg3d (vertices)</span></span>
+<span><span class="co">#&gt; ────────────────────────────────────────────────────────────────────────────────</span></span>
+<span><span class="co">#&gt;    hemi                            region                      label</span></span>
+<span><span class="co">#&gt; 1  left banks of superior temporal sulcus                lh_bankssts</span></span>
+<span><span class="co">#&gt; 2  left         caudal anterior cingulate lh_caudalanteriorcingulate</span></span>
+<span><span class="co">#&gt; 3  left             caudal middle frontal     lh_caudalmiddlefrontal</span></span>
+<span><span class="co">#&gt; 4  left                   corpus callosum          lh_corpuscallosum</span></span>
+<span><span class="co">#&gt; 5  left                            cuneus                  lh_cuneus</span></span>
+<span><span class="co">#&gt; 6  left                        entorhinal              lh_entorhinal</span></span>
+<span><span class="co">#&gt; 7  left                          fusiform                lh_fusiform</span></span>
+<span><span class="co">#&gt; 8  left                 inferior parietal        lh_inferiorparietal</span></span>
+<span><span class="co">#&gt; 9  left                 inferior temporal        lh_inferiortemporal</span></span>
+<span><span class="co">#&gt; 10 left                 isthmus cingulate        lh_isthmuscingulate</span></span>
+<span><span class="co">#&gt;            lobe</span></span>
+<span><span class="co">#&gt; 1      temporal</span></span>
+<span><span class="co">#&gt; 2     cingulate</span></span>
+<span><span class="co">#&gt; 3       frontal</span></span>
+<span><span class="co">#&gt; 4  white matter</span></span>
+<span><span class="co">#&gt; 5     occipital</span></span>
+<span><span class="co">#&gt; 6      temporal</span></span>
+<span><span class="co">#&gt; 7      temporal</span></span>
+<span><span class="co">#&gt; 8      parietal</span></span>
+<span><span class="co">#&gt; 9      temporal</span></span>
+<span><span class="co">#&gt; 10    cingulate</span></span>
+<span><span class="co">#&gt; <span style="font-style: italic;">... with 60 more rows</span></span></span></code></pre></div>
 <p>The <code>dk</code> atlas (Desikan-Killiany) ships with the package.
 Call <code><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot()</a></code> for a quick look:</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
@@ -121,7 +150,9 @@ Quick overview of the Desikan-Killiany cortical atlas.
 </div>
 <p>Two helpers pull out the names you’ll need for matching data:</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu">ggseg.formats</span><span class="fu">::</span><span class="fu"><a href="https://ggsegverse.github.io/ggseg.formats/reference/atlas_regions.html">atlas_regions</a></span><span class="op">(</span><span class="fu"><a href="https://ggsegverse.github.io/ggseg.formats/reference/dk.html">dk</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/ggsegverse/ggseg.formats" class="external-link">ggseg.formats</a></span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://ggsegverse.github.io/ggseg.formats/reference/atlas_regions.html">atlas_regions</a></span><span class="op">(</span><span class="fu"><a href="https://ggsegverse.github.io/ggseg.formats/reference/dk.html">dk</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt;  [1] "banks of superior temporal sulcus" "caudal anterior cingulate"        </span></span>
 <span><span class="co">#&gt;  [3] "caudal middle frontal"             "corpus callosum"                  </span></span>
 <span><span class="co">#&gt;  [5] "cuneus"                            "entorhinal"                       </span></span>
@@ -140,7 +171,7 @@ Quick overview of the Desikan-Killiany cortical atlas.
 <span><span class="co">#&gt; [31] "superior parietal"                 "superior temporal"                </span></span>
 <span><span class="co">#&gt; [33] "supramarginal"                     "temporal pole"                    </span></span>
 <span><span class="co">#&gt; [35] "transverse temporal"</span></span>
-<span><span class="fu">ggseg.formats</span><span class="fu">::</span><span class="fu"><a href="https://ggsegverse.github.io/ggseg.formats/reference/atlas_labels.html">atlas_labels</a></span><span class="op">(</span><span class="fu"><a href="https://ggsegverse.github.io/ggseg.formats/reference/dk.html">dk</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://ggsegverse.github.io/ggseg.formats/reference/atlas_labels.html">atlas_labels</a></span><span class="op">(</span><span class="fu"><a href="https://ggsegverse.github.io/ggseg.formats/reference/dk.html">dk</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt;  [1] "lh_bankssts"                 "lh_caudalanteriorcingulate" </span></span>
 <span><span class="co">#&gt;  [3] "lh_caudalmiddlefrontal"      "lh_corpuscallosum"          </span></span>
 <span><span class="co">#&gt;  [5] "lh_cuneus"                   "lh_entorhinal"              </span></span>
@@ -184,7 +215,7 @@ Quick overview of the Desikan-Killiany cortical atlas.
 atlas and it draws the regions:</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="../reference/ggbrain.html">geom_brain</a></span><span class="op">(</span>atlas <span class="op">=</span> <span class="fu"><a href="https://ggsegverse.github.io/ggseg.formats/reference/dk.html">dk</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<span>  <span class="fu"><a href="../reference/ggbrain.html">geom_brain</a></span><span class="op">(</span>atlas <span class="op">=</span> <span class="fu"><a href="https://ggsegverse.github.io/ggseg.formats/reference/dk.html">dk</a></span><span class="op">(</span><span class="op">)</span>, show.legend <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
 <div class="figure">
 <img src="ggseg_files/figure-html/fig-basic-brain-1.png" class="r-plt" alt="Default brain plot using geom_brain() with the dk atlas." width="576"><p class="caption">
 Default brain plot using geom_brain() with the dk atlas.
@@ -199,7 +230,11 @@ Default brain plot using geom_brain() with the dk atlas.
 formula syntax borrowed from <code><a href="https://ggplot2.tidyverse.org/reference/facet_grid.html" class="external-link">facet_grid()</a></code>:</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="../reference/ggbrain.html">geom_brain</a></span><span class="op">(</span>atlas <span class="op">=</span> <span class="fu"><a href="https://ggsegverse.github.io/ggseg.formats/reference/dk.html">dk</a></span><span class="op">(</span><span class="op">)</span>, position <span class="op">=</span> <span class="fu"><a href="../reference/position_brain.html">position_brain</a></span><span class="op">(</span><span class="va">hemi</span> <span class="op">~</span> <span class="va">view</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<span>  <span class="fu"><a href="../reference/ggbrain.html">geom_brain</a></span><span class="op">(</span></span>
+<span>    atlas <span class="op">=</span> <span class="fu"><a href="https://ggsegverse.github.io/ggseg.formats/reference/dk.html">dk</a></span><span class="op">(</span><span class="op">)</span>,</span>
+<span>    position <span class="op">=</span> <span class="fu"><a href="../reference/position_brain.html">position_brain</a></span><span class="op">(</span><span class="va">hemi</span> <span class="op">~</span> <span class="va">view</span><span class="op">)</span>,</span>
+<span>    show.legend <span class="op">=</span> <span class="cn">FALSE</span></span>
+<span>  <span class="op">)</span></span></code></pre></div>
 <div class="figure">
 <img src="ggseg_files/figure-html/fig-position-formula-1.png" class="r-plt" alt="Brain views arranged using formula syntax in position_brain()." width="576"><p class="caption">
 Brain views arranged using formula syntax in position_brain().
@@ -215,7 +250,8 @@ Brain views arranged using formula syntax in position_brain().
 <span>      <span class="st">"right medial"</span>,</span>
 <span>      <span class="st">"left lateral"</span>,</span>
 <span>      <span class="st">"left medial"</span></span>
-<span>    <span class="op">)</span><span class="op">)</span></span>
+<span>    <span class="op">)</span><span class="op">)</span>,</span>
+<span>    show.legend <span class="op">=</span> <span class="cn">FALSE</span></span>
 <span>  <span class="op">)</span></span></code></pre></div>
 <div class="figure">
 <img src="ggseg_files/figure-html/fig-position-character-1.png" class="r-plt" alt="Brain views arranged using a character vector to specify order." width="576"><p class="caption">
@@ -223,15 +259,15 @@ Brain views arranged using a character vector to specify order.
 </p>
 </div>
 <p>See <code><a href="../articles/positioning-views.html">vignette("positioning-views")</a></code> for the full set of
-layout options, including grid layouts for subcortical and tract
-atlases.</p>
+layout options, including grid layouts for subcortical and tract atlases
+and per-view zoom.</p>
 </div>
 <div class="section level2">
 <h2 id="showing-only-certain-hemispheres-or-views">Showing only certain hemispheres or views<a class="anchor" aria-label="anchor" href="#showing-only-certain-hemispheres-or-views"></a>
 </h2>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="../reference/ggbrain.html">geom_brain</a></span><span class="op">(</span>atlas <span class="op">=</span> <span class="fu"><a href="https://ggsegverse.github.io/ggseg.formats/reference/dk.html">dk</a></span><span class="op">(</span><span class="op">)</span>, view <span class="op">=</span> <span class="st">"lateral"</span><span class="op">)</span></span></code></pre></div>
+<span>  <span class="fu"><a href="../reference/ggbrain.html">geom_brain</a></span><span class="op">(</span>atlas <span class="op">=</span> <span class="fu"><a href="https://ggsegverse.github.io/ggseg.formats/reference/dk.html">dk</a></span><span class="op">(</span><span class="op">)</span>, view <span class="op">=</span> <span class="st">"lateral"</span>, show.legend <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
 <div class="figure">
 <img src="ggseg_files/figure-html/fig-filter-lateral-1.png" class="r-plt" alt="Brain plot showing only lateral views." width="576"><p class="caption">
 Brain plot showing only lateral views.
@@ -248,7 +284,7 @@ Brain plot showing only the left hemisphere.
 <p>For subcortical atlases, views are slice identifiers. Check what’s
 available with <code><a href="https://ggsegverse.github.io/ggseg.formats/reference/atlas_views.html">ggseg.formats::atlas_views()</a></code>:</p>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu">ggseg.formats</span><span class="fu">::</span><span class="fu"><a href="https://ggsegverse.github.io/ggseg.formats/reference/atlas_views.html">atlas_views</a></span><span class="op">(</span><span class="fu"><a href="https://ggsegverse.github.io/ggseg.formats/reference/aseg.html">aseg</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="fu"><a href="https://ggsegverse.github.io/ggseg.formats/reference/atlas_views.html">atlas_views</a></span><span class="op">(</span><span class="fu"><a href="https://ggsegverse.github.io/ggseg.formats/reference/aseg.html">aseg</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] "axial_3"   "axial_4"   "axial_5"   "axial_6"   "coronal_1" "coronal_2"</span></span>
 <span><span class="co">#&gt; [7] "sagittal"</span></span></code></pre></div>
 </div>
@@ -256,9 +292,9 @@ available with <code><a href="https://ggsegverse.github.io/ggseg.formats/referen
 <h2 id="plotting-your-own-data">Plotting your own data<a class="anchor" aria-label="anchor" href="#plotting-your-own-data"></a>
 </h2>
 <p>Create a data frame with at least one column that matches the atlas
-(typically <code>region</code> or <code>label</code>).
-<code><a href="../reference/ggbrain.html">geom_brain()</a></code> joins your data to the atlas
-automatically:</p>
+(typically <code>region</code> or <code>label</code>). Pass it to
+<code><a href="../reference/ggbrain.html">geom_brain()</a></code> through the <code>data</code> argument and it
+joins to the atlas automatically:</p>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org" class="external-link">dplyr</a></span><span class="op">)</span></span>
 <span><span class="co">#&gt; </span></span>
@@ -280,15 +316,15 @@ automatically:</p>
 <span>  p <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sample.html" class="external-link">sample</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">0.5</span>, <span class="fl">0.001</span><span class="op">)</span>, <span class="fl">4</span><span class="op">)</span></span>
 <span><span class="op">)</span></span>
 <span></span>
-<span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="va">some_data</span><span class="op">)</span> <span class="op">+</span></span>
+<span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="../reference/ggbrain.html">geom_brain</a></span><span class="op">(</span></span>
 <span>    atlas <span class="op">=</span> <span class="fu"><a href="https://ggsegverse.github.io/ggseg.formats/reference/dk.html">dk</a></span><span class="op">(</span><span class="op">)</span>,</span>
+<span>    data <span class="op">=</span> <span class="va">some_data</span>,</span>
 <span>    position <span class="op">=</span> <span class="fu"><a href="../reference/position_brain.html">position_brain</a></span><span class="op">(</span><span class="va">hemi</span> <span class="op">~</span> <span class="va">view</span><span class="op">)</span>,</span>
 <span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>fill <span class="op">=</span> <span class="va">p</span><span class="op">)</span></span>
 <span>  <span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_viridis.html" class="external-link">scale_fill_viridis_c</a></span><span class="op">(</span>option <span class="op">=</span> <span class="st">"cividis"</span>, direction <span class="op">=</span> <span class="op">-</span><span class="fl">1</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html" class="external-link">theme_void</a></span><span class="op">(</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Merging atlas and data by <span style="color: #00BB00;">region</span>.</span></span></code></pre></div>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html" class="external-link">theme_void</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <div class="figure">
 <img src="ggseg_files/figure-html/fig-external-data-1.png" class="r-plt" alt="Brain plot coloured by external p-values using a viridis scale." width="576"><p class="caption">
 Brain plot coloured by external p-values using a viridis scale.
@@ -300,9 +336,9 @@ preparation and matching.</p>
 <div class="section level2">
 <h2 id="faceting">Faceting<a class="anchor" aria-label="anchor" href="#faceting"></a>
 </h2>
-<p>ggplot2 faceting works as you’d expect. <code><a href="../reference/ggbrain.html">geom_brain()</a></code>
-detects faceting variables and replicates the full atlas in each
-panel:</p>
+<p>ggplot2 faceting works as you’d expect. Group your data by the
+faceting variable and <code><a href="../reference/ggbrain.html">geom_brain()</a></code> replicates the full
+atlas in each panel:</p>
 <div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">some_data</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://tibble.tidyverse.org/reference/tibble.html" class="external-link">tibble</a></span><span class="op">(</span></span>
 <span>  region <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span></span>
@@ -318,20 +354,19 @@ panel:</p>
 <span>  group <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="st">"A"</span>, <span class="fl">4</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="st">"B"</span>, <span class="fl">4</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="op">)</span></span>
 <span></span>
-<span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="va">some_data</span><span class="op">)</span> <span class="op">+</span></span>
+<span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="../reference/ggbrain.html">geom_brain</a></span><span class="op">(</span></span>
 <span>    atlas <span class="op">=</span> <span class="fu"><a href="https://ggsegverse.github.io/ggseg.formats/reference/dk.html">dk</a></span><span class="op">(</span><span class="op">)</span>,</span>
+<span>    data <span class="op">=</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html" class="external-link">group_by</a></span><span class="op">(</span><span class="va">some_data</span>, <span class="va">group</span><span class="op">)</span>,</span>
 <span>    position <span class="op">=</span> <span class="fu"><a href="../reference/position_brain.html">position_brain</a></span><span class="op">(</span><span class="va">hemi</span> <span class="op">~</span> <span class="va">view</span><span class="op">)</span>,</span>
 <span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>fill <span class="op">=</span> <span class="va">p</span><span class="op">)</span></span>
 <span>  <span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/facet_wrap.html" class="external-link">facet_wrap</a></span><span class="op">(</span><span class="op">~</span><span class="va">group</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Merging atlas and data by <span style="color: #00BB00;">region</span>.</span></span></code></pre></div>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/facet_wrap.html" class="external-link">facet_wrap</a></span><span class="op">(</span><span class="op">~</span><span class="va">group</span><span class="op">)</span></span></code></pre></div>
 <div class="figure">
 <img src="ggseg_files/figure-html/fig-faceting-1.png" class="r-plt" alt="Brain plots faceted by group, each panel showing the full atlas." width="576"><p class="caption">
 Brain plots faceted by group, each panel showing the full atlas.
 </p>
 </div>
-<p>No <code><a href="https://dplyr.tidyverse.org/reference/group_by.html" class="external-link">group_by()</a></code> needed – the geom handles it.</p>
 </div>
 <div class="section level2">
 <h2 id="highlighting-specific-regions">Highlighting specific regions<a class="anchor" aria-label="anchor" href="#highlighting-specific-regions"></a>
@@ -341,14 +376,15 @@ one for the join (<code>region</code>) and one for the fill
 aesthetic:</p>
 <div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">data</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span></span>
-<span>  region <span class="op">=</span> <span class="fu">ggseg.formats</span><span class="fu">::</span><span class="fu"><a href="https://ggsegverse.github.io/ggseg.formats/reference/atlas_regions.html">atlas_regions</a></span><span class="op">(</span><span class="fu"><a href="https://ggsegverse.github.io/ggseg.formats/reference/dk.html">dk</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">3</span><span class="op">]</span>,</span>
-<span>  reg_col <span class="op">=</span> <span class="fu">ggseg.formats</span><span class="fu">::</span><span class="fu"><a href="https://ggsegverse.github.io/ggseg.formats/reference/atlas_regions.html">atlas_regions</a></span><span class="op">(</span><span class="fu"><a href="https://ggsegverse.github.io/ggseg.formats/reference/dk.html">dk</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">3</span><span class="op">]</span></span>
+<span>  region <span class="op">=</span> <span class="fu"><a href="https://ggsegverse.github.io/ggseg.formats/reference/atlas_regions.html">atlas_regions</a></span><span class="op">(</span><span class="fu"><a href="https://ggsegverse.github.io/ggseg.formats/reference/dk.html">dk</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">3</span><span class="op">]</span>,</span>
+<span>  reg_col <span class="op">=</span> <span class="fu"><a href="https://ggsegverse.github.io/ggseg.formats/reference/atlas_labels.html">atlas_labels</a></span><span class="op">(</span><span class="fu"><a href="https://ggsegverse.github.io/ggseg.formats/reference/dk.html">dk</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">3</span><span class="op">]</span></span>
 <span><span class="op">)</span></span>
 <span></span>
-<span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="va">data</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="../reference/ggbrain.html">geom_brain</a></span><span class="op">(</span>atlas <span class="op">=</span> <span class="fu"><a href="https://ggsegverse.github.io/ggseg.formats/reference/dk.html">dk</a></span><span class="op">(</span><span class="op">)</span>, <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>fill <span class="op">=</span> <span class="va">reg_col</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="../reference/scale_brain_manual.html">scale_fill_brain_manual</a></span><span class="op">(</span><span class="fu"><a href="https://ggsegverse.github.io/ggseg.formats/reference/dk.html">dk</a></span><span class="op">(</span><span class="op">)</span><span class="op">$</span><span class="va">palette</span><span class="op">[</span><span class="va">data</span><span class="op">$</span><span class="va">region</span><span class="op">]</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Merging atlas and data by <span style="color: #00BB00;">region</span>.</span></span></code></pre></div>
+<span><span class="va">palette</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://ggsegverse.github.io/ggseg.formats/reference/atlas_palette.html">atlas_palette</a></span><span class="op">(</span><span class="fu"><a href="https://ggsegverse.github.io/ggseg.formats/reference/dk.html">dk</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">3</span><span class="op">]</span></span>
+<span></span>
+<span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="../reference/ggbrain.html">geom_brain</a></span><span class="op">(</span>atlas <span class="op">=</span> <span class="fu"><a href="https://ggsegverse.github.io/ggseg.formats/reference/dk.html">dk</a></span><span class="op">(</span><span class="op">)</span>, data <span class="op">=</span> <span class="va">data</span>, <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>fill <span class="op">=</span> <span class="va">reg_col</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="../reference/scale_brain_manual.html">scale_fill_brain_manual</a></span><span class="op">(</span><span class="va">palette</span><span class="op">)</span></span></code></pre></div>
 <div class="figure">
 <img src="ggseg_files/figure-html/fig-highlighting-1.png" class="r-plt" alt="Highlighting selected regions using the atlas colour palette." width="576"><p class="caption">
 Highlighting selected regions using the atlas colour palette.
@@ -368,11 +404,20 @@ Highlighting selected regions using the atlas colour palette.
 <span>  <span class="fu"><a href="../reference/theme_brain.html">theme_brain</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
+<h2 id="going-further">Going further<a class="anchor" aria-label="anchor" href="#going-further"></a>
+</h2>
+<p>For full control over the data before it reaches ggplot2 — adding
+region labels, layering other sf geoms, or using <code><a href="https://ggplot2.tidyverse.org/reference/ggsf.html" class="external-link">geom_sf()</a></code>
+directly — see <code><a href="../articles/geom-sf.html">vignette("geom-sf")</a></code>.</p>
+</div>
+<div class="section level2">
 <h2 id="finding-more-atlases">Finding more atlases<a class="anchor" aria-label="anchor" href="#finding-more-atlases"></a>
 </h2>
-<p>ggseg ships with <code>dk</code> (cortical), <code>aseg</code>
-(subcortical), and <code>tracula</code> (white matter tracts). Many more
-are available through the <a href="https://ggsegverse.r-universe.dev" class="external-link">ggsegverse r-universe</a>:</p>
+<p>ggseg ships with <code><a href="https://ggsegverse.github.io/ggseg.formats/reference/dk.html">dk()</a></code> (cortical), <code><a href="https://ggsegverse.github.io/ggseg.formats/reference/aseg.html">aseg()</a></code>
+(subcortical), <code><a href="https://ggsegverse.github.io/ggseg.formats/reference/suit.html">suit()</a></code> (cerebellar flamap), and
+<code><a href="https://ggsegverse.github.io/ggseg.formats/reference/tracula.html">tracula()</a></code> (white matter tracts). Many more are available
+through the <a href="https://ggsegverse.r-universe.dev" class="external-link">ggsegverse
+r-universe</a>:</p>
 <div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"ggsegYeo2011"</span>, repos <span class="op">=</span> <span class="st">"https://ggsegverse.r-universe.dev"</span><span class="op">)</span></span></code></pre></div>
 </div>

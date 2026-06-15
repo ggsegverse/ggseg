@@ -7,11 +7,13 @@ Core geom and positioning for brain plots
 - [`geom_brain()`](https://ggsegverse.github.io/ggseg/reference/ggbrain.md)
   : Plot brain atlas regions
 - [`position_brain()`](https://ggsegverse.github.io/ggseg/reference/position_brain.md)
-  : Alter brain atlas position
-- [`reposition_brain()`](https://ggsegverse.github.io/ggseg/reference/reposition_brain.md)
-  : Reposition brain slices
+  : Arrange brain atlas views
 - [`annotate_brain()`](https://ggsegverse.github.io/ggseg/reference/annotate_brain.md)
   : Add view labels to brain atlas plots
+- [`coord_brain()`](https://ggsegverse.github.io/ggseg/reference/coord_brain.md)
+  : Keep brain shapes undistorted
+- [`reposition_brain()`](https://ggsegverse.github.io/ggseg/reference/reposition_brain.md)
+  : Reposition brain slices
 
 ## Data
 

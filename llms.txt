@@ -16,6 +16,7 @@ and Practices in Psychological Science.
 Install from CRAN:
 
 ``` r
+
 install.packages("ggseg")
 ```
 
@@ -23,6 +24,7 @@ Or get the development version from the [ggsegverse
 r-universe](https://ggsegverse.r-universe.dev):
 
 ``` r
+
 options(repos = c(
   ggsegverse = "https://ggsegverse.r-universe.dev",
   CRAN = "https://cloud.r-project.org"
@@ -33,6 +35,7 @@ install.packages("ggseg")
 ## Quick start
 
 ``` r
+
 library(ggseg)
 library(ggplot2)
 ```
@@ -46,6 +49,7 @@ parcellation), `aseg` (automatic subcortical segmentation), and
 quick overview:
 
 ``` r
+
 plot(dk())
 plot(aseg())
 ```
@@ -67,6 +71,7 @@ column that matches the atlas (typically `region` or `label`).
 handles the join:
 
 ``` r
+
 library(dplyr)
 
 some_data <- tibble(
@@ -104,6 +109,7 @@ Many additional atlases are available through the [ggsegverse
 r-universe](https://ggsegverse.r-universe.dev):
 
 ``` r
+
 install.packages("ggsegYeo2011", repos = "https://ggsegverse.r-universe.dev")
 ```
 
@@ -131,11 +137,13 @@ Core geom and positioning for brain plots
 - [`geom_brain()`](https://ggsegverse.github.io/ggseg/reference/ggbrain.md)
   : Plot brain atlas regions
 - [`position_brain()`](https://ggsegverse.github.io/ggseg/reference/position_brain.md)
-  : Alter brain atlas position
-- [`reposition_brain()`](https://ggsegverse.github.io/ggseg/reference/reposition_brain.md)
-  : Reposition brain slices
+  : Arrange brain atlas views
 - [`annotate_brain()`](https://ggsegverse.github.io/ggseg/reference/annotate_brain.md)
   : Add view labels to brain atlas plots
+- [`coord_brain()`](https://ggsegverse.github.io/ggseg/reference/coord_brain.md)
+  : Keep brain shapes undistorted
+- [`reposition_brain()`](https://ggsegverse.github.io/ggseg/reference/reposition_brain.md)
+  : Reposition brain slices
 
 ## Data
 

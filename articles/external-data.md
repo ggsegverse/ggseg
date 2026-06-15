@@ -6,6 +6,7 @@ This vignette covers how to get your data into the right shape for
 ggseg.
 
 ``` r
+
 library(ggseg)
 library(dplyr)
 ```
@@ -22,15 +23,17 @@ library(dplyr)
     ##     intersect, setdiff, setequal, union
 
 ``` r
+
 library(ggplot2)
 ```
 
 ## How matching works
 
 [`geom_brain()`](https://ggsegverse.github.io/ggseg/reference/ggbrain.md)
-joins your data to the atlas by any columns they share. That means your
-data needs at least one column with names that match the atlas. The two
-columns you’ll use most:
+joins your data to the atlas by `region` (and by `hemi` too, when both
+your data and the atlas carry it). That means your data needs at least
+one column with names that match the atlas. The two columns you’ll use
+most:
 
 - **region** – human-readable names like “insula” or “precentral”
 - **label** – FreeSurfer labels like “lh_bankssts”
@@ -38,6 +41,7 @@ columns you’ll use most:
 Check what’s available:
 
 ``` r
+
 ggseg.formats::atlas_regions(dk())
 ```
 
@@ -61,6 +65,7 @@ ggseg.formats::atlas_regions(dk())
     ## [35] "transverse temporal"
 
 ``` r
+
 ggseg.formats::atlas_labels(dk())
 ```
 
@@ -107,6 +112,7 @@ Names must match exactly, including case and spacing.
 Three regions, three p-values:
 
 ``` r
+
 some_data <- tibble(
   region = c("superior temporal", "precentral", "lateral orbitofrontal"),
   p = c(0.03, 0.6, 0.05)
@@ -122,15 +128,14 @@ some_data
     ## 3 lateral orbitofrontal  0.05
 
 Pass the data to
-[`ggplot()`](https://ggplot2.tidyverse.org/reference/ggplot.html) and
-map `fill` to your variable:
+[`geom_brain()`](https://ggsegverse.github.io/ggseg/reference/ggbrain.md)
+through its `data` argument and map `fill` to your variable:
 
 ``` r
-ggplot(some_data) +
-  geom_brain(atlas = dk(), mapping = aes(fill = p))
-```
 
-    ## Merging atlas and data by region.
+ggplot() +
+  geom_brain(atlas = dk(), data = some_data, mapping = aes(fill = p))
+```
 
 ![Brain plot with three regions coloured by
 p-value.](external-data_files/figure-html/fig-minimal-plot-1.png)
@@ -147,13 +152,12 @@ If your data is hemisphere-specific, add a `hemi` column. The join will
 use both `region` and `hemi`, so values only land on the correct side:
 
 ``` r
+
 some_data$hemi <- "left"
 
-ggplot(some_data) +
-  geom_brain(atlas = dk(), mapping = aes(fill = p))
+ggplot() +
+  geom_brain(atlas = dk(), data = some_data, mapping = aes(fill = p))
 ```
-
-    ## Merging atlas and data by region and hemi.
 
 ![Brain plot restricted to the left hemisphere using a hemi
 column.](external-data_files/figure-html/fig-hemi-constraint-1.png)
@@ -165,16 +169,16 @@ restrict matches to specific views.
 
 ## Faceting across groups
 
-If your data has a grouping variable,
+If your data has a grouping variable, group by it and
 [`facet_wrap()`](https://ggplot2.tidyverse.org/reference/facet_wrap.html)
-and
+/
 [`facet_grid()`](https://ggplot2.tidyverse.org/reference/facet_grid.html)
 work as you’d expect.
 [`geom_brain()`](https://ggsegverse.github.io/ggseg/reference/ggbrain.md)
-detects the faceting variables and replicates the full atlas in each
-panel:
+replicates the full atlas – context regions included – in each panel:
 
 ``` r
+
 some_data <- tibble(
   region = rep(
     c(
@@ -189,8 +193,13 @@ some_data <- tibble(
   group = c(rep("Young", 4), rep("Old", 4))
 )
 
-ggplot(some_data) +
-  geom_brain(atlas = dk(), colour = "white", mapping = aes(fill = p)) +
+ggplot() +
+  geom_brain(
+    atlas = dk(),
+    data = group_by(some_data, group),
+    colour = "white",
+    mapping = aes(fill = p)
+  ) +
   facet_wrap(~group, ncol = 1) +
   theme(legend.position = "bottom") +
   scale_fill_gradientn(
@@ -199,58 +208,13 @@ ggplot(some_data) +
   )
 ```
 
-    ## Merging atlas and data by region.
-
 ![Brain plots faceted by age group with a custom colour
 gradient.](external-data_files/figure-html/fig-facet-groups-1.png)
 
 Brain plots faceted by age group with a custom colour gradient.
 
-No need to call
-[`group_by()`](https://dplyr.tidyverse.org/reference/group_by.html)
-first – the geom handles atlas replication automatically. (Explicit
-[`group_by()`](https://dplyr.tidyverse.org/reference/group_by.html)
-still works for backward compatibility.)
-
-## The pre-merged workflow
-
-For full control over faceting or when you need to combine brain data
-with other sf layers, convert the atlas to a data frame and join
-manually:
-
-``` r
-atlas_df <- as.data.frame(dk())
-names(atlas_df)
-```
-
-    ## [1] "label"    "view"     "hemi"     "region"   "lobe"     "geometry" "atlas"   
-    ## [8] "type"     "colour"
-
-Then use a standard join and
-[`geom_sf()`](https://ggplot2.tidyverse.org/reference/ggsf.html):
-
-``` r
-some_data <- tibble(
-  region = c("superior temporal", "precentral", "lateral orbitofrontal"),
-  p = c(0.03, 0.6, 0.05)
-)
-
-atlas_df |>
-  left_join(some_data, by = "region") |>
-  ggplot() +
-  geom_sf(aes(fill = p), colour = "white") +
-  facet_grid(hemi ~ view) +
-  theme_void()
-```
-
-![Brain plot using a manual left_join and geom_sf for full
-control.](external-data_files/figure-html/fig-pre-merged-1.png)
-
-Brain plot using a manual left_join and geom_sf for full control.
-
-See
-[`vignette("geom-sf")`](https://ggsegverse.github.io/ggseg/articles/geom-sf.md)
-for more on this approach.
+Grouping the data is what tells the geom how many copies of the atlas to
+make – one per group.
 
 ## Troubleshooting
 
@@ -261,11 +225,14 @@ atlas expects.
 **Data lands on both hemispheres.** Add a `hemi` column with `"left"` or
 `"right"` to constrain the match.
 
-**Extra facet panels appear.** This is handled automatically by
-[`geom_brain()`](https://ggsegverse.github.io/ggseg/reference/ggbrain.md).
-If you’re using the
-[`brain_join()`](https://ggsegverse.github.io/ggseg/reference/brain_join.md) +
-[`geom_sf()`](https://ggplot2.tidyverse.org/reference/ggsf.html)
-workflow directly,
-[`group_by()`](https://dplyr.tidyverse.org/reference/group_by.html) your
-data by the faceting variable before joining.
+**A facet panel is missing context.** Group your data by the faceting
+variable before plotting (`data = my_data |> group_by(group)`) so the
+full atlas is replicated in every panel.
+
+## Full control with sf
+
+When you need to layer brain data with other sf geoms, or join the atlas
+manually before plotting, work with the atlas as an sf object instead.
+See
+[`vignette("geom-sf")`](https://ggsegverse.github.io/ggseg/articles/geom-sf.md)
+for that workflow.
