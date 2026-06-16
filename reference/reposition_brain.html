@@ -233,39 +233,28 @@ and pass it to [geom_brain()].</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Bounding box:  xmin: -5.66502 ymin: -5.66502 xmax: 572.167 ymax: 262.8586</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> CRS:           NA</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> First 10 features:</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                                  label     view hemi           region</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> X.sagittal..257                cortex_ sagittal &lt;NA&gt;             &lt;NA&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> X.sagittal..6               Brain-Stem sagittal &lt;NA&gt;       Brain Stem</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> X.sagittal..7              CC_Anterior sagittal &lt;NA&gt;      cc anterior</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> X.sagittal..12              CC_Central sagittal &lt;NA&gt;       cc central</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> X.sagittal..18         CC_Mid_Anterior sagittal &lt;NA&gt;  cc mid anterior</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> X.sagittal..20        CC_Mid_Posterior sagittal &lt;NA&gt; cc mid posterior</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> X.sagittal..25            CC_Posterior sagittal &lt;NA&gt;     cc posterior</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> X.sagittal..54  Left-Cerebellum-Cortex sagittal left       Cerebellum</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> X.sagittal..55  Left-Cerebellum-Cortex sagittal left       Cerebellum</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> X.sagittal..120          Left-Thalamus sagittal left         Thalamus</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                     structure atlas        type  colour</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> X.sagittal..257          &lt;NA&gt;  aseg subcortical    &lt;NA&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> X.sagittal..6       brainstem  aseg subcortical #779FB0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> X.sagittal..7            &lt;NA&gt;  aseg subcortical #0000FF</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> X.sagittal..12           &lt;NA&gt;  aseg subcortical #0000A0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> X.sagittal..18           &lt;NA&gt;  aseg subcortical #0000D0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> X.sagittal..20           &lt;NA&gt;  aseg subcortical #000070</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> X.sagittal..25           &lt;NA&gt;  aseg subcortical #000040</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> X.sagittal..54     cerebellum  aseg subcortical #E69422</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> X.sagittal..55     cerebellum  aseg subcortical #E69422</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> X.sagittal..120 basal ganglia  aseg subcortical #00760E</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                                       geometry</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> X.sagittal..257 MULTIPOLYGON (((65.44853 20...</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> X.sagittal..6   MULTIPOLYGON (((92.93022 12...</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> X.sagittal..7   MULTIPOLYGON (((189.3959 11...</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> X.sagittal..12  MULTIPOLYGON (((164.3167 15...</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> X.sagittal..18  MULTIPOLYGON (((188.9379 14...</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> X.sagittal..20  MULTIPOLYGON (((123.7356 15...</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> X.sagittal..25  MULTIPOLYGON (((95.71832 13...</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> X.sagittal..54  MULTIPOLYGON (((62.23099 10...</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> X.sagittal..55  MULTIPOLYGON (((62.23099 10...</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> X.sagittal..120 MULTIPOLYGON (((140.0147 13...</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                      label     view hemi           region     structure atlas</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 257                cortex_ sagittal &lt;NA&gt;             &lt;NA&gt;          &lt;NA&gt;  aseg</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 6               Brain-Stem sagittal &lt;NA&gt;       Brain Stem     brainstem  aseg</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 7              CC_Anterior sagittal &lt;NA&gt;      cc anterior          &lt;NA&gt;  aseg</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 12              CC_Central sagittal &lt;NA&gt;       cc central          &lt;NA&gt;  aseg</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 18         CC_Mid_Anterior sagittal &lt;NA&gt;  cc mid anterior          &lt;NA&gt;  aseg</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 20        CC_Mid_Posterior sagittal &lt;NA&gt; cc mid posterior          &lt;NA&gt;  aseg</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 25            CC_Posterior sagittal &lt;NA&gt;     cc posterior          &lt;NA&gt;  aseg</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 54  Left-Cerebellum-Cortex sagittal left       Cerebellum    cerebellum  aseg</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 55  Left-Cerebellum-Cortex sagittal left       Cerebellum    cerebellum  aseg</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 120          Left-Thalamus sagittal left         Thalamus basal ganglia  aseg</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>            type  colour                       geometry</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 257 subcortical    &lt;NA&gt; MULTIPOLYGON (((65.44853 20...</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 6   subcortical #779FB0 MULTIPOLYGON (((92.93022 12...</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 7   subcortical #0000FF MULTIPOLYGON (((189.3959 11...</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 12  subcortical #0000A0 MULTIPOLYGON (((164.3167 15...</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 18  subcortical #0000D0 MULTIPOLYGON (((188.9379 14...</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 20  subcortical #000070 MULTIPOLYGON (((123.7356 15...</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 25  subcortical #000040 MULTIPOLYGON (((95.71832 13...</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 54  subcortical #E69422 MULTIPOLYGON (((62.23099 10...</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 55  subcortical #E69422 MULTIPOLYGON (((62.23099 10...</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 120 subcortical #00760E MULTIPOLYGON (((140.0147 13...</span>
 <span class="r-in"><span><span class="co"># }</span></span></span>
 </code></pre></div>
     </div>
