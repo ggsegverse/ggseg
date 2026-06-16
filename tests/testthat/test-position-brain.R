@@ -121,17 +121,6 @@ describe("split_data with subcortical", {
   })
 })
 
-describe("stack_vertical", {
-  it("stacks data frames vertically", {
-    skip_if_not_installed("sf")
-    data <- as.data.frame(dk())
-    split_result <- split_data(data, "vertical")
-    gathered <- lapply(split_result$data, gather_geometry)
-    result <- stack_vertical(gathered)
-    expect_type(result, "list")
-    expect_named(result, c("df", "box"))
-  })
-})
 
 describe("position_formula edge cases", {
   it("errors when formula missing '.' for single row/column", {

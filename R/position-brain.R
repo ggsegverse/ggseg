@@ -416,23 +416,36 @@ frame_2_position <- function(
     data$view <- as.character(data$view)
   }
 
-  dfpos <- split_data(data, pos)
   if (!is.null(nrow) || !is.null(ncol)) {
     dfpos <- split_data_grid(data, nrow, ncol)
+  } else {
+    dfpos <- split_data(data, pos)
   }
 
-  df2 <- lapply(dfpos$data, gather_geometry)
   posi <- if (length(dfpos$position) > 1) "grid" else dfpos$position
+  rows <- if (posi == "grid") dfpos$position[1] else NULL
+  columns <- if (posi == "grid") dfpos$position[2] else NULL
 
-  df3 <- switch(
+  res <- position_groups(
+    dfpos$data,
     posi,
-    rows = stack_vertical(df2),
-    columns = stack_horizontal(df2),
-    grid = stack_grid(df2, dfpos$position[1], dfpos$position[2])
+    rows,
+    columns,
+    bbox_of = function(g) as.numeric(sf::st_bbox(g$geometry)),
+    translate = function(g, dx, dy) {
+      g$geometry <- g$geometry + c(dx, dy)
+      g
+    }
   )
 
-  df4 <- sf::st_as_sf(df3$df)
-  attr(sf::st_geometry(df4), "bbox") <- df3$box
+  out <- do.call(rbind, res$data)
+  if (posi == "grid") {
+    out <- drop_temp_columns(out)
+  }
+  df4 <- sf::st_as_sf(out)
+  box <- res$box
+  class(box) <- "bbox"
+  attr(sf::st_geometry(df4), "bbox") <- box
 
   df4
 }
@@ -559,126 +572,6 @@ split_cortical_pairs <- function(data, pos) {
   })
 }
 
-#' Zero-origin geometry for a single view
-#'
-#' Translates geometry so the bounding box starts at (0, 0).
-#'
-#' @param df Data.frame with a `geometry` column.
-#'
-#' @return Modified data.frame with shifted geometry.
-#' @keywords internal
-#' @noRd
-gather_geometry <- function(df) {
-  bbx <- sf::st_bbox(df$geometry)
-  df$geometry <- df$geometry - bbx[c("xmin", "ymin")]
-  df
-}
-
-#' Center a view within a grid cell
-#'
-#' Offsets geometry so the view is centered inside a cell of
-#' `cell_size` at position `grid_pos`.
-#'
-#' @param df Data.frame with a `geometry` column.
-#' @param cell_size Numeric length-2 vector `c(width, height)`.
-#' @param grid_pos Numeric length-2 vector `c(x, y)` offset.
-#'
-#' @return Modified data.frame with repositioned geometry.
-#' @keywords internal
-#' @noRd
-center_view <- function(df, cell_size, grid_pos) {
-  bbox <- sf::st_bbox(df$geometry)
-  view_width <- bbox["xmax"] - bbox["xmin"]
-  view_height <- bbox["ymax"] - bbox["ymin"]
-  view_size <- c(view_width, view_height)
-  center_offset <- (cell_size - view_size) / 2
-  df$geometry <- df$geometry + grid_pos + center_offset
-  df
-}
-
-#' Arrange views in a horizontal row
-#'
-#' @param df List of data.frames, each with a `geometry` column.
-#'
-#' @return A list with `df` (combined data.frame) and `box` (bbox).
-#' @keywords internal
-#' @noRd
-stack_horizontal <- function(df) {
-  sep <- get_sep(df)
-  cell_size <- sep / 1.2
-
-  bx <- list()
-  for (k in seq_along(df)) {
-    df[[k]] <- center_view(df[[k]], cell_size, c((k - 1) * sep[1], 0))
-    bx[[k]] <- sf::st_bbox(df[[k]]$geometry)
-  }
-
-  list(df = do.call(rbind, df), box = get_box(bx))
-}
-
-#' Arrange views in a vertical column
-#'
-#' @param df List of data.frames, each with a `geometry` column.
-#'
-#' @return A list with `df` (combined data.frame) and `box` (bbox).
-#' @keywords internal
-#' @noRd
-stack_vertical <- function(df) {
-  sep <- get_sep(df)
-  cell_size <- sep / 1.2
-
-  bx <- list()
-  for (k in seq_along(df)) {
-    df[[k]] <- center_view(df[[k]], cell_size, c(0, (k - 1) * sep[2]))
-    bx[[k]] <- sf::st_bbox(df[[k]]$geometry)
-  }
-
-  list(df = do.call(rbind, df), box = get_box(bx))
-}
-
-#' Arrange views in a row-by-column grid
-#'
-#' @param df List of data.frames, each with a `geometry` column
-#'   and grid assignment columns.
-#' @param rows Column name identifying the row variable.
-#' @param columns Column name identifying the column variable.
-#'
-#' @return A list with `df` (combined data.frame) and `box` (bbox).
-#' @keywords internal
-#' @noRd
-stack_grid <- function(df, rows, columns) {
-  sep <- get_sep(df)
-  lookup <- grid_lookup(df, rows, columns)
-
-  grid <- expand.grid(
-    col_idx = seq_along(lookup$col_vals),
-    row_idx = seq_along(lookup$row_vals)
-  )
-
-  cell_size <- sep / 1.2
-  df_positioned <- Map(
-    function(ri, ci) {
-      idx <- which(
-        lookup$df_rows == lookup$row_vals[ri] &
-          lookup$df_cols == lookup$col_vals[ci]
-      )
-      if (length(idx) != 1) {
-        return(NULL)
-      }
-      grid_pos <- c((ci - 1) * sep[1], (ri - 1) * sep[2])
-      center_view(df[[idx]], cell_size, grid_pos)
-    },
-    grid$row_idx,
-    grid$col_idx
-  )
-
-  df_positioned <- Filter(Negate(is.null), df_positioned)
-  bx <- lapply(df_positioned, function(x) sf::st_bbox(x$geometry))
-  result_df <- drop_temp_columns(do.call(rbind, df_positioned))
-
-  list(df = result_df, box = get_box(bx))
-}
-
 #' Build a lookup of row/column values per data.frame element
 #'
 #' @param df List of data.frames from a split atlas.
@@ -732,44 +625,6 @@ drop_temp_columns <- function(df) {
     df[, temp] <- NULL
   }
   df
-}
-
-#' Compute a padded bounding box from a list of bboxes
-#'
-#' @param bx List of sf bbox objects.
-#'
-#' @return An sf `bbox` object with 1\% padding.
-#' @keywords internal
-#' @noRd
-get_box <- function(bx) {
-  bx <- do.call(rbind, bx)
-  pad <- max(bx) * 0.01
-  bx <- c(
-    -pad,
-    -pad,
-    max(bx[, "xmax"]) + pad,
-    max(bx[, "ymax"]) + pad
-  )
-  x <- stats::setNames(bx, c("xmin", "ymin", "xmax", "ymax"))
-  class(x) <- "bbox"
-  x
-}
-
-#' Compute cell separation distances
-#'
-#' Determines the x and y spacing between grid cells based on
-#' the maximum bounding-box dimensions across all views.
-#'
-#' @param data List of data.frames, each with a `geometry` column.
-#'
-#' @return Named numeric vector `c(x = ..., y = ...)`.
-#' @keywords internal
-#' @noRd
-get_sep <- function(data) {
-  get_bbox <- function(x) sf::st_bbox(x$geometry)
-  bboxes <- vapply(data, get_bbox, numeric(4))
-  sep <- c(max(bboxes[3, ]), max(bboxes[4, ]))
-  c("x" = sep[1] + sep[1] * 0.2, "y" = sep[2] + sep[2] * 0.2)
 }
 
 #' Generate the default view ordering for an atlas

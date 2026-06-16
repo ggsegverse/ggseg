@@ -51,21 +51,6 @@ describe("flat-coord helpers", {
     expect_named(b, c("xmin", "ymin", "xmax", "ymax"))
     expect_equal(unname(b), c(0, 0, 2, 2))
   })
-
-  it("gather_flat shifts bbox to origin", {
-    df <- data.frame(x = c(10, 12, 14), y = c(20, 22, 24))
-    out <- gather_flat(df)
-    expect_equal(min(out$x), 0)
-    expect_equal(min(out$y), 0)
-  })
-
-  it("center_view_flat preserves width/height while shifting position", {
-    df <- data.frame(x = c(0, 4), y = c(0, 2))
-    out <- center_view_flat(df, c(10, 10), c(100, 100))
-    expect_equal(diff(range(out$x)), 4)
-    expect_equal(diff(range(out$y)), 2)
-    expect_gt(min(out$x), 100)
-  })
 })
 
 describe("geom_brain_polygon() with position", {

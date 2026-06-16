@@ -31,7 +31,6 @@ Imports:
     grid,
     lifecycle,
     rlang,
-    stats,
     tidyr (>= 1.0.0),
     utils
 Suggests:
