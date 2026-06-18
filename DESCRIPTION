@@ -1,6 +1,6 @@
 Package: ggseg
 Title: Plotting Tool for Brain Atlases
-Version: 2.1.1.9001
+Version: 2.2.0
 Authors@R: c(
     person("Athanasia Mo", "Mowinckel", , "a.m.mowinckel@psykologi.uio.no", role = c("aut", "cre"),
            comment = c(ORCID = "0000-0002-5756-0223")),
@@ -27,7 +27,7 @@ Imports:
     cli,
     dplyr (>= 1.0.0),
     ggplot2 (>= 3.3),
-    ggseg.formats,
+    ggseg.formats (>= 0.0.3),
     grid,
     lifecycle,
     rlang,
@@ -44,8 +44,6 @@ Suggests:
     testthat (>= 3.0.0),
     vdiffr,
     withr
-Remotes:
-    ggsegverse/ggseg.formats
 VignetteBuilder:
     knitr
 Config/Needs/website: ggsegverse/ggseg.docs

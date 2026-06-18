@@ -17,6 +17,7 @@ Optimising
 PROJ
 Piñeiro
 PositionBrain
+Repositions
 Subcortical
 Tourville
 Visualise
@@ -24,6 +25,7 @@ WebAssembly
 aes
 aseg
 bankssts
+behaviour
 callosum
 cli
 colour
@@ -37,7 +39,6 @@ dk
 dkt
 doi
 dplyr
-eiro
 favour
 flamap
 freesurfer
@@ -65,7 +66,6 @@ postcentral
 pre
 precentral
 readme
-renderer
 reorganised
 repositioned
 roxygen
@@ -80,7 +80,6 @@ unlabelled
 vctrs
 vdiffr
 vis
-visualisation
 visualisations
 visualising
 vjust

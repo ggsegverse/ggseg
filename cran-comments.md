@@ -12,9 +12,9 @@ polygon representation by default, so it installs and plots on systems where
 
 ## Dependency note
 
-ggseg imports 'ggseg.formats', which is on CRAN. This release relies on
-features in a newer 'ggseg.formats'; the 'Remotes' field will be removed and a
-minimum version pinned once that 'ggseg.formats' release is on CRAN.
+This release relies on the sf-optional atlas format introduced in
+'ggseg.formats' 0.0.3, which is now on CRAN. The minimum version is pinned to
+'ggseg.formats (>= 0.0.3)' and the 'Remotes' field has been removed.
 
 ## URL note
 
