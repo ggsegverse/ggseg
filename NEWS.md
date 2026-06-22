@@ -1,3 +1,5 @@
+# ggseg 2.2.0.9000 (development)
+
 # ggseg 2.2.0
 
 This release makes the **`sf` package optional**. ggseg now draws brains from a
