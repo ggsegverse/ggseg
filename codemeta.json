@@ -8,7 +8,7 @@
   "codeRepository": "https://github.com/ggsegverse/ggseg",
   "issueTracker": "https://github.com/ggsegverse/ggseg/issues",
   "license": "https://spdx.org/licenses/MIT",
-  "version": "2.1.1.9001",
+  "version": "2.2.0.9000",
   "programmingLanguage": {
     "@type": "ComputerLanguage",
     "name": "R",
@@ -233,13 +233,14 @@
       "@type": "SoftwareApplication",
       "identifier": "ggseg.formats",
       "name": "ggseg.formats",
+      "version": ">= 0.0.3",
       "provider": {
         "@id": "https://cran.r-project.org",
         "@type": "Organization",
         "name": "Comprehensive R Archive Network (CRAN)",
         "url": "https://cran.r-project.org"
       },
-      "sameAs": "https://github.com/ggsegverse/ggseg.formats"
+      "sameAs": "https://CRAN.R-project.org/package=ggseg.formats"
     },
     "6": {
       "@type": "SoftwareApplication",
@@ -290,7 +291,7 @@
     },
     "SystemRequirements": null
   },
-  "fileSize": "5431.139KB",
+  "fileSize": "5431.163KB",
   "citation": [
     {
       "@type": "CreativeWork",
