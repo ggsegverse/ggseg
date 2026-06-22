@@ -1,6 +1,8 @@
 # Changelog
 
-## ggseg 2.2.0 (development)
+## ggseg 2.2.0
+
+CRAN release: 2026-06-22
 
 This release makes the **`sf` package optional**. ggseg now draws brains
 from a lightweight polygon representation by default, so it installs and
