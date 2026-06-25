@@ -223,8 +223,7 @@ describe("LayerBrain", {
   it("errors when atlas has no data", {
     skip_if_not_installed("sf")
     withr::local_options(lifecycle_verbosity = "quiet")
-    empty_atlas <- dk()
-    empty_atlas$data$sf <- empty_atlas$data$sf[0, ]
+    empty_atlas <- atlas_without_2d_geometry()
     expect_error(
       ggplot_build(ggplot() + geom_brain_sf(atlas = empty_atlas)),
       "no data|no 2D geometry"

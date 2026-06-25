@@ -17,10 +17,7 @@ describe("geom_brain_polygon()", {
   })
 
   it("errors when the atlas has no 2D geometry", {
-    no_geom <- dk()
-    no_geom$data$geom <- NULL
-    no_geom$data$sf <- NULL
-    no_geom$data$polygons <- NULL
+    no_geom <- atlas_without_2d_geometry()
     expect_error(
       ggplot2::ggplot() + geom_brain_polygon(atlas = no_geom),
       "no 2D geometry"
