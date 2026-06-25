@@ -20,15 +20,16 @@ describe("to_coords", {
 describe("sf2coords", {
   it("converts sf data to coords format", {
     skip_if_not_installed("sf")
-    result <- sf2coords(dk()$data$sf)
+    sf_data <- atlas_sf(dk())
+    result <- sf2coords(sf_data)
     expect_true("ggseg" %in% names(result))
     expect_type(result$ggseg, "list")
-    expect_length(result$ggseg, nrow(dk()$data$sf))
+    expect_length(result$ggseg, nrow(sf_data))
   })
 
   it("removes geometry column", {
     skip_if_not_installed("sf")
-    result <- sf2coords(dk()$data$sf)
+    result <- sf2coords(atlas_sf(dk()))
     expect_false("geometry" %in% names(result))
   })
 })
