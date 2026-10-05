@@ -1,104 +1,140 @@
-# ggseg 2.2.1.9000 (development)
+# ggseg 3.0.0
 
-- `brain_test_plot()` now defaults to `position_brain(. ~ view)` for
-  slice-based atlases (subcortical, cerebellar, tract) and keeps
-  `position_brain(hemi ~ view)` for cortical ones. The layout is unchanged, but
-  atlas packages' snapshot tests no longer warn that `hemi` is ignored.
+A major release. The atlas geometry now comes from the re-keyed `ggseg.formats`
+atlases (`>= 0.1.0`), and `geom_brain()` has been rebuilt on a `Stat` so that
+faceting, inherited `data`/`aes()`, and outline aesthetics work the way ggplot2
+users expect. Several of those fixes change existing figures, so read the
+breaking changes before upgrading.
 
-- `position_brain()` now ignores the `hemi` term (with a warning) for
-  slice-based atlases (subcortical, cerebellar, tract). Those views are whole
-  slices already containing both hemispheres, so `hemi ~ view` no longer splits
-  the grey-brain context into its own row away from the structures — each view
-  now renders with its anatomical context integrated, matching `plot()`.
+## Breaking changes
+
+- **Region keys changed.** `ggseg.formats` re-keyed the bundled atlases: the
+  `region` column now holds short keys (e.g. `"superiorparietal"`,
+  `"transversetemporal"`) and the fully spelled-out names moved to a new `names`
+  column. **Any user data joined to an atlas by `region` must be re-keyed.**
+  Passing a long name where a `region` is expected no longer matches, and
+  `geom_brain()` warns that the rows were not merged. `ggseg.formats` ships a
+  helper for translating old keys to new — look for `legacy_region_map()` in the
+  `ggseg.formats` 0.1.0 reference — or join by the schema-stable `label` column
+  instead. `ggseg` now requires `ggseg.formats (>= 0.1.0)`; the combination of
+  an older `ggseg` with the re-keyed atlases is silently wrong, which the new
+  floor rules out.
+
+- **A bare `geom_brain()` no longer colours the atlas by its palette.** Up to
+  2.2.1 `geom_brain()` injected `fill = .data$label` plus a matching
+  `scale_fill_manual()` whenever you mapped no `fill`, so
+  `ggplot() + geom_brain(atlas = dk())` came out palette-coloured. It now
+  renders grey — the same grey that regions you supply no value for already
+  had — and warns once per session. `geom_brain()` is for plotting *your* data
+  on the brain; for a palette-coloured overview use `plot(atlas)` (from
+  `ggseg.formats`), or map it yourself with `aes(fill = region)` and
+  `scale_fill_brain()`.
+
+- **The injected discrete palette scale is gone.** A side effect of the item
+  above. This *fixes* a continuous fill set in the top-level call —
+  `ggplot(df, aes(fill = value)) + geom_brain(atlas = dk())` no longer errors
+  with "Continuous value supplied to a discrete scale" — but any plot that
+  relied on the injected scale now needs its own.
+
+- **`GeomBrain` is a different object.** Both 2.2.1 and 3.0.0 export
+  `GeomBrain`, but it is no longer the same ggproto: it is now the polygon geom
+  (`GeomBrain` < `ggplot2::GeomPolygon` < `ggplot2::Geom`) that backs the
+  default `geom_brain()`. The sf geom it used to be is now `GeomBrainSf`, which
+  **this release also exports** so extension code doing
+  `ggplot2::layer(geom = GeomBrain)` against the sf path has a migration
+  target: switch to `GeomBrainSf`. Because the export name did not change, the
+  failure mode in extension code is a confusing rendering error rather than an
+  object-not-found error — check any package that reaches for `GeomBrain`
+  directly.
+
+- **`geom_brain()` gained a `fun` argument, positionally before
+  `show.legend`.** The signature is now
+  `geom_brain(mapping, data, atlas, hemi, view, position, context, fun,
+  show.legend, inherit.aes, ...)`. Callers passing `show.legend` or
+  `inherit.aes` positionally shift by one — name those arguments.
+
+- **Multiple `data` rows per region are now combined, not overplotted.** `fun`
+  (default `mean`) reduces them within each facet panel. Long data with several
+  rows per region — one per subject, say — used to overplot, so the last row
+  silently won; it is now averaged. This is a silent numeric change for anyone
+  plotting an unaggregated cohort, so `geom_brain()` warns once per session when
+  `fun` actually collapses rows. Pass `fun = dplyr::last` to recover the old
+  last-wins behaviour. `fun` applies to numeric columns only — non-numeric
+  columns take the first value of the group regardless.
+
+- **`aes()` mappings for `x`, `y`, `group`, and `subgroup` are ignored, with a
+  warning.** They are derived from the atlas geometry (`group` is the polygon
+  feature id, `subgroup` marks holes), so mapping them previously corrupted the
+  rendering silently — `aes(group = region)` collapsed each region's separate
+  polygon pieces.
+
+- **Polygon draw order now follows your data's row order.** The renderer used to
+  force alphabetical order, so when you mapped a variable to `colour` the
+  outlines stacked in an order unrelated to it. Regions now draw in the order
+  they appear in your `data` (later rows on top); regions you supply no value for
+  stay underneath in atlas order. `arrange()` your data to control layering.
+  Visual-only, but it restacks overlapping outlines (#162).
+
+- **`position_brain()` ignores the `hemi` term for slice-based atlases**
+  (subcortical, cerebellar, tract), with a warning. Those views are whole slices
+  already containing both hemispheres, so `hemi ~ view` no longer splits the grey
+  context into its own row away from the structures. Each view now renders with
+  its anatomical context integrated, matching `plot()`. Subcortical and tract
+  plots using `hemi ~ view` lay out differently (correctly).
+
+- **Faceting is handled by `StatBrain`, not grouped data frames.** Pre-grouped
+  data still works, but `dplyr::group_by()` is no longer needed — see below.
+
+## New features
+
+- New `stat_brain()` and exported `StatBrain` ggproto: the stat-first spelling
+  of `geom_brain()`. Both build the same layer; use `stat_brain()` to pair
+  `StatBrain` with a different geom.
 
 - New `brain_test_plot()` builds a minimal, deterministic atlas plot (regions
   filled by `label`, no legend, `theme_void()`) — the canonical construction for
   `vdiffr` snapshots across the ggsegverse, so a stray legend or title cannot
-  creep into a snapshot and every atlas is rendered identically.
+  creep into a snapshot and every atlas renders identically. It defaults to
+  `position_brain(. ~ view)` for slice-based atlases and
+  `position_brain(hemi ~ view)` for cortical ones.
 
-- Tests, examples, and vignettes now resolve region names dynamically through
-  `ggseg.formats::atlas_regions()` (and the schema-stable `label` column)
-  instead of hard-coding region strings, so `R CMD check` passes cleanly against
-  both the released and the development `ggseg.formats` schema. Visual
-  regression tests that use `vdiffr` now `skip_on_cran()`, since their snapshots
-  are geometry-specific and cannot match both schema versions.
+- `GeomBrainSf` is now exported (see above).
 
-- Examples, tests, and vignettes now use the new `ggseg.formats` short
-  `region` keys (e.g. `"superiorparietal"`, `"transversetemporal"`). The
-  fully spelled-out long names moved to the atlas `names` column, so passing a
-  long name in a `region =` position no longer matches. Any user data joined to
-  an atlas by `region` must use the short keys.
+## Bug fixes
 
-- **Breaking:** `geom_brain()` no longer colours the atlas by its built-in
-  palette when you map no `fill`. A bare `geom_brain(atlas = dk())` now renders
-  grey, matching how regions you supply no value for already looked. `geom_brain()`
-  is for plotting _your_ data on the brain; for a palette-coloured atlas overview
-  use `plot(atlas)` (from `ggseg.formats`), or map it yourself with
-  `aes(fill = region)` and `scale_fill_brain()`. This also removes the discrete
-  palette scale that `geom_brain()` used to inject silently, so a continuous fill
-  set in `ggplot()` — `ggplot(df, aes(fill = value)) + geom_brain(atlas = dk())`
-  — no longer errors with "Continuous value supplied to a discrete scale".
+- Faceting no longer needs `dplyr::group_by()`. The atlas geometry is drawn by
+  `StatBrain`, which ggplot2 recomputes per panel, so `facet_wrap()` /
+  `facet_grid()` work directly from your data. Faceting on a variable of your own
+  draws the complete brain in every panel; faceting on an atlas column (`hemi`,
+  `view`) draws that slice in each panel, as before.
 
-- `geom_brain()` now combines multiple `data` rows that map to the same atlas
-  region into a single value with a new `fun` argument (default `mean`). Long
-  data with several rows per region — e.g. one per subject — is summarised per
-  region instead of overplotting. Any reducing function works, so
-  `geom_brain(atlas = dk(), fun = median)` draws the median.
+- `geom_brain()` again respects `data` and aesthetics set in the top-level
+  `ggplot()` call. The polygon renderer built the atlas eagerly, before the plot
+  existed, so it never saw inherited `data`/`aes()` (#158).
 
-- Faceting no longer needs `dplyr::group_by()`. The atlas geometry is now drawn
-  by a `Stat` (`StatBrain`), which `ggplot2` recomputes per panel, so
-  `facet_wrap()` / `facet_grid()` work directly from your data. Faceting on a
-  variable of your own (e.g. a cohort) draws the complete brain in every panel;
-  faceting on an atlas column (e.g. `hemi` or `view`) draws that slice in each
-  panel, as before. The old grouped-data-frame replication in the polygon path
-  is gone (the deprecated sf path is unchanged).
+- `geom_brain()` again maps `aes(colour = ...)` and `aes(linewidth = ...)` to
+  region outlines. The defaults (`grey35`, `0.2`) were injected as fixed geom
+  parameters, which silently overrode any mapping; they are now `default_aes` on
+  `GeomBrain` (#160).
 
-- New `stat_brain()` and exported `StatBrain` ggproto — the stat-first spelling
-  of `geom_brain()`. Both build the same layer; use `stat_brain()` to pair
-  `StatBrain` with a different geom.
+- `geom_brain()` again warns when rows of your `data` match no atlas region. The
+  polygon renderer's left join dropped unmatched rows silently (#121).
+
+## Documentation and internals
 
 - Roxygen documentation now uses markdown.
 
-- `geom_brain()` again warns when rows of your `data` match no atlas region.
-  The default polygon renderer joins your data onto the atlas with a left join,
-  which silently dropped unmatched rows — so a region name the atlas does not
-  use (e.g. the short `"bankssts"` against the long region name) vanished
-  without notice. It now surfaces those rows with the same "Some data not
-  merged properly" warning the sf renderer gives (#121).
+- Tests, examples, and vignettes resolve region names dynamically through
+  `ggseg.formats::atlas_regions()` and the schema-stable `label` column instead
+  of hard-coding region strings.
 
-- Internal geom/layer consolidation: the exported `GeomBrain` ggproto is now
-  the polygon geom that backs the default `geom_brain()` (a `GeomPolygon`
-  subclass). The deprecated sf renderer's geom was renamed to the internal
-  `GeomBrainSf`. Only affects code reaching for the `GeomBrain` object directly.
+- `vdiffr` snapshots are keyed by atlas schema through testthat's `variant`
+  mechanism, so one snapshot set per `ggseg.formats` schema can be committed
+  side by side.
 
-- `geom_brain()` now ignores (with a warning) a user `aes()` mapping for
-  `x`, `y`, `group`, or `subgroup`. These are derived from the atlas geometry
-  — `group` is the polygon feature id and `subgroup` marks holes — so mapping
-  them previously corrupted the rendering silently (e.g. `aes(group = region)`
-  collapsed each region's separate polygon pieces).
-
-- Polygon draw order now follows your data's row order, so overlapping region
-  outlines layer predictably. The renderer used to force alphabetical draw
-  order, so when you mapped a variable to `colour` the outlines stacked in an
-  order unrelated to that variable. Regions now draw in the order they appear
-  in your `data` (later rows on top), and regions you supply no value for stay
-  underneath in atlas order — so `arrange()` your data to control layering
-  (#162).
-
-- `geom_brain()` again maps `aes(colour = ...)` and `aes(linewidth = ...)` to
-  region outlines. The default outline colour (`grey35`) and width (`0.2`) were
-  injected as fixed geom parameters, which silently overrode any mapping. They
-  are now `default_aes` on a dedicated `GeomPolygon` subclass, so a mapping (or
-  an explicit constant) takes precedence while the defaults still apply when
-  neither is given (#160).
-
-- `geom_brain()` again respects `data` and aesthetics set in the top-level
-  `ggplot()` call. The default polygon renderer built the atlas eagerly, before
-  the plot existed, so it never saw inherited `data`/`aes()` and fell back to
-  colouring by region label — e.g. `ggplot(df, aes(fill = value)) +
-geom_brain(atlas = dk())` errored with "Discrete value supplied to a
-  continuous scale". The atlas is now flattened and joined at plot-build time, so
-  inherited mappings, inherited data, and faceting all work (#158).
+- The test helpers no longer attach Suggests packages unconditionally, so the
+  suite degrades to skips rather than erroring under
+  `_R_CHECK_DEPENDS_ONLY_=true`.
 
 # ggseg 2.2.1
 
