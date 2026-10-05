@@ -24,3 +24,4 @@ dev
 .claude/
 ^cran-comments\.md$
 ^codemeta\.json$
+^Rplots\.pdf$

@@ -74,7 +74,7 @@ describe("annotate_brain dispatch", {
     p <- ggplot() +
       geom_brain_polygon(atlas = dk(), show.legend = FALSE) +
       annotate_brain(atlas = dk())
-    expect_silent(ggplot2::ggplot_build(p))
+    expect_silent(muffle_breaking_warnings(ggplot2::ggplot_build(p)))
   })
 
   it("routes to the sf path when given a position_brain_sf()", {
@@ -96,7 +96,7 @@ describe("annotate_brain (polygon path)", {
       geom_brain(atlas = dk(), show.legend = FALSE) +
       annotate_brain(atlas = dk(), position = position_brain())
     expect_s3_class(p, "gg")
-    expect_silent(ggplot2::ggplot_build(p))
+    expect_silent(muffle_breaking_warnings(ggplot2::ggplot_build(p)))
   })
 
   it("builds a valid plot with subcortical atlas", {
@@ -104,7 +104,7 @@ describe("annotate_brain (polygon path)", {
       geom_brain(atlas = aseg(), show.legend = FALSE) +
       annotate_brain(atlas = aseg(), position = position_brain())
     expect_s3_class(p, "gg")
-    expect_silent(ggplot2::ggplot_build(p))
+    expect_silent(muffle_breaking_warnings(ggplot2::ggplot_build(p)))
   })
 
   it("respects hemi filtering", {
@@ -146,7 +146,7 @@ describe("annotate_brain (polygon path)", {
         atlas = dk(),
         position = position_brain(hemi ~ view)
       )
-    expect_silent(ggplot2::ggplot_build(p))
+    expect_silent(muffle_breaking_warnings(ggplot2::ggplot_build(p)))
   })
 
   it("works with nrow/ncol for subcortical", {
@@ -160,7 +160,7 @@ describe("annotate_brain (polygon path)", {
         atlas = aseg(),
         position = position_brain(nrow = 2)
       )
-    expect_silent(ggplot2::ggplot_build(p))
+    expect_silent(muffle_breaking_warnings(ggplot2::ggplot_build(p)))
   })
 
   it("passes styling arguments", {
@@ -178,7 +178,7 @@ describe("annotate_brain (polygon path)", {
 describe("annotate_brain visual", {
   it("dk default with labels", {
     testthat::skip_on_cran()
-    expect_doppelganger(
+    expect_brain_doppelganger(
       "dk default labels",
       ggplot() +
         geom_brain(atlas = dk(), show.legend = FALSE) +
@@ -188,7 +188,7 @@ describe("annotate_brain visual", {
 
   it("dk hemi ~ view with labels", {
     testthat::skip_on_cran()
-    expect_doppelganger(
+    expect_brain_doppelganger(
       "dk hemi view labels",
       ggplot() +
         geom_brain(
@@ -205,7 +205,7 @@ describe("annotate_brain visual", {
 
   it("aseg default with labels", {
     testthat::skip_on_cran()
-    expect_doppelganger(
+    expect_brain_doppelganger(
       "aseg default labels",
       ggplot() +
         geom_brain(atlas = aseg(), show.legend = FALSE) +
@@ -215,7 +215,7 @@ describe("annotate_brain visual", {
 
   it("aseg nrow 2 with labels", {
     testthat::skip_on_cran()
-    expect_doppelganger(
+    expect_brain_doppelganger(
       "aseg nrow 2 labels",
       ggplot() +
         geom_brain(

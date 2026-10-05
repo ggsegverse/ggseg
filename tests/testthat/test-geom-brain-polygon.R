@@ -1,9 +1,8 @@
 describe("geom_brain_polygon()", {
   it("renders a polygon atlas without requiring sf in the data path", {
-    skip_if_not_installed("vdiffr")
     poly <- ggseg.formats::as_polygon_atlas(dk())
     p <- ggplot2::ggplot() + geom_brain_polygon(atlas = poly)
-    g <- ggplot2::ggplot_build(p)
+    g <- muffle_breaking_warnings(ggplot2::ggplot_build(p))
     expect_gte(length(g$data), 1)
     expect_gt(nrow(g$data[[1]]), 0)
   })
@@ -474,14 +473,17 @@ describe("draw order follows the data row order (ggseg#162)", {
 
   it("layers overlapping outlines by data order", {
     testthat::skip_on_cran()
-    skip_if_not_installed("vdiffr")
     # Mirrors ggseg#162: fill by a statistic, outline by a threshold factor.
     # The factor levels are fixed, so each region keeps its colour and only the
     # row order differs between the two plots -- isolating the draw order.
-    # The committed snapshot is geometry-specific (skip_on_cran above), so the
-    # regions stay literal to keep the baseline stable under the schema it was
-    # generated with; the mismatch under the other schema is expected.
-    regs <- c("precentral", "postcentral", "superiorparietal")
+    # Regions are resolved from the rendered view itself so every row matches a
+    # polygon under either ggseg.formats schema.
+    regs <- utils::head(
+      unique(stats::na.omit(
+        prepare_polygon_atlas(dk(), hemi = "left", view = "lateral")$region
+      )),
+      3
+    )
     make <- function(order_regs) {
       d <- data.frame(
         region = order_regs,
@@ -502,7 +504,7 @@ describe("draw order follows the data row order (ggseg#162)", {
         ) +
         ggplot2::theme_void()
     }
-    vdiffr::expect_doppelganger("draw-order-forward", make(regs))
-    vdiffr::expect_doppelganger("draw-order-reversed", make(rev(regs)))
+    expect_brain_doppelganger("draw-order-forward", make(regs))
+    expect_brain_doppelganger("draw-order-reversed", make(rev(regs)))
   })
 })
