@@ -5,6 +5,13 @@
 #' lays out the brain views for you. No data? It just draws the atlas.
 #'
 #' @details
+#' `geom_brain()` plots *your* data on the brain. It does not colour the atlas
+#' by the atlas's own palette. Up to ggseg 2.2.1 it did whenever you mapped no
+#' `fill`, so a bare `geom_brain(atlas = dk())` now renders grey instead and
+#' warns once per session. For a palette-coloured overview use `plot(atlas)`
+#' from `ggseg.formats`, or map it here with `aes(fill = region)` and
+#' [scale_fill_brain()].
+#'
 #' Regions are drawn in the order they appear in your `data`, so when outlines
 #' overlap (e.g. mapping `colour` to a threshold with a wide `linewidth`) the
 #' later rows draw on top. Reorder your data with [dplyr::arrange()] to control
@@ -33,7 +40,9 @@
 #' @param fun Function used to combine multiple `data` rows that map to the same
 #'   atlas region, applied within each facet panel. Defaults to [mean()]. Any
 #'   function reducing a vector to a single value works (e.g. [median()],
-#'   [max()]).
+#'   [max()]). It applies to numeric columns only; non-numeric ones take the
+#'   first value of the group. Up to ggseg 2.2.1 duplicate rows overplotted, so
+#'   the last one won — `fun = dplyr::last` reproduces that.
 #' @param show.legend Logical. Should this layer be included in the legends?
 #' @param inherit.aes Logical. If `FALSE`, overrides the default aesthetics
 #'   rather than combining with them.
@@ -184,15 +193,19 @@ geom_brain_sf <- function(
 }
 
 
-#' Deprecated sf brain geom ggproto
+#' @section GeomBrainSf ggproto:
+#' `GeomBrainSf` is the [ggplot2::Geom] backing the deprecated
+#' `geom_brain_sf()` sf path. It renders atlas geometry via `sf::st_as_grob()`
+#' and requires [coord_sf()][ggplot2::coord_sf]. Up to ggseg 2.2.1 this object
+#' was the exported `GeomBrain`; `GeomBrain` is now the polygon geom that backs
+#' the default [geom_brain()], so extension code doing
+#' `ggplot2::layer(geom = GeomBrain)` against the sf path must switch to
+#' `GeomBrainSf`.
 #'
-#' The [ggplot2::Geom] backing the deprecated [geom_brain_sf()] sf path. It
-#' renders atlas geometry via [sf::st_as_grob()] and requires
-#' [coord_sf()][ggplot2::coord_sf]. The default [geom_brain()] path uses the
-#' polygon [GeomBrain] instead.
-#'
-#' @keywords internal
-#' @noRd
+#' @export
+#' @rdname geom_brain_sf
+#' @usage NULL
+#' @format NULL
 #' @importFrom ggplot2 Geom aes ggproto draw_key_polygon
 GeomBrainSf <- ggproto(
   "GeomBrainSf",

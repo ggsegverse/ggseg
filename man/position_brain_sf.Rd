@@ -38,7 +38,7 @@ A \code{PositionBrain} ggproto object.
 The sf rendering path is deprecated. \code{position_brain_sf()} returns the
 legacy \code{PositionBrain} ggproto for use with \code{\link[=geom_brain_sf]{geom_brain_sf()}}. For new
 code, use \code{\link[=position_brain]{position_brain()}} (the polygon default), or convert the atlas
-with \code{as_sf_atlas()} and use \code{\link[ggplot2:ggsf]{ggplot2::geom_sf()}} directly.
+with \code{as_sf_atlas()} and use \code{\link[ggplot2:geom_sf]{ggplot2::geom_sf()}} directly.
 }
 \examples{
 \dontrun{

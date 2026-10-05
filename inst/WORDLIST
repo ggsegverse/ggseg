@@ -7,6 +7,7 @@ FreeSurfer's
 GDAL
 GEOS
 GeomBrain
+GeomBrainSf
 ICV
 Killiany
 Lifebrain
@@ -41,6 +42,7 @@ dkt
 doi
 dplyr
 errored
+erroring
 favour
 flamap
 freesurfer
@@ -63,8 +65,11 @@ neuroimaging
 orbito
 orbitofrontal
 organisation
+overplot
+overplotted
 parcellation
 pkgcheck
+positionally
 postcentral
 pre
 precentral
@@ -73,14 +78,17 @@ renderer
 renderer's
 reorganised
 repositioned
+restacks
 roxygen
 sagittal
 subcortical
 summarised
 sysreq
 testthat
+testthat's
 tibble
 tracula
+unaggregated
 undistorted
 unlabelled
 vctrs

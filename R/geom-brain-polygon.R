@@ -175,6 +175,8 @@ LayerBrain <- ggproto(
   setup_layer = function(self, data, plot) {
     dt <- ggproto_parent(ggplot2_Layer(), self)$setup_layer(data, plot)
 
+    warn_uncoloured_atlas(self$computed_mapping, self$aes_params)
+
     atlas <- self$brain_atlas
     if (is.null(atlas)) {
       cli::cli_abort(
@@ -246,6 +248,7 @@ LayerBrain <- ggproto(
     # Draw-order-follows-data (#162) only applies to real user data; keep the
     # atlas order when the driving rows are just the atlas identity.
     self$stat_params$reorder <- has_data
+    self$stat_params$has_data <- has_data
     self$stat_params$facet_atlas_cols <- facet_atlas_cols
 
     dt
@@ -279,6 +282,47 @@ group_by_facet_vars <- function(data, plot, atlas) {
     data <- dplyr::group_by(data, dplyr::across(dplyr::all_of(group_vars)))
   }
   data
+}
+
+
+#' Warn once per session that a bare brain is no longer palette-coloured
+#'
+#' ggseg 2.2.1 and earlier injected `fill = .data$label` plus a matching
+#' `scale_fill_manual()` whenever the user mapped no `fill`, so a bare
+#' `geom_brain()` came out palette-coloured. It no longer does, and the result
+#' (a uniform grey brain) is a silent change of meaning for existing figures.
+#' The warning fires from `setup_layer()`, after the top-level `ggplot()`
+#' mapping has been inherited, so a `fill` set there counts.
+#'
+#' @param mapping The layer's computed aesthetic mapping.
+#' @param aes_params The layer's fixed aesthetic parameters.
+#' @return `invisible(NULL)`, called for its warning side effect.
+#' @keywords internal
+#' @noRd
+warn_uncoloured_atlas <- function(mapping, aes_params) {
+  if (any(c(names(mapping), names(aes_params)) == "fill")) {
+    return(invisible(NULL))
+  }
+  rlang::warn(
+    cli::format_message(c(
+      "!" = paste(
+        "{.fn geom_brain} no longer colours the atlas by its own palette",
+        "when you map no {.field fill}; regions render grey."
+      ),
+      "i" = paste(
+        "For a palette-coloured overview use {.code plot(atlas)}",
+        "({.pkg ggseg.formats})."
+      ),
+      "i" = paste(
+        "To colour by region here, map it:",
+        "{.code aes(fill = region)} with {.fn scale_fill_brain}."
+      )
+    )),
+    class = "ggseg_uncoloured_atlas",
+    .frequency = "once",
+    .frequency_id = "ggseg_uncoloured_atlas"
+  )
+  invisible(NULL)
 }
 
 

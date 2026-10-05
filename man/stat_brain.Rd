@@ -44,7 +44,9 @@ the default), or show only the regions you're plotting (\code{FALSE}).}
 \item{fun}{Function used to combine multiple \code{data} rows that map to the same
 atlas region, applied within each facet panel. Defaults to \code{\link[=mean]{mean()}}. Any
 function reducing a vector to a single value works (e.g. \code{\link[=median]{median()}},
-\code{\link[=max]{max()}}).}
+\code{\link[=max]{max()}}). It applies to numeric columns only; non-numeric ones take the
+first value of the group. Up to ggseg 2.2.1 duplicate rows overplotted, so
+the last one won — \code{fun = dplyr::last} reproduces that.}
 
 \item{geom}{The geometric object used to render the atlas. Defaults to
 \link{GeomBrain}.}

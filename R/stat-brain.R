@@ -29,7 +29,14 @@ StatBrain <- ggproto(
   Stat,
   required_aes = character(0),
   retransform = TRUE,
-  extra_params = c("na.rm", "fun", "flat", "reorder", "facet_atlas_cols"),
+  extra_params = c(
+    "na.rm",
+    "fun",
+    "flat",
+    "reorder",
+    "has_data",
+    "facet_atlas_cols"
+  ),
   # `na.rm` is the standard stat switch for dropping missing values (used by the
   # base `Stat$compute_layer()`'s `remove_missing()`); it does NOT touch
   # aggregation. To drop NAs while aggregating, pass e.g.
@@ -40,6 +47,7 @@ StatBrain <- ggproto(
     flat = NULL,
     fun = mean,
     reorder = TRUE,
+    has_data = TRUE,
     facet_atlas_cols = character(0),
     na.rm = FALSE
   ) {
@@ -53,7 +61,7 @@ StatBrain <- ggproto(
     # per panel rather than replicating it; faceting on a user column replicates
     # the whole atlas. This mirrors the pre-StatBrain contract.
     flat <- subset_flat_to_facet(flat, data, facet_atlas_cols)
-    join_brain_values(data, flat, fun, reorder = reorder)
+    join_brain_values(data, flat, fun, reorder = reorder, has_data = has_data)
   }
 )
 
@@ -151,12 +159,20 @@ atlas_metadata_cols <- function(flat) {
 #'   data row order (ggsegverse/ggseg#162). Set `FALSE` when the data is just
 #'   the atlas's own identity rows (no user data), so the atlas draw order is
 #'   preserved.
+#' @param has_data Whether the driving rows are real user data rather than the
+#'   atlas's own identity rows; only then can `fun` meaningfully collapse.
 #' @return `flat` with joined (aggregated) values and `group` set to the polygon
 #'   feature id.
 #' @keywords internal
 #' @noRd
 #' @importFrom rlang .data
-join_brain_values <- function(data, flat, fun, reorder = TRUE) {
+join_brain_values <- function(
+  data,
+  flat,
+  fun,
+  reorder = TRUE,
+  has_data = TRUE
+) {
   keys <- intersect(brain_join_keys(), intersect(names(data), names(flat)))
 
   if (length(keys) == 0) {
@@ -164,7 +180,13 @@ join_brain_values <- function(data, flat, fun, reorder = TRUE) {
     return(flat)
   }
 
-  agg <- aggregate_brain_values(data, keys, fun, atlas_metadata_cols(flat))
+  agg <- aggregate_brain_values(
+    data,
+    keys,
+    fun,
+    atlas_metadata_cols(flat),
+    warn_collapse = has_data
+  )
   joined <- dplyr::left_join(flat, agg, by = keys, suffix = c("", ".user"))
   if (reorder) {
     joined <- order_features_by_data(joined, data, keys)
@@ -188,10 +210,17 @@ join_brain_values <- function(data, flat, fun, reorder = TRUE) {
 #' @param fun Aggregating function for numeric aesthetic columns.
 #' @param atlas_cols The atlas metadata columns (from [atlas_metadata_cols()]);
 #'   any `data` column among them is geometry, not a value to aggregate.
+#' @param warn_collapse Whether to warn when `fun` collapses rows.
 #' @return One row per unique key combination.
 #' @keywords internal
 #' @noRd
-aggregate_brain_values <- function(data, keys, fun, atlas_cols) {
+aggregate_brain_values <- function(
+  data,
+  keys,
+  fun,
+  atlas_cols,
+  warn_collapse = TRUE
+) {
   ignore <- c(
     "group",
     "PANEL",
@@ -199,6 +228,10 @@ aggregate_brain_values <- function(data, keys, fun, atlas_cols) {
     intersect(names(data), atlas_cols)
   )
   value_cols <- setdiff(names(data), ignore)
+
+  if (warn_collapse) {
+    warn_collapsed_rows(data, keys, value_cols)
+  }
 
   grouped <- dplyr::group_by(data, dplyr::across(dplyr::all_of(keys)))
   tryCatch(
@@ -221,6 +254,45 @@ aggregate_brain_values <- function(data, keys, fun, atlas_cols) {
       )
     }
   )
+}
+
+
+#' Warn once per session when `fun` actually collapses rows
+#'
+#' Before ggseg 3.0.0 several `data` rows for the same region overplotted, so
+#' the last row won; they are now reduced with `fun` (mean by default). That is
+#' a silent numeric change for anyone plotting an unaggregated cohort, so say so
+#' the first time it happens in a session.
+#'
+#' @param data One facet panel's user data, with computed aesthetics.
+#' @param keys Character vector of join-key columns.
+#' @param value_cols The aesthetic columns that would be aggregated.
+#' @return `invisible(NULL)`, called for its warning side effect.
+#' @keywords internal
+#' @noRd
+warn_collapsed_rows <- function(data, keys, value_cols) {
+  collapses <- length(value_cols) > 0 &&
+    anyDuplicated(data[, keys, drop = FALSE]) > 0
+  if (!collapses) {
+    return(invisible(NULL))
+  }
+  rlang::warn(
+    cli::format_message(c(
+      "!" = paste(
+        "Several {.arg data} rows map to the same atlas region;",
+        "combining them with {.arg fun}."
+      ),
+      "i" = paste(
+        "Before ggseg 3.0.0 these rows overplotted, so the last one won.",
+        "Pass {.code fun = dplyr::last} to keep that behaviour."
+      ),
+      "i" = "Non-numeric columns take the first value regardless of {.arg fun}."
+    )),
+    class = "ggseg_collapsed_rows",
+    .frequency = "once",
+    .frequency_id = "ggseg_collapsed_rows"
+  )
+  invisible(NULL)
 }
 
 

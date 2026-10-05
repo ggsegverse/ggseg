@@ -10,15 +10,39 @@ describe("aggregate_brain_values()", {
 
   it("reduces numeric columns per key with fun (default mean)", {
     d <- data.frame(region = c("a", "a", "b"), fill = c(1, 3, 10))
-    agg <- aggregate_brain_values(d, "region", mean, keys)
+    agg <- aggregate_brain_values(
+      d,
+      "region",
+      mean,
+      keys,
+      warn_collapse = FALSE
+    )
     expect_identical(agg$fill[agg$region == "a"], 2)
     expect_identical(agg$fill[agg$region == "b"], 10)
   })
 
   it("honours a custom aggregating function", {
     d <- data.frame(region = c("a", "a"), fill = c(1, 3))
-    expect_identical(aggregate_brain_values(d, "region", max, keys)$fill, 3)
-    expect_identical(aggregate_brain_values(d, "region", min, keys)$fill, 1)
+    expect_identical(
+      aggregate_brain_values(
+        d,
+        "region",
+        max,
+        keys,
+        warn_collapse = FALSE
+      )$fill,
+      3
+    )
+    expect_identical(
+      aggregate_brain_values(
+        d,
+        "region",
+        min,
+        keys,
+        warn_collapse = FALSE
+      )$fill,
+      1
+    )
   })
 
   it("takes the first value of non-numeric columns", {
@@ -27,18 +51,36 @@ describe("aggregate_brain_values()", {
       grp = c("x", "y"),
       stringsAsFactors = FALSE
     )
-    expect_identical(aggregate_brain_values(d, "region", mean, keys)$grp, "x")
+    expect_identical(
+      aggregate_brain_values(
+        d,
+        "region",
+        mean,
+        keys,
+        warn_collapse = FALSE
+      )$grp,
+      "x"
+    )
   })
 
   it("collapses to one row per key", {
     d <- data.frame(region = c("a", "a", "b", "b"), fill = 1:4)
-    expect_identical(nrow(aggregate_brain_values(d, "region", mean, keys)), 2L)
+    expect_identical(
+      nrow(aggregate_brain_values(
+        d,
+        "region",
+        mean,
+        keys,
+        warn_collapse = FALSE
+      )),
+      2L
+    )
   })
 
   it("errors clearly when fun does not reduce to a single value", {
     d <- data.frame(region = c("a", "a"), fill = c(1, 3))
     expect_error(
-      aggregate_brain_values(d, "region", range, keys),
+      aggregate_brain_values(d, "region", range, keys, warn_collapse = FALSE),
       "single value"
     )
   })

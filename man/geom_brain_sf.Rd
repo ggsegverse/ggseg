@@ -2,6 +2,7 @@
 % Please edit documentation in R/geom-brain.R
 \name{geom_brain_sf}
 \alias{geom_brain_sf}
+\alias{GeomBrainSf}
 \title{Deprecated sf brain geom}
 \usage{
 geom_brain_sf(
@@ -49,11 +50,22 @@ A list of ggplot2 layer and coord objects.
 \ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#deprecated}{\figure{lifecycle-deprecated.svg}{options: alt='[Deprecated]'}}}{\strong{[Deprecated]}}
 
 The sf rendering path is deprecated. \code{geom_brain_sf()} renders an atlas via
-\code{\link[ggplot2:ggsf]{ggplot2::geom_sf()}} and \link[ggplot2:ggsf]{coord_sf()}. For new code, use
+\code{\link[ggplot2:geom_sf]{ggplot2::geom_sf()}} and \link[ggplot2:coord_sf]{coord_sf()}. For new code, use
 \code{\link[=geom_brain]{geom_brain()}} (the polygon default), or convert the atlas with
-\code{as_sf_atlas()} and use \code{\link[ggplot2:ggsf]{ggplot2::geom_sf()}} directly for the full sf
+\code{as_sf_atlas()} and use \code{\link[ggplot2:geom_sf]{ggplot2::geom_sf()}} directly for the full sf
 toolkit (labels, other sf layers).
 }
+\section{GeomBrainSf ggproto}{
+
+\code{GeomBrainSf} is the \link[ggplot2:Geom]{ggplot2::Geom} backing the deprecated
+\code{geom_brain_sf()} sf path. It renders atlas geometry via \code{sf::st_as_grob()}
+and requires \link[ggplot2:coord_sf]{coord_sf()}. Up to ggseg 2.2.1 this object
+was the exported \code{GeomBrain}; \code{GeomBrain} is now the polygon geom that backs
+the default \code{\link[=geom_brain]{geom_brain()}}, so extension code doing
+\code{ggplot2::layer(geom = GeomBrain)} against the sf path must switch to
+\code{GeomBrainSf}.
+}
+
 \examples{
 \dontrun{
 # Deprecated: prefer geom_brain(). Shown for reference only.

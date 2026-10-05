@@ -4,11 +4,7 @@
 \alias{brain_test_plot}
 \title{Render a brain atlas with default snapshot styling}
 \usage{
-brain_test_plot(
-  atlas,
-  position = NULL,
-  na.value = "grey"
-)
+brain_test_plot(atlas, position = NULL, na.value = "grey")
 }
 \arguments{
 \item{atlas}{A \code{ggseg_atlas} object, such as \code{\link[=dk]{dk()}} or \code{\link[=aseg]{aseg()}}.}
@@ -26,14 +22,14 @@ A \code{\link[ggplot2:ggplot]{ggplot2::ggplot()}} object.
 }
 \description{
 Builds a minimal, deterministic plot of a \code{ggseg_atlas}: every region filled
-by its \code{label}, no legend, and \code{\link[ggplot2:ggtheme]{ggplot2::theme_void()}}. This is the canonical
+by its \code{label}, no legend, and \code{\link[ggplot2:theme_void]{ggplot2::theme_void()}}. This is the canonical
 construction used across the ggsegverse for visual-regression (\code{vdiffr})
 snapshots, so that every atlas is rendered the same way and a stray legend,
 axis, or title cannot creep into a snapshot. It doubles as a quick way to
 preview an atlas.
 }
 \details{
-The atlas \code{palette} is applied with \code{\link[ggplot2:scale_manual]{ggplot2::scale_fill_manual()}} when it is
+The atlas \code{palette} is applied with \code{\link[ggplot2:scale_fill_manual]{ggplot2::scale_fill_manual()}} when it is
 present; atlases without a palette fall back to the default \code{ggplot2} fill
 scale.
 }
