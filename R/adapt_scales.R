@@ -3,7 +3,7 @@
 #' Returns axis breaks, labels, and lab strings based on atlas layout.
 #' Used internally by [scale_continous_brain()] and related functions.
 #'
-#' @param geobrain A data.frame containing atlas information with columns
+#' @param geobrain A `ggseg_atlas`, or a flattened atlas data.frame with columns
 #'   `hemi`, `view`, `type`, `.lat`, and `.long`.
 #' @inheritParams reposition_brain
 #' @inheritParams scale_brain
@@ -17,8 +17,13 @@ adapt_scales <- function(
   aesthetics = "labs"
 ) {
   if (!is.data.frame(geobrain)) {
-    geobrain <- sf2coords(as.data.frame(geobrain))
-    geobrain <- tidyr::unnest(geobrain, ggseg)
+    if (!ggseg.formats::is_ggseg_atlas(geobrain)) {
+      cli::cli_abort(c(
+        "{.arg atlas} must be a {.cls ggseg_atlas}.",
+        "i" = "Got {.cls {class(geobrain)}}."
+      ))
+    }
+    geobrain <- atlas_scale_coords(geobrain)
   }
 
   atlas_type <- unique(geobrain$type)
@@ -27,6 +32,30 @@ adapt_scales <- function(
   } else if (atlas_type %in% c("subcortical", "tract")) {
     adapt_scales_subcortical(geobrain, position, aesthetics)
   }
+}
+
+
+#' Vertex coordinates of an atlas for axis scaling
+#'
+#' Flattens an atlas to one row per polygon vertex and names the coordinates
+#' `.long`/`.lat`, the frame [adapt_scales()] summarises. It goes through
+#' [prepare_polygon_atlas()], i.e. `ggseg.formats::atlas_polygons()`, so the
+#' exported `scale_x_brain()` family works without the optional `sf` package.
+#' No branch on `is_atlas_polygon()` / `is_atlas_sf()` is needed:
+#' `atlas_polygons()` already serves both, converting an sf-backed atlas on the
+#' fly (which can only exist where `sf` is installed anyway). No layout is
+#' applied, so the coordinates are the atlas's own frame, as the previous
+#' sf-derived ones were.
+#'
+#' @param atlas A `ggseg_atlas`.
+#' @return A data.frame with `.long`, `.lat` and the atlas metadata columns.
+#' @keywords internal
+#' @noRd
+atlas_scale_coords <- function(atlas) {
+  flat <- prepare_polygon_atlas(atlas)
+  flat$.long <- flat$x
+  flat$.lat <- flat$y
+  flat
 }
 
 

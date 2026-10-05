@@ -120,6 +120,15 @@ breaking changes before upgrading.
 - `geom_brain()` again warns when rows of your `data` match no atlas region. The
   polygon renderer's left join dropped unmatched rows silently (#121).
 
+- `scale_x_brain()`, `scale_y_brain()` and `scale_labs_brain()` no longer
+  require the optional `sf` package. They derived their axis breaks by
+  converting the atlas to `sf` and reading coordinates back out, so on a system
+  without `sf` they errored instead of working -- even though `sf` moved to
+  Suggests in 2.2.0 and everything else on the default path had been made
+  sf-free. They now read the coordinates from the polygon representation
+  (`ggseg.formats::atlas_polygons()`). The breaks and labels are unchanged for
+  `dk()`, `aseg()` and `tracula()`; a test pins them to the sf-derived values.
+
 ## Documentation and internals
 
 - Roxygen documentation now uses markdown.

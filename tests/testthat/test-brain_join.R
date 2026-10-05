@@ -62,6 +62,7 @@ describe("brain_join", {
   })
 
   it("returns tibble when atlas has no geometry", {
+    skip_if_not_installed("sf")
     atlas_df <- as.data.frame(dk())
     atlas_df$geometry <- NULL
     single <- some_data[some_data$grp == "G1", ]
