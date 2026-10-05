@@ -19,7 +19,7 @@
 #' @importFrom utils capture.output
 #' @examplesIf requireNamespace("sf", quietly = TRUE)
 #' someData <- data.frame(
-#'   region = ggseg.formats::atlas_regions(dk())[1:4],
+#'   region = sort(unique(ggseg.formats::atlas_regions(dk())))[1:4],
 #'   p = sample(seq(0, .5, .001), 4),
 #'   stringsAsFactors = FALSE
 #' )

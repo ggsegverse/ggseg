@@ -176,7 +176,7 @@ describe("warn_unmatched_polygon_data() (ggseg#121)", {
   # setup_layer warning surfaces the mismatch. StatBrain does the join now; the
   # warning helper is exercised directly plus through a built plot.
   poly <- ggseg.formats::as_polygon_atlas(dk())
-  a_region <- ggseg.formats::atlas_regions(dk())[1]
+  a_region <- sort(unique(ggseg.formats::atlas_regions(dk())))[1]
 
   it("warns when a data region matches no atlas region", {
     flat <- prepare_polygon_atlas(poly)
@@ -201,7 +201,7 @@ describe("warn_unmatched_polygon_data() (ggseg#121)", {
   it("stays silent when every data row matches", {
     flat <- prepare_polygon_atlas(poly)
     data <- data.frame(
-      region = ggseg.formats::atlas_regions(dk())[1:2],
+      region = sort(unique(ggseg.formats::atlas_regions(dk())))[1:2],
       p = c(0.9, 0.1)
     )
     expect_no_warning(warn_unmatched_polygon_data(data, flat, "region"))
@@ -209,7 +209,11 @@ describe("warn_unmatched_polygon_data() (ggseg#121)", {
 
   it("matches by label without warning", {
     flat <- prepare_polygon_atlas(poly)
-    a_label <- sub("^lh_", "", ggseg.formats::atlas_labels(dk())[1])
+    a_label <- sub(
+      "^lh_",
+      "",
+      sort(unique(ggseg.formats::atlas_labels(dk())))[1]
+    )
     data <- data.frame(
       label = paste0(c("lh_", "rh_"), a_label),
       p = c(0.9, 0.9)
@@ -235,8 +239,8 @@ describe("geom_brain() inherits top-level data and aes (ggseg#158)", {
 
   labelled_values <- function() {
     data.frame(
-      label = ggseg.formats::atlas_labels(dk()),
-      value = seq_along(ggseg.formats::atlas_labels(dk()))
+      label = sort(unique(ggseg.formats::atlas_labels(dk()))),
+      value = seq_along(sort(unique(ggseg.formats::atlas_labels(dk()))))
     )
   }
 
@@ -251,7 +255,9 @@ describe("geom_brain() inherits top-level data and aes (ggseg#158)", {
     # regions keep the scale's grey na.value.
     expect_gt(length(unique(grep("^#", fills, value = TRUE))), 2)
     # Fill must not fall back to the region labels.
-    expect_false(any(fills %in% ggseg.formats::atlas_labels(dk())))
+    expect_false(any(
+      fills %in% sort(unique(ggseg.formats::atlas_labels(dk())))
+    ))
   })
 
   it("matches the explicit geom-level data= workaround from the issue", {
@@ -334,7 +340,7 @@ describe("geom_brain() outline aesthetics (ggseg#160)", {
 
   outline_data <- function() {
     data.frame(
-      region = ggseg.formats::atlas_regions(dk())[1:3],
+      region = sort(unique(ggseg.formats::atlas_regions(dk())))[1:3],
       grp = c("a", "b", "c"),
       w = c(0.5, 1.5, 3)
     )
@@ -378,7 +384,7 @@ describe("geom_brain() protects atlas-controlled aesthetics", {
 
   it("warns and ignores a user-mapped group aesthetic", {
     d <- data.frame(
-      region = ggseg.formats::atlas_regions(dk())[1:2],
+      region = sort(unique(ggseg.formats::atlas_regions(dk())))[1:2],
       v = c(1, 2)
     )
     baseline <- n_groups(
@@ -434,7 +440,7 @@ describe("draw order follows the data row order (ggseg#162)", {
     poly <- ggseg.formats::as_polygon_atlas(dk())
     flat <- prepare_polygon_atlas(poly)
     data <- data.frame(
-      region = ggseg.formats::atlas_regions(dk())[1:2],
+      region = sort(unique(ggseg.formats::atlas_regions(dk())))[1:2],
       v = 1:2
     )
     joined <- join_brain_values(data, flat, mean)
@@ -451,7 +457,7 @@ describe("draw order follows the data row order (ggseg#162)", {
       j <- join_brain_values(d, flat, mean)
       j$region[j$.feature_id == max(j$.feature_id)][1]
     }
-    regs <- ggseg.formats::atlas_regions(dk())[1:4]
+    regs <- sort(unique(ggseg.formats::atlas_regions(dk())))[1:4]
     expect_identical(top_region(regs), regs[4])
     expect_identical(top_region(rev(regs)), regs[1])
   })
@@ -466,7 +472,7 @@ describe("draw order follows the data row order (ggseg#162)", {
       j <- join_brain_values(d, flat, mean)
       j$region[j$.feature_id == max(j$.feature_id)][1]
     }
-    two <- ggseg.formats::atlas_regions(dk())[1:2]
+    two <- sort(unique(ggseg.formats::atlas_regions(dk())))[1:2]
     expect_identical(top_in(two), two[2])
     expect_identical(top_in(rev(two)), two[1])
   })

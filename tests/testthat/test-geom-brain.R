@@ -60,7 +60,7 @@ describe("geom_brain_sf (deprecated sf path)", {
     skip_if_not_installed("sf")
     withr::local_options(lifecycle_verbosity = "quiet")
     some_data <- tibble(
-      region = ggseg.formats::atlas_regions(dk())[1:2],
+      region = sort(unique(ggseg.formats::atlas_regions(dk())))[1:2],
       p = c(0.1, 0.5)
     )
     p <- ggplot(some_data) +
@@ -83,7 +83,10 @@ describe("geom_brain_sf (deprecated sf path)", {
   it("works with inherit.aes FALSE", {
     skip_if_not_installed("sf")
     withr::local_options(lifecycle_verbosity = "quiet")
-    some_data <- tibble(region = ggseg.formats::atlas_regions(dk())[1], p = 0.3)
+    some_data <- tibble(
+      region = sort(unique(ggseg.formats::atlas_regions(dk())))[1],
+      p = 0.3
+    )
     p <- ggplot(some_data, aes(fill = p)) +
       geom_brain_sf(atlas = dk(), inherit.aes = FALSE)
     expect_message(
@@ -111,7 +114,7 @@ describe("geom_brain_sf (deprecated sf path)", {
 
 describe("geom_brain faceting", {
   some_data <- tibble(
-    region = rep(ggseg.formats::atlas_regions(dk())[1:4], 2),
+    region = rep(sort(unique(ggseg.formats::atlas_regions(dk())))[1:4], 2),
     p = seq(0.1, 0.8, by = 0.1),
     group = c(rep("A", 4), rep("B", 4))
   )
@@ -183,7 +186,7 @@ describe("geom_brain faceting", {
     skip_if_not_installed("sf")
     withr::local_options(lifecycle_verbosity = "quiet")
     data_with_hemi <- tibble(
-      region = ggseg.formats::atlas_regions(dk())[1:2],
+      region = sort(unique(ggseg.formats::atlas_regions(dk())))[1:2],
       p = c(0.1, 0.5),
       hemi = c("left", "right")
     )

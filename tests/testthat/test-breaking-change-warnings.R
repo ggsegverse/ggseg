@@ -66,7 +66,7 @@ describe("warn_uncoloured_atlas()", {
 
 describe("warn_collapsed_rows()", {
   duplicated_data <- function() {
-    regs <- rep(ggseg.formats::atlas_regions(dk())[1:2], each = 2)
+    regs <- rep(sort(unique(ggseg.formats::atlas_regions(dk())))[1:2], each = 2)
     data.frame(region = regs, value = seq_along(regs))
   }
 
@@ -91,7 +91,7 @@ describe("warn_collapsed_rows()", {
   it("stays silent when every region appears once", {
     rlang::reset_warning_verbosity("ggseg_collapsed_rows")
     one_per_region <- data.frame(
-      region = ggseg.formats::atlas_regions(dk())[1:2],
+      region = sort(unique(ggseg.formats::atlas_regions(dk())))[1:2],
       value = 1:2
     )
     expect_no_warning(

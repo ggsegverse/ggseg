@@ -72,7 +72,7 @@ geometry and handles column detection:
 ```{r}
 #| label: brain-join
 some_data <- tibble(
-  region = ggseg.formats::atlas_regions(dk())[1:4],
+  region = sort(unique(ggseg.formats::atlas_regions(dk())))[1:4],
   p = sample(seq(0, 0.5, 0.001), 4)
 )
 
@@ -141,7 +141,7 @@ The grouping tells the join to replicate the atlas for each group:
 #| label: fig-facet-grouped
 #| fig-cap: "Faceted brain plots using the geom_sf workflow with grouped data."
 some_data <- tibble(
-  region = rep(ggseg.formats::atlas_regions(dk())[1:4], 2),
+  region = rep(sort(unique(ggseg.formats::atlas_regions(dk())))[1:4], 2),
   p = sample(seq(0, 0.5, 0.001), 8),
   group = c(rep("A", 4), rep("B", 4))
 )

@@ -41,7 +41,7 @@ colour mapping.
 \examples{
 library(ggplot2)
 
-regions <- ggseg.formats::atlas_regions(dk())[1:2]
+regions <- sort(unique(ggseg.formats::atlas_regions(dk())))[1:2]
 pal <- setNames(c("red", "blue"), regions)
 ggplot() +
   geom_brain(atlas = dk(), aes(fill = region), show.legend = FALSE) +

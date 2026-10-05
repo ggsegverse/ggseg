@@ -91,7 +91,7 @@ describe("join_brain_values()", {
   flat <- prepare_polygon_atlas(poly)
 
   it("keeps every atlas polygon and leaves unmatched regions NA", {
-    reg <- ggseg.formats::atlas_regions(dk())[1]
+    reg <- sort(unique(ggseg.formats::atlas_regions(dk())))[1]
     d <- data.frame(region = reg, fill = 5)
     j <- join_brain_values(d, flat, mean)
     expect_identical(nrow(j), nrow(flat))
@@ -103,7 +103,7 @@ describe("join_brain_values()", {
   })
 
   it("joins by label when data carries label but not region", {
-    lbl <- ggseg.formats::atlas_labels(dk())[1]
+    lbl <- sort(unique(ggseg.formats::atlas_labels(dk())))[1]
     d <- data.frame(label = lbl, fill = 1.5)
     j <- join_brain_values(d, flat, mean)
     expect_identical(unique(j$fill[j$label %in% lbl]), 1.5)
@@ -117,7 +117,10 @@ describe("join_brain_values()", {
   })
 
   it("sets group to the polygon feature id", {
-    d <- data.frame(region = ggseg.formats::atlas_regions(dk())[1], fill = 1)
+    d <- data.frame(
+      region = sort(unique(ggseg.formats::atlas_regions(dk())))[1],
+      fill = 1
+    )
     j <- join_brain_values(d, flat, mean)
     expect_identical(j$group, j$.feature_id)
   })
@@ -125,7 +128,7 @@ describe("join_brain_values()", {
 
 describe("stat_brain()", {
   it("produces the same layer output as geom_brain()", {
-    regs <- ggseg.formats::atlas_regions(dk())
+    regs <- sort(unique(ggseg.formats::atlas_regions(dk())))
     d <- data.frame(region = regs, value = seq_along(regs))
     g <- suppressMessages(ggplot2::ggplot_build(
       ggplot2::ggplot(d, ggplot2::aes(fill = value)) +
@@ -148,7 +151,7 @@ describe("stat_brain()", {
 })
 
 describe("geom_brain() aggregates multiple rows per region", {
-  regs <- ggseg.formats::atlas_regions(dk())[1:4]
+  regs <- sort(unique(ggseg.formats::atlas_regions(dk())))[1:4]
   long <- do.call(
     rbind,
     lapply(1:3, function(i) {
@@ -190,7 +193,7 @@ describe("geom_brain() aggregates multiple rows per region", {
 })
 
 describe("faceting without group_by (native via StatBrain)", {
-  regs <- ggseg.formats::atlas_regions(dk())
+  regs <- sort(unique(ggseg.formats::atlas_regions(dk())))
   faceted <- rbind(
     cbind(data.frame(region = regs, value = seq_along(regs)), cohort = "A"),
     cbind(data.frame(region = regs, value = rev(seq_along(regs))), cohort = "B")
@@ -254,7 +257,7 @@ describe("faceting on an atlas column subsets the atlas (not replicate)", {
   })
 
   it("splits by hemisphere with user data too", {
-    regs <- ggseg.formats::atlas_regions(dk())
+    regs <- sort(unique(ggseg.formats::atlas_regions(dk())))
     d <- data.frame(
       region = regs,
       hemi = ifelse(grepl("frontal", regs, fixed = TRUE), "left", "right"),

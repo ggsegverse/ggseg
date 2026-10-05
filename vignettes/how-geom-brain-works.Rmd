@@ -56,7 +56,7 @@ Everything else stays grey, so the brain remains legible even when you have meas
 #| fig-alt: "Three regions on a red-blue diverging scale, the rest grey."
 #| fig-cap: "Three regions have values; the rest of the brain still renders."
 results <- data.frame(
-  region = ggseg.formats::atlas_regions(dk())[1:3],
+  region = sort(unique(ggseg.formats::atlas_regions(dk())))[1:3],
   score = c(2.1, -1.4, 0.8)
 )
 
@@ -77,7 +77,7 @@ The default is the mean, and the `fun` argument takes any function that turns a 
 #| fig-alt: "The three regions summarised by mean, then by maximum."
 #| fig-cap: "Repeated-measures data summarised by mean and by maximum."
 thickness <- data.frame(
-  region = rep(ggseg.formats::atlas_regions(dk())[1:3], each = 4),
+  region = rep(sort(unique(ggseg.formats::atlas_regions(dk())))[1:3], each = 4),
   subject = rep(1:4, times = 3),
   thickness = c(2.5, 2.6, 2.4, 2.7, 3.1, 3.0, 3.2, 2.9, 2.8, 2.7, 2.9, 2.6)
 )
@@ -103,7 +103,7 @@ No `group_by()`, no copying the atlas by hand -- `facet_wrap()` and `facet_grid(
 #| fig-alt: "Two stacked brains, one per cohort, four regions coloured."
 #| fig-cap: "One brain per cohort, each drawn from that cohort's own rows."
 cohorts <- expand.grid(
-  region = ggseg.formats::atlas_regions(dk())[1:4],
+  region = sort(unique(ggseg.formats::atlas_regions(dk())))[1:4],
   group = c("patients", "controls"),
   stringsAsFactors = FALSE
 )
