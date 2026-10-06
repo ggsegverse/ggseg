@@ -177,7 +177,7 @@ describe("geom_brain() aggregates multiple rows per region", {
         geom = Spy,
         fun = fun
       )
-    invisible(ggplot2::ggplot_build(p))
+    invisible(muffle_breaking_warnings(ggplot2::ggplot_build(p)))
     captured$fill
   }
 
