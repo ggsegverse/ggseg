@@ -176,28 +176,33 @@ describe("annotate_brain (polygon path)", {
 })
 
 describe("annotate_brain visual", {
+  # The view labels are placed from each view's post-layout bounding box, so the
+  # minimal fixtures from helper-layout-fixtures.R exercise the placement just
+  # as the full atlases did -- and keep the baselines small enough for CRAN.
   it("dk default with labels", {
     testthat::skip_on_cran()
+    atlas <- dk_fixture()
     expect_brain_doppelganger(
       "dk default labels",
       ggplot() +
-        geom_brain(atlas = dk(), show.legend = FALSE) +
-        annotate_brain(atlas = dk(), position = position_brain())
+        geom_brain(atlas = atlas, show.legend = FALSE) +
+        annotate_brain(atlas = atlas, position = position_brain())
     )
   })
 
   it("dk hemi ~ view with labels", {
     testthat::skip_on_cran()
+    atlas <- dk_fixture()
     expect_brain_doppelganger(
       "dk hemi view labels",
       ggplot() +
         geom_brain(
-          atlas = dk(),
+          atlas = atlas,
           position = position_brain(hemi ~ view),
           show.legend = FALSE
         ) +
         annotate_brain(
-          atlas = dk(),
+          atlas = atlas,
           position = position_brain(hemi ~ view)
         )
     )
@@ -205,26 +210,28 @@ describe("annotate_brain visual", {
 
   it("aseg default with labels", {
     testthat::skip_on_cran()
+    atlas <- aseg_fixture()
     expect_brain_doppelganger(
       "aseg default labels",
       ggplot() +
-        geom_brain(atlas = aseg(), show.legend = FALSE) +
-        annotate_brain(atlas = aseg(), position = position_brain())
+        geom_brain(atlas = atlas, show.legend = FALSE) +
+        annotate_brain(atlas = atlas, position = position_brain())
     )
   })
 
   it("aseg nrow 2 with labels", {
     testthat::skip_on_cran()
+    atlas <- aseg_fixture()
     expect_brain_doppelganger(
       "aseg nrow 2 labels",
       ggplot() +
         geom_brain(
-          atlas = aseg(),
+          atlas = atlas,
           position = position_brain(nrow = 2),
           show.legend = FALSE
         ) +
         annotate_brain(
-          atlas = aseg(),
+          atlas = atlas,
           position = position_brain(nrow = 2)
         )
     )
