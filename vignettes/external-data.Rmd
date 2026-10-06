@@ -10,7 +10,11 @@ vignette: >
 ```{r}
 #| label: setup
 #| include: false
-knitr::opts_chunk$set(eval = TRUE, fig.retina = 3, fig.width = 6)
+knitr::opts_chunk$set(
+  eval = TRUE,
+  fig.width = 6,
+  fig.height = 2.5
+)
 ```
 
 Most of the time, you're not plotting empty atlases. You have results --
@@ -99,6 +103,7 @@ full atlas -- context regions included -- in each panel:
 
 ```{r}
 #| label: fig-facet-groups
+#| fig-height: 4
 #| fig-cap: "Brain plots faceted by age group with a custom colour gradient."
 some_data <- tibble(
   region = rep(sort(unique(ggseg.formats::atlas_regions(dk())))[1:4], 2),
