@@ -33,8 +33,11 @@
 #' @param view Character vector of views to include, as recorded in the atlas
 #'   data. For cortical atlases: `"lateral"`, `"medial"`. For subcortical/tract
 #'   atlases: slice identifiers like `"axial_3"`. Defaults to all views.
-#' @param position Position adjustment, either as a string or the result of
-#'   a call to [position_brain()].
+#' @param position Brain-view layout: the result of a call to
+#'   [position_brain()], a layout string (e.g. `"horizontal"`, `"vertical"`), or
+#'   a layout formula (e.g. `hemi ~ view`). Strings and formulas are passed to
+#'   [position_brain()]. Use `"identity"` to keep the atlas polygons' raw
+#'   coordinates. Per-view zoom is set through [position_brain()]'s `zoom`.
 #' @param context Keep the rest of the brain as a soft grey backdrop (`TRUE`,
 #'   the default), or show only the regions you're plotting (`FALSE`).
 #' @param fun Function used to combine multiple `data` rows that map to the same

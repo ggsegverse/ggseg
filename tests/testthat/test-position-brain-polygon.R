@@ -188,3 +188,40 @@ describe("zoom_views_flat", {
     expect_identical(out, list(df))
   })
 })
+
+describe("as_polygon_position", {
+  it("passes a polygon position spec through unchanged", {
+    spec <- position_brain_polygon("vertical")
+    expect_identical(as_polygon_position(spec), spec)
+  })
+
+  it("keeps NULL as the no-layout marker", {
+    expect_null(as_polygon_position(NULL))
+  })
+
+  it("coerces a layout string", {
+    out <- as_polygon_position("vertical")
+    expect_true(is_polygon_position(out))
+    expect_identical(out$position, "vertical")
+  })
+
+  it("coerces a layout formula", {
+    out <- as_polygon_position(hemi ~ view)
+    expect_true(is_polygon_position(out))
+    expect_identical(out$position, hemi ~ view)
+  })
+
+  it("treats 'identity' as the opt-out from any layout", {
+    expect_null(as_polygon_position("identity"))
+  })
+
+  it("errors on an unsupported position value", {
+    expect_error(as_polygon_position(1L), "must be a")
+    expect_error(as_polygon_position("nonsense"), "must be a")
+    expect_error(as_polygon_position(c("vertical", "horizontal")), "must be a")
+    expect_error(
+      as_polygon_position(ggplot2::position_identity()),
+      "must be a"
+    )
+  })
+})

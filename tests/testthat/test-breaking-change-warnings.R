@@ -117,6 +117,24 @@ describe("warn_collapsed_rows()", {
     )
   })
 
+  it("stays silent for a bare atlas plot", {
+    # The atlas identity rows that drive the stat are not unique on
+    # region/hemi, so the `has_data = FALSE` guard is what keeps a bare
+    # geom_brain() from warning. Without it every atlas plot would warn.
+    flat <- prepare_polygon_atlas(dk())
+    identity_rows <- unique(flat[, atlas_metadata_cols(flat), drop = FALSE])
+    expect_gt(anyDuplicated(identity_rows[, c("region", "hemi")]), 0)
+
+    rlang::reset_warning_verbosity("ggseg_collapsed_rows")
+    expect_no_warning(
+      withCallingHandlers(
+        ggplot2::ggplot_build(ggplot2::ggplot() + geom_brain(atlas = dk())),
+        ggseg_uncoloured_atlas = function(w) rlang::cnd_muffle(w)
+      ),
+      class = "ggseg_collapsed_rows"
+    )
+  })
+
   it("fires through a built plot with duplicate region rows", {
     rlang::reset_warning_verbosity("ggseg_collapsed_rows")
     expect_warning(

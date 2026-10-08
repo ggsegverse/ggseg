@@ -37,8 +37,11 @@ draw one brain per group.}
 data. For cortical atlases: \code{"lateral"}, \code{"medial"}. For subcortical/tract
 atlases: slice identifiers like \code{"axial_3"}. Defaults to all views.}
 
-\item{position}{Position adjustment, either as a string or the result of
-a call to \code{\link[=position_brain]{position_brain()}}.}
+\item{position}{Brain-view layout: the result of a call to
+\code{\link[=position_brain]{position_brain()}}, a layout string (e.g. \code{"horizontal"}, \code{"vertical"}), or
+a layout formula (e.g. \code{hemi ~ view}). Strings and formulas are passed to
+\code{\link[=position_brain]{position_brain()}}. Use \code{"identity"} to keep the atlas polygons' raw
+coordinates. Per-view zoom is set through \code{\link[=position_brain]{position_brain()}}'s \code{zoom}.}
 
 \item{context}{Keep the rest of the brain as a soft grey backdrop (\code{TRUE},
 the default), or show only the regions you're plotting (\code{FALSE}).}

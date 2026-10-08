@@ -514,3 +514,35 @@ describe("draw order follows the data row order (ggseg#162)", {
     expect_brain_doppelganger("draw-order-reversed", make(rev(regs)))
   })
 })
+
+describe("geom_brain() position coercion", {
+  built <- function(position) {
+    p <- ggplot2::ggplot() + geom_brain(atlas = dk(), position = position)
+    muffle_breaking_warnings(ggplot2::ggplot_build(p))$data[[1]]
+  }
+
+  it("applies a layout string the same way as a position_brain() spec", {
+    expect_equal(built("vertical"), built(position_brain("vertical")))
+  })
+
+  it("applies a layout formula the same way as a spec", {
+    expect_equal(built(hemi ~ view), built(position_brain(hemi ~ view)))
+  })
+
+  it("lays a string out differently from the default layout", {
+    expect_false(isTRUE(all.equal(
+      range(built("vertical")$y),
+      range(built(position_brain())$y)
+    )))
+  })
+
+  it("keeps raw polygon coordinates for 'identity'", {
+    raw <- prepare_polygon_atlas(dk())
+    expect_equal(range(built("identity")$x), range(raw$x))
+    expect_equal(range(built("identity")$y), range(raw$y))
+  })
+
+  it("errors on an invalid position instead of silently ignoring it", {
+    expect_error(built("nonsense"), "position")
+  })
+})

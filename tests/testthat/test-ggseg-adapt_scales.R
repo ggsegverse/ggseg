@@ -112,3 +112,20 @@ describe("atlas_scale_coords()", {
     expect_identical(unique(flat$type), "subcortical")
   })
 })
+
+describe("adapt_scales type dispatch", {
+  it("handles cerebellar atlases like slice-based ones", {
+    geo <- atlas_scale_coords(suit())
+    labs <- adapt_scales(geo, position = "dispersed", aesthetics = "labs")
+    expect_identical(labs$x, "view")
+    x <- adapt_scales(geo, position = "dispersed", aesthetics = "x")
+    expect_false(is.null(x$breaks))
+    expect_false(is.null(x$labels))
+  })
+
+  it("errors on an atlas type it has no scales for", {
+    geo <- atlas_scale_coords(dk())
+    geo$type <- "nonesuch"
+    expect_error(adapt_scales(geo), "nonesuch")
+  })
+})

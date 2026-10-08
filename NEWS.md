@@ -1,9 +1,9 @@
 # ggseg 3.0.0
 
 A major release. The atlas geometry now comes from the re-keyed `ggseg.formats`
-atlases (`>= 0.1.0`), and `geom_brain()` has been rebuilt on a `Stat` so that
-faceting, inherited `data`/`aes()`, and outline aesthetics work the way ggplot2
-users expect. Several of those fixes change existing figures, so read the
+atlases (`>= 0.0.4.9008`), and `geom_brain()` has been rebuilt on a `Stat` so
+that faceting, inherited `data`/`aes()`, and outline aesthetics work the way
+ggplot2 users expect. Several of those fixes change existing figures, so read the
 breaking changes before upgrading.
 
 ## Breaking changes
@@ -15,10 +15,10 @@ breaking changes before upgrading.
   Passing a long name where a `region` is expected no longer matches, and
   `geom_brain()` warns that the rows were not merged. `ggseg.formats` ships a
   helper for translating old keys to new — look for `legacy_region_map()` in the
-  `ggseg.formats` 0.1.0 reference — or join by the schema-stable `label` column
-  instead. `ggseg` now requires `ggseg.formats (>= 0.1.0)`; the combination of
-  an older `ggseg` with the re-keyed atlases is silently wrong, which the new
-  floor rules out.
+  `ggseg.formats` reference — or join by the schema-stable `label` column
+  instead. `ggseg` now requires `ggseg.formats (>= 0.0.4.9008)`; the
+  combination of an older `ggseg` with the re-keyed atlases is silently wrong,
+  which the new floor rules out.
 
 - **A bare `geom_brain()` no longer colours the atlas by its palette.** Up to
   2.2.1 `geom_brain()` injected `fill = .data$label` plus a matching
@@ -128,6 +128,20 @@ breaking changes before upgrading.
   sf-free. They now read the coordinates from the polygon representation
   (`ggseg.formats::atlas_polygons()`). The breaks and labels are unchanged for
   `dk()`, `aseg()` and `tracula()`; a test pins them to the sf-derived values.
+
+- `geom_brain(position = )` again applies a layout string or formula.
+  Previously only a `position_brain()` spec took effect; everything else,
+  including an invalid value, was silently dropped. Strings and formulas are
+  now coerced, `"identity"` opts out, and anything else errors.
+
+- Axis scales work for cerebellar atlases such as `suit()`. `adapt_scales()`
+  returned `NULL` for any type outside cortical/subcortical/tract, so
+  `scale_x_brain()` and friends produced empty scales. Unsupported types now
+  error.
+
+- `scale_continous_brain()` no longer returns a scale without breaks at its
+  default `aesthetics = c("y", "x")`; the argument was matched after it was
+  used.
 
 ## Documentation and internals
 

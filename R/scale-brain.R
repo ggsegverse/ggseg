@@ -237,8 +237,10 @@ scale_continous_brain <- function(
   position = "dispersed",
   aesthetics = c("y", "x")
 ) {
-  positions <- adapt_scales(atlas, position, aesthetics)
+  # match.arg() must run first: a vector `aesthetics` makes adapt_scales()'s
+  # terminal `[[` indexing recursive, which silently yields NULL breaks.
   aesthetics <- match.arg(aesthetics)
+  positions <- adapt_scales(atlas, position, aesthetics)
   func <- switch(
     aesthetics,
     y = ggplot2::scale_y_continuous,
@@ -267,9 +269,8 @@ scale_labs_brain <- function(
   position = "dispersed",
   aesthetics = "labs"
 ) {
-  positions <- adapt_scales(atlas, position, aesthetics)
-
   aesthetics <- match.arg(aesthetics)
+  positions <- adapt_scales(atlas, position, aesthetics)
   func <- switch(aesthetics, labs = labs)
   func(x = positions$x, y = positions$y)
 }

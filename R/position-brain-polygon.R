@@ -393,3 +393,43 @@ clip_ring_to_box <- function(x, y, box) {
 is_polygon_position <- function(x) {
   inherits(x, "position_brain_polygon_spec")
 }
+
+
+#' Coerce a user-supplied `position` into a polygon-path layout spec
+#'
+#' `geom_brain()` documents `position` as "a string or the result of
+#' [position_brain()]", and `position_brain()`'s own default is the string
+#' `"horizontal"`, so strings and layout formulas are the forms users reach for.
+#' They are coerced here rather than silently dropped.
+#' `"identity"` is the documented opt-out that keeps the polygons' raw
+#' coordinates, represented downstream by `NULL`.
+#'
+#' @param x A polygon position spec, `"horizontal"`, `"vertical"`, `"identity"`,
+#'   a layout formula, or `NULL`.
+#' @return A `position_brain_polygon_spec`, or `NULL` for no layout.
+#' @keywords internal
+#' @noRd
+as_polygon_position <- function(x) {
+  if (is.null(x) || is_polygon_position(x)) {
+    return(x)
+  }
+
+  if (identical(x, "identity")) {
+    return(NULL)
+  }
+
+  if (inherits(x, "formula")) {
+    return(position_brain_polygon(x))
+  }
+
+  if (is.character(x) && length(x) == 1 && x %in% c("horizontal", "vertical")) {
+    return(position_brain_polygon(x))
+  }
+
+  cli::cli_abort(c(
+    "{.arg position} must be a {.fn position_brain} spec, a layout \\
+    formula, or one of {.val horizontal}, {.val vertical}, {.val identity}.",
+    "x" = "You supplied {.obj_type_friendly {x}}.",
+    "i" = "{.val identity} keeps the atlas polygons' raw coordinates."
+  ))
+}

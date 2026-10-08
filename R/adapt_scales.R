@@ -29,8 +29,16 @@ adapt_scales <- function(
   atlas_type <- unique(geobrain$type)
   if (atlas_type == "cortical") {
     adapt_scales_cortical(geobrain, position, aesthetics)
-  } else if (atlas_type %in% c("subcortical", "tract")) {
+  } else if (atlas_type %in% c("subcortical", "tract", "cerebellar")) {
+    # Cerebellar atlases (e.g. suit()) are slice-based like subcortical ones,
+    # so their axes are labelled by view, not hemisphere.
     adapt_scales_subcortical(geobrain, position, aesthetics)
+  } else {
+    cli::cli_abort(c(
+      "Cannot build brain axis scales for atlas type {.val {atlas_type}}.",
+      "i" = "Supported types: {.val cortical}, {.val subcortical}, \
+        {.val tract}, {.val cerebellar}."
+    ))
   }
 }
 

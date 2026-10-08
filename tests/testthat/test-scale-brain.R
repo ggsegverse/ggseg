@@ -174,3 +174,27 @@ describe("scale_labs_brain", {
     expect_s3_class(scale, "gg")
   })
 })
+
+describe("scale_continous_brain", {
+  it("resolves the y scale at its default aesthetics", {
+    # `aesthetics = c("y", "x")` used to reach adapt_scales() unmatched, where
+    # the vector turned the terminal `[[` into recursive indexing and silently
+    # yielded NULL. The default must behave exactly like scale_y_brain().
+    expect_equal(
+      scale_continous_brain(dk(), position = "stacked")$breaks,
+      scale_y_brain(position = "stacked")$breaks
+    )
+    expect_false(is.null(scale_continous_brain(dk(), "stacked")$breaks))
+    expect_false(is.null(scale_continous_brain(dk(), "stacked")$labels))
+  })
+
+  it("matches scale_y_brain() for the dispersed default", {
+    expect_equal(scale_continous_brain(dk())$breaks, scale_y_brain()$breaks)
+    expect_true("y" %in% scale_continous_brain(dk())$aesthetics)
+  })
+
+  it("produces non-empty axis scales for a cerebellar atlas", {
+    expect_false(is.null(scale_x_brain(atlas = suit())$breaks))
+    expect_false(is.null(scale_labs_brain(atlas = suit())$x))
+  })
+})

@@ -27,9 +27,11 @@
 #' @param atlas A `ggseg_atlas` object with 2D geometry (sf or polygons).
 #' @param hemi Character vector of hemispheres to include.
 #' @param view Character vector of views to include.
-#' @param position Position adjustment. Defaults to [position_brain_polygon()],
-#'   which lays views out horizontally without sf. Pass `"identity"` to use
-#'   the polygons' raw coordinates. Per-view zoom is controlled here via
+#' @param position Brain-view layout: a `position_brain_polygon()` spec
+#'   (the default, laying views out horizontally without sf), a layout string,
+#'   or a layout formula -- the latter two are coerced with
+#'   `position_brain_polygon()`. Pass `"identity"` to use the polygons' raw
+#'   coordinates. Per-view zoom is controlled here via
 #'   [position_brain_polygon()]'s `zoom` argument.
 #' @param context Logical. When `TRUE` (default), context regions (atlas rows
 #'   with no `region` label, drawn grey) are kept. When `FALSE`, they are
@@ -344,6 +346,8 @@ prepare_polygon_atlas <- function(
   context = TRUE,
   focus = NULL
 ) {
+  position <- as_polygon_position(position)
+
   if (is.null(ggseg.formats::atlas_geom(atlas))) {
     cli::cli_abort(c(
       "{.arg atlas} has no 2D geometry.",
@@ -417,7 +421,7 @@ prepare_polygon_atlas <- function(
     levels = unique(feature_key)
   ))
 
-  if (is_polygon_position(position)) {
+  if (!is.null(position)) {
     flat <- frame_2_position_flat(
       flat,
       position$position,
