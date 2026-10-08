@@ -36,19 +36,18 @@ The whole brain always renders, even when your data covers only a handful of reg
 That comes from `StatBrain`, a ggplot2 stat that _generates_ the atlas geometry instead of reading it from your data.
 It is the same move `geom_sf()` makes: the shape is computed, not supplied.
 
-A generated shape has a consequence worth stating plainly.
-A bare atlas has no values to colour, so it draws grey.
-`geom_brain()` is for putting _your_ numbers on the brain; when you want to look at the atlas itself, palette and all, reach for `plot(dk())`.
+Map nothing and there is nothing of yours to colour by, so `geom_brain()` falls back to the atlas's own palette: it maps `fill` to `label`, the key the palette is built on.
+That is the atlas looked at for its own sake.
 
 ```{r}
 #| label: bare
-#| fig-alt: "The DK atlas in uniform grey with region outlines and no fill."
-#| fig-cap: "A bare atlas: the full shape, drawn grey."
+#| fig-alt: "The DK atlas with every region in its own atlas palette colour."
+#| fig-cap: "A bare atlas: the full shape, in the atlas palette."
 ggplot() +
   geom_brain(atlas = dk(), show.legend = FALSE)
 ```
 
-Give it data and the regions you have values for take colour.
+Give it data and your mapping takes over: the regions you have values for take colour from your scale.
 Everything else stays grey, so the brain remains legible even when you have measured only a corner of it.
 
 ```{r}
@@ -162,10 +161,11 @@ Under `geom_brain()` sit three ggproto objects, each with a narrow job.
 It emits the polygon `x` and `y`, the `group` and `subgroup` that encode ring structure and holes, and passes your `fill` straight through.
 
 `GeomBrain` is a thin `GeomPolygon` subclass.
-Its only additions are the brain defaults -- a grey fill and a `grey35` outline -- and both step aside the moment you map an aesthetic of your own.
+Its only additions are the brain defaults -- a `grey35` outline and a grey fill for an atlas with no palette of its own -- and both step aside the moment you map an aesthetic of your own.
 
 `LayerBrain` is the layer that runs at plot-build time.
-It flattens the atlas, hands the geometry to the stat, and quietly maps the join keys as aesthetics so `region` and `label` survive into the stat.
+It flattens the atlas, hands the geometry to the stat, and quietly maps the join keys as aesthetics so `label` and `region` survive into the stat.
+Running at build time is also what lets it see a `fill` set in the top-level `ggplot()` call before deciding whether to supply the palette default.
 
 `stat_brain()` is the stat-first spelling of `geom_brain()` -- both build the same layer.
 Reach for it when you want `StatBrain` paired with a different geom, such as drawing the atlas vertices as a point cloud.
@@ -175,7 +175,7 @@ Reach for it when you want `StatBrain` paired with a different geom, such as dra
 #| fig-alt: "The atlas as a dense cloud of small grey points."
 #| fig-cap: "StatBrain with a point geom instead of the polygon default."
 ggplot() +
-  stat_brain(atlas = dk(), geom = "point", size = 0.1)
+  stat_brain(atlas = dk(), geom = "point", size = 0.1, show.legend = FALSE)
 ```
 
 Everything else you already use -- `position_brain()` layouts, `coord_brain()`, the `scale_*_brain()` palettes, `theme_brain()` -- sits on top of these three pieces without changes.

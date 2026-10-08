@@ -22,14 +22,12 @@ atlas_schema_variant <- function(x = ggseg.formats::dk()) {
   if (length(ggseg.formats::atlas_names(x))) "schema-names" else "schema-legacy"
 }
 
-# ggseg's two breaking-change warnings (uncoloured atlas, collapsed rows) fire
-# once per session from plumbing that many tests exercise incidentally. Tests
-# that are not about them muffle exactly those two classes, so an unrelated
-# warning still counts as noise.
+# ggseg's collapsed-rows breaking-change warning fires once per session from
+# plumbing that many tests exercise incidentally. Tests that are not about it
+# muffle exactly that class, so an unrelated warning still counts as noise.
 muffle_breaking_warnings <- function(expr) {
   withCallingHandlers(
     expr,
-    ggseg_uncoloured_atlas = function(w) rlang::cnd_muffle(w),
     ggseg_collapsed_rows = function(w) rlang::cnd_muffle(w)
   )
 }

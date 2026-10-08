@@ -2,7 +2,14 @@ describe("extract_position_params", {
   it("extracts from PositionBrain object", {
     skip_if_not_installed("sf")
     withr::local_options(lifecycle_verbosity = "quiet")
-    pos <- position_brain_sf(hemi ~ view, nrow = 2, ncol = 3, views = "lateral")
+    # Built through the non-validating constructor: this test is about reading
+    # the fields back, and position_brain_sf() rejects formula + nrow/ncol.
+    pos <- make_position_brain_sf(
+      hemi ~ view,
+      nrow = 2,
+      ncol = 3,
+      views = "lateral"
+    )
     params <- extract_position_params(pos)
     expect_identical(params$position, hemi ~ view)
     expect_identical(params$nrow, 2)

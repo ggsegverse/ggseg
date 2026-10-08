@@ -40,6 +40,9 @@ reposition_brain <- function(
   ncol = NULL,
   views = NULL
 ) {
+  # Validate before the sf guard: a bad nrow/ncol combination is wrong whether
+  # or not sf is installed, and "install sf" would hide the real mistake.
+  validate_grid_args(position, nrow, ncol)
   require_sf("reposition_brain()")
   data <- as.data.frame(data, stringsAsFactors = FALSE)
   frame_2_position(
@@ -75,8 +78,10 @@ reposition_brain <- function(
 #'   order. If `NULL` (default), all views are included in their original
 #'   order. Names the atlas does not have are dropped with a warning.
 #' @param zoom Controls per-view zoom. `NULL`/`FALSE` (default) draws each view
-#'   at full extent. `TRUE` zooms each view onto its focus regions; a character
-#'   vector names the focus regions explicitly.
+#'   at full extent. `TRUE` zooms each view onto the regions your `data`
+#'   covers, taken from its `label` column when it has one and `region`
+#'   otherwise; a character vector names the focus explicitly, as either
+#'   labels or regions.
 #' @param zoom_pad Fractional padding added around the focus window when `zoom`
 #'   is active. Defaults to `0.05` (5%).
 #'
@@ -173,6 +178,7 @@ position_brain_sf <- function(
       "with `ggplot2::geom_sf()` for an sf workflow."
     )
   )
+  validate_grid_args(position, nrow, ncol)
   require_sf("position_brain_sf()")
   make_position_brain_sf(position, nrow = nrow, ncol = ncol, views = views)
 }

@@ -5,12 +5,14 @@
 #' lays out the brain views for you. No data? It just draws the atlas.
 #'
 #' @details
-#' `geom_brain()` plots *your* data on the brain. It does not colour the atlas
-#' by the atlas's own palette. Up to ggseg 2.2.1 it did whenever you mapped no
-#' `fill`, so a bare `geom_brain(atlas = dk())` now renders grey instead and
-#' warns once per session. For a palette-coloured overview use `plot(atlas)`
-#' from `ggseg.formats`, or map its key here with `aes(fill = label)` and
-#' [scale_fill_brain()] -- atlas palettes are keyed by `label`.
+#' Map neither `fill` nor `colour` and `geom_brain()` colours the atlas by its
+#' own palette for you, by mapping `fill` to `label` -- the key atlas palettes
+#' are built on, and the ecosystem's canonical matching key. Map either one and
+#' yours wins; your `data` then drives the colours and regions you supply no
+#' value for stay grey.
+#'
+#' Match your `data` to the atlas on `label` (hemisphere-qualified, unique per
+#' atlas row) or on `region` (which repeats across hemispheres).
 #'
 #' Regions are drawn in the order they appear in your `data`, so when outlines
 #' overlap (e.g. mapping `colour` to a threshold with a wide `linewidth`) the
@@ -61,7 +63,7 @@
 #' library(ggplot2)
 #'
 #' ggplot() +
-#'   geom_brain(atlas = dk())
+#'   geom_brain(atlas = dk(), show.legend = FALSE)
 geom_brain <- function(
   mapping = aes(),
   data = NULL,

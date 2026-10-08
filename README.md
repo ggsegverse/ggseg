@@ -82,7 +82,7 @@ Figure 2: Overview of the dk and aseg built-in brain atlases.
 ### Plotting your own data
 
 Pass a data frame to `ggplot()` with a column that matches the atlas
-(typically `region` or `label`). `geom_brain()` handles the join:
+(typically `label` or `region`). `geom_brain()` handles the join:
 
 ```r
 library(dplyr)

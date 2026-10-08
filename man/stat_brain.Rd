@@ -76,7 +76,7 @@ library(ggplot2)
 
 # Equivalent to geom_brain(atlas = dk())
 ggplot() +
-  stat_brain(atlas = dk())
+  stat_brain(atlas = dk(), show.legend = FALSE)
 }
 \seealso{
 \code{\link[=geom_brain]{geom_brain()}}

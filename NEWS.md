@@ -20,21 +20,12 @@ breaking changes before upgrading.
   combination of an older `ggseg` with the re-keyed atlases is silently wrong,
   which the new floor rules out.
 
-- **A bare `geom_brain()` no longer colours the atlas by its palette.** Up to
-  2.2.1 `geom_brain()` injected `fill = .data$label` plus a matching
-  `scale_fill_manual()` whenever you mapped no `fill`, so
-  `ggplot() + geom_brain(atlas = dk())` came out palette-coloured. It now
-  renders grey — the same grey that regions you supply no value for already
-  had — and warns once per session. `geom_brain()` is for plotting *your* data
-  on the brain; for a palette-coloured overview use `plot(atlas)` (from
-  `ggseg.formats`), or map its key yourself with `aes(fill = label)` and
-  `scale_fill_brain()`.
-
-- **The injected discrete palette scale is gone.** A side effect of the item
-  above. This *fixes* a continuous fill set in the top-level call —
+- **`geom_brain()` defaults to `label`, not `region`.** Map neither `fill` nor
+  `colour` and it maps `fill = label` and applies the atlas palette, which is
+  keyed on `label`. The decision is now made at build time, so a `fill` set in
+  the top-level `ggplot()` wins and
   `ggplot(df, aes(fill = value)) + geom_brain(atlas = dk())` no longer errors
-  with "Continuous value supplied to a discrete scale" — but any plot that
-  relied on the injected scale now needs its own.
+  with "Continuous value supplied to a discrete scale".
 
 - **`GeomBrain` is a different object.** Both 2.2.1 and 3.0.0 export
   `GeomBrain`, but it is no longer the same ggproto: it is now the polygon geom
@@ -145,7 +136,9 @@ breaking changes before upgrading.
 
 - `position_brain(hemi ~ view, nrow = 2)` now errors instead of silently
   discarding the formula, and `nrow`/`ncol` must be positive whole numbers
-  (`ncol = 0` produced `Inf` grid indices).
+  (`ncol = 0` produced `Inf` grid indices). The deprecated `position_brain_sf()`
+  and `reposition_brain()` validate the same way, and before their `sf` guard,
+  so a bad argument is not reported as a missing `sf`.
 
 - A `nrow`/`ncol` grid on a cortical atlas now gives each hemisphere/view pair
   its own cell; it split on `view` alone, putting both hemispheres in every
@@ -153,6 +146,8 @@ breaking changes before upgrading.
 
 - `position_brain(views = )` warns when a named view is not in the atlas, and
   `zoom = ` warns when a named region is not, instead of silently dropping it.
+  `zoom = TRUE` resolves its focus from `label` before `region`, and a named
+  focus may use either vocabulary.
 
 - A layout formula variable containing a dot (e.g. `my.col ~ view`) is no
   longer dropped along with the `.` placeholder.

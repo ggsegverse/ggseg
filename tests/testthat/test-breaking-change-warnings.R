@@ -18,52 +18,6 @@ describe("atlas_schema_variant()", {
   })
 })
 
-describe("warn_uncoloured_atlas()", {
-  bare_plot <- function(...) {
-    ggplot2::ggplot_build(
-      ggplot2::ggplot() + geom_brain(atlas = dk(), ...)
-    )
-  }
-
-  it("warns when no fill is mapped or set", {
-    rlang::reset_warning_verbosity("ggseg_uncoloured_atlas")
-    expect_warning(bare_plot(), class = "ggseg_uncoloured_atlas")
-  })
-
-  it("points at plot(atlas) and scale_fill_brain()", {
-    rlang::reset_warning_verbosity("ggseg_uncoloured_atlas")
-    w <- expect_warning(bare_plot(), class = "ggseg_uncoloured_atlas")
-    expect_match(conditionMessage(w), "plot(atlas)", fixed = TRUE)
-    expect_match(conditionMessage(w), "scale_fill_brain", fixed = TRUE)
-  })
-
-  it("stays silent when fill is mapped", {
-    rlang::reset_warning_verbosity("ggseg_uncoloured_atlas")
-    expect_no_warning(bare_plot(mapping = ggplot2::aes(fill = region)))
-  })
-
-  it("stays silent when fill is mapped in the top-level ggplot()", {
-    rlang::reset_warning_verbosity("ggseg_uncoloured_atlas")
-    expect_no_warning(
-      ggplot2::ggplot_build(
-        ggplot2::ggplot(mapping = ggplot2::aes(fill = region)) +
-          geom_brain(atlas = dk())
-      )
-    )
-  })
-
-  it("stays silent when fill is set as a constant", {
-    rlang::reset_warning_verbosity("ggseg_uncoloured_atlas")
-    expect_no_warning(bare_plot(fill = "steelblue"))
-  })
-
-  it("warns only once per session", {
-    rlang::reset_warning_verbosity("ggseg_uncoloured_atlas")
-    expect_warning(bare_plot(), class = "ggseg_uncoloured_atlas")
-    expect_no_warning(bare_plot())
-  })
-})
-
 describe("warn_collapsed_rows()", {
   duplicated_data <- function() {
     regs <- rep(sort(unique(ggseg.formats::atlas_regions(dk())))[1:2], each = 2)
@@ -127,10 +81,7 @@ describe("warn_collapsed_rows()", {
 
     rlang::reset_warning_verbosity("ggseg_collapsed_rows")
     expect_no_warning(
-      withCallingHandlers(
-        ggplot2::ggplot_build(ggplot2::ggplot() + geom_brain(atlas = dk())),
-        ggseg_uncoloured_atlas = function(w) rlang::cnd_muffle(w)
-      ),
+      ggplot2::ggplot_build(ggplot2::ggplot() + geom_brain(atlas = dk())),
       class = "ggseg_collapsed_rows"
     )
   })

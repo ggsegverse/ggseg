@@ -127,10 +127,11 @@ frame_2_position_flat <- function(
 #'   order. If `NULL` (default), all views are included in their original
 #'   order. Names the atlas does not have are dropped with a warning.
 #' @param zoom Controls per-view zoom. `NULL`/`FALSE` (default) draws each
-#'   view at full extent. `TRUE` zooms each view onto its focus regions —
-#'   the regions present in the user `data` passed to [geom_brain_polygon()],
-#'   or the atlas's labelled regions when no data is supplied. A character
-#'   vector names the focus regions explicitly. Cropping uses an sf-free
+#'   view at full extent. `TRUE` zooms each view onto the regions the user
+#'   `data` passed to [geom_brain_polygon()] covers, read from its `label`
+#'   column when it has one and `region` otherwise, falling back to the
+#'   atlas's labels when no data is supplied. A character vector names the
+#'   focus explicitly, as either labels or regions. Cropping uses an sf-free
 #'   polygon clip so context regions become a clean rectangular frame around
 #'   the focus.
 #' @param zoom_pad Fractional padding added around the focus window when
@@ -179,18 +180,20 @@ position_brain_polygon <- function(
 }
 
 
-#' Resolve a zoom spec into a concrete set of focus region names
+#' Resolve a zoom spec into a concrete set of focus keys
 #'
 #' Translates the `zoom` argument of [position_brain_polygon()] into the
-#' character vector of regions used to build each view's focus window.
-#' `TRUE` resolves to the regions present in the user `data` (those the user
-#' supplied values for), falling back to the atlas's labelled regions when no
-#' data is supplied.
+#' character vector of atlas keys used to build each view's focus window.
+#' `TRUE` resolves to the keys present in the user `data` (those the user
+#' supplied values for), preferring `label` -- the ecosystem's canonical
+#' matching key -- and falling back to `region`, then to the atlas's own
+#' labels when no data is supplied. A character `zoom` may name either
+#' labels or regions; [zoom_views_flat()] matches both.
 #'
 #' @param zoom The `zoom` spec: `NULL`/`FALSE`, `TRUE`, or a character vector.
 #' @param data Optional user data.frame passed to [geom_brain_polygon()].
 #' @param atlas The `ggseg_atlas` being rendered.
-#' @return `NULL` when zoom is off, otherwise a character vector of regions.
+#' @return `NULL` when zoom is off, otherwise a character vector of keys.
 #' @keywords internal
 #' @noRd
 resolve_zoom_focus <- function(zoom, data, atlas) {
@@ -199,7 +202,7 @@ resolve_zoom_focus <- function(zoom, data, atlas) {
   }
 
   if (is.character(zoom)) {
-    warn_unmatched_focus(zoom, unique(ggseg.formats::atlas_regions(atlas)))
+    warn_unmatched_focus(zoom, atlas_focus_keys(atlas))
     return(zoom)
   }
 
@@ -210,16 +213,57 @@ resolve_zoom_focus <- function(zoom, data, atlas) {
     ))
   }
 
-  if (!is.null(data) && "region" %in% names(data)) {
-    regs <- unique(data$region)
-    regs <- regs[!is.na(regs)]
-    if (length(regs)) {
-      return(regs)
-    }
+  keys <- data_focus_keys(data)
+  if (length(keys)) {
+    return(keys)
   }
 
-  regs <- unique(ggseg.formats::atlas_regions(atlas))
-  regs[!is.na(regs)]
+  keys <- unique(ggseg.formats::atlas_labels(atlas))
+  keys[!is.na(keys)]
+}
+
+
+#' Focus keys a user `data` frame supplies
+#'
+#' `label` first, `region` second: `label` is the ecosystem's canonical
+#' matching key, and is what the atlas palette and the join default to.
+#'
+#' @param data Optional user data.frame, or `NULL`.
+#' @return Character vector of keys, possibly empty.
+#' @keywords internal
+#' @noRd
+data_focus_keys <- function(data) {
+  if (is.null(data)) {
+    return(character(0))
+  }
+  for (key in c("label", "region")) {
+    if (key %in% names(data)) {
+      keys <- unique(data[[key]])
+      keys <- keys[!is.na(keys)]
+      if (length(keys)) {
+        return(keys)
+      }
+    }
+  }
+  character(0)
+}
+
+
+#' Atlas keys a `zoom` focus may name
+#'
+#' Both `label` and `region` are accepted, so a layout written against either
+#' vocabulary zooms rather than silently no-ops.
+#'
+#' @param atlas The `ggseg_atlas` being rendered.
+#' @return Character vector of labels and regions, without `NA`.
+#' @keywords internal
+#' @noRd
+atlas_focus_keys <- function(atlas) {
+  keys <- unique(c(
+    ggseg.formats::atlas_labels(atlas),
+    ggseg.formats::atlas_regions(atlas)
+  ))
+  keys[!is.na(keys)]
 }
 
 
@@ -229,8 +273,8 @@ resolve_zoom_focus <- function(zoom, data, atlas) {
 #' never cropped and the plot looks exactly like an unzoomed one. Name the
 #' misses, and the closest real regions, instead.
 #'
-#' @param focus Requested focus region names.
-#' @param available Region names the atlas actually carries.
+#' @param focus Requested focus labels or region names.
+#' @param available Labels and region names the atlas actually carries.
 #' @return Invisibly `NULL`; called for its side effect.
 #' @keywords internal
 #' @noRd
@@ -248,10 +292,34 @@ warn_unmatched_focus <- function(focus, available) {
   if (length(suggestions)) {
     msg <- c(msg, "i" = "Did you mean {.val {suggestions}}?")
   }
-  msg <- c(msg, "i" = "See {.fn ggseg.formats::atlas_regions} for all regions.")
+  msg <- c(
+    msg,
+    "i" = "A focus may name a {.field label} or a {.field region}; see \
+      {.fn ggseg.formats::atlas_labels} and {.fn ggseg.formats::atlas_regions}."
+  )
 
   cli::cli_warn(msg, class = "ggseg_unmatched_focus")
   invisible(NULL)
+}
+
+
+#' Which flat rows belong to the zoom focus
+#'
+#' A focus key may be a `label` or a `region`, so both columns are tested.
+#'
+#' @param df A flattened atlas data.frame.
+#' @param focus Character vector of focus labels or region names.
+#' @return Logical vector along `nrow(df)`.
+#' @keywords internal
+#' @noRd
+in_focus <- function(df, focus) {
+  hit <- rep(FALSE, nrow(df))
+  for (key in c("label", "region")) {
+    if (key %in% names(df)) {
+      hit <- hit | (!is.na(df[[key]]) & df[[key]] %in% focus)
+    }
+  }
+  hit
 }
 
 
@@ -265,14 +333,14 @@ warn_unmatched_focus <- function(focus, available) {
 #' so they render as context-only frames rather than disappearing.
 #'
 #' @param view_list List of per-view flat data.frames.
-#' @param focus Character vector of focus region names.
+#' @param focus Character vector of focus labels or region names.
 #' @param pad Fractional padding around the focus window.
 #' @return List of clipped per-view data.frames.
 #' @keywords internal
 #' @noRd
 zoom_views_flat <- function(view_list, focus, pad = 0.05) {
   focus_bboxes <- lapply(view_list, function(df) {
-    fr <- df[!is.na(df$region) & df$region %in% focus, , drop = FALSE]
+    fr <- df[in_focus(df, focus), , drop = FALSE]
     if (nrow(fr) == 0) {
       return(NULL)
     }

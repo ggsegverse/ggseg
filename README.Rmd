@@ -83,7 +83,7 @@ plot(aseg())
 ### Plotting your own data
 
 Pass a data frame to `ggplot()` with a column that matches the atlas
-(typically `region` or `label`). `geom_brain()` handles the join:
+(typically `label` or `region`). `geom_brain()` handles the join:
 
 ```{r}
 #| label: fig-external-data

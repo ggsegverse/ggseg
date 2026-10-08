@@ -271,14 +271,18 @@ describe("geom_brain() inherits top-level data and aes (ggseg#158)", {
     expect_identical(fill_column(inherited), fill_column(explicit))
   })
 
-  it("renders grey (not the palette) when no fill is mapped anywhere", {
-    # geom_brain() plots your data, so a bare atlas is grey; the palette is
-    # opt-in via plot(atlas) or aes(fill = label) + scale_fill_brain().
+  it("applies the atlas palette when no fill is mapped anywhere", {
+    # The default is the atlas's own palette, keyed on `label`; `grey` is only
+    # the na.value for rows the palette has no entry for (context regions).
     p <- ggplot2::ggplot() + geom_brain(atlas = dk())
-    expect_setequal(unique(fill_column(p)), "grey")
+    fills <- unique(fill_column(p))
+    expect_gt(length(fills), 1)
+    expect_true(all(
+      setdiff(fills, "grey") %in% toupper(ggseg.formats::atlas_palette(dk()))
+    ))
   })
 
-  it("no longer injects a discrete palette that fights a continuous fill", {
+  it("does not inject a discrete palette that fights a continuous fill", {
     # Regression: plot-level continuous fill with no user scale used to error
     # "Continuous value supplied to a discrete scale" from the injected palette.
     mex <- labelled_values()

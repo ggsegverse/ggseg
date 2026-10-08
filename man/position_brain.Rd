@@ -34,8 +34,10 @@ order. If \code{NULL} (default), all views are included in their original
 order. Names the atlas does not have are dropped with a warning.}
 
 \item{zoom}{Controls per-view zoom. \code{NULL}/\code{FALSE} (default) draws each view
-at full extent. \code{TRUE} zooms each view onto its focus regions; a character
-vector names the focus regions explicitly.}
+at full extent. \code{TRUE} zooms each view onto the regions your \code{data}
+covers, taken from its \code{label} column when it has one and \code{region}
+otherwise; a character vector names the focus explicitly, as either
+labels or regions.}
 
 \item{zoom_pad}{Fractional padding added around the focus window when \code{zoom}
 is active. Defaults to \code{0.05} (5\%).}

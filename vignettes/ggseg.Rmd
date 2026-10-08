@@ -64,7 +64,7 @@ draws the regions:
 
 ```{r}
 #| label: fig-basic-brain
-#| fig-cap: "Default brain plot using geom_brain() with the dk atlas."
+#| fig-cap: "A bare atlas: geom_brain() fills by `label` from the palette."
 ggplot() +
   geom_brain(atlas = dk(), show.legend = FALSE)
 ```
@@ -120,7 +120,7 @@ ggplot() +
 #| label: fig-filter-left
 #| fig-cap: "Brain plot showing only the left hemisphere."
 ggplot() +
-  geom_brain(atlas = dk(), hemi = "left")
+  geom_brain(atlas = dk(), hemi = "left", show.legend = FALSE)
 ```
 
 For subcortical atlases, views are slice identifiers. Check what's available
@@ -207,8 +207,9 @@ ggplot() +
 
 ## Scales and themes
 
-Atlas colour palettes are applied automatically by `geom_brain()`.
-For custom palettes, use `scale_fill_brain_manual()`.
+With neither `fill` nor `colour` mapped, `geom_brain()` applies the atlas
+palette for you, keyed on `label`. For custom palettes, use
+`scale_fill_brain_manual()`.
 
 Built-in themes strip axes and grids for cleaner figures:
 
@@ -216,7 +217,7 @@ Built-in themes strip axes and grids for cleaner figures:
 #| label: themes-example
 #| eval: false
 ggplot() +
-  geom_brain(atlas = dk()) +
+  geom_brain(atlas = dk(), show.legend = FALSE) +
   theme_brain()
 ```
 

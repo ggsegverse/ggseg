@@ -30,6 +30,13 @@
 brain_join <- function(data, atlas, by = NULL) {
   atlas <- as.data.frame(atlas)
 
+  # Guard up front rather than after the join: the return value is an sf
+  # object whenever the atlas carries geometry, so the work would be thrown
+  # away -- and its unmatched-data warning emitted -- before failing.
+  if ("geometry" %in% names(atlas)) {
+    require_sf("brain_join()")
+  }
+
   if (is.null(by)) {
     by <- names(data)[names(data) %in% names(atlas)]
     cli::cli_inform("Merging atlas and data by {.field {by}}.")
@@ -60,7 +67,6 @@ brain_join <- function(data, atlas, by = NULL) {
   }
 
   if ("geometry" %in% names(dt)) {
-    require_sf("brain_join()")
     sf::st_as_sf(dt)
   } else {
     as_tibble(dt)

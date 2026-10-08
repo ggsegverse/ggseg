@@ -30,13 +30,15 @@ library(ggplot2)
 
 ## How matching works
 
-`geom_brain()` joins your data to the atlas by `region` (and by
+`geom_brain()` joins your data to the atlas by `label` or `region` (and by
 `hemi` too, when both your data and the atlas carry it). That means your data
 needs at least one column with names that match the atlas. The two columns
 you'll use most:
 
-- **region** -- human-readable names like "insula" or "precentral"
-- **label** -- FreeSurfer labels like "lh_bankssts"
+- **label** -- FreeSurfer labels like "lh_bankssts", unique per atlas row and
+  the key atlas palettes are built on
+- **region** -- human-readable names like "insula" or "precentral", which
+  repeat across hemispheres
 
 Check what's available:
 

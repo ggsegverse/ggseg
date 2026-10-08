@@ -69,12 +69,14 @@ Colour brain regions by your own values. Give \code{geom_brain()} an atlas like
 lays out the brain views for you. No data? It just draws the atlas.
 }
 \details{
-\code{geom_brain()} plots \emph{your} data on the brain. It does not colour the atlas
-by the atlas's own palette. Up to ggseg 2.2.1 it did whenever you mapped no
-\code{fill}, so a bare \code{geom_brain(atlas = dk())} now renders grey instead and
-warns once per session. For a palette-coloured overview use \code{plot(atlas)}
-from \code{ggseg.formats}, or map its key here with \code{aes(fill = label)} and
-\code{\link[=scale_fill_brain]{scale_fill_brain()}} -- atlas palettes are keyed by \code{label}.
+Map neither \code{fill} nor \code{colour} and \code{geom_brain()} colours the atlas by its
+own palette for you, by mapping \code{fill} to \code{label} -- the key atlas palettes
+are built on, and the ecosystem's canonical matching key. Map either one and
+yours wins; your \code{data} then drives the colours and regions you supply no
+value for stay grey.
+
+Match your \code{data} to the atlas on \code{label} (hemisphere-qualified, unique per
+atlas row) or on \code{region} (which repeats across hemispheres).
 
 Regions are drawn in the order they appear in your \code{data}, so when outlines
 overlap (e.g. mapping \code{colour} to a threshold with a wide \code{linewidth}) the
@@ -94,7 +96,8 @@ It subclasses \link[ggplot2:GeomPolygon]{ggplot2::GeomPolygon} and supplies the 
 \code{default_aes} -- outline \code{colour} (grey35), \code{linewidth} (0.2), and \code{fill}
 (grey) -- which apply when the user has not mapped those aesthetics but yield
 to a mapping when present (ggsegverse/ggseg#160). The grey default fill is
-why an atlas plotted without data renders grey, not palette-coloured. Used
+what an atlas with no palette of its own falls back to; otherwise
+\code{\link[=geom_brain]{geom_brain()}} maps \code{fill} to \code{label} and applies the palette. Used
 internally by \code{\link[=geom_brain]{geom_brain()}}; not typically called directly.
 }
 
@@ -113,7 +116,7 @@ layer.
 library(ggplot2)
 
 ggplot() +
-  geom_brain(atlas = dk())
+  geom_brain(atlas = dk(), show.legend = FALSE)
 }
 \seealso{
 \code{\link[=stat_brain]{stat_brain()}} for the stat-first spelling.

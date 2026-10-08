@@ -152,7 +152,19 @@ describe("resolve_zoom_focus", {
     expect_identical(resolve_zoom_focus(focus, NULL, aseg()), focus)
   })
 
-  it("uses regions present in data when zoom = TRUE", {
+  it("returns explicit labels unchanged, without warning", {
+    focus <- ggseg.formats::atlas_labels(aseg())[1:2]
+    expect_identical(resolve_zoom_focus(focus, NULL, aseg()), focus)
+  })
+
+  it("prefers labels in data when zoom = TRUE", {
+    atlas <- aseg()
+    labs <- ggseg.formats::atlas_labels(atlas)[1:2]
+    data <- data.frame(label = labs, region = c("thalamus proper", "caudate"))
+    expect_setequal(resolve_zoom_focus(TRUE, data, atlas), labs)
+  })
+
+  it("uses regions present in data when zoom = TRUE and there is no label", {
     atlas <- aseg()
     data <- data.frame(region = c("thalamus proper", "caudate"))
     expect_setequal(
@@ -161,9 +173,9 @@ describe("resolve_zoom_focus", {
     )
   })
 
-  it("falls back to labelled atlas regions when zoom = TRUE and no data", {
+  it("falls back to the atlas labels when zoom = TRUE and no data", {
     atlas <- aseg()
-    labelled <- unique(atlas$core$region)
+    labelled <- unique(ggseg.formats::atlas_labels(atlas))
     labelled <- labelled[!is.na(labelled)]
     expect_setequal(resolve_zoom_focus(TRUE, NULL, atlas), labelled)
   })
@@ -245,5 +257,37 @@ describe("warn_unmatched_focus()", {
 
   it("is silent when every focus region matches", {
     expect_no_warning(resolve_zoom_focus("thalamus", NULL, aseg()))
+  })
+})
+
+describe("in_focus()", {
+  it("matches a focus key against label or region", {
+    df <- data.frame(
+      label = c("lh_a", "lh_b", NA),
+      region = c("a", "b", NA)
+    )
+    expect_identical(in_focus(df, "lh_a"), c(TRUE, FALSE, FALSE))
+    expect_identical(in_focus(df, "b"), c(FALSE, TRUE, FALSE))
+    expect_identical(in_focus(df, c("lh_a", "b")), c(TRUE, TRUE, FALSE))
+    expect_identical(in_focus(df, "nope"), c(FALSE, FALSE, FALSE))
+  })
+
+  it("works when only one of the two columns is present", {
+    expect_true(in_focus(data.frame(label = "lh_a"), "lh_a"))
+    expect_true(in_focus(data.frame(region = "a"), "a"))
+    expect_false(in_focus(data.frame(label = "lh_a"), "a"))
+  })
+})
+
+describe("zoom focus by label end to end", {
+  it("crops to a label-named focus", {
+    focus <- ggseg.formats::atlas_labels(dk())[1]
+    zoomed <- prepare_polygon_atlas(
+      dk(),
+      position = position_brain_polygon(zoom = focus),
+      focus = focus
+    )
+    full <- prepare_polygon_atlas(dk())
+    expect_lt(diff(range(zoomed$x)), diff(range(full$x)))
   })
 })

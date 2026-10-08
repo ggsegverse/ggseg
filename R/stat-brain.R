@@ -87,7 +87,7 @@ StatBrain <- ggproto(
 #'
 #' # Equivalent to geom_brain(atlas = dk())
 #' ggplot() +
-#'   stat_brain(atlas = dk())
+#'   stat_brain(atlas = dk(), show.legend = FALSE)
 stat_brain <- function(
   mapping = aes(),
   data = NULL,
@@ -122,11 +122,14 @@ stat_brain <- function(
 #' The columns `geom_brain()` joins user data to the atlas on
 #'
 #' The single source of truth for the join keys, deliberately a subset of the
-#' atlas metadata columns.
+#' atlas metadata columns. `label` comes first: it is the ecosystem's canonical
+#' matching key (unique per atlas row, hemisphere-qualified) and the key atlas
+#' palettes are built on. Every key a `data` frame carries is used, so data
+#' keyed on `region` still joins.
 #' @keywords internal
 #' @noRd
 brain_join_keys <- function() {
-  c("region", "label", "hemi")
+  c("label", "region", "hemi")
 }
 
 

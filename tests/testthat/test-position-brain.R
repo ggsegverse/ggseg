@@ -476,6 +476,21 @@ describe("position_formula() with slice-based atlases", {
 })
 
 
+describe("position_brain_sf() grid validation", {
+  it("rejects a formula combined with nrow/ncol before the sf guard", {
+    withr::local_options(lifecycle_verbosity = "quiet")
+    expect_error(
+      position_brain_sf(hemi ~ view, nrow = 2),
+      "cannot be combined"
+    )
+  })
+
+  it("rejects a non-positive grid dimension", {
+    withr::local_options(lifecycle_verbosity = "quiet")
+    expect_error(position_brain_sf(nrow = 0), "positive whole number")
+  })
+})
+
 describe("validate_grid_args()", {
   it("rejects a layout formula combined with nrow/ncol", {
     # `position_brain(hemi ~ view, nrow = 2)` used to be byte-identical to

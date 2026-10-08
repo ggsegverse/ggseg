@@ -289,12 +289,15 @@ describe("faceting on an atlas column subsets the atlas (not replicate)", {
 })
 
 describe("geom_brain() with no data (atlas identity drives the stat)", {
-  it("emits the full atlas rendered grey (no auto palette)", {
+  it("emits the full atlas coloured by the atlas palette", {
     d <- ggplot2::ggplot_build(
       ggplot2::ggplot() + geom_brain(atlas = dk())
     )$data[[1]]
     expect_gt(nrow(d), 0)
-    expect_setequal(unique(d$fill), "grey")
+    expect_true(all(
+      setdiff(unique(d$fill), "grey") %in%
+        toupper(ggseg.formats::atlas_palette(dk()))
+    ))
   })
 
   it("maps aes(fill = region) to the atlas's own regions without user data", {

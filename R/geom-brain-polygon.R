@@ -112,11 +112,10 @@ geom_brain_polygon <- function(
   brain_layer$brain_position <- position
   brain_layer$brain_context <- context
 
-  # geom_brain() plots your data on the brain; it does not colour the atlas by
-  # its own palette. Regions you supply no value for stay grey (GeomBrain's
-  # default fill). For a palette-coloured atlas overview use `plot(atlas)`
-  # (ggseg.formats), or map its key yourself with `aes(fill = label)` and
-  # `scale_fill_brain()` -- atlas palettes are keyed by `label`.
+  # When the user maps neither `fill` nor `colour`, LayerBrain$setup_layer()
+  # maps `fill` to `label` and installs the atlas palette, so a bare
+  # geom_brain() comes out palette-coloured. `label` -- not `region` -- is the
+  # key the palette (and the rest of the ecosystem) is built on.
   list(brain_layer, coord_brain())
 }
 
@@ -136,7 +135,8 @@ ggplot2_Layer <- function() {
 #' `default_aes` -- outline `colour` (grey35), `linewidth` (0.2), and `fill`
 #' (grey) -- which apply when the user has not mapped those aesthetics but yield
 #' to a mapping when present (ggsegverse/ggseg#160). The grey default fill is
-#' why an atlas plotted without data renders grey, not palette-coloured. Used
+#' what an atlas with no palette of its own falls back to; otherwise
+#' [geom_brain()] maps `fill` to `label` and applies the palette. Used
 #' internally by [geom_brain()]; not typically called directly.
 #'
 #' @export
@@ -164,7 +164,7 @@ GeomBrain <- ggproto(
 #' The user data itself is passed through untouched (join keys are injected as
 #' aesthetics so they survive into the stat); when no data is supplied the
 #' atlas's own identity rows drive the stat so the bare atlas still renders (and
-#' `aes(fill = region)` / faceting on an atlas column keep working). Fixes
+#' `aes(fill = label)` / faceting on an atlas column keep working). Fixes
 #' ggsegverse/ggseg#158 (top-level `aes()`/`data` were dropped by the eager
 #' build). The deprecated sf renderer has a parallel [LayerBrainSf].
 #'
@@ -177,13 +177,24 @@ LayerBrain <- ggproto(
   setup_layer = function(self, data, plot) {
     dt <- ggproto_parent(ggplot2_Layer(), self)$setup_layer(data, plot)
 
-    warn_uncoloured_atlas(self$computed_mapping, self$aes_params)
-
     atlas <- self$brain_atlas
     if (is.null(atlas)) {
       cli::cli_abort(
         "No atlas supplied, please provide a brain atlas to the geom."
       )
+    }
+
+    # A bare geom_brain() colours the atlas by its own palette, keyed on
+    # `label`. Both halves or neither: a `fill = label` mapping with no palette
+    # would hand ggplot2's hue ramp to 100-odd labels.
+    if (needs_default_atlas_fill(self$computed_mapping, self$aes_params)) {
+      if (add_atlas_fill_scale(plot, atlas)) {
+        # `after_stat()`: `label` is a column of the atlas geometry StatBrain
+        # emits, not of the user's `data`, which need not carry it at all (it
+        # may be keyed on `region`). Mapping it directly would fail to evaluate
+        # in `compute_aesthetics()`.
+        self$computed_mapping$fill <- quote(ggplot2::after_stat(label))
+      }
     }
 
     has_data <- !inherits(dt, "waiver") && is.data.frame(dt) && nrow(dt) > 0
@@ -210,7 +221,7 @@ LayerBrain <- ggproto(
 
     if (!has_data) {
       # No user data: drive the stat with the atlas's own identity rows so its
-      # columns are available for aesthetics like aes(fill = region) and for
+      # columns are available for aesthetics like aes(fill = label) and for
       # faceting on an atlas column; the atlas draw order is preserved (reorder
       # off).
       dt <- unique(flat[, atlas_cols, drop = FALSE])
@@ -221,7 +232,7 @@ LayerBrain <- ggproto(
       cli::cli_abort(c(
         "{.arg data} has no columns in common with the atlas.",
         "i" = paste0(
-          "Need {.field region} or {.field label} ",
+          "Need {.field label} or {.field region} ",
           "(and optionally {.field hemi})."
         )
       ))
@@ -290,44 +301,47 @@ group_by_facet_vars <- function(data, plot, atlas) {
 }
 
 
-#' Warn once per session that a bare brain is no longer palette-coloured
+#' Should `geom_brain()` colour the atlas by its own palette?
 #'
-#' ggseg 2.2.1 and earlier injected `fill = .data$label` plus a matching
-#' `scale_fill_manual()` whenever the user mapped no `fill`, so a bare
-#' `geom_brain()` came out palette-coloured. It no longer does, and the result
-#' (a uniform grey brain) is a silent change of meaning for existing figures.
-#' The warning fires from `setup_layer()`, after the top-level `ggplot()`
-#' mapping has been inherited, so a `fill` set there counts.
+#' A bare `geom_brain()` -- one where the user maps (or fixes) neither `fill`
+#' nor `colour` -- is a request for an atlas overview, so the layer colours it
+#' by the atlas palette. Any explicit `fill`/`colour` from the user wins. The
+#' check runs from `setup_layer()`, after the top-level `ggplot()` mapping has
+#' been inherited, so an aesthetic set there counts.
 #'
 #' @param mapping The layer's computed aesthetic mapping.
 #' @param aes_params The layer's fixed aesthetic parameters.
-#' @return `invisible(NULL)`, called for its warning side effect.
+#' @return `TRUE` when the atlas palette should be applied.
 #' @keywords internal
 #' @noRd
-warn_uncoloured_atlas <- function(mapping, aes_params) {
-  if (any(c(names(mapping), names(aes_params)) == "fill")) {
-    return(invisible(NULL))
+needs_default_atlas_fill <- function(mapping, aes_params) {
+  supplied <- c(names(mapping), names(aes_params))
+  !any(supplied %in% c("fill", "colour", "color"))
+}
+
+
+#' Install the atlas palette as the plot's fill scale
+#'
+#' Atlas palettes are keyed by `label`, so this pairs with
+#' `aes(fill = label)`. The scale is added to the plot's scale list rather than
+#' returned from `geom_brain()` because whether the user mapped `fill` is only
+#' known once the top-level mapping has been inherited, i.e. inside
+#' `setup_layer()`. `ScalesList$add()` replaces any scale already registered
+#' for the aesthetic, so it is only reached when the user supplied no `fill` at
+#' all. An atlas carrying no palette is left alone.
+#'
+#' @param plot The ggplot object being built.
+#' @param atlas The `ggseg_atlas` being rendered.
+#' @return `TRUE` when a palette scale was installed, `FALSE` otherwise.
+#' @keywords internal
+#' @noRd
+add_atlas_fill_scale <- function(plot, atlas) {
+  palette <- ggseg.formats::atlas_palette(atlas)
+  if (is.null(palette) || length(palette) == 0) {
+    return(FALSE)
   }
-  rlang::warn(
-    cli::format_message(c(
-      "!" = paste(
-        "{.fn geom_brain} no longer colours the atlas by its own palette",
-        "when you map no {.field fill}; regions render grey."
-      ),
-      "i" = paste(
-        "For a palette-coloured overview use {.code plot(atlas)}",
-        "({.pkg ggseg.formats})."
-      ),
-      "i" = paste(
-        "To colour by the atlas palette here, map its key:",
-        "{.code aes(fill = label)} with {.fn scale_fill_brain}."
-      )
-    )),
-    class = "ggseg_uncoloured_atlas",
-    .frequency = "once",
-    .frequency_id = "ggseg_uncoloured_atlas"
-  )
-  invisible(NULL)
+  plot$scales$add(scale_fill_manual(values = palette, na.value = "grey"))
+  TRUE
 }
 
 
