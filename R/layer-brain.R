@@ -110,23 +110,12 @@ LayerBrainSf <- ggproto(
 
       data <- brain_join(dt, atlas)
 
-      merge_errs <- vapply(
-        data$geometry,
-        function(x) length(!is.na(x)) > 0,
-        logical(1)
-      )
-
-      if (!all(merge_errs)) {
-        k <- data[!merge_errs, ]
-        k <- k[, !vapply(k, anyNA, logical(1))]
-        k$geometry <- NULL
-        k <- paste(utils::capture.output(k), collapse = "\n")
-
-        cli::cli_warn(sprintf(
-          "Some data not merged. Check for spelling mistakes in:\n%s",
-          k
-        ))
-        data <- data[merge_errs, ]
+      # Rows whose join key matched no atlas region come back with empty
+      # geometry and cannot be drawn. brain_join() has already warned about
+      # them by name, so they are only dropped here.
+      merged <- !sf::st_is_empty(data$geometry)
+      if (!all(merged)) {
+        data <- data[merged, ]
       }
     } else {
       data <- atlas

@@ -30,7 +30,7 @@ library(ggplot2)
 
 ## What's in a brain atlas
 
-A `brain_atlas` object bundles four things: a name, a type (cortical,
+A `ggseg_atlas` object bundles four things: a name, a type (cortical,
 subcortical, or tract), region geometry, and an optional colour palette.
 
 ```{r}

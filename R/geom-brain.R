@@ -9,8 +9,8 @@
 #' by the atlas's own palette. Up to ggseg 2.2.1 it did whenever you mapped no
 #' `fill`, so a bare `geom_brain(atlas = dk())` now renders grey instead and
 #' warns once per session. For a palette-coloured overview use `plot(atlas)`
-#' from `ggseg.formats`, or map it here with `aes(fill = region)` and
-#' [scale_fill_brain()].
+#' from `ggseg.formats`, or map its key here with `aes(fill = label)` and
+#' [scale_fill_brain()] -- atlas palettes are keyed by `label`.
 #'
 #' Regions are drawn in the order they appear in your `data`, so when outlines
 #' overlap (e.g. mapping `colour` to a threshold with a wide `linewidth`) the
@@ -183,11 +183,12 @@ geom_brain_sf <- function(
   )
 
   has_fill_aes <- "fill" %in% names(mapping)
-  if (!is.null(atlas$palette) && !has_fill_aes) {
+  palette <- atlas_palette(atlas)
+  if (!is.null(palette) && !has_fill_aes) {
     result <- c(
       result,
       list(
-        scale_fill_manual(values = atlas$palette, na.value = "grey")
+        scale_fill_manual(values = palette, na.value = "grey")
       )
     )
   }

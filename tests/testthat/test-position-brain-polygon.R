@@ -57,7 +57,7 @@ describe("geom_brain_polygon() with position", {
   it("renders with default horizontal position", {
     poly <- ggseg.formats::as_polygon_atlas(dk())
     p <- ggplot2::ggplot() + geom_brain_polygon(atlas = poly)
-    g <- ggplot2::ggplot_build(p)
+    g <- muffle_breaking_warnings(ggplot2::ggplot_build(p))
     expect_true(all(is.finite(range(g$data[[1]]$x))))
   })
 
@@ -148,7 +148,8 @@ describe("resolve_zoom_focus", {
   })
 
   it("returns explicit region names unchanged", {
-    expect_identical(resolve_zoom_focus(c("x", "y"), NULL, aseg()), c("x", "y"))
+    focus <- c("thalamus", "putamen")
+    expect_identical(resolve_zoom_focus(focus, NULL, aseg()), focus)
   })
 
   it("uses regions present in data when zoom = TRUE", {
@@ -223,5 +224,26 @@ describe("as_polygon_position", {
       as_polygon_position(ggplot2::position_identity()),
       "must be a"
     )
+  })
+})
+
+
+describe("warn_unmatched_focus()", {
+  it("names focus regions the atlas does not have", {
+    expect_warning(
+      resolve_zoom_focus("Thalamus Proper", NULL, aseg()),
+      class = "ggseg_unmatched_focus"
+    )
+  })
+
+  it("suggests the closest real region", {
+    expect_warning(
+      resolve_zoom_focus("Thalamus Proper", NULL, aseg()),
+      "thalamus"
+    )
+  })
+
+  it("is silent when every focus region matches", {
+    expect_no_warning(resolve_zoom_focus("thalamus", NULL, aseg()))
   })
 })

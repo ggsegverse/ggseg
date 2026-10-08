@@ -18,8 +18,8 @@ set.seed(1234)
 # values, polygon vertex count and coordinate frame, so no single snapshot set
 # can satisfy both. The `names` column exists only in the re-keyed schema, where
 # the spelled-out region names moved out of `region`, so it marks the schema.
-atlas_schema_variant <- function(core = ggseg.formats::dk()$core) {
-  if ("names" %in% names(core)) "schema-names" else "schema-legacy"
+atlas_schema_variant <- function(x = ggseg.formats::dk()) {
+  if (length(ggseg.formats::atlas_names(x))) "schema-names" else "schema-legacy"
 }
 
 # ggseg's two breaking-change warnings (uncoloured atlas, collapsed rows) fire

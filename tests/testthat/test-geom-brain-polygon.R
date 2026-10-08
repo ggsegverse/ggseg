@@ -273,7 +273,7 @@ describe("geom_brain() inherits top-level data and aes (ggseg#158)", {
 
   it("renders grey (not the palette) when no fill is mapped anywhere", {
     # geom_brain() plots your data, so a bare atlas is grey; the palette is
-    # opt-in via plot(atlas) or aes(fill = region) + scale_fill_brain().
+    # opt-in via plot(atlas) or aes(fill = label) + scale_fill_brain().
     p <- ggplot2::ggplot() + geom_brain(atlas = dk())
     expect_setequal(unique(fill_column(p)), "grey")
   })

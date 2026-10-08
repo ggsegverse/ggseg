@@ -39,7 +39,7 @@ brain_test_plot <- function(
   }
 
   if (is.null(position)) {
-    position <- if (identical(atlas$type, "cortical")) {
+    position <- if (identical(ggseg.formats::atlas_type(atlas), "cortical")) {
       position_brain(hemi ~ view)
     } else {
       position_brain(. ~ view)
@@ -55,10 +55,11 @@ brain_test_plot <- function(
     ) +
     ggplot2::theme_void()
 
-  if (!is.null(atlas$palette)) {
+  palette <- ggseg.formats::atlas_palette(atlas)
+  if (!is.null(palette)) {
     p <- p +
       ggplot2::scale_fill_manual(
-        values = atlas$palette,
+        values = palette,
         na.value = na.value
       )
   }

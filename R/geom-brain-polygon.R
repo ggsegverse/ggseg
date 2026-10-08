@@ -115,8 +115,8 @@ geom_brain_polygon <- function(
   # geom_brain() plots your data on the brain; it does not colour the atlas by
   # its own palette. Regions you supply no value for stay grey (GeomBrain's
   # default fill). For a palette-coloured atlas overview use `plot(atlas)`
-  # (ggseg.formats), or map it yourself with `aes(fill = region)` and
-  # `scale_fill_brain()`.
+  # (ggseg.formats), or map its key yourself with `aes(fill = label)` and
+  # `scale_fill_brain()` -- atlas palettes are keyed by `label`.
   list(brain_layer, coord_brain())
 }
 
@@ -272,6 +272,9 @@ LayerBrain <- ggproto(
 group_by_facet_vars <- function(data, plot, atlas) {
   facet_vars <- plot$facet$vars()
   group_vars <- intersect(facet_vars, names(data))
+  # Sanctioned `$core` access: ggseg.formats has no accessor for the set of
+  # core column names, because the schema allows user-defined classification
+  # columns (lobe, structure, ...) that no accessor could enumerate.
   atlas_cols <- unique(c(
     names(atlas$core),
     "view",
@@ -316,8 +319,8 @@ warn_uncoloured_atlas <- function(mapping, aes_params) {
         "({.pkg ggseg.formats})."
       ),
       "i" = paste(
-        "To colour by region here, map it:",
-        "{.code aes(fill = region)} with {.fn scale_fill_brain}."
+        "To colour by the atlas palette here, map its key:",
+        "{.code aes(fill = label)} with {.fn scale_fill_brain}."
       )
     )),
     class = "ggseg_uncoloured_atlas",
@@ -363,6 +366,8 @@ prepare_polygon_atlas <- function(
   # some atlases (e.g. tracula) carry their own `group` column in `core`,
   # which would otherwise collide and suffix this one away.
   names(flat)[names(flat) == "group"] <- ".group"
+  # Sanctioned `$core` access: see group_by_facet_vars(). The whole core is
+  # joined precisely so user-defined classification columns survive.
   flat <- dplyr::left_join(
     flat,
     atlas$core,
@@ -396,10 +401,13 @@ prepare_polygon_atlas <- function(
     flat <- flat[!is.na(flat$region), , drop = FALSE]
   }
 
+  # `$atlas` (the atlas's own name) has no accessor in ggseg.formats; `$type`
+  # does, so it goes through it.
+  atlas_type <- ggseg.formats::atlas_type(atlas)
   flat$atlas <- atlas$atlas
-  flat$type <- atlas$type
+  flat$type <- atlas_type
 
-  if (atlas$type == "cortical") {
+  if (atlas_type == "cortical") {
     if (!"hemi" %in% names(flat)) {
       flat$hemi <- NA_character_
     }

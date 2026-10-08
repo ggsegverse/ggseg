@@ -53,12 +53,12 @@ For everything else, `geom_brain()` is simpler.
 
 ## Getting atlas data as sf
 
-A brain atlas stores its geometry in the `data` slot. Convert to a plain
-data frame to see all the columns:
+A brain atlas stores its geometry in the `data` slot. Reach it through the
+accessor rather than by list indexing:
 
 ```{r}
 #| label: atlas-data
-dk()$data
+ggseg.formats::atlas_geom(dk())
 ```
 
 The `geometry` column holds the polygons. This is a standard sf object, so

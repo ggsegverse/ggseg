@@ -237,3 +237,41 @@ describe("annotate_brain visual", {
     )
   })
 })
+
+
+describe("annotate_brain() position coercion", {
+  # annotate_brain() used to send any non-spec `position` into the sf
+  # implementation, so a string or formula hard-failed on require_sf() for an
+  # argument form geom_brain() accepts. Both exports now coerce the same way.
+  it("accepts a layout string without sf", {
+    expect_s3_class(
+      annotate_brain(dk(), position = "vertical"),
+      "LayerInstance"
+    )
+  })
+
+  it("accepts a layout formula without sf", {
+    expect_s3_class(
+      annotate_brain(dk(), position = hemi ~ view),
+      "LayerInstance"
+    )
+  })
+
+  it("accepts 'identity' as the no-layout opt-out", {
+    expect_s3_class(
+      annotate_brain(dk(), position = "identity"),
+      "LayerInstance"
+    )
+  })
+
+  it("rejects an unsupported position the same way geom_brain() does", {
+    expect_error(annotate_brain(dk(), position = "nonsense"), "must be a")
+  })
+
+  it("still routes an explicit PositionBrain to the sf implementation", {
+    skip_if_not_installed("sf")
+    withr::local_options(lifecycle_verbosity = "quiet")
+    layer <- annotate_brain(dk(), position = position_brain_sf(hemi ~ view))
+    expect_s3_class(layer, "LayerInstance")
+  })
+})

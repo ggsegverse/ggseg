@@ -184,7 +184,7 @@ ggplot() +
   geom_brain(
     atlas = aseg(),
     position = position_brain(
-      views = c("sagittal", "axial_3", "coronal_3")
+      views = c("sagittal", "axial_3", "coronal_2")
     ),
     show.legend = FALSE
   ) +
@@ -202,7 +202,7 @@ ggplot() +
   geom_brain(
     atlas = aseg(),
     position = position_brain(
-      views = c("sagittal", "axial_3", "axial_5", "coronal_3"),
+      views = c("sagittal", "axial_3", "axial_5", "coronal_2"),
       nrow = 2
     ),
     show.legend = FALSE
@@ -321,7 +321,7 @@ independent of any data you plot:
 ```{r}
 #| label: fig-zoom-explicit
 #| fig-cap: "Zoom targeted at a named set of regions."
-focus <- c("Thalamus Proper", "Putamen", "Hippocampus")
+focus <- c("thalamus", "putamen", "hippocampus")
 
 ggplot() +
   geom_brain(

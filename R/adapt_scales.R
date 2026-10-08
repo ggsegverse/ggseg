@@ -26,8 +26,8 @@ adapt_scales <- function(
     geobrain <- atlas_scale_coords(geobrain)
   }
 
-  atlas_type <- unique(geobrain$type)
-  if (atlas_type == "cortical") {
+  atlas_type <- atlas_type_of(geobrain)
+  if (identical(atlas_type, "cortical")) {
     adapt_scales_cortical(geobrain, position, aesthetics)
   } else if (atlas_type %in% c("subcortical", "tract", "cerebellar")) {
     # Cerebellar atlases (e.g. suit()) are slice-based like subcortical ones,
@@ -72,10 +72,9 @@ atlas_scale_coords <- function(atlas) {
 adapt_scales_cortical <- function(geobrain, position, aesthetics) {
   stk_y <- dplyr::summarise(dplyr::group_by(geobrain, hemi), val = gap(.lat))
   stk_x <- dplyr::summarise(dplyr::group_by(geobrain, view), val = gap(.long))
-  disp <- dplyr::summarise_at(
+  disp <- dplyr::summarise(
     dplyr::group_by(geobrain, hemi),
-    dplyr::vars(.long, .lat),
-    list(gap)
+    dplyr::across(c(.long, .lat), gap)
   )
 
   ad_scale <- list(
@@ -99,10 +98,9 @@ adapt_scales_cortical <- function(geobrain, position, aesthetics) {
 #' @noRd
 adapt_scales_subcortical <- function(geobrain, position, aesthetics) {
   stk_y <- dplyr::summarise(dplyr::group_by(geobrain, view), val = gap(.lat))
-  disp <- dplyr::summarise_at(
+  disp <- dplyr::summarise(
     dplyr::group_by(geobrain, view),
-    dplyr::vars(.long, .lat),
-    list(gap)
+    dplyr::across(c(.long, .lat), gap)
   )
 
   ad_scale <- list(

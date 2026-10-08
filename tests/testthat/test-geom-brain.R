@@ -256,17 +256,14 @@ describe("LayerBrainSf", {
       p = 0.5
     )
     expect_warning(
-      expect_warning(
-        expect_message(
-          ggplot_build(
-            ggplot(bad_data) +
-              geom_brain_sf(atlas = dk(), mapping = aes(fill = p))
-          ),
-          "Merging atlas and data"
+      expect_message(
+        ggplot_build(
+          ggplot(bad_data) +
+            geom_brain_sf(atlas = dk(), mapping = aes(fill = p))
         ),
-        "not merged properly"
+        "Merging atlas and data"
       ),
-      "not merged"
+      "not merged properly"
     )
   })
 
@@ -325,5 +322,23 @@ describe("brain_grob", {
     built <- ggplot_build(p)
     gt <- ggplot_gtable(built)
     expect_s3_class(gt, "gtable")
+  })
+})
+
+
+describe("geom_brain_sf() unmerged data", {
+  it("warns once and drops the unmatched rows", {
+    # The layer used to repeat brain_join()'s warning with a worse message,
+    # via an emptiness test written as `length(!is.na(x)) > 0`.
+    skip_if_not_installed("sf")
+    withr::local_options(lifecycle_verbosity = "quiet")
+    dt <- data.frame(region = c("precentral", "not_a_region"), p = c(1, 2))
+    p <- ggplot2::ggplot() +
+      geom_brain_sf(atlas = dk(), data = dt, mapping = ggplot2::aes(fill = p))
+
+    warns <- testthat::capture_warnings(
+      suppressMessages(ggplot2::ggplot_build(p))
+    )
+    expect_length(grep("not merged", warns, fixed = TRUE), 1)
   })
 })

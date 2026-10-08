@@ -13,9 +13,12 @@
 #' @param position Position formula for slices. For cortical atlases, use
 #'   formulas like `hemi ~ view`. For subcortical/tract atlases, use
 #'   "horizontal", "vertical", or `type ~ .` for type-based layout.
-#' @param nrow Number of rows for grid layout (subcortical/tract only)
-#' @param ncol Number of columns for grid layout (subcortical/tract only)
-#' @param views Character vector specifying view order (subcortical/tract only)
+#' @param nrow Number of rows for grid layout; cannot be combined with a
+#'   `position` formula.
+#' @param ncol Number of columns for grid layout; cannot be combined with a
+#'   `position` formula.
+#' @param views Character vector specifying view order. Names the data does
+#'   not have are dropped with a warning.
 #'
 #' @return sf-data.frame with re-positioned slices
 #' @export
@@ -60,15 +63,17 @@ reposition_brain <- function(
 #'   cortical atlases (e.g., `hemi ~ view`). For subcortical/tract atlases,
 #'   can be "horizontal", "vertical", or a formula with `type ~ .` where type
 #'   is extracted from view names like "axial_1" -> "axial".
-#' @param nrow Number of rows for grid layout. If NULL (default), calculated
-#'   automatically. Only used for subcortical/tract atlases when position is
-#'   not a formula.
-#' @param ncol Number of columns for grid layout. If NULL (default), calculated
-#'   automatically. Only used for subcortical/tract atlases when position is
-#'   not a formula.
+#' @param nrow Number of rows for grid layout, a positive whole number. If
+#'   `NULL` (default), calculated automatically. Cannot be combined with a
+#'   `position` formula, which a grid layout would discard. Grid cells are
+#'   hemisphere/view pairs for a cortical atlas and views for a slice-based
+#'   one.
+#' @param ncol Number of columns for grid layout, a positive whole number. If
+#'   `NULL` (default), calculated automatically. Cannot be combined with a
+#'   `position` formula.
 #' @param views Character vector specifying which views to include and their
-#'   order. If NULL (default), all views are included in their original order.
-#'   Only applies to subcortical/tract atlases.
+#'   order. If `NULL` (default), all views are included in their original
+#'   order. Names the atlas does not have are dropped with a warning.
 #' @param zoom Controls per-view zoom. `NULL`/`FALSE` (default) draws each view
 #'   at full extent. `TRUE` zooms each view onto its focus regions; a character
 #'   vector names the focus regions explicitly.
@@ -238,6 +243,176 @@ PositionBrain <- ggproto(
   }
 )
 
+# layout argument validation ----
+
+#' The single atlas type a frame describes
+#'
+#' Three layout sites branch on the atlas type, and all three read it off an
+#' arbitrary data.frame -- `reposition_brain()` is exported and takes any sf
+#' frame, so a row-bound mix of a cortical and a slice-based atlas reaches
+#' them. Guarding with `[1]` would silently lay the mix out as whichever type
+#' came first; leaving it unguarded is a bare "condition has length > 1" error
+#' in R >= 4.2. Both are wrong, so say what is wrong.
+#'
+#' @param data Data.frame with an optional `type` column.
+#' @param call Environment to report the error against.
+#' @return The single type as a string, or `NA_character_` when absent.
+#' @keywords internal
+#' @noRd
+atlas_type_of <- function(data, call = rlang::caller_env()) {
+  types <- unique(data$type)
+  if (length(types) > 1) {
+    cli::cli_abort(
+      c(
+        "A single brain layout cannot mix atlas types.",
+        "x" = "{.arg data} carries type{?s} {.val {types}}.",
+        "i" = "Lay out one atlas at a time."
+      ),
+      call = call
+    )
+  }
+  if (length(types) == 0) NA_character_ else as.character(types)
+}
+
+#' Validate `nrow`/`ncol` against the layout `position`
+#'
+#' A grid layout is built from `nrow`/`ncol` alone, so a `position` formula
+#' supplied alongside them would be discarded. Rather than drop it silently,
+#' insist on one or the other. `nrow`/`ncol` also index the grid arithmetic
+#' directly, so a zero or fractional value would produce `Inf`/`NaN` cells.
+#'
+#' @param position The layout spec passed by the user.
+#' @param nrow,ncol Requested grid dimensions, or `NULL`.
+#' @param call Environment to report the error against.
+#' @return Invisibly `NULL`; called for its side effect.
+#' @keywords internal
+#' @noRd
+validate_grid_args <- function(
+  position,
+  nrow,
+  ncol,
+  call = rlang::caller_env()
+) {
+  if ((!is.null(nrow) || !is.null(ncol)) && inherits(position, "formula")) {
+    cli::cli_abort(
+      c(
+        "{.arg nrow}/{.arg ncol} cannot be combined with a layout formula.",
+        "x" = "A grid layout would discard {.code {format(position)}}.",
+        "i" = "Supply either {.arg position} or {.arg nrow}/{.arg ncol}."
+      ),
+      call = call
+    )
+  }
+
+  validate_grid_dim(nrow, "nrow", call)
+  validate_grid_dim(ncol, "ncol", call)
+  invisible(NULL)
+}
+
+#' @param value The supplied dimension.
+#' @param arg Argument name, for the error message.
+#' @rdname validate_grid_args
+#' @keywords internal
+#' @noRd
+validate_grid_dim <- function(value, arg, call) {
+  if (is.null(value) || is_grid_dim(value)) {
+    return(invisible(NULL))
+  }
+
+  cli::cli_abort(
+    c(
+      "{.arg {arg}} must be a single positive whole number.",
+      "x" = describe_supplied(value)
+    ),
+    call = call
+  )
+}
+
+#' @rdname validate_grid_args
+#' @keywords internal
+#' @noRd
+is_grid_dim <- function(value) {
+  is.numeric(value) &&
+    length(value) == 1L &&
+    !is.na(value) &&
+    value >= 1 &&
+    value == trunc(value)
+}
+
+#' @rdname validate_grid_args
+#' @keywords internal
+#' @noRd
+describe_supplied <- function(value) {
+  if (is.atomic(value) && length(value) == 1L) {
+    cli::format_inline("You supplied {.val {value}}.")
+  } else {
+    cli::format_inline("You supplied {.obj_type_friendly {value}}.")
+  }
+}
+
+#' Warn about requested views the atlas does not have
+#'
+#' `views` filters by `%in%`, so an unknown name is a silent no-op that quietly
+#' drops a panel from the plot. Name it instead.
+#'
+#' @param views Requested view names.
+#' @param available View names the atlas actually carries.
+#' @return Invisibly `NULL`; called for its side effect.
+#' @keywords internal
+#' @noRd
+warn_unmatched_views <- function(views, available) {
+  unmatched <- setdiff(views, available)
+  if (length(unmatched) == 0) {
+    return(invisible(NULL))
+  }
+
+  cli::cli_warn(
+    c(
+      "!" = "View{?s} {.val {unmatched}} {?is/are} not in the atlas \\
+        and {?was/were} dropped.",
+      "i" = "Available views: {.val {available}}."
+    ),
+    class = "ggseg_unmatched_views"
+  )
+  invisible(NULL)
+}
+
+#' Atlas values closest to a set of unmatched ones
+#'
+#' Cheap fuzzy lookup used to turn "that name is unknown" into "did you mean
+#' this". Matches in whichever direction makes the shorter string the pattern,
+#' so `"Thalamus Proper"` still finds `"thalamus"`.
+#'
+#' @param x Unmatched values.
+#' @param available The real values.
+#' @return Character vector of suggestions, possibly empty.
+#' @keywords internal
+#' @noRd
+nearest_values <- function(x, available) {
+  if (length(available) == 0) {
+    return(character(0))
+  }
+
+  hits <- lapply(x, function(v) {
+    close <- vapply(
+      available,
+      function(a) {
+        short <- if (nchar(a) <= nchar(v)) a else v
+        long <- if (nchar(a) <= nchar(v)) v else a
+        # A one- or two-character pattern fuzzily matches everything, which
+        # would suggest the whole atlas instead of a near miss.
+        nchar(short) >= 4 &&
+          length(agrep(short, long, max.distance = 0.2, ignore.case = TRUE)) > 0
+      },
+      logical(1),
+      USE.NAMES = FALSE
+    )
+    available[close]
+  })
+
+  unique(unlist(hits))
+}
+
 # geometry movers ----
 
 #' Extract and validate variable names from a position formula
@@ -248,7 +423,7 @@ PositionBrain <- ggproto(
 #' @noRd
 parse_formula_vars <- function(pos) {
   chosen <- all.vars(pos, unique = FALSE)
-  chosen <- chosen[!grepl(".", chosen, fixed = TRUE)]
+  chosen <- chosen[chosen != "."]
 
   if (anyDuplicated(chosen)) {
     cli::cli_abort(
@@ -305,9 +480,8 @@ validate_stacking_formula <- function(pos, position) {
 #' @noRd
 position_formula <- function(pos, data) {
   chosen <- parse_formula_vars(pos)
-  atlas_type <- unique(data$type)[1]
 
-  if (atlas_type == "cortical") {
+  if (identical(atlas_type_of(data), "cortical")) {
     position <- position_cortical(pos, chosen)
     validate_stacking_formula(pos, position)
   } else {
@@ -429,7 +603,10 @@ frame_2_position <- function(
   ncol = NULL,
   views = NULL
 ) {
+  validate_grid_args(pos, nrow, ncol)
+
   if (!is.null(views)) {
+    warn_unmatched_views(views, unique(data$view))
     data <- data[data$view %in% views, , drop = FALSE]
     data$view <- factor(data$view, levels = views)
     data <- data[order(data$view), ]
@@ -473,10 +650,12 @@ frame_2_position <- function(
 
 #' Split atlas data into a grid of views
 #'
-#' Assigns grid row/column indices to each view and returns
-#' a list of per-view data.frames.
+#' Assigns grid row/column indices to each cell and returns a list of per-cell
+#' data.frames. A cell is one view for a slice-based atlas, whose views already
+#' carry both hemispheres, and one hemisphere/view pair for a cortical atlas,
+#' where splitting on `view` alone would put both hemispheres in every cell.
 #'
-#' @param data Data.frame with a `view` column.
+#' @param data Data.frame with a `view` column (and `hemi` when cortical).
 #' @param nrow Number of grid rows (optional, auto-calculated).
 #' @param ncol Number of grid columns (optional, auto-calculated).
 #'
@@ -485,33 +664,47 @@ frame_2_position <- function(
 #' @keywords internal
 #' @noRd
 split_data_grid <- function(data, nrow = NULL, ncol = NULL) {
-  view_list <- unique(data$view)
-  n_views <- length(view_list)
+  cell_id <- grid_cell_id(data)
+  cells <- unique(cell_id)
+  n_cells <- length(cells)
 
   if (is.null(nrow) && is.null(ncol)) {
-    ncol <- ceiling(sqrt(n_views))
-    nrow <- ceiling(n_views / ncol)
+    ncol <- ceiling(sqrt(n_cells))
+    nrow <- ceiling(n_cells / ncol)
   } else if (is.null(nrow)) {
-    nrow <- ceiling(n_views / ncol)
+    nrow <- ceiling(n_cells / ncol)
   } else if (is.null(ncol)) {
-    ncol <- ceiling(n_views / nrow)
+    ncol <- ceiling(n_cells / nrow)
   }
 
-  data$.grid_row <- ((seq_along(view_list) - 1) %/% ncol + 1)[
-    match(data$view, view_list)
-  ]
-  data$.grid_col <- ((seq_along(view_list) - 1) %% ncol + 1)[
-    match(data$view, view_list)
-  ]
+  idx <- match(cell_id, cells)
+  data$.grid_row <- ((seq_along(cells) - 1) %/% ncol + 1)[idx]
+  data$.grid_col <- ((seq_along(cells) - 1) %% ncol + 1)[idx]
 
-  df_list <- lapply(view_list, function(v) {
-    data[data$view == v, ]
+  df_list <- lapply(cells, function(v) {
+    data[cell_id == v, , drop = FALSE]
   })
 
   list(
     data = df_list,
     position = c(".grid_row", ".grid_col")
   )
+}
+
+#' Identify the grid cell each row belongs to
+#'
+#' @param data Data.frame with `type`, `view` and possibly `hemi`.
+#' @return Character vector, one cell identifier per row.
+#' @keywords internal
+#' @noRd
+grid_cell_id <- function(data) {
+  cortical <- identical(atlas_type_of(data), "cortical") &&
+    "hemi" %in% names(data)
+  if (cortical) {
+    paste(data$hemi, data$view)
+  } else {
+    data$view
+  }
 }
 
 #' Split atlas data by position specification
@@ -569,7 +762,7 @@ split_data_string <- function(data, position) {
     stringsAsFactors = FALSE
   )
 
-  groups <- if (identical(unique(data$type)[1], "cortical")) {
+  groups <- if (identical(atlas_type_of(data), "cortical")) {
     split_cortical_pairs(data, pos)
   } else {
     lapply(pos, function(view) data[data$view == view, ])
@@ -658,7 +851,7 @@ drop_temp_columns <- function(df) {
 #' @keywords internal
 #' @noRd
 default_order <- function(data) {
-  if (unique(data$type) != "cortical") {
+  if (!identical(atlas_type_of(data), "cortical")) {
     return(unique(data$view))
   }
   sides <- unique(data$view)

@@ -73,8 +73,8 @@ lays out the brain views for you. No data? It just draws the atlas.
 by the atlas's own palette. Up to ggseg 2.2.1 it did whenever you mapped no
 \code{fill}, so a bare \code{geom_brain(atlas = dk())} now renders grey instead and
 warns once per session. For a palette-coloured overview use \code{plot(atlas)}
-from \code{ggseg.formats}, or map it here with \code{aes(fill = region)} and
-\code{\link[=scale_fill_brain]{scale_fill_brain()}}.
+from \code{ggseg.formats}, or map its key here with \code{aes(fill = label)} and
+\code{\link[=scale_fill_brain]{scale_fill_brain()}} -- atlas palettes are keyed by \code{label}.
 
 Regions are drawn in the order they appear in your \code{data}, so when outlines
 overlap (e.g. mapping \code{colour} to a threshold with a wide \code{linewidth}) the

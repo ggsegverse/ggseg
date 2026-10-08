@@ -19,11 +19,14 @@ reposition_brain(
 formulas like \code{hemi ~ view}. For subcortical/tract atlases, use
 "horizontal", "vertical", or \code{type ~ .} for type-based layout.}
 
-\item{nrow}{Number of rows for grid layout (subcortical/tract only)}
+\item{nrow}{Number of rows for grid layout; cannot be combined with a
+\code{position} formula.}
 
-\item{ncol}{Number of columns for grid layout (subcortical/tract only)}
+\item{ncol}{Number of columns for grid layout; cannot be combined with a
+\code{position} formula.}
 
-\item{views}{Character vector specifying view order (subcortical/tract only)}
+\item{views}{Character vector specifying view order. Names the data does
+not have are dropped with a warning.}
 }
 \value{
 sf-data.frame with re-positioned slices

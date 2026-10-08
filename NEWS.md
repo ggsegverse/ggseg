@@ -27,7 +27,7 @@ breaking changes before upgrading.
   renders grey — the same grey that regions you supply no value for already
   had — and warns once per session. `geom_brain()` is for plotting *your* data
   on the brain; for a palette-coloured overview use `plot(atlas)` (from
-  `ggseg.formats`), or map it yourself with `aes(fill = region)` and
+  `ggseg.formats`), or map its key yourself with `aes(fill = label)` and
   `scale_fill_brain()`.
 
 - **The injected discrete palette scale is gone.** A side effect of the item
@@ -143,9 +143,41 @@ breaking changes before upgrading.
   default `aesthetics = c("y", "x")`; the argument was matched after it was
   used.
 
+- `position_brain(hemi ~ view, nrow = 2)` now errors instead of silently
+  discarding the formula, and `nrow`/`ncol` must be positive whole numbers
+  (`ncol = 0` produced `Inf` grid indices).
+
+- A `nrow`/`ncol` grid on a cortical atlas now gives each hemisphere/view pair
+  its own cell; it split on `view` alone, putting both hemispheres in every
+  cell.
+
+- `position_brain(views = )` warns when a named view is not in the atlas, and
+  `zoom = ` warns when a named region is not, instead of silently dropping it.
+
+- A layout formula variable containing a dot (e.g. `my.col ~ view`) is no
+  longer dropped along with the `.` placeholder.
+
+- `annotate_brain()` accepts a layout string or formula without requiring the
+  optional `sf`; it routed every non-spec `position` into the sf
+  implementation.
+
+- `scale_brain()` and friends error with the available atlas names when `name`
+  is not an atlas; `match.fun()` resolved any visible function.
+
+- The deprecated `scale_*_brain()` scales warn at build time when no mapped
+  value is a palette key. Atlas palettes are keyed by `label`, so
+  `aes(fill = region)` drew every region in `na.value` with no signal.
+
+- Laying out a data frame that mixes atlas types now errors with an explanation
+  rather than R's "condition has length > 1".
+
 ## Documentation and internals
 
 - Roxygen documentation now uses markdown.
+
+- `positioning-views.Rmd` used region and view names no atlas has
+  (`"Thalamus Proper"`, `coronal_3`), so three zoom figures and two
+  view-selection figures demonstrated nothing.
 
 - Tests, examples, and vignettes resolve region names dynamically through
   `ggseg.formats::atlas_regions()` and the schema-stable `label` column instead

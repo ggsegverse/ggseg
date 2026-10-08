@@ -58,6 +58,7 @@ frame_2_position_flat <- function(
   zoom_pad = 0.05
 ) {
   if (!is.null(views)) {
+    warn_unmatched_views(views, unique(data$view))
     data <- data[data$view %in% views, , drop = FALSE]
     data$view <- factor(data$view, levels = views)
     data <- data[order(data$view), ]
@@ -114,15 +115,17 @@ frame_2_position_flat <- function(
 #'   cortical atlases (e.g., `hemi ~ view`). For subcortical/tract atlases,
 #'   can be "horizontal", "vertical", or a formula with `type ~ .` where type
 #'   is extracted from view names like "axial_1" -> "axial".
-#' @param nrow Number of rows for grid layout. If NULL (default), calculated
-#'   automatically. Only used for subcortical/tract atlases when position is
-#'   not a formula.
-#' @param ncol Number of columns for grid layout. If NULL (default), calculated
-#'   automatically. Only used for subcortical/tract atlases when position is
-#'   not a formula.
+#' @param nrow Number of rows for grid layout, a positive whole number. If
+#'   `NULL` (default), calculated automatically. Cannot be combined with a
+#'   `position` formula, which a grid layout would discard. Grid cells are
+#'   hemisphere/view pairs for a cortical atlas and views for a slice-based
+#'   one.
+#' @param ncol Number of columns for grid layout, a positive whole number. If
+#'   `NULL` (default), calculated automatically. Cannot be combined with a
+#'   `position` formula.
 #' @param views Character vector specifying which views to include and their
-#'   order. If NULL (default), all views are included in their original order.
-#'   Only applies to subcortical/tract atlases.
+#'   order. If `NULL` (default), all views are included in their original
+#'   order. Names the atlas does not have are dropped with a warning.
 #' @param zoom Controls per-view zoom. `NULL`/`FALSE` (default) draws each
 #'   view at full extent. `TRUE` zooms each view onto its focus regions —
 #'   the regions present in the user `data` passed to [geom_brain_polygon()],
@@ -161,6 +164,7 @@ position_brain_polygon <- function(
   zoom = NULL,
   zoom_pad = 0.05
 ) {
+  validate_grid_args(position, nrow, ncol)
   structure(
     list(
       position = position,
@@ -195,6 +199,7 @@ resolve_zoom_focus <- function(zoom, data, atlas) {
   }
 
   if (is.character(zoom)) {
+    warn_unmatched_focus(zoom, unique(ggseg.formats::atlas_regions(atlas)))
     return(zoom)
   }
 
@@ -213,8 +218,40 @@ resolve_zoom_focus <- function(zoom, data, atlas) {
     }
   }
 
-  regs <- unique(atlas$core$region)
+  regs <- unique(ggseg.formats::atlas_regions(atlas))
   regs[!is.na(regs)]
+}
+
+
+#' Warn about focus regions the atlas does not have
+#'
+#' A named focus region that matches nothing is a silent no-op: the view is
+#' never cropped and the plot looks exactly like an unzoomed one. Name the
+#' misses, and the closest real regions, instead.
+#'
+#' @param focus Requested focus region names.
+#' @param available Region names the atlas actually carries.
+#' @return Invisibly `NULL`; called for its side effect.
+#' @keywords internal
+#' @noRd
+warn_unmatched_focus <- function(focus, available) {
+  available <- available[!is.na(available)]
+  unmatched <- setdiff(focus, available)
+  if (length(unmatched) == 0) {
+    return(invisible(NULL))
+  }
+
+  suggestions <- nearest_values(unmatched, available)
+  msg <- c(
+    "!" = "Focus region{?s} {.val {unmatched}} {?is/are} not in the atlas."
+  )
+  if (length(suggestions)) {
+    msg <- c(msg, "i" = "Did you mean {.val {suggestions}}?")
+  }
+  msg <- c(msg, "i" = "See {.fn ggseg.formats::atlas_regions} for all regions.")
+
+  cli::cli_warn(msg, class = "ggseg_unmatched_focus")
+  invisible(NULL)
 }
 
 
