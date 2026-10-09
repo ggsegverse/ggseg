@@ -20,13 +20,6 @@ breaking changes before upgrading.
   combination of an older `ggseg` with the re-keyed atlases is silently wrong,
   which the new floor rules out.
 
-- **`geom_brain()` defaults to `label`, not `region`.** Map neither `fill` nor
-  `colour` and it maps `fill = label` and applies the atlas palette, which is
-  keyed on `label`. The decision is now made at build time, so a `fill` set in
-  the top-level `ggplot()` wins and
-  `ggplot(df, aes(fill = value)) + geom_brain(atlas = dk())` no longer errors
-  with "Continuous value supplied to a discrete scale".
-
 - **`GeomBrain` is a different object.** Both 2.2.1 and 3.0.0 export
   `GeomBrain`, but it is no longer the same ggproto: it is now the polygon geom
   (`GeomBrain` < `ggplot2::GeomPolygon` < `ggplot2::Geom`) that backs the
@@ -59,12 +52,12 @@ breaking changes before upgrading.
   rendering silently — `aes(group = region)` collapsed each region's separate
   polygon pieces.
 
-- **Polygon draw order now follows your data's row order.** The renderer used to
-  force alphabetical order, so when you mapped a variable to `colour` the
-  outlines stacked in an order unrelated to it. Regions now draw in the order
-  they appear in your `data` (later rows on top); regions you supply no value for
-  stay underneath in atlas order. `arrange()` your data to control layering.
-  Visual-only, but it restacks overlapping outlines (#162).
+- **Polygon draw order now follows your data's row order.** It used to be the
+  atlas's own polygon order regardless of your data, so when you mapped a
+  variable to `colour` the outlines stacked in an order unrelated to it. Regions
+  now draw in the order they appear in your `data` (later rows on top); regions
+  you supply no value for stay underneath in atlas order. `arrange()` your data
+  to control layering. Visual-only, but it restacks overlapping outlines (#162).
 
 - **`position_brain()` ignores the `hemi` term for slice-based atlases**
   (subcortical, cerebellar, tract), with a warning. Those views are whole slices
@@ -72,9 +65,6 @@ breaking changes before upgrading.
   context into its own row away from the structures. Each view now renders with
   its anatomical context integrated, matching `plot()`. Subcortical and tract
   plots using `hemi ~ view` lay out differently (correctly).
-
-- **Faceting is handled by `StatBrain`, not grouped data frames.** Pre-grouped
-  data still works, but `dplyr::group_by()` is no longer needed — see below.
 
 ## New features
 
@@ -92,6 +82,11 @@ breaking changes before upgrading.
 - `GeomBrainSf` is now exported (see above).
 
 ## Bug fixes
+
+- A bare `geom_brain()` again colours the atlas by its palette, keyed on
+  `label` — unchanged from 2.2.1. The default is now installed at build time, so
+  a top-level `aes(fill = value)` wins instead of erroring with "Continuous
+  value supplied to a discrete scale".
 
 - Faceting no longer needs `dplyr::group_by()`. The atlas geometry is drawn by
   `StatBrain`, which ggplot2 recomputes per panel, so `facet_wrap()` /
