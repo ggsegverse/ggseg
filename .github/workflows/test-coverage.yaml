@@ -12,4 +12,6 @@ permissions:
 jobs:
   test-coverage:
     uses: ggsegverse/.github/.github/workflows/test-coverage.yaml@main
+    with:
+      extra-repositories: https://ggsegverse.r-universe.dev
     secrets: inherit
