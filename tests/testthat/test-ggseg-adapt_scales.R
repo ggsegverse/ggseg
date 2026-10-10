@@ -74,18 +74,16 @@ describe("adapt_scales", {
 
 describe("atlas_scale_coords()", {
   it("derives coordinates without the sf path", {
-    local_mocked_bindings(
-      sf2coords = function(...) stop("the sf coordinate path was used")
-    )
+    skip_if_not_installed("sf")
+    local_sf_unusable()
     result <- adapt_scales(dk(), position = "dispersed", aesthetics = "x")
     expect_length(result$breaks, 2L)
     expect_false(anyNA(result$breaks))
   })
 
   it("lets the exported axis scales work without the sf path", {
-    local_mocked_bindings(
-      sf2coords = function(...) stop("the sf coordinate path was used")
-    )
+    skip_if_not_installed("sf")
+    local_sf_unusable()
     expect_s3_class(scale_x_brain(atlas = dk()), "ScaleContinuousPosition")
     expect_s3_class(scale_y_brain(atlas = aseg()), "ScaleContinuousPosition")
     expect_type(scale_labs_brain(atlas = tracula()), "list")

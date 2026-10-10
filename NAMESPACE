@@ -43,10 +43,7 @@ importFrom(dplyr,
   full_join,
   group_by,
   is.grouped_df,
-  mutate,
-  row_number,
-  summarise,
-  ungroup
+  summarise
 )
 importFrom(ggplot2,
   .pt,

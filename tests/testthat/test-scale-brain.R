@@ -180,7 +180,7 @@ describe("scale_continous_brain", {
     # `aesthetics = c("y", "x")` used to reach adapt_scales() unmatched, where
     # the vector turned the terminal `[[` into recursive indexing and silently
     # yielded NULL. The default must behave exactly like scale_y_brain().
-    expect_equal(
+    expect_identical(
       scale_continous_brain(dk(), position = "stacked")$breaks,
       scale_y_brain(position = "stacked")$breaks
     )
@@ -189,7 +189,7 @@ describe("scale_continous_brain", {
   })
 
   it("matches scale_y_brain() for the dispersed default", {
-    expect_equal(scale_continous_brain(dk())$breaks, scale_y_brain()$breaks)
+    expect_identical(scale_continous_brain(dk())$breaks, scale_y_brain()$breaks)
     expect_true("y" %in% scale_continous_brain(dk())$aesthetics)
   })
 
