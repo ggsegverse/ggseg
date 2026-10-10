@@ -44,7 +44,7 @@ describe("layout fixtures", {
 
   it("drops the contextual silhouettes", {
     flat <- prepare_polygon_atlas(tracula_fixture())
-    expect_false(any(is.na(flat$region)))
+    expect_false(anyNA(flat$region))
   })
 
   it("is a fraction of the source atlas's geometry", {

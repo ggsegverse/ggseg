@@ -500,6 +500,17 @@ is_polygon_position <- function(x) {
 }
 
 
+#' Test whether an object is one of the named layouts
+#'
+#' @param x An object.
+#' @return Logical.
+#' @keywords internal
+#' @noRd
+is_layout_keyword <- function(x) {
+  is.character(x) && length(x) == 1L && x %in% c("horizontal", "vertical")
+}
+
+
 #' Coerce a user-supplied `position` into a polygon-path layout spec
 #'
 #' `geom_brain()` documents `position` as "a string or the result of
@@ -523,11 +534,7 @@ as_polygon_position <- function(x) {
     return(NULL)
   }
 
-  if (inherits(x, "formula")) {
-    return(position_brain_polygon(x))
-  }
-
-  if (is.character(x) && length(x) == 1 && x %in% c("horizontal", "vertical")) {
+  if (inherits(x, "formula") || is_layout_keyword(x)) {
     return(position_brain_polygon(x))
   }
 

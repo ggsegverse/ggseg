@@ -526,11 +526,11 @@ describe("geom_brain() position coercion", {
   }
 
   it("applies a layout string the same way as a position_brain() spec", {
-    expect_equal(built("vertical"), built(position_brain("vertical")))
+    expect_identical(built("vertical"), built(position_brain("vertical")))
   })
 
   it("applies a layout formula the same way as a spec", {
-    expect_equal(built(hemi ~ view), built(position_brain(hemi ~ view)))
+    expect_identical(built(hemi ~ view), built(position_brain(hemi ~ view)))
   })
 
   it("lays a string out differently from the default layout", {
@@ -542,8 +542,8 @@ describe("geom_brain() position coercion", {
 
   it("keeps raw polygon coordinates for 'identity'", {
     raw <- prepare_polygon_atlas(dk())
-    expect_equal(range(built("identity")$x), range(raw$x))
-    expect_equal(range(built("identity")$y), range(raw$y))
+    expect_identical(range(built("identity")$x), range(raw$x))
+    expect_identical(range(built("identity")$y), range(raw$y))
   })
 
   it("errors on an invalid position instead of silently ignoring it", {
