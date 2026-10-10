@@ -13,8 +13,8 @@ vignette: >
 knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>",
-  fig.width = 7,
-  fig.height = 5
+  fig.width = 6,
+  fig.height = 2.5
 )
 ```
 
@@ -54,6 +54,8 @@ Flip the formula to transpose the layout:
 
 ```{r}
 #| label: fig-view-by-hemi
+#| fig-width: 3.4
+#| fig-height: 4.3
 #| fig-cap: "Transposed layout with views as rows and hemispheres as columns."
 ggplot() +
   geom_brain(
@@ -83,6 +85,8 @@ ggplot() +
 
 ```{r}
 #| label: fig-single-column
+#| fig-width: 1.4
+#| fig-height: 4.3
 #| fig-cap: "All brain views stacked in a single column."
 ggplot() +
   geom_brain(
@@ -118,6 +122,8 @@ ggplot() +
 
 ```{r}
 #| label: fig-aseg-vertical
+#| fig-width: 1.2
+#| fig-height: 4.3
 #| fig-cap: "Subcortical atlas views arranged vertically."
 ggplot() +
   geom_brain(
@@ -135,6 +141,7 @@ When you have many views, a grid keeps things readable. Specify `nrow`,
 
 ```{r}
 #| label: fig-aseg-nrow
+#| fig-height: 3
 #| fig-cap: "Subcortical atlas views in a two-row grid."
 ggplot() +
   geom_brain(
@@ -147,6 +154,8 @@ ggplot() +
 
 ```{r}
 #| label: fig-aseg-ncol
+#| fig-width: 4.3
+#| fig-height: 4.3
 #| fig-cap: "Subcortical atlas views in a three-column grid."
 ggplot() +
   geom_brain(
@@ -169,12 +178,13 @@ ggseg.formats::atlas_views(aseg())
 
 ```{r}
 #| label: fig-aseg-select-views
+#| fig-height: 3
 #| fig-cap: "A subset of subcortical views selected by name."
 ggplot() +
   geom_brain(
     atlas = aseg(),
     position = position_brain(
-      views = c("sagittal", "axial_3", "coronal_3")
+      views = c("sagittal", "axial_3", "coronal_2")
     ),
     show.legend = FALSE
   ) +
@@ -185,12 +195,14 @@ Combine `views` with `nrow` or `ncol` for a custom grid:
 
 ```{r}
 #| label: fig-aseg-custom-grid
+#| fig-width: 4.3
+#| fig-height: 4.3
 #| fig-cap: "Custom two-row grid with selected subcortical views."
 ggplot() +
   geom_brain(
     atlas = aseg(),
     position = position_brain(
-      views = c("sagittal", "axial_3", "axial_5", "coronal_3"),
+      views = c("sagittal", "axial_3", "axial_5", "coronal_2"),
       nrow = 2
     ),
     show.legend = FALSE
@@ -227,6 +239,7 @@ share the same layout:
 
 ```{r}
 #| label: fig-dk-view-labels
+#| fig-height: 3
 #| fig-cap: "Cortical atlas with view labels."
 pos <- position_brain(hemi ~ view)
 ggplot() +
@@ -240,6 +253,7 @@ layouts:
 
 ```{r}
 #| label: fig-aseg-view-labels
+#| fig-height: 4
 #| fig-cap: "Subcortical atlas with view labels in a two-row grid."
 pos <- position_brain(nrow = 2)
 ggplot() +
@@ -284,7 +298,7 @@ with no data, the atlas's labelled regions):
 #| label: fig-zoom-data
 #| fig-cap: "Each view zoomed onto the regions present in the supplied data."
 my_data <- data.frame(
-  region = ggseg.formats::atlas_regions(aseg())[1:3],
+  region = sort(unique(ggseg.formats::atlas_regions(aseg())))[1:3],
   value = c(1, 2, 3)
 )
 
@@ -307,7 +321,7 @@ independent of any data you plot:
 ```{r}
 #| label: fig-zoom-explicit
 #| fig-cap: "Zoom targeted at a named set of regions."
-focus <- c("Thalamus Proper", "Putamen", "Hippocampus")
+focus <- c("thalamus", "putamen", "hippocampus")
 
 ggplot() +
   geom_brain(

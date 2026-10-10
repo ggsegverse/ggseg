@@ -60,7 +60,7 @@ describe("geom_brain_sf (deprecated sf path)", {
     skip_if_not_installed("sf")
     withr::local_options(lifecycle_verbosity = "quiet")
     some_data <- tibble(
-      region = ggseg.formats::atlas_regions(dk())[1:2],
+      region = sort(unique(ggseg.formats::atlas_regions(dk())))[1:2],
       p = c(0.1, 0.5)
     )
     p <- ggplot(some_data) +
@@ -83,7 +83,10 @@ describe("geom_brain_sf (deprecated sf path)", {
   it("works with inherit.aes FALSE", {
     skip_if_not_installed("sf")
     withr::local_options(lifecycle_verbosity = "quiet")
-    some_data <- tibble(region = ggseg.formats::atlas_regions(dk())[1], p = 0.3)
+    some_data <- tibble(
+      region = sort(unique(ggseg.formats::atlas_regions(dk())))[1],
+      p = 0.3
+    )
     p <- ggplot(some_data, aes(fill = p)) +
       geom_brain_sf(atlas = dk(), inherit.aes = FALSE)
     expect_message(
@@ -111,7 +114,7 @@ describe("geom_brain_sf (deprecated sf path)", {
 
 describe("geom_brain faceting", {
   some_data <- tibble(
-    region = rep(ggseg.formats::atlas_regions(dk())[1:4], 2),
+    region = rep(sort(unique(ggseg.formats::atlas_regions(dk())))[1:4], 2),
     p = seq(0.1, 0.8, by = 0.1),
     group = c(rep("A", 4), rep("B", 4))
   )
@@ -183,7 +186,7 @@ describe("geom_brain faceting", {
     skip_if_not_installed("sf")
     withr::local_options(lifecycle_verbosity = "quiet")
     data_with_hemi <- tibble(
-      region = ggseg.formats::atlas_regions(dk())[1:2],
+      region = sort(unique(ggseg.formats::atlas_regions(dk())))[1:2],
       p = c(0.1, 0.5),
       hemi = c("left", "right")
     )
@@ -253,17 +256,14 @@ describe("LayerBrainSf", {
       p = 0.5
     )
     expect_warning(
-      expect_warning(
-        expect_message(
-          ggplot_build(
-            ggplot(bad_data) +
-              geom_brain_sf(atlas = dk(), mapping = aes(fill = p))
-          ),
-          "Merging atlas and data"
+      expect_message(
+        ggplot_build(
+          ggplot(bad_data) +
+            geom_brain_sf(atlas = dk(), mapping = aes(fill = p))
         ),
-        "not merged properly"
+        "Merging atlas and data"
       ),
-      "not merged"
+      "not merged properly"
     )
   })
 
@@ -322,5 +322,129 @@ describe("brain_grob", {
     built <- ggplot_build(p)
     gt <- ggplot_gtable(built)
     expect_s3_class(gt, "gtable")
+  })
+})
+
+
+describe("geom_brain_sf() unmerged data", {
+  it("warns once and drops the unmatched rows", {
+    # The layer used to repeat brain_join()'s warning with a worse message,
+    # via an emptiness test written as `length(!is.na(x)) > 0`.
+    skip_if_not_installed("sf")
+    withr::local_options(lifecycle_verbosity = "quiet")
+    dt <- data.frame(region = c("precentral", "not_a_region"), p = c(1, 2))
+    p <- ggplot2::ggplot() +
+      geom_brain_sf(atlas = dk(), data = dt, mapping = ggplot2::aes(fill = p))
+
+    warns <- testthat::capture_warnings(
+      suppressMessages(ggplot2::ggplot_build(p))
+    )
+    expect_length(grep("not merged", warns, fixed = TRUE), 1)
+  })
+})
+
+describe("default atlas fill", {
+  it("colours a bare geom_brain() with the atlas palette, keyed on label", {
+    built <- ggplot_build(ggplot() + geom_brain(atlas = dk()))
+    fills <- unique(built$data[[1]]$fill)
+    palette <- ggseg.formats::atlas_palette(dk())
+
+    expect_false(all(fills == "grey"))
+    expect_true(all(setdiff(fills, "grey") %in% toupper(palette)))
+    # ggplot2's hue ramp would be as many distinct colours as there are
+    # labels; the dk palette shares a colour between hemispheres.
+    expect_lt(length(fills), length(palette))
+  })
+
+  it("maps fill to label, not region", {
+    built <- ggplot_build(ggplot() + geom_brain(atlas = dk()))
+    mapping <- built$plot$layers[[1]]$computed_mapping
+    expect_identical(
+      rlang::as_label(mapping$fill),
+      "ggplot2::after_stat(label)"
+    )
+  })
+
+  it("colours by label even when data carries no label column", {
+    dt <- data.frame(
+      region = sort(unique(ggseg.formats::atlas_regions(dk())))[1:3],
+      w = c(0.5, 1.5, 3)
+    )
+    built <- ggplot_build(
+      ggplot(dt) + geom_brain(atlas = dk(), mapping = aes(linewidth = w))
+    )
+    fills <- unique(built$data[[1]]$fill)
+    expect_gt(length(fills), 1)
+    expect_true(all(
+      setdiff(fills, "grey") %in%
+        toupper(
+          ggseg.formats::atlas_palette(dk())
+        )
+    ))
+  })
+
+  it("leaves an explicit layer fill mapping alone", {
+    built <- ggplot_build(
+      ggplot() + geom_brain(atlas = dk(), mapping = aes(fill = region))
+    )
+    mapping <- built$plot$layers[[1]]$computed_mapping
+    expect_identical(rlang::as_label(mapping$fill), "region")
+    expect_false(any(
+      built$data[[1]]$fill %in%
+        ggseg.formats::atlas_palette(
+          dk()
+        )
+    ))
+  })
+
+  it("leaves a top-level fill mapping alone", {
+    dt <- data.frame(
+      label = ggseg.formats::atlas_labels(dk())[1:3],
+      value = c(1, 2, 3)
+    )
+    built <- ggplot_build(
+      ggplot(dt, aes(fill = value)) + geom_brain(atlas = dk(), data = dt)
+    )
+    mapping <- built$plot$layers[[1]]$computed_mapping
+    expect_identical(rlang::as_label(mapping$fill), "value")
+    expect_s3_class(built$plot$scales$get_scales("fill"), "ScaleContinuous")
+  })
+
+  it("leaves a fixed fill parameter alone", {
+    built <- ggplot_build(ggplot() + geom_brain(atlas = dk(), fill = "red"))
+    expect_null(built$plot$layers[[1]]$computed_mapping$fill)
+    expect_true(all(built$data[[1]]$fill == "red"))
+  })
+
+  it("does not fill by label when the user maps colour", {
+    built <- ggplot_build(
+      ggplot() + geom_brain(atlas = dk(), mapping = aes(colour = region))
+    )
+    expect_null(built$plot$layers[[1]]$computed_mapping$fill)
+    expect_true(all(built$data[[1]]$fill == "grey"))
+  })
+
+  it("leaves an explicit scale_fill_*() in charge", {
+    built <- ggplot_build(
+      ggplot() +
+        geom_brain(atlas = dk(), mapping = aes(fill = label)) +
+        scale_fill_manual(values = c(lh_bankssts = "red"), na.value = "white")
+    )
+    expect_true("white" %in% built$data[[1]]$fill)
+  })
+
+  it("installs no scale, so no fill mapping, for a palette-less atlas", {
+    atlas <- atlas_without_2d_geometry()
+    expect_null(ggseg.formats::atlas_palette(atlas))
+    expect_false(add_atlas_fill_scale(ggplot(), atlas))
+  })
+
+  it("asks for the default only when neither fill nor colour is supplied", {
+    expect_true(needs_default_atlas_fill(aes(), list()))
+    expect_false(needs_default_atlas_fill(aes(fill = region), list()))
+    expect_false(needs_default_atlas_fill(aes(colour = region), list()))
+    expect_false(needs_default_atlas_fill(aes(), list(fill = "red")))
+    expect_false(needs_default_atlas_fill(aes(), list(colour = "red")))
+    expect_true(needs_default_atlas_fill(aes(alpha = region), list()))
   })
 })

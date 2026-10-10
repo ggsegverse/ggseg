@@ -1,5 +1,5 @@
 describe("brain_join", {
-  regs <- ggseg.formats::atlas_regions(dk())[1:4]
+  regs <- sort(unique(ggseg.formats::atlas_regions(dk())))[1:4]
   some_data <- data.frame(
     region = rep(regs, 2),
     p = seq(0.1, 0.8, by = 0.1),
@@ -62,6 +62,7 @@ describe("brain_join", {
   })
 
   it("returns tibble when atlas has no geometry", {
+    skip_if_not_installed("sf")
     atlas_df <- as.data.frame(dk())
     atlas_df$geometry <- NULL
     single <- some_data[some_data$grp == "G1", ]

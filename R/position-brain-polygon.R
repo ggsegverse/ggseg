@@ -58,6 +58,7 @@ frame_2_position_flat <- function(
   zoom_pad = 0.05
 ) {
   if (!is.null(views)) {
+    warn_unmatched_views(views, unique(data$view))
     data <- data[data$view %in% views, , drop = FALSE]
     data$view <- factor(data$view, levels = views)
     data <- data[order(data$view), ]
@@ -114,20 +115,23 @@ frame_2_position_flat <- function(
 #'   cortical atlases (e.g., `hemi ~ view`). For subcortical/tract atlases,
 #'   can be "horizontal", "vertical", or a formula with `type ~ .` where type
 #'   is extracted from view names like "axial_1" -> "axial".
-#' @param nrow Number of rows for grid layout. If NULL (default), calculated
-#'   automatically. Only used for subcortical/tract atlases when position is
-#'   not a formula.
-#' @param ncol Number of columns for grid layout. If NULL (default), calculated
-#'   automatically. Only used for subcortical/tract atlases when position is
-#'   not a formula.
+#' @param nrow Number of rows for grid layout, a positive whole number. If
+#'   `NULL` (default), calculated automatically. Cannot be combined with a
+#'   `position` formula, which a grid layout would discard. Grid cells are
+#'   hemisphere/view pairs for a cortical atlas and views for a slice-based
+#'   one.
+#' @param ncol Number of columns for grid layout, a positive whole number. If
+#'   `NULL` (default), calculated automatically. Cannot be combined with a
+#'   `position` formula.
 #' @param views Character vector specifying which views to include and their
-#'   order. If NULL (default), all views are included in their original order.
-#'   Only applies to subcortical/tract atlases.
+#'   order. If `NULL` (default), all views are included in their original
+#'   order. Names the atlas does not have are dropped with a warning.
 #' @param zoom Controls per-view zoom. `NULL`/`FALSE` (default) draws each
-#'   view at full extent. `TRUE` zooms each view onto its focus regions —
-#'   the regions present in the user `data` passed to [geom_brain_polygon()],
-#'   or the atlas's labelled regions when no data is supplied. A character
-#'   vector names the focus regions explicitly. Cropping uses an sf-free
+#'   view at full extent. `TRUE` zooms each view onto the regions the user
+#'   `data` passed to [geom_brain_polygon()] covers, read from its `label`
+#'   column when it has one and `region` otherwise, falling back to the
+#'   atlas's labels when no data is supplied. A character vector names the
+#'   focus explicitly, as either labels or regions. Cropping uses an sf-free
 #'   polygon clip so context regions become a clean rectangular frame around
 #'   the focus.
 #' @param zoom_pad Fractional padding added around the focus window when
@@ -161,6 +165,7 @@ position_brain_polygon <- function(
   zoom = NULL,
   zoom_pad = 0.05
 ) {
+  validate_grid_args(position, nrow, ncol)
   structure(
     list(
       position = position,
@@ -175,18 +180,20 @@ position_brain_polygon <- function(
 }
 
 
-#' Resolve a zoom spec into a concrete set of focus region names
+#' Resolve a zoom spec into a concrete set of focus keys
 #'
 #' Translates the `zoom` argument of [position_brain_polygon()] into the
-#' character vector of regions used to build each view's focus window.
-#' `TRUE` resolves to the regions present in the user `data` (those the user
-#' supplied values for), falling back to the atlas's labelled regions when no
-#' data is supplied.
+#' character vector of atlas keys used to build each view's focus window.
+#' `TRUE` resolves to the keys present in the user `data` (those the user
+#' supplied values for), preferring `label` -- the ecosystem's canonical
+#' matching key -- and falling back to `region`, then to the atlas's own
+#' labels when no data is supplied. A character `zoom` may name either
+#' labels or regions; [zoom_views_flat()] matches both.
 #'
 #' @param zoom The `zoom` spec: `NULL`/`FALSE`, `TRUE`, or a character vector.
 #' @param data Optional user data.frame passed to [geom_brain_polygon()].
 #' @param atlas The `ggseg_atlas` being rendered.
-#' @return `NULL` when zoom is off, otherwise a character vector of regions.
+#' @return `NULL` when zoom is off, otherwise a character vector of keys.
 #' @keywords internal
 #' @noRd
 resolve_zoom_focus <- function(zoom, data, atlas) {
@@ -195,6 +202,7 @@ resolve_zoom_focus <- function(zoom, data, atlas) {
   }
 
   if (is.character(zoom)) {
+    warn_unmatched_focus(zoom, atlas_focus_keys(atlas))
     return(zoom)
   }
 
@@ -205,16 +213,113 @@ resolve_zoom_focus <- function(zoom, data, atlas) {
     ))
   }
 
-  if (!is.null(data) && "region" %in% names(data)) {
-    regs <- unique(data$region)
-    regs <- regs[!is.na(regs)]
-    if (length(regs)) {
-      return(regs)
-    }
+  keys <- data_focus_keys(data)
+  if (length(keys)) {
+    return(keys)
   }
 
-  regs <- unique(atlas$core$region)
-  regs[!is.na(regs)]
+  keys <- unique(ggseg.formats::atlas_labels(atlas))
+  keys[!is.na(keys)]
+}
+
+
+#' Focus keys a user `data` frame supplies
+#'
+#' `label` first, `region` second: `label` is the ecosystem's canonical
+#' matching key, and is what the atlas palette and the join default to.
+#'
+#' @param data Optional user data.frame, or `NULL`.
+#' @return Character vector of keys, possibly empty.
+#' @keywords internal
+#' @noRd
+data_focus_keys <- function(data) {
+  if (is.null(data)) {
+    return(character(0))
+  }
+  for (key in c("label", "region")) {
+    if (key %in% names(data)) {
+      keys <- unique(data[[key]])
+      keys <- keys[!is.na(keys)]
+      if (length(keys)) {
+        return(keys)
+      }
+    }
+  }
+  character(0)
+}
+
+
+#' Atlas keys a `zoom` focus may name
+#'
+#' Both `label` and `region` are accepted, so a layout written against either
+#' vocabulary zooms rather than silently no-ops.
+#'
+#' @param atlas The `ggseg_atlas` being rendered.
+#' @return Character vector of labels and regions, without `NA`.
+#' @keywords internal
+#' @noRd
+atlas_focus_keys <- function(atlas) {
+  keys <- unique(c(
+    ggseg.formats::atlas_labels(atlas),
+    ggseg.formats::atlas_regions(atlas)
+  ))
+  keys[!is.na(keys)]
+}
+
+
+#' Warn about focus regions the atlas does not have
+#'
+#' A named focus region that matches nothing is a silent no-op: the view is
+#' never cropped and the plot looks exactly like an unzoomed one. Name the
+#' misses, and the closest real regions, instead.
+#'
+#' @param focus Requested focus labels or region names.
+#' @param available Labels and region names the atlas actually carries.
+#' @return Invisibly `NULL`; called for its side effect.
+#' @keywords internal
+#' @noRd
+warn_unmatched_focus <- function(focus, available) {
+  available <- available[!is.na(available)]
+  unmatched <- setdiff(focus, available)
+  if (length(unmatched) == 0) {
+    return(invisible(NULL))
+  }
+
+  suggestions <- nearest_values(unmatched, available)
+  msg <- c(
+    "!" = "Focus region{?s} {.val {unmatched}} {?is/are} not in the atlas."
+  )
+  if (length(suggestions)) {
+    msg <- c(msg, "i" = "Did you mean {.val {suggestions}}?")
+  }
+  msg <- c(
+    msg,
+    "i" = "A focus may name a {.field label} or a {.field region}; see \
+      {.fn ggseg.formats::atlas_labels} and {.fn ggseg.formats::atlas_regions}."
+  )
+
+  cli::cli_warn(msg, class = "ggseg_unmatched_focus")
+  invisible(NULL)
+}
+
+
+#' Which flat rows belong to the zoom focus
+#'
+#' A focus key may be a `label` or a `region`, so both columns are tested.
+#'
+#' @param df A flattened atlas data.frame.
+#' @param focus Character vector of focus labels or region names.
+#' @return Logical vector along `nrow(df)`.
+#' @keywords internal
+#' @noRd
+in_focus <- function(df, focus) {
+  hit <- rep(FALSE, nrow(df))
+  for (key in c("label", "region")) {
+    if (key %in% names(df)) {
+      hit <- hit | (!is.na(df[[key]]) & df[[key]] %in% focus)
+    }
+  }
+  hit
 }
 
 
@@ -228,14 +333,14 @@ resolve_zoom_focus <- function(zoom, data, atlas) {
 #' so they render as context-only frames rather than disappearing.
 #'
 #' @param view_list List of per-view flat data.frames.
-#' @param focus Character vector of focus region names.
+#' @param focus Character vector of focus labels or region names.
 #' @param pad Fractional padding around the focus window.
 #' @return List of clipped per-view data.frames.
 #' @keywords internal
 #' @noRd
 zoom_views_flat <- function(view_list, focus, pad = 0.05) {
   focus_bboxes <- lapply(view_list, function(df) {
-    fr <- df[!is.na(df$region) & df$region %in% focus, , drop = FALSE]
+    fr <- df[in_focus(df, focus), , drop = FALSE]
     if (nrow(fr) == 0) {
       return(NULL)
     }
@@ -392,4 +497,51 @@ clip_ring_to_box <- function(x, y, box) {
 #' @noRd
 is_polygon_position <- function(x) {
   inherits(x, "position_brain_polygon_spec")
+}
+
+
+#' Test whether an object is one of the named layouts
+#'
+#' @param x An object.
+#' @return Logical.
+#' @keywords internal
+#' @noRd
+is_layout_keyword <- function(x) {
+  is.character(x) && length(x) == 1L && x %in% c("horizontal", "vertical")
+}
+
+
+#' Coerce a user-supplied `position` into a polygon-path layout spec
+#'
+#' `geom_brain()` documents `position` as "a string or the result of
+#' [position_brain()]", and `position_brain()`'s own default is the string
+#' `"horizontal"`, so strings and layout formulas are the forms users reach for.
+#' They are coerced here rather than silently dropped.
+#' `"identity"` is the documented opt-out that keeps the polygons' raw
+#' coordinates, represented downstream by `NULL`.
+#'
+#' @param x A polygon position spec, `"horizontal"`, `"vertical"`, `"identity"`,
+#'   a layout formula, or `NULL`.
+#' @return A `position_brain_polygon_spec`, or `NULL` for no layout.
+#' @keywords internal
+#' @noRd
+as_polygon_position <- function(x) {
+  if (is.null(x) || is_polygon_position(x)) {
+    return(x)
+  }
+
+  if (identical(x, "identity")) {
+    return(NULL)
+  }
+
+  if (inherits(x, "formula") || is_layout_keyword(x)) {
+    return(position_brain_polygon(x))
+  }
+
+  cli::cli_abort(c(
+    "{.arg position} must be a {.fn position_brain} spec, a layout \\
+    formula, or one of {.val horizontal}, {.val vertical}, {.val identity}.",
+    "x" = "You supplied {.obj_type_friendly {x}}.",
+    "i" = "{.val identity} keeps the atlas polygons' raw coordinates."
+  ))
 }

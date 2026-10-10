@@ -174,3 +174,106 @@ describe("scale_labs_brain", {
     expect_s3_class(scale, "gg")
   })
 })
+
+describe("scale_continous_brain", {
+  it("resolves the y scale at its default aesthetics", {
+    # `aesthetics = c("y", "x")` used to reach adapt_scales() unmatched, where
+    # the vector turned the terminal `[[` into recursive indexing and silently
+    # yielded NULL. The default must behave exactly like scale_y_brain().
+    expect_identical(
+      scale_continous_brain(dk(), position = "stacked")$breaks,
+      scale_y_brain(position = "stacked")$breaks
+    )
+    expect_false(is.null(scale_continous_brain(dk(), "stacked")$breaks))
+    expect_false(is.null(scale_continous_brain(dk(), "stacked")$labels))
+  })
+
+  it("matches scale_y_brain() for the dispersed default", {
+    expect_identical(scale_continous_brain(dk())$breaks, scale_y_brain()$breaks)
+    expect_true("y" %in% scale_continous_brain(dk())$aesthetics)
+  })
+
+  it("produces non-empty axis scales for a cerebellar atlas", {
+    expect_false(is.null(scale_x_brain(atlas = suit())$breaks))
+    expect_false(is.null(scale_labs_brain(atlas = suit())$x))
+  })
+})
+
+
+describe("atlas_palette_by_name()", {
+  it("rejects a name that is some other visible function", {
+    # match.fun() resolved anything, so scale_brain("mean") failed inside
+    # mean.default with no mention of atlases.
+    expect_error(atlas_palette_by_name("mean"), "brain atlas function")
+    expect_error(atlas_palette_by_name("mean"), "dk")
+  })
+
+  it("rejects a name that resolves to nothing", {
+    expect_error(atlas_palette_by_name("no_such_atlas"), "brain atlas function")
+    expect_error(atlas_palette_by_name(1L), "brain atlas function")
+  })
+
+  it("resolves a bundled atlas", {
+    expect_type(atlas_palette_by_name("dk"), "character")
+  })
+
+  it("returns a label-keyed palette", {
+    # `label` is the ecosystem's canonical key; the palette is keyed by it.
+    pal <- atlas_palette_by_name("dk")
+    expect_true(all(names(pal) %in% ggseg.formats::atlas_labels(dk())))
+  })
+})
+
+
+describe("warn_palette_key_mismatch()", {
+  it("warns when no mapped value is a palette key", {
+    expect_warning(
+      warn_palette_key_mismatch("bankssts", c(lh_bankssts = "red"), "fill"),
+      class = "ggseg_palette_key_mismatch"
+    )
+  })
+
+  it("names label as the mapping that works", {
+    expect_warning(
+      warn_palette_key_mismatch("bankssts", c(lh_bankssts = "red"), "fill"),
+      "aes\\(fill = label\\)"
+    )
+  })
+
+  it("is silent when a mapped value matches", {
+    expect_no_warning(
+      warn_palette_key_mismatch("lh_bankssts", c(lh_bankssts = "red"), "fill")
+    )
+    expect_no_warning(warn_palette_key_mismatch(NA, c(a = "red"), "fill"))
+  })
+
+  it("fires at build time for a region-mapped deprecated scale", {
+    # aes(fill = region) with a label-keyed palette greyed the whole plot
+    # with no signal at all.
+    withr::local_options(lifecycle_verbosity = "quiet")
+    p <- ggplot2::ggplot() +
+      geom_brain(
+        atlas = dk(),
+        ggplot2::aes(fill = region),
+        show.legend = FALSE
+      ) +
+      scale_fill_brain("dk")
+    expect_warning(
+      muffle_breaking_warnings(ggplot2::ggplot_build(p)),
+      class = "ggseg_palette_key_mismatch"
+    )
+  })
+
+  it("stays silent for a label-mapped deprecated scale", {
+    withr::local_options(lifecycle_verbosity = "quiet")
+    p <- ggplot2::ggplot() +
+      geom_brain(
+        atlas = dk(),
+        ggplot2::aes(fill = label),
+        show.legend = FALSE
+      ) +
+      scale_fill_brain("dk")
+    built <- muffle_breaking_warnings(ggplot2::ggplot_build(p))
+    expect_gt(length(unique(built$data[[1]]$fill)), 2)
+  })
+})

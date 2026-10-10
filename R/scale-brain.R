@@ -23,7 +23,7 @@
 #' \dontrun{
 #' library(ggplot2)
 #' ggplot() +
-#'   geom_brain(atlas = dk(), aes(fill = region), show.legend = FALSE) +
+#'   geom_brain(atlas = dk(), aes(fill = label), show.legend = FALSE) +
 #'   scale_brain("dk")
 #' }
 scale_brain <- function(
@@ -45,7 +45,11 @@ scale_brain <- function(
     colour = scale_colour_manual,
     fill = scale_fill_manual
   )
-  func(values = pal, na.value = na.value)
+  scale_warning_on_key_mismatch(
+    func(values = pal, na.value = na.value),
+    pal,
+    if (aesthetics == "fill") "fill" else "colour"
+  )
 }
 
 #' @rdname scale_brain
@@ -57,7 +61,11 @@ scale_colour_brain <- function(name = "dk", na.value = "grey", ...) {
     details = "Atlas palettes are now applied automatically by `geom_brain()`."
   )
   pal <- atlas_palette_by_name(name, ...)
-  scale_colour_manual(values = pal, na.value = na.value)
+  scale_warning_on_key_mismatch(
+    scale_colour_manual(values = pal, na.value = na.value),
+    pal,
+    "colour"
+  )
 }
 
 #' @rdname scale_brain
@@ -69,7 +77,11 @@ scale_color_brain <- function(name = "dk", na.value = "grey", ...) {
     details = "Atlas palettes are now applied automatically by `geom_brain()`."
   )
   pal <- atlas_palette_by_name(name, ...)
-  scale_color_manual(values = pal, na.value = na.value)
+  scale_warning_on_key_mismatch(
+    scale_color_manual(values = pal, na.value = na.value),
+    pal,
+    "colour"
+  )
 }
 
 #' @export
@@ -81,7 +93,11 @@ scale_fill_brain <- function(name = "dk", na.value = "grey", ...) {
     details = "Atlas palettes are now applied automatically by `geom_brain()`."
   )
   pal <- atlas_palette_by_name(name, ...)
-  scale_fill_manual(values = pal, na.value = na.value)
+  scale_warning_on_key_mismatch(
+    scale_fill_manual(values = pal, na.value = na.value),
+    pal,
+    "fill"
+  )
 }
 
 #' Manual colour and fill scales for brain plots
@@ -103,10 +119,10 @@ scale_fill_brain <- function(name = "dk", na.value = "grey", ...) {
 #' @examples
 #' library(ggplot2)
 #'
-#' regions <- ggseg.formats::atlas_regions(dk())[1:2]
-#' pal <- setNames(c("red", "blue"), regions)
+#' labels <- sort(unique(ggseg.formats::atlas_labels(dk())))[1:2]
+#' pal <- setNames(c("red", "blue"), labels)
 #' ggplot() +
-#'   geom_brain(atlas = dk(), aes(fill = region), show.legend = FALSE) +
+#'   geom_brain(atlas = dk(), aes(fill = label), show.legend = FALSE) +
 #'   scale_fill_brain_manual(palette = pal)
 #'
 scale_brain_manual <- function(
@@ -201,7 +217,7 @@ scale_fill_brain2 <- function(...) {
 #' @name scale_brain2-deprecated
 #' @examples
 #' pal <- c("transversetemporal" = "#FF0000", "insula" = "#00FF00")
-#' suppressWarnings(scale_fill_brain_manual(palette = pal))
+#' suppressWarnings(scale_fill_brain2(palette = pal))
 NULL
 
 
@@ -226,7 +242,7 @@ NULL
 #' library(ggplot2)
 #'
 #' ggplot() +
-#'   geom_brain(atlas = dk()) +
+#'   geom_brain(atlas = dk(), show.legend = FALSE) +
 #'   scale_x_brain() +
 #'   scale_y_brain() +
 #'   scale_labs_brain()
@@ -237,8 +253,10 @@ scale_continous_brain <- function(
   position = "dispersed",
   aesthetics = c("y", "x")
 ) {
-  positions <- adapt_scales(atlas, position, aesthetics)
+  # match.arg() must run first: a vector `aesthetics` makes adapt_scales()'s
+  # terminal `[[` indexing recursive, which silently yields NULL breaks.
   aesthetics <- match.arg(aesthetics)
+  positions <- adapt_scales(atlas, position, aesthetics)
   func <- switch(
     aesthetics,
     y = ggplot2::scale_y_continuous,
@@ -267,14 +285,95 @@ scale_labs_brain <- function(
   position = "dispersed",
   aesthetics = "labs"
 ) {
-  positions <- adapt_scales(atlas, position, aesthetics)
-
   aesthetics <- match.arg(aesthetics)
+  positions <- adapt_scales(atlas, position, aesthetics)
   func <- switch(aesthetics, labs = labs)
   func(x = positions$x, y = positions$y)
 }
 
 
+#' Look up an atlas palette from the atlas's function name
+#'
+#' Resolves `name` to a function and insists the result is a `ggseg_atlas`, so
+#' a name that happens to match some unrelated visible function (`"mean"`)
+#' fails with an atlas error rather than that function's own.
+#'
+#' @param name Name of an atlas function, e.g. `"dk"`.
+#' @param ... Passed to [ggseg.formats::atlas_palette()].
+#' @return Named character vector of colours.
+#' @keywords internal
+#' @noRd
 atlas_palette_by_name <- function(name, ...) {
-  atlas_palette(match.fun(name)(), ...)
+  atlas <- NULL
+  if (is.character(name) && length(name) == 1L) {
+    fn <- tryCatch(match.fun(name), error = function(e) NULL)
+    if (is.function(fn)) {
+      atlas <- tryCatch(fn(), error = function(e) NULL)
+    }
+  }
+
+  if (!ggseg.formats::is_ggseg_atlas(atlas)) {
+    cli::cli_abort(c(
+      "{.arg name} must name a brain atlas function.",
+      "x" = "{.val {name}} does not resolve to a {.cls ggseg_atlas}.",
+      "i" = "Atlases bundled with ggseg: \\
+        {.val {c('dk', 'aseg', 'suit', 'tracula')}}.",
+      "i" = "Atlas packages such as {.pkg ggsegDKT} supply more."
+    ))
+  }
+
+  atlas_palette(atlas, ...)
+}
+
+#' Warn when no mapped value matches the palette's keys
+#'
+#' Atlas palettes are keyed by `label` -- the ecosystem's canonical join key --
+#' so `aes(fill = region)` matches nothing and every region falls through to
+#' `na.value`: a uniformly grey brain with no build-time signal. Say so at the
+#' point where the mismatch is first visible, and name the mapping that works.
+#'
+#' @param x The values the scale was asked to map.
+#' @param palette The named palette the scale carries.
+#' @param aesthetic Name of the aesthetic, for the suggested `aes()` call.
+#' @return Invisibly `NULL`; called for its side effect.
+#' @keywords internal
+#' @noRd
+warn_palette_key_mismatch <- function(x, palette, aesthetic) {
+  values <- unique(as.character(x))
+  values <- values[!is.na(values)]
+  if (length(values) == 0 || any(values %in% names(palette))) {
+    return(invisible(NULL))
+  }
+
+  cli::cli_warn(
+    c(
+      "!" = "No mapped value matches the atlas palette, so every region \
+        is drawn with {.arg na.value}.",
+      "x" = "Mapped value{?s} {.val {utils::head(values, 3)}} \\
+        {?is/are} not a palette key.",
+      "i" = "Atlas palettes are keyed by {.field label}; map \
+        {.code aes({aesthetic} = label)}."
+    ),
+    class = "ggseg_palette_key_mismatch"
+  )
+  invisible(NULL)
+}
+
+#' Wrap a manual scale so a key mismatch is reported at build time
+#'
+#' @param scale A ggplot2 discrete scale carrying `palette` as its values.
+#' @param palette The named palette the scale carries.
+#' @param aesthetic Name of the aesthetic, for the suggested `aes()` call.
+#' @return A ggproto child of `scale` that warns before mapping.
+#' @keywords internal
+#' @noRd
+scale_warning_on_key_mismatch <- function(scale, palette, aesthetic) {
+  ggplot2::ggproto(
+    NULL,
+    scale,
+    map = function(self, x, ...) {
+      warn_palette_key_mismatch(x, palette, aesthetic)
+      ggplot2::ggproto_parent(scale, self)$map(x, ...)
+    }
+  )
 }

@@ -2,7 +2,14 @@ describe("extract_position_params", {
   it("extracts from PositionBrain object", {
     skip_if_not_installed("sf")
     withr::local_options(lifecycle_verbosity = "quiet")
-    pos <- position_brain_sf(hemi ~ view, nrow = 2, ncol = 3, views = "lateral")
+    # Built through the non-validating constructor: this test is about reading
+    # the fields back, and position_brain_sf() rejects formula + nrow/ncol.
+    pos <- make_position_brain_sf(
+      hemi ~ view,
+      nrow = 2,
+      ncol = 3,
+      views = "lateral"
+    )
     params <- extract_position_params(pos)
     expect_identical(params$position, hemi ~ view)
     expect_identical(params$nrow, 2)
@@ -74,7 +81,7 @@ describe("annotate_brain dispatch", {
     p <- ggplot() +
       geom_brain_polygon(atlas = dk(), show.legend = FALSE) +
       annotate_brain(atlas = dk())
-    expect_silent(ggplot2::ggplot_build(p))
+    expect_silent(muffle_breaking_warnings(ggplot2::ggplot_build(p)))
   })
 
   it("routes to the sf path when given a position_brain_sf()", {
@@ -96,7 +103,7 @@ describe("annotate_brain (polygon path)", {
       geom_brain(atlas = dk(), show.legend = FALSE) +
       annotate_brain(atlas = dk(), position = position_brain())
     expect_s3_class(p, "gg")
-    expect_silent(ggplot2::ggplot_build(p))
+    expect_silent(muffle_breaking_warnings(ggplot2::ggplot_build(p)))
   })
 
   it("builds a valid plot with subcortical atlas", {
@@ -104,7 +111,7 @@ describe("annotate_brain (polygon path)", {
       geom_brain(atlas = aseg(), show.legend = FALSE) +
       annotate_brain(atlas = aseg(), position = position_brain())
     expect_s3_class(p, "gg")
-    expect_silent(ggplot2::ggplot_build(p))
+    expect_silent(muffle_breaking_warnings(ggplot2::ggplot_build(p)))
   })
 
   it("respects hemi filtering", {
@@ -146,7 +153,7 @@ describe("annotate_brain (polygon path)", {
         atlas = dk(),
         position = position_brain(hemi ~ view)
       )
-    expect_silent(ggplot2::ggplot_build(p))
+    expect_silent(muffle_breaking_warnings(ggplot2::ggplot_build(p)))
   })
 
   it("works with nrow/ncol for subcortical", {
@@ -160,7 +167,7 @@ describe("annotate_brain (polygon path)", {
         atlas = aseg(),
         position = position_brain(nrow = 2)
       )
-    expect_silent(ggplot2::ggplot_build(p))
+    expect_silent(muffle_breaking_warnings(ggplot2::ggplot_build(p)))
   })
 
   it("passes styling arguments", {
@@ -176,28 +183,33 @@ describe("annotate_brain (polygon path)", {
 })
 
 describe("annotate_brain visual", {
+  # The view labels are placed from each view's post-layout bounding box, so the
+  # minimal fixtures from helper-layout-fixtures.R exercise the placement just
+  # as the full atlases did -- and keep the baselines small enough for CRAN.
   it("dk default with labels", {
     testthat::skip_on_cran()
-    expect_doppelganger(
+    atlas <- dk_fixture()
+    expect_brain_doppelganger(
       "dk default labels",
       ggplot() +
-        geom_brain(atlas = dk(), show.legend = FALSE) +
-        annotate_brain(atlas = dk(), position = position_brain())
+        geom_brain(atlas = atlas, show.legend = FALSE) +
+        annotate_brain(atlas = atlas, position = position_brain())
     )
   })
 
   it("dk hemi ~ view with labels", {
     testthat::skip_on_cran()
-    expect_doppelganger(
+    atlas <- dk_fixture()
+    expect_brain_doppelganger(
       "dk hemi view labels",
       ggplot() +
         geom_brain(
-          atlas = dk(),
+          atlas = atlas,
           position = position_brain(hemi ~ view),
           show.legend = FALSE
         ) +
         annotate_brain(
-          atlas = dk(),
+          atlas = atlas,
           position = position_brain(hemi ~ view)
         )
     )
@@ -205,28 +217,68 @@ describe("annotate_brain visual", {
 
   it("aseg default with labels", {
     testthat::skip_on_cran()
-    expect_doppelganger(
+    atlas <- aseg_fixture()
+    expect_brain_doppelganger(
       "aseg default labels",
       ggplot() +
-        geom_brain(atlas = aseg(), show.legend = FALSE) +
-        annotate_brain(atlas = aseg(), position = position_brain())
+        geom_brain(atlas = atlas, show.legend = FALSE) +
+        annotate_brain(atlas = atlas, position = position_brain())
     )
   })
 
   it("aseg nrow 2 with labels", {
     testthat::skip_on_cran()
-    expect_doppelganger(
+    atlas <- aseg_fixture()
+    expect_brain_doppelganger(
       "aseg nrow 2 labels",
       ggplot() +
         geom_brain(
-          atlas = aseg(),
+          atlas = atlas,
           position = position_brain(nrow = 2),
           show.legend = FALSE
         ) +
         annotate_brain(
-          atlas = aseg(),
+          atlas = atlas,
           position = position_brain(nrow = 2)
         )
     )
+  })
+})
+
+
+describe("annotate_brain() position coercion", {
+  # annotate_brain() used to send any non-spec `position` into the sf
+  # implementation, so a string or formula hard-failed on require_sf() for an
+  # argument form geom_brain() accepts. Both exports now coerce the same way.
+  it("accepts a layout string without sf", {
+    expect_s3_class(
+      annotate_brain(dk(), position = "vertical"),
+      "LayerInstance"
+    )
+  })
+
+  it("accepts a layout formula without sf", {
+    expect_s3_class(
+      annotate_brain(dk(), position = hemi ~ view),
+      "LayerInstance"
+    )
+  })
+
+  it("accepts 'identity' as the no-layout opt-out", {
+    expect_s3_class(
+      annotate_brain(dk(), position = "identity"),
+      "LayerInstance"
+    )
+  })
+
+  it("rejects an unsupported position the same way geom_brain() does", {
+    expect_error(annotate_brain(dk(), position = "nonsense"), "must be a")
+  })
+
+  it("still routes an explicit PositionBrain to the sf implementation", {
+    skip_if_not_installed("sf")
+    withr::local_options(lifecycle_verbosity = "quiet")
+    layer <- annotate_brain(dk(), position = position_brain_sf(hemi ~ view))
+    expect_s3_class(layer, "LayerInstance")
   })
 })

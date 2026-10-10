@@ -35,8 +35,11 @@ draw one brain per group.}
 data. For cortical atlases: \code{"lateral"}, \code{"medial"}. For subcortical/tract
 atlases: slice identifiers like \code{"axial_3"}. Defaults to all views.}
 
-\item{position}{Position adjustment, either as a string or the result of
-a call to \code{\link[=position_brain]{position_brain()}}.}
+\item{position}{Brain-view layout: the result of a call to
+\code{\link[=position_brain]{position_brain()}}, a layout string (e.g. \code{"horizontal"}, \code{"vertical"}), or
+a layout formula (e.g. \code{hemi ~ view}). Strings and formulas are passed to
+\code{\link[=position_brain]{position_brain()}}. Use \code{"identity"} to keep the atlas polygons' raw
+coordinates. Per-view zoom is set through \code{\link[=position_brain]{position_brain()}}'s \code{zoom}.}
 
 \item{context}{Keep the rest of the brain as a soft grey backdrop (\code{TRUE},
 the default), or show only the regions you're plotting (\code{FALSE}).}
@@ -44,7 +47,9 @@ the default), or show only the regions you're plotting (\code{FALSE}).}
 \item{fun}{Function used to combine multiple \code{data} rows that map to the same
 atlas region, applied within each facet panel. Defaults to \code{\link[=mean]{mean()}}. Any
 function reducing a vector to a single value works (e.g. \code{\link[=median]{median()}},
-\code{\link[=max]{max()}}).}
+\code{\link[=max]{max()}}). It applies to numeric columns only; non-numeric ones take the
+first value of the group. Up to ggseg 2.2.1 duplicate rows overplotted, so
+the last one won — \code{fun = dplyr::last} reproduces that.}
 
 \item{geom}{The geometric object used to render the atlas. Defaults to
 \link{GeomBrain}.}
@@ -71,7 +76,7 @@ library(ggplot2)
 
 # Equivalent to geom_brain(atlas = dk())
 ggplot() +
-  stat_brain(atlas = dk())
+  stat_brain(atlas = dk(), show.legend = FALSE)
 }
 \seealso{
 \code{\link[=geom_brain]{geom_brain()}}

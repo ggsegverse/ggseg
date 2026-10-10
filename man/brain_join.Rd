@@ -28,7 +28,7 @@ for \code{brain_join()} when you want the joined sf object yourself.
 \examples{
 \dontshow{if (requireNamespace("sf", quietly = TRUE)) withAutoprint(\{ # examplesIf}
 someData <- data.frame(
-  region = ggseg.formats::atlas_regions(dk())[1:4],
+  region = sort(unique(ggseg.formats::atlas_regions(dk())))[1:4],
   p = sample(seq(0, .5, .001), 4),
   stringsAsFactors = FALSE
 )

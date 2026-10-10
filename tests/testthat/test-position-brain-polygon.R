@@ -57,7 +57,7 @@ describe("geom_brain_polygon() with position", {
   it("renders with default horizontal position", {
     poly <- ggseg.formats::as_polygon_atlas(dk())
     p <- ggplot2::ggplot() + geom_brain_polygon(atlas = poly)
-    g <- ggplot2::ggplot_build(p)
+    g <- muffle_breaking_warnings(ggplot2::ggplot_build(p))
     expect_true(all(is.finite(range(g$data[[1]]$x))))
   })
 
@@ -148,10 +148,23 @@ describe("resolve_zoom_focus", {
   })
 
   it("returns explicit region names unchanged", {
-    expect_identical(resolve_zoom_focus(c("x", "y"), NULL, aseg()), c("x", "y"))
+    focus <- c("thalamus", "putamen")
+    expect_identical(resolve_zoom_focus(focus, NULL, aseg()), focus)
   })
 
-  it("uses regions present in data when zoom = TRUE", {
+  it("returns explicit labels unchanged, without warning", {
+    focus <- ggseg.formats::atlas_labels(aseg())[1:2]
+    expect_identical(resolve_zoom_focus(focus, NULL, aseg()), focus)
+  })
+
+  it("prefers labels in data when zoom = TRUE", {
+    atlas <- aseg()
+    labs <- ggseg.formats::atlas_labels(atlas)[1:2]
+    data <- data.frame(label = labs, region = c("thalamus proper", "caudate"))
+    expect_setequal(resolve_zoom_focus(TRUE, data, atlas), labs)
+  })
+
+  it("uses regions present in data when zoom = TRUE and there is no label", {
     atlas <- aseg()
     data <- data.frame(region = c("thalamus proper", "caudate"))
     expect_setequal(
@@ -160,9 +173,9 @@ describe("resolve_zoom_focus", {
     )
   })
 
-  it("falls back to labelled atlas regions when zoom = TRUE and no data", {
+  it("falls back to the atlas labels when zoom = TRUE and no data", {
     atlas <- aseg()
-    labelled <- unique(atlas$core$region)
+    labelled <- unique(ggseg.formats::atlas_labels(atlas))
     labelled <- labelled[!is.na(labelled)]
     expect_setequal(resolve_zoom_focus(TRUE, NULL, atlas), labelled)
   })
@@ -186,5 +199,95 @@ describe("zoom_views_flat", {
       "No focus regions"
     )
     expect_identical(out, list(df))
+  })
+})
+
+describe("as_polygon_position", {
+  it("passes a polygon position spec through unchanged", {
+    spec <- position_brain_polygon("vertical")
+    expect_identical(as_polygon_position(spec), spec)
+  })
+
+  it("keeps NULL as the no-layout marker", {
+    expect_null(as_polygon_position(NULL))
+  })
+
+  it("coerces a layout string", {
+    out <- as_polygon_position("vertical")
+    expect_true(is_polygon_position(out))
+    expect_identical(out$position, "vertical")
+  })
+
+  it("coerces a layout formula", {
+    out <- as_polygon_position(hemi ~ view)
+    expect_true(is_polygon_position(out))
+    expect_identical(out$position, hemi ~ view)
+  })
+
+  it("treats 'identity' as the opt-out from any layout", {
+    expect_null(as_polygon_position("identity"))
+  })
+
+  it("errors on an unsupported position value", {
+    expect_error(as_polygon_position(1L), "must be a")
+    expect_error(as_polygon_position("nonsense"), "must be a")
+    expect_error(as_polygon_position(c("vertical", "horizontal")), "must be a")
+    expect_error(
+      as_polygon_position(ggplot2::position_identity()),
+      "must be a"
+    )
+  })
+})
+
+
+describe("warn_unmatched_focus()", {
+  it("names focus regions the atlas does not have", {
+    expect_warning(
+      resolve_zoom_focus("Thalamus Proper", NULL, aseg()),
+      class = "ggseg_unmatched_focus"
+    )
+  })
+
+  it("suggests the closest real region", {
+    expect_warning(
+      resolve_zoom_focus("Thalamus Proper", NULL, aseg()),
+      "thalamus"
+    )
+  })
+
+  it("is silent when every focus region matches", {
+    expect_no_warning(resolve_zoom_focus("thalamus", NULL, aseg()))
+  })
+})
+
+describe("in_focus()", {
+  it("matches a focus key against label or region", {
+    df <- data.frame(
+      label = c("lh_a", "lh_b", NA),
+      region = c("a", "b", NA)
+    )
+    expect_identical(in_focus(df, "lh_a"), c(TRUE, FALSE, FALSE))
+    expect_identical(in_focus(df, "b"), c(FALSE, TRUE, FALSE))
+    expect_identical(in_focus(df, c("lh_a", "b")), c(TRUE, TRUE, FALSE))
+    expect_identical(in_focus(df, "nope"), c(FALSE, FALSE, FALSE))
+  })
+
+  it("works when only one of the two columns is present", {
+    expect_true(in_focus(data.frame(label = "lh_a"), "lh_a"))
+    expect_true(in_focus(data.frame(region = "a"), "a"))
+    expect_false(in_focus(data.frame(label = "lh_a"), "a"))
+  })
+})
+
+describe("zoom focus by label end to end", {
+  it("crops to a label-named focus", {
+    focus <- ggseg.formats::atlas_labels(dk())[1]
+    zoomed <- prepare_polygon_atlas(
+      dk(),
+      position = position_brain_polygon(zoom = focus),
+      focus = focus
+    )
+    full <- prepare_polygon_atlas(dk())
+    expect_lt(diff(range(zoomed$x)), diff(range(full$x)))
   })
 })

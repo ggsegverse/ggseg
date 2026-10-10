@@ -15,4 +15,6 @@ permissions:
 jobs:
   update-codemeta:
     uses: ggsegverse/.github/.github/workflows/update-codemeta.yaml@main
+    with:
+      extra-repositories: https://ggsegverse.r-universe.dev
     secrets: inherit

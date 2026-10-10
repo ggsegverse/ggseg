@@ -13,3 +13,5 @@ permissions:
 jobs:
   render-readme:
     uses: ggsegverse/.github/.github/workflows/render-readme.yaml@main
+    with:
+      extra-repositories: https://ggsegverse.r-universe.dev

@@ -27,9 +27,11 @@
 #' @param atlas A `ggseg_atlas` object with 2D geometry (sf or polygons).
 #' @param hemi Character vector of hemispheres to include.
 #' @param view Character vector of views to include.
-#' @param position Position adjustment. Defaults to [position_brain_polygon()],
-#'   which lays views out horizontally without sf. Pass `"identity"` to use
-#'   the polygons' raw coordinates. Per-view zoom is controlled here via
+#' @param position Brain-view layout: a `position_brain_polygon()` spec
+#'   (the default, laying views out horizontally without sf), a layout string,
+#'   or a layout formula -- the latter two are coerced with
+#'   `position_brain_polygon()`. Pass `"identity"` to use the polygons' raw
+#'   coordinates. Per-view zoom is controlled here via
 #'   [position_brain_polygon()]'s `zoom` argument.
 #' @param context Logical. When `TRUE` (default), context regions (atlas rows
 #'   with no `region` label, drawn grey) are kept. When `FALSE`, they are
@@ -110,11 +112,10 @@ geom_brain_polygon <- function(
   brain_layer$brain_position <- position
   brain_layer$brain_context <- context
 
-  # geom_brain() plots your data on the brain; it does not colour the atlas by
-  # its own palette. Regions you supply no value for stay grey (GeomBrain's
-  # default fill). For a palette-coloured atlas overview use `plot(atlas)`
-  # (ggseg.formats), or map it yourself with `aes(fill = region)` and
-  # `scale_fill_brain()`.
+  # When the user maps neither `fill` nor `colour`, LayerBrain$setup_layer()
+  # maps `fill` to `label` and installs the atlas palette, so a bare
+  # geom_brain() comes out palette-coloured. `label` -- not `region` -- is the
+  # key the palette (and the rest of the ecosystem) is built on.
   list(brain_layer, coord_brain())
 }
 
@@ -134,7 +135,8 @@ ggplot2_Layer <- function() {
 #' `default_aes` -- outline `colour` (grey35), `linewidth` (0.2), and `fill`
 #' (grey) -- which apply when the user has not mapped those aesthetics but yield
 #' to a mapping when present (ggsegverse/ggseg#160). The grey default fill is
-#' why an atlas plotted without data renders grey, not palette-coloured. Used
+#' what an atlas with no palette of its own falls back to; otherwise
+#' [geom_brain()] maps `fill` to `label` and applies the palette. Used
 #' internally by [geom_brain()]; not typically called directly.
 #'
 #' @export
@@ -162,7 +164,7 @@ GeomBrain <- ggproto(
 #' The user data itself is passed through untouched (join keys are injected as
 #' aesthetics so they survive into the stat); when no data is supplied the
 #' atlas's own identity rows drive the stat so the bare atlas still renders (and
-#' `aes(fill = region)` / faceting on an atlas column keep working). Fixes
+#' `aes(fill = label)` / faceting on an atlas column keep working). Fixes
 #' ggsegverse/ggseg#158 (top-level `aes()`/`data` were dropped by the eager
 #' build). The deprecated sf renderer has a parallel [LayerBrainSf].
 #'
@@ -180,6 +182,19 @@ LayerBrain <- ggproto(
       cli::cli_abort(
         "No atlas supplied, please provide a brain atlas to the geom."
       )
+    }
+
+    # A bare geom_brain() colours the atlas by its own palette, keyed on
+    # `label`. Both halves or neither: a `fill = label` mapping with no palette
+    # would hand ggplot2's hue ramp to 100-odd labels.
+    if (needs_default_atlas_fill(self$computed_mapping, self$aes_params)) {
+      if (add_atlas_fill_scale(plot, atlas)) {
+        # `after_stat()`: `label` is a column of the atlas geometry StatBrain
+        # emits, not of the user's `data`, which need not carry it at all (it
+        # may be keyed on `region`). Mapping it directly would fail to evaluate
+        # in `compute_aesthetics()`.
+        self$computed_mapping$fill <- quote(ggplot2::after_stat(label))
+      }
     }
 
     has_data <- !inherits(dt, "waiver") && is.data.frame(dt) && nrow(dt) > 0
@@ -206,7 +221,7 @@ LayerBrain <- ggproto(
 
     if (!has_data) {
       # No user data: drive the stat with the atlas's own identity rows so its
-      # columns are available for aesthetics like aes(fill = region) and for
+      # columns are available for aesthetics like aes(fill = label) and for
       # faceting on an atlas column; the atlas draw order is preserved (reorder
       # off).
       dt <- unique(flat[, atlas_cols, drop = FALSE])
@@ -217,7 +232,7 @@ LayerBrain <- ggproto(
       cli::cli_abort(c(
         "{.arg data} has no columns in common with the atlas.",
         "i" = paste0(
-          "Need {.field region} or {.field label} ",
+          "Need {.field label} or {.field region} ",
           "(and optionally {.field hemi})."
         )
       ))
@@ -246,6 +261,7 @@ LayerBrain <- ggproto(
     # Draw-order-follows-data (#162) only applies to real user data; keep the
     # atlas order when the driving rows are just the atlas identity.
     self$stat_params$reorder <- has_data
+    self$stat_params$has_data <- has_data
     self$stat_params$facet_atlas_cols <- facet_atlas_cols
 
     dt
@@ -267,6 +283,9 @@ LayerBrain <- ggproto(
 group_by_facet_vars <- function(data, plot, atlas) {
   facet_vars <- plot$facet$vars()
   group_vars <- intersect(facet_vars, names(data))
+  # Sanctioned `$core` access: ggseg.formats has no accessor for the set of
+  # core column names, because the schema allows user-defined classification
+  # columns (lobe, structure, ...) that no accessor could enumerate.
   atlas_cols <- unique(c(
     names(atlas$core),
     "view",
@@ -279,6 +298,50 @@ group_by_facet_vars <- function(data, plot, atlas) {
     data <- dplyr::group_by(data, dplyr::across(dplyr::all_of(group_vars)))
   }
   data
+}
+
+
+#' Should `geom_brain()` colour the atlas by its own palette?
+#'
+#' A bare `geom_brain()` -- one where the user maps (or fixes) neither `fill`
+#' nor `colour` -- is a request for an atlas overview, so the layer colours it
+#' by the atlas palette. Any explicit `fill`/`colour` from the user wins. The
+#' check runs from `setup_layer()`, after the top-level `ggplot()` mapping has
+#' been inherited, so an aesthetic set there counts.
+#'
+#' @param mapping The layer's computed aesthetic mapping.
+#' @param aes_params The layer's fixed aesthetic parameters.
+#' @return `TRUE` when the atlas palette should be applied.
+#' @keywords internal
+#' @noRd
+needs_default_atlas_fill <- function(mapping, aes_params) {
+  supplied <- c(names(mapping), names(aes_params))
+  !any(supplied %in% c("fill", "colour", "color"))
+}
+
+
+#' Install the atlas palette as the plot's fill scale
+#'
+#' Atlas palettes are keyed by `label`, so this pairs with
+#' `aes(fill = label)`. The scale is added to the plot's scale list rather than
+#' returned from `geom_brain()` because whether the user mapped `fill` is only
+#' known once the top-level mapping has been inherited, i.e. inside
+#' `setup_layer()`. `ScalesList$add()` replaces any scale already registered
+#' for the aesthetic, so it is only reached when the user supplied no `fill` at
+#' all. An atlas carrying no palette is left alone.
+#'
+#' @param plot The ggplot object being built.
+#' @param atlas The `ggseg_atlas` being rendered.
+#' @return `TRUE` when a palette scale was installed, `FALSE` otherwise.
+#' @keywords internal
+#' @noRd
+add_atlas_fill_scale <- function(plot, atlas) {
+  palette <- ggseg.formats::atlas_palette(atlas)
+  if (is.null(palette) || length(palette) == 0) {
+    return(FALSE)
+  }
+  plot$scales$add(scale_fill_manual(values = palette, na.value = "grey"))
+  TRUE
 }
 
 
@@ -300,6 +363,8 @@ prepare_polygon_atlas <- function(
   context = TRUE,
   focus = NULL
 ) {
+  position <- as_polygon_position(position)
+
   if (is.null(ggseg.formats::atlas_geom(atlas))) {
     cli::cli_abort(c(
       "{.arg atlas} has no 2D geometry.",
@@ -315,6 +380,8 @@ prepare_polygon_atlas <- function(
   # some atlases (e.g. tracula) carry their own `group` column in `core`,
   # which would otherwise collide and suffix this one away.
   names(flat)[names(flat) == "group"] <- ".group"
+  # Sanctioned `$core` access: see group_by_facet_vars(). The whole core is
+  # joined precisely so user-defined classification columns survive.
   flat <- dplyr::left_join(
     flat,
     atlas$core,
@@ -348,10 +415,13 @@ prepare_polygon_atlas <- function(
     flat <- flat[!is.na(flat$region), , drop = FALSE]
   }
 
+  # `$atlas` (the atlas's own name) has no accessor in ggseg.formats; `$type`
+  # does, so it goes through it.
+  atlas_type <- ggseg.formats::atlas_type(atlas)
   flat$atlas <- atlas$atlas
-  flat$type <- atlas$type
+  flat$type <- atlas_type
 
-  if (atlas$type == "cortical") {
+  if (atlas_type == "cortical") {
     if (!"hemi" %in% names(flat)) {
       flat$hemi <- NA_character_
     }
@@ -373,7 +443,7 @@ prepare_polygon_atlas <- function(
     levels = unique(feature_key)
   ))
 
-  if (is_polygon_position(position)) {
+  if (!is.null(position)) {
     flat <- frame_2_position_flat(
       flat,
       position$position,
