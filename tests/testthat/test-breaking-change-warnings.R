@@ -1,8 +1,8 @@
 describe("atlas_schema_variant()", {
   it("names the re-keyed schema when core carries `names`", {
     expect_identical(
-      atlas_schema_variant(data.frame(region = "a", names = "A")),
-      "schema-names"
+      atlas_schema_variant(data.frame(region = "a", display = "A")),
+      "schema-display"
     )
   })
 
@@ -14,7 +14,9 @@ describe("atlas_schema_variant()", {
   })
 
   it("resolves the installed atlas to one of the two schemas", {
-    expect_true(atlas_schema_variant() %in% c("schema-names", "schema-legacy"))
+    expect_true(
+      atlas_schema_variant() %in% c("schema-display", "schema-legacy")
+    )
   })
 })
 

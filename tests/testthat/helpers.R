@@ -16,10 +16,15 @@ set.seed(1234)
 
 # The released and development ggseg.formats atlas schemas differ in `region`
 # values, polygon vertex count and coordinate frame, so no single snapshot set
-# can satisfy both. The `names` column exists only in the re-keyed schema, where
-# the spelled-out region names moved out of `region`, so it marks the schema.
+# can satisfy both. The `display` column exists only in the re-keyed schema,
+# where the spelled-out region names moved out of `region`, so it marks the
+# schema.
 atlas_schema_variant <- function(x = ggseg.formats::dk()) {
-  if (length(ggseg.formats::atlas_names(x))) "schema-names" else "schema-legacy"
+  if (length(ggseg.formats::atlas_display(x))) {
+    "schema-display"
+  } else {
+    "schema-legacy"
+  }
 }
 
 # ggseg's collapsed-rows breaking-change warning fires once per session from

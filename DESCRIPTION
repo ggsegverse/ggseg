@@ -27,7 +27,7 @@ Imports:
     cli,
     dplyr (>= 1.0.0),
     ggplot2 (>= 3.3),
-    ggseg.formats (>= 0.0.4.9008),
+    ggseg.formats (>= 0.0.4.9010),
     grid,
     lifecycle,
     rlang,
