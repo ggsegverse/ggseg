@@ -12,7 +12,7 @@ describe("annotate_brain_polygon()", {
     p <- ggplot2::ggplot() +
       geom_brain_polygon(atlas = poly, position = pos, show.legend = FALSE) +
       annotate_brain_polygon(atlas = poly, position = pos)
-    g <- ggplot2::ggplot_build(p)
+    g <- muffle_breaking_warnings(ggplot2::ggplot_build(p))
     expect_gte(length(g$data), 2L)
     expect_gt(nrow(g$data[[1]]), 0)
   })

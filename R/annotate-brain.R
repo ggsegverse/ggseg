@@ -10,7 +10,9 @@
 #'
 #' @param atlas A `brain_atlas` object (e.g. `dk()`, `aseg()`).
 #' @param position The same layout you passed to [geom_brain()], from
-#'   [position_brain()].
+#'   [position_brain()]. A layout formula or one of `"horizontal"`,
+#'   `"vertical"`, `"identity"` is accepted too, and coerced exactly as
+#'   [geom_brain()] coerces it.
 #' @param hemi Character vector of hemispheres to include. If `NULL`
 #'   (default), all hemispheres are included.
 #' @param view Character vector of views to include. If `NULL`
@@ -51,10 +53,16 @@ annotate_brain <- function(
   nudge_y = 0,
   ...
 ) {
-  annotate_fn <- if (is_polygon_position(position)) {
-    annotate_brain_polygon
-  } else {
+  # Only an explicit `PositionBrain` ggproto selects the deprecated sf
+  # renderer. Everything else -- a spec, a formula, "horizontal"/"vertical",
+  # "identity", NULL -- is coerced the same way `geom_brain()` coerces it, so
+  # the two exports cannot disagree about one `position` value (and a string
+  # no longer drags an sf-free install into `require_sf()`).
+  annotate_fn <- if (inherits(position, "PositionBrain")) {
     annotate_brain_sf
+  } else {
+    position <- as_polygon_position(position)
+    annotate_brain_polygon
   }
   annotate_fn(
     atlas,
@@ -177,9 +185,7 @@ extract_position_params <- function(pos) {
 #' @keywords internal
 #' @noRd
 compute_label_positions <- function(repositioned) {
-  atlas_type <- unique(repositioned$type)[1]
-
-  if (atlas_type == "cortical") {
+  if (identical(atlas_type_of(repositioned), "cortical")) {
     groups <- split(
       repositioned,
       list(repositioned$hemi, repositioned$view),

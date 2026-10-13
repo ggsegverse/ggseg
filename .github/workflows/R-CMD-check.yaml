@@ -13,4 +13,5 @@ jobs:
   R-CMD-check:
     uses: ggsegverse/.github/.github/workflows/R-CMD-check.yaml@main
     with:
+      extra-repositories: https://ggsegverse.r-universe.dev
       build-args: 'c("--no-manual", "--compact-vignettes=gs+qpdf")'

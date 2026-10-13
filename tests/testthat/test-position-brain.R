@@ -1,4 +1,5 @@
 test_that("position_formula works", {
+  skip_if_not_installed("sf")
   expect_error(
     position_formula(hemi ~ hemi, as.data.frame(dk())),
     "Cannot position brain"
@@ -74,6 +75,7 @@ describe("position_brain", {
 
 describe("position_brain_sf (deprecated)", {
   it("warns and returns a PositionBrain ggproto", {
+    skip_if_not_installed("sf")
     lifecycle::expect_deprecated(pos <- position_brain_sf(hemi ~ view))
     expect_s3_class(pos, "PositionBrain")
     expect_identical(pos$position, hemi ~ view)
@@ -82,6 +84,7 @@ describe("position_brain_sf (deprecated)", {
 
 describe("split_data", {
   it("works with horizontal character position", {
+    skip_if_not_installed("sf")
     data <- as.data.frame(dk())
     result <- split_data(data, "horizontal")
     expect_type(result, "list")
@@ -89,6 +92,7 @@ describe("split_data", {
   })
 
   it("works with vertical character position", {
+    skip_if_not_installed("sf")
     data <- as.data.frame(dk())
     result <- split_data(data, "vertical")
     expect_type(result, "list")
@@ -98,6 +102,7 @@ describe("split_data", {
 
 describe("default_order", {
   it("returns order for cortical data", {
+    skip_if_not_installed("sf")
     data <- as.data.frame(dk())
     result <- default_order(data)
     expect_type(result, "character")
@@ -106,6 +111,7 @@ describe("default_order", {
   })
 
   it("returns views for subcortical data", {
+    skip_if_not_installed("sf")
     data <- as.data.frame(aseg())
     result <- default_order(data)
     expect_type(result, "character")
@@ -114,6 +120,7 @@ describe("default_order", {
 
 describe("split_data with subcortical", {
   it("works with subcortical atlas positions", {
+    skip_if_not_installed("sf")
     data <- as.data.frame(aseg())
     result <- split_data(data, "horizontal")
     expect_type(result, "list")
@@ -124,6 +131,7 @@ describe("split_data with subcortical", {
 
 describe("position_formula edge cases", {
   it("errors when formula missing '.' for single row/column", {
+    skip_if_not_installed("sf")
     data <- as.data.frame(dk())
     expect_error(
       position_formula(hemi + view ~ foo, data),
@@ -163,6 +171,7 @@ describe("position_brain with nrow/ncol", {
 
 describe("split_data_grid", {
   it("creates grid layout for subcortical data", {
+    skip_if_not_installed("sf")
     data <- as.data.frame(aseg())
     result <- split_data_grid(data, nrow = 2)
     expect_type(result, "list")
@@ -171,6 +180,7 @@ describe("split_data_grid", {
   })
 
   it("respects ncol parameter", {
+    skip_if_not_installed("sf")
     data <- as.data.frame(aseg())
     result <- split_data_grid(data, ncol = 3)
     expect_type(result, "list")
@@ -209,6 +219,7 @@ describe("reposition_brain with subcortical", {
 
 describe("position_formula with subcortical", {
   it("handles type ~ . formula", {
+    skip_if_not_installed("sf")
     data <- as.data.frame(aseg())
     k <- position_formula(type ~ ., data)
     expect_true("position" %in% names(k))
@@ -216,6 +227,7 @@ describe("position_formula with subcortical", {
   })
 
   it("handles . ~ type formula", {
+    skip_if_not_installed("sf")
     data <- as.data.frame(aseg())
     k <- position_formula(. ~ type, data)
     expect_true("position" %in% names(k))
@@ -223,12 +235,14 @@ describe("position_formula with subcortical", {
   })
 
   it("handles view ~ . formula for subcortical", {
+    skip_if_not_installed("sf")
     data <- as.data.frame(aseg())
     k <- position_formula(view ~ ., data)
     expect_identical(k$position, "rows")
   })
 
   it("handles . ~ view formula for subcortical", {
+    skip_if_not_installed("sf")
     data <- as.data.frame(aseg())
     k <- position_formula(. ~ view, data)
     expect_identical(k$position, "columns")
@@ -237,6 +251,7 @@ describe("position_formula with subcortical", {
 
 describe("split_data_grid with defaults", {
   it("auto-calculates nrow and ncol when both NULL", {
+    skip_if_not_installed("sf")
     data <- as.data.frame(aseg())
     result <- split_data_grid(data)
     expect_type(result, "list")
@@ -262,6 +277,7 @@ describe("reposition_brain subcortical formula", {
 
 describe("position_formula subcortical multi-var", {
   it("ignores hemi for subcortical two-variable formulas", {
+    skip_if_not_installed("sf")
     data <- as.data.frame(aseg())
     data$hemi <- "left"
     expect_warning(
@@ -363,6 +379,7 @@ describe("position_cortical", {
 
 describe("position_subcortical", {
   it("remaps type to .view_type", {
+    skip_if_not_installed("sf")
     data <- as.data.frame(aseg())
     result <- position_subcortical(type ~ ., "type", data)
     expect_identical(result$chosen, ".view_type")
@@ -370,12 +387,14 @@ describe("position_subcortical", {
   })
 
   it("detects stacking direction for single var", {
+    skip_if_not_installed("sf")
     data <- as.data.frame(aseg())
     result <- position_subcortical(view ~ ., "view", data)
     expect_identical(result$position, "rows")
   })
 
   it("drops hemi for a slice-based two-var formula", {
+    skip_if_not_installed("sf")
     data <- as.data.frame(aseg())
     data$hemi <- "left"
     expect_warning(
@@ -389,6 +408,7 @@ describe("position_subcortical", {
 
 describe("grid_lookup", {
   it("extracts row and column values from split data", {
+    skip_if_not_installed("sf")
     data <- as.data.frame(aseg())
     split_result <- split_data_grid(data, nrow = 2)
     lookup <- grid_lookup(split_result$data, ".grid_row", ".grid_col")
@@ -398,6 +418,7 @@ describe("grid_lookup", {
   })
 
   it("coerces numeric values to character", {
+    skip_if_not_installed("sf")
     data <- as.data.frame(aseg())
     split_result <- split_data_grid(data, nrow = 2)
     lookup <- grid_lookup(split_result$data, ".grid_row", ".grid_col")
@@ -427,6 +448,7 @@ describe("drop_temp_columns", {
 
 describe("position_formula() with slice-based atlases", {
   it("ignores hemi for subcortical atlases, laying out by view only", {
+    skip_if_not_installed("sf")
     d <- as.data.frame(aseg())
     expect_warning(
       res <- position_formula(hemi ~ view, d),
@@ -437,6 +459,7 @@ describe("position_formula() with slice-based atlases", {
   })
 
   it("falls back to view when only hemi is supplied", {
+    skip_if_not_installed("sf")
     d <- as.data.frame(aseg())
     expect_warning(
       res <- position_formula(hemi ~ ., d),
@@ -446,7 +469,162 @@ describe("position_formula() with slice-based atlases", {
   })
 
   it("does not warn about hemi for cortical atlases", {
+    skip_if_not_installed("sf")
     d <- as.data.frame(dk())
     expect_no_warning(position_formula(hemi ~ view, d))
+  })
+})
+
+
+describe("position_brain_sf() grid validation", {
+  it("rejects a formula combined with nrow/ncol before the sf guard", {
+    withr::local_options(lifecycle_verbosity = "quiet")
+    expect_error(
+      position_brain_sf(hemi ~ view, nrow = 2),
+      "cannot be combined"
+    )
+  })
+
+  it("rejects a non-positive grid dimension", {
+    withr::local_options(lifecycle_verbosity = "quiet")
+    expect_error(position_brain_sf(nrow = 0), "positive whole number")
+  })
+})
+
+describe("validate_grid_args()", {
+  it("rejects a layout formula combined with nrow/ncol", {
+    # `position_brain(hemi ~ view, nrow = 2)` used to be byte-identical to
+    # `position_brain(nrow = 2)`: the formula was silently discarded.
+    expect_error(position_brain(hemi ~ view, nrow = 2), "cannot be combined")
+    expect_error(position_brain(hemi ~ view, ncol = 3), "cannot be combined")
+  })
+
+  it("rejects the same combination on the sf twin", {
+    skip_if_not_installed("sf")
+    expect_error(
+      reposition_brain(as.data.frame(dk()), hemi ~ view, nrow = 2),
+      "cannot be combined"
+    )
+  })
+
+  it("keeps a layout formula on its own", {
+    expect_identical(position_brain(hemi ~ view)$position, hemi ~ view)
+  })
+
+  it("rejects grid dimensions that are not positive whole numbers", {
+    # ncol = 0 divided by zero into Inf grid indices.
+    expect_error(position_brain(ncol = 0), "positive whole number")
+    expect_error(position_brain(nrow = -1), "positive whole number")
+    expect_error(position_brain(nrow = 1.5), "positive whole number")
+    expect_error(position_brain(nrow = c(1, 2)), "positive whole number")
+    expect_error(position_brain(nrow = "2"), "positive whole number")
+  })
+
+  it("accepts a positive whole number", {
+    expect_identical(position_brain(nrow = 2)$nrow, 2)
+    expect_identical(position_brain("vertical", ncol = 3)$ncol, 3)
+  })
+})
+
+
+describe("warn_unmatched_views()", {
+  it("names views the atlas does not have", {
+    expect_warning(
+      warn_unmatched_views(c("sagittal", "coronal_3"), c("sagittal", "axial")),
+      class = "ggseg_unmatched_views"
+    )
+  })
+
+  it("is silent when every view matches", {
+    expect_no_warning(warn_unmatched_views("sagittal", c("sagittal", "axial")))
+  })
+
+  it("warns from the layout itself", {
+    expect_warning(
+      prepare_polygon_atlas(
+        aseg(),
+        position = position_brain(views = c("sagittal", "coronal_3"))
+      ),
+      class = "ggseg_unmatched_views"
+    )
+  })
+})
+
+
+describe("atlas_type_of()", {
+  it("returns the single type", {
+    types <- data.frame(type = c("cortical", "cortical"))
+    expect_identical(atlas_type_of(types), "cortical")
+  })
+
+  it("returns NA when the frame carries no type", {
+    expect_identical(atlas_type_of(data.frame(x = 1)), NA_character_)
+  })
+
+  it("rejects a frame mixing atlas types", {
+    # reposition_brain() takes arbitrary sf data, so a row-bound cortical +
+    # subcortical frame is reachable; default_order() used to hit a bare
+    # "condition has length > 1" there.
+    mixed <- data.frame(type = c("cortical", "subcortical"))
+    expect_error(atlas_type_of(mixed), "cannot mix atlas types")
+    expect_error(default_order(mixed), "cannot mix atlas types")
+  })
+
+  it("rejects a mixed frame through reposition_brain()", {
+    skip_if_not_installed("sf")
+    mixed <- dplyr::bind_rows(
+      as.data.frame(ggseg.formats::as_sf_atlas(dk())),
+      as.data.frame(ggseg.formats::as_sf_atlas(aseg()))
+    )
+    expect_error(
+      reposition_brain(mixed, "horizontal"),
+      "cannot mix atlas types"
+    )
+    expect_error(reposition_brain(mixed, hemi ~ view), "cannot mix atlas types")
+  })
+})
+
+
+describe("split_data_grid() cells", {
+  it("gives a cortical atlas one cell per hemisphere/view pair", {
+    # Splitting on `view` alone put both hemispheres in every grid cell.
+    flat <- prepare_polygon_atlas(dk(), position = position_brain(nrow = 2))
+    cells <- unique(paste(flat$hemi, flat$view))
+    expect_length(cells, length(unique(flat$hemi)) * length(unique(flat$view)))
+
+    centres <- vapply(
+      split(flat, paste(flat$hemi, flat$view)),
+      function(d) {
+        paste(round(mean(range(d$x)), 4), round(mean(range(d$y)), 4))
+      },
+      character(1)
+    )
+    expect_length(unique(centres), length(cells))
+  })
+
+  it("gives a slice-based atlas one cell per view", {
+    data <- data.frame(type = "subcortical", view = c("a", "a", "b"))
+    expect_identical(grid_cell_id(data), c("a", "a", "b"))
+  })
+})
+
+
+describe("parse_formula_vars()", {
+  it("drops only the `.` placeholder", {
+    # grepl(".", fixed = TRUE) dropped every name containing a dot, so a
+    # user column like `my.col` vanished from the layout.
+    expect_identical(parse_formula_vars(my.col ~ view), c("my.col", "view"))
+    expect_identical(parse_formula_vars(hemi ~ .), "hemi")
+    expect_identical(parse_formula_vars(. ~ view), "view")
+  })
+
+  it("keeps a dotted variable through the slice-based layout", {
+    data <- data.frame(
+      type = "subcortical",
+      view = c("a", "b"),
+      my.col = c("x", "y")
+    )
+    result <- position_subcortical(my.col ~ ., "my.col", data)
+    expect_identical(result$chosen, "my.col")
   })
 })

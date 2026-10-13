@@ -21,7 +21,9 @@ annotate_brain(
 \item{atlas}{A \code{brain_atlas} object (e.g. \code{dk()}, \code{aseg()}).}
 
 \item{position}{The same layout you passed to \code{\link[=geom_brain]{geom_brain()}}, from
-\code{\link[=position_brain]{position_brain()}}.}
+\code{\link[=position_brain]{position_brain()}}. A layout formula or one of \code{"horizontal"},
+\code{"vertical"}, \code{"identity"} is accepted too, and coerced exactly as
+\code{\link[=geom_brain]{geom_brain()}} coerces it.}
 
 \item{hemi}{Character vector of hemispheres to include. If \code{NULL}
 (default), all hemispheres are included.}

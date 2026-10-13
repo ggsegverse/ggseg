@@ -12,7 +12,6 @@
 ^\.Rproj\.user$
 img
 ^_pkgdown\.yml$
-^doc$
 ^\.github$
 vignettes/ggseg-old*
 vignettes/geom-sf*
@@ -24,3 +23,7 @@ dev
 .claude/
 ^cran-comments\.md$
 ^codemeta\.json$
+Rplots\.pdf$
+^revdep$
+^.*\.Rcheck$
+^.*\.tar\.gz$

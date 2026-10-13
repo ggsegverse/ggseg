@@ -14,6 +14,6 @@ These objects are imported from other packages. Follow the links
 below to see their documentation.
 
 \describe{
-  \item{ggseg.formats}{\code{\link[ggseg.formats]{aseg}}, \code{\link[ggseg.formats]{dk}}, \code{\link[ggseg.formats]{suit}}, \code{\link[ggseg.formats]{tracula}}}
+  \item{ggseg.formats}{\code{\link[ggseg.formats:aseg]{aseg()}}, \code{\link[ggseg.formats:dk]{dk()}}, \code{\link[ggseg.formats:suit]{suit()}}, \code{\link[ggseg.formats:tracula]{tracula()}}}
 }}
 

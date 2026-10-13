@@ -17,17 +17,19 @@ cortical atlases (e.g., \code{hemi ~ view}). For subcortical/tract atlases,
 can be "horizontal", "vertical", or a formula with \code{type ~ .} where type
 is extracted from view names like "axial_1" -> "axial".}
 
-\item{nrow}{Number of rows for grid layout. If NULL (default), calculated
-automatically. Only used for subcortical/tract atlases when position is
-not a formula.}
+\item{nrow}{Number of rows for grid layout, a positive whole number. If
+\code{NULL} (default), calculated automatically. Cannot be combined with a
+\code{position} formula, which a grid layout would discard. Grid cells are
+hemisphere/view pairs for a cortical atlas and views for a slice-based
+one.}
 
-\item{ncol}{Number of columns for grid layout. If NULL (default), calculated
-automatically. Only used for subcortical/tract atlases when position is
-not a formula.}
+\item{ncol}{Number of columns for grid layout, a positive whole number. If
+\code{NULL} (default), calculated automatically. Cannot be combined with a
+\code{position} formula.}
 
 \item{views}{Character vector specifying which views to include and their
-order. If NULL (default), all views are included in their original order.
-Only applies to subcortical/tract atlases.}
+order. If \code{NULL} (default), all views are included in their original
+order. Names the atlas does not have are dropped with a warning.}
 }
 \value{
 A \code{PositionBrain} ggproto object.
@@ -38,7 +40,7 @@ A \code{PositionBrain} ggproto object.
 The sf rendering path is deprecated. \code{position_brain_sf()} returns the
 legacy \code{PositionBrain} ggproto for use with \code{\link[=geom_brain_sf]{geom_brain_sf()}}. For new
 code, use \code{\link[=position_brain]{position_brain()}} (the polygon default), or convert the atlas
-with \code{as_sf_atlas()} and use \code{\link[ggplot2:ggsf]{ggplot2::geom_sf()}} directly.
+with \code{as_sf_atlas()} and use \code{\link[ggplot2:geom_sf]{ggplot2::geom_sf()}} directly.
 }
 \examples{
 \dontrun{

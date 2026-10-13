@@ -3,7 +3,7 @@
 #' Returns axis breaks, labels, and lab strings based on atlas layout.
 #' Used internally by [scale_continous_brain()] and related functions.
 #'
-#' @param geobrain A data.frame containing atlas information with columns
+#' @param geobrain A `ggseg_atlas`, or a flattened atlas data.frame with columns
 #'   `hemi`, `view`, `type`, `.lat`, and `.long`.
 #' @inheritParams reposition_brain
 #' @inheritParams scale_brain
@@ -17,16 +17,53 @@ adapt_scales <- function(
   aesthetics = "labs"
 ) {
   if (!is.data.frame(geobrain)) {
-    geobrain <- sf2coords(as.data.frame(geobrain))
-    geobrain <- tidyr::unnest(geobrain, ggseg)
+    if (!ggseg.formats::is_ggseg_atlas(geobrain)) {
+      cli::cli_abort(c(
+        "{.arg atlas} must be a {.cls ggseg_atlas}.",
+        "i" = "Got {.cls {class(geobrain)}}."
+      ))
+    }
+    geobrain <- atlas_scale_coords(geobrain)
   }
 
-  atlas_type <- unique(geobrain$type)
-  if (atlas_type == "cortical") {
+  atlas_type <- atlas_type_of(geobrain)
+  if (identical(atlas_type, "cortical")) {
     adapt_scales_cortical(geobrain, position, aesthetics)
-  } else if (atlas_type %in% c("subcortical", "tract")) {
+  } else if (atlas_type %in% c("subcortical", "tract", "cerebellar")) {
+    # Cerebellar atlases (e.g. suit()) are slice-based like subcortical ones,
+    # so their axes are labelled by view, not hemisphere.
     adapt_scales_subcortical(geobrain, position, aesthetics)
+  } else {
+    cli::cli_abort(c(
+      "Cannot build brain axis scales for atlas type {.val {atlas_type}}.",
+      "i" = "Supported types: {.val cortical}, {.val subcortical}, \
+        {.val tract}, {.val cerebellar}."
+    ))
   }
+}
+
+
+#' Vertex coordinates of an atlas for axis scaling
+#'
+#' Flattens an atlas to one row per polygon vertex and names the coordinates
+#' `.long`/`.lat`, the frame [adapt_scales()] summarises. It goes through
+#' [prepare_polygon_atlas()], i.e. `ggseg.formats::atlas_polygons()`, so the
+#' exported `scale_x_brain()` family works without the optional `sf` package.
+#' No branch on `is_atlas_polygon()` / `is_atlas_sf()` is needed:
+#' `atlas_polygons()` already serves both, converting an sf-backed atlas on the
+#' fly (which can only exist where `sf` is installed anyway). No layout is
+#' applied, so the coordinates are the atlas's own frame, as the previous
+#' sf-derived ones were.
+#'
+#' @param atlas A `ggseg_atlas`.
+#' @return A data.frame with `.long`, `.lat` and the atlas metadata columns.
+#' @keywords internal
+#' @noRd
+atlas_scale_coords <- function(atlas) {
+  flat <- prepare_polygon_atlas(atlas)
+  flat$.long <- flat$x
+  flat$.lat <- flat$y
+  flat
 }
 
 
@@ -35,10 +72,9 @@ adapt_scales <- function(
 adapt_scales_cortical <- function(geobrain, position, aesthetics) {
   stk_y <- dplyr::summarise(dplyr::group_by(geobrain, hemi), val = gap(.lat))
   stk_x <- dplyr::summarise(dplyr::group_by(geobrain, view), val = gap(.long))
-  disp <- dplyr::summarise_at(
+  disp <- dplyr::summarise(
     dplyr::group_by(geobrain, hemi),
-    dplyr::vars(.long, .lat),
-    list(gap)
+    dplyr::across(c(.long, .lat), gap)
   )
 
   ad_scale <- list(
@@ -62,10 +98,9 @@ adapt_scales_cortical <- function(geobrain, position, aesthetics) {
 #' @noRd
 adapt_scales_subcortical <- function(geobrain, position, aesthetics) {
   stk_y <- dplyr::summarise(dplyr::group_by(geobrain, view), val = gap(.lat))
-  disp <- dplyr::summarise_at(
+  disp <- dplyr::summarise(
     dplyr::group_by(geobrain, view),
-    dplyr::vars(.long, .lat),
-    list(gap)
+    dplyr::across(c(.long, .lat), gap)
   )
 
   ad_scale <- list(

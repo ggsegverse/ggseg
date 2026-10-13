@@ -13,4 +13,6 @@ permissions:
 jobs:
   code-quality:
     uses: ggsegverse/.github/.github/workflows/code-quality.yaml@main
+    with:
+      extra-repositories: https://ggsegverse.r-universe.dev
     secrets: inherit

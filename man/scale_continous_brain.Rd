@@ -41,7 +41,7 @@ the atlas layout.
 library(ggplot2)
 
 ggplot() +
-  geom_brain(atlas = dk()) +
+  geom_brain(atlas = dk(), show.legend = FALSE) +
   scale_x_brain() +
   scale_y_brain() +
   scale_labs_brain()

@@ -5,6 +5,15 @@
 #' lays out the brain views for you. No data? It just draws the atlas.
 #'
 #' @details
+#' Map neither `fill` nor `colour` and `geom_brain()` colours the atlas by its
+#' own palette for you, by mapping `fill` to `label` -- the key atlas palettes
+#' are built on, and the ecosystem's canonical matching key. Map either one and
+#' yours wins; your `data` then drives the colours and regions you supply no
+#' value for stay grey.
+#'
+#' Match your `data` to the atlas on `label` (hemisphere-qualified, unique per
+#' atlas row) or on `region` (which repeats across hemispheres).
+#'
 #' Regions are drawn in the order they appear in your `data`, so when outlines
 #' overlap (e.g. mapping `colour` to a threshold with a wide `linewidth`) the
 #' later rows draw on top. Reorder your data with [dplyr::arrange()] to control
@@ -26,14 +35,19 @@
 #' @param view Character vector of views to include, as recorded in the atlas
 #'   data. For cortical atlases: `"lateral"`, `"medial"`. For subcortical/tract
 #'   atlases: slice identifiers like `"axial_3"`. Defaults to all views.
-#' @param position Position adjustment, either as a string or the result of
-#'   a call to [position_brain()].
+#' @param position Brain-view layout: the result of a call to
+#'   [position_brain()], a layout string (e.g. `"horizontal"`, `"vertical"`), or
+#'   a layout formula (e.g. `hemi ~ view`). Strings and formulas are passed to
+#'   [position_brain()]. Use `"identity"` to keep the atlas polygons' raw
+#'   coordinates. Per-view zoom is set through [position_brain()]'s `zoom`.
 #' @param context Keep the rest of the brain as a soft grey backdrop (`TRUE`,
 #'   the default), or show only the regions you're plotting (`FALSE`).
 #' @param fun Function used to combine multiple `data` rows that map to the same
 #'   atlas region, applied within each facet panel. Defaults to [mean()]. Any
 #'   function reducing a vector to a single value works (e.g. [median()],
-#'   [max()]).
+#'   [max()]). It applies to numeric columns only; non-numeric ones take the
+#'   first value of the group. Up to ggseg 2.2.1 duplicate rows overplotted, so
+#'   the last one won — `fun = dplyr::last` reproduces that.
 #' @param show.legend Logical. Should this layer be included in the legends?
 #' @param inherit.aes Logical. If `FALSE`, overrides the default aesthetics
 #'   rather than combining with them.
@@ -49,7 +63,7 @@
 #' library(ggplot2)
 #'
 #' ggplot() +
-#'   geom_brain(atlas = dk())
+#'   geom_brain(atlas = dk(), show.legend = FALSE)
 geom_brain <- function(
   mapping = aes(),
   data = NULL,
@@ -171,11 +185,12 @@ geom_brain_sf <- function(
   )
 
   has_fill_aes <- "fill" %in% names(mapping)
-  if (!is.null(atlas$palette) && !has_fill_aes) {
+  palette <- atlas_palette(atlas)
+  if (!is.null(palette) && !has_fill_aes) {
     result <- c(
       result,
       list(
-        scale_fill_manual(values = atlas$palette, na.value = "grey")
+        scale_fill_manual(values = palette, na.value = "grey")
       )
     )
   }
@@ -184,15 +199,19 @@ geom_brain_sf <- function(
 }
 
 
-#' Deprecated sf brain geom ggproto
+#' @section GeomBrainSf ggproto:
+#' `GeomBrainSf` is the [ggplot2::Geom] backing the deprecated
+#' `geom_brain_sf()` sf path. It renders atlas geometry via `sf::st_as_grob()`
+#' and requires [coord_sf()][ggplot2::coord_sf]. Up to ggseg 2.2.1 this object
+#' was the exported `GeomBrain`; `GeomBrain` is now the polygon geom that backs
+#' the default [geom_brain()], so extension code doing
+#' `ggplot2::layer(geom = GeomBrain)` against the sf path must switch to
+#' `GeomBrainSf`.
 #'
-#' The [ggplot2::Geom] backing the deprecated [geom_brain_sf()] sf path. It
-#' renders atlas geometry via [sf::st_as_grob()] and requires
-#' [coord_sf()][ggplot2::coord_sf]. The default [geom_brain()] path uses the
-#' polygon [GeomBrain] instead.
-#'
-#' @keywords internal
-#' @noRd
+#' @export
+#' @rdname geom_brain_sf
+#' @usage NULL
+#' @format NULL
 #' @importFrom ggplot2 Geom aes ggproto draw_key_polygon
 GeomBrainSf <- ggproto(
   "GeomBrainSf",

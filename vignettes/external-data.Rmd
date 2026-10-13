@@ -10,7 +10,11 @@ vignette: >
 ```{r}
 #| label: setup
 #| include: false
-knitr::opts_chunk$set(eval = TRUE, fig.retina = 3, fig.width = 6)
+knitr::opts_chunk$set(
+  eval = TRUE,
+  fig.width = 6,
+  fig.height = 2.5
+)
 ```
 
 Most of the time, you're not plotting empty atlases. You have results --
@@ -26,24 +30,26 @@ library(ggplot2)
 
 ## How matching works
 
-`geom_brain()` joins your data to the atlas by `region` (and by
+`geom_brain()` joins your data to the atlas by `label` or `region` (and by
 `hemi` too, when both your data and the atlas carry it). That means your data
 needs at least one column with names that match the atlas. The two columns
 you'll use most:
 
-- **region** -- human-readable names like "insula" or "precentral"
-- **label** -- FreeSurfer labels like "lh_bankssts"
+- **label** -- FreeSurfer labels like "lh_bankssts", unique per atlas row and
+  the key atlas palettes are built on
+- **region** -- human-readable names like "insula" or "precentral", which
+  repeat across hemispheres
 
 Check what's available:
 
 ```{r}
 #| label: dk-regions
-ggseg.formats::atlas_regions(dk())
+sort(unique(ggseg.formats::atlas_regions(dk())))
 ```
 
 ```{r}
 #| label: dk-labels
-ggseg.formats::atlas_labels(dk())
+sort(unique(ggseg.formats::atlas_labels(dk())))
 ```
 
 Names must match exactly, including case and spacing.
@@ -55,7 +61,7 @@ Three regions, three p-values:
 ```{r}
 #| label: minimal-data
 some_data <- tibble(
-  region = ggseg.formats::atlas_regions(dk())[1:3],
+  region = sort(unique(ggseg.formats::atlas_regions(dk())))[1:3],
   p = c(0.03, 0.6, 0.05)
 )
 some_data
@@ -99,9 +105,10 @@ full atlas -- context regions included -- in each panel:
 
 ```{r}
 #| label: fig-facet-groups
+#| fig-height: 4
 #| fig-cap: "Brain plots faceted by age group with a custom colour gradient."
 some_data <- tibble(
-  region = rep(ggseg.formats::atlas_regions(dk())[1:4], 2),
+  region = rep(sort(unique(ggseg.formats::atlas_regions(dk())))[1:4], 2),
   p = sample(seq(0, 0.5, 0.001), 8),
   group = c(rep("Young", 4), rep("Old", 4))
 )
@@ -126,7 +133,7 @@ make -- one per group.
 
 ## Troubleshooting
 
-**Regions don't show up.** Check spelling and case. `ggseg.formats::atlas_regions(dk())`
+**Regions don't show up.** Check spelling and case. `sort(unique(ggseg.formats::atlas_regions(dk())))`
 gives you the exact strings the atlas expects.
 
 **Data lands on both hemispheres.** Add a `hemi` column with `"left"` or
