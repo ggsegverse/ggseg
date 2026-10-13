@@ -30,11 +30,29 @@
 brain_join <- function(data, atlas, by = NULL) {
   atlas <- as.data.frame(atlas)
 
-  # Guard up front rather than after the join: the return value is an sf
-  # object whenever the atlas carries geometry, so the work would be thrown
-  # away -- and its unmatched-data warning emitted -- before failing.
-  if ("geometry" %in% names(atlas)) {
-    require_sf("brain_join()")
+  # Geometry travels out of band, paired back by `.ggseg_row`. Without sf
+  # loaded a join cannot carry an sfc column at all -- tibble rejects it as a
+  # non-vector -- so the join runs on the attribute table and
+  # ggseg.formats::attach_sfc() restores the sf representation at the end.
+  # `.ggseg_row` is dot-prefixed so the unmatched-data warning below, which
+  # drops `starts_with(".")`, does not show it.
+  sf_column <- attr(atlas, "sf_column")
+  if (is.null(sf_column)) {
+    sf_column <- "geometry"
+  }
+  # Only an sfc is carried out of band. A plain data.frame whose `geometry`
+  # column is something else still goes through sf, which is what promotes an
+  # arbitrary column to geometry.
+  geometry <- if (inherits(atlas[[sf_column]], "sfc")) {
+    atlas[[sf_column]]
+  } else {
+    NULL
+  }
+
+  if (!is.null(geometry)) {
+    atlas[[sf_column]] <- NULL
+    class(atlas) <- "data.frame"
+    atlas$.ggseg_row <- seq_len(nrow(atlas))
   }
 
   if (is.null(by)) {
@@ -66,9 +84,19 @@ brain_join <- function(data, atlas, by = NULL) {
     ))
   }
 
-  if ("geometry" %in% names(dt)) {
-    sf::st_as_sf(dt)
-  } else {
-    as_tibble(dt)
+  if (is.null(geometry)) {
+    if (!sf_column %in% names(dt)) {
+      return(as_tibble(dt))
+    }
+    require_sf("brain_join()")
+    return(sf::st_as_sf(dt))
   }
+
+  geometry <- ggseg.formats::reorder_sfc(geometry, dt$.ggseg_row)
+  dt$.ggseg_row <- NULL
+  dt <- as.data.frame(dt)
+  rownames(dt) <- NULL
+  # Appended, not restored to its position in the atlas: st_as_sf() moved the
+  # geometry column to the end, and callers see that order today.
+  ggseg.formats::attach_sfc(dt, geometry, sf_column)
 }
