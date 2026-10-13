@@ -45,7 +45,7 @@ if (FALSE) { # \dontrun{
 poly <- ggseg.formats::as_polygon_atlas(dk())
 # Equivalent to the default; shown explicitly:
 ggplot() +
-  geom_brain(atlas = poly) +
+  geom_brain(atlas = poly, show.legend = FALSE) +
   coord_brain()
 } # }
 ```

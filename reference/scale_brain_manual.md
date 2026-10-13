@@ -48,10 +48,10 @@ A ggplot2 scale object.
 ``` r
 library(ggplot2)
 
-regions <- ggseg.formats::atlas_regions(dk())[1:2]
-pal <- setNames(c("red", "blue"), regions)
+labels <- sort(unique(ggseg.formats::atlas_labels(dk())))[1:2]
+pal <- setNames(c("red", "blue"), labels)
 ggplot() +
-  geom_brain(atlas = dk(), aes(fill = region), show.legend = FALSE) +
+  geom_brain(atlas = dk(), aes(fill = label), show.legend = FALSE) +
   scale_fill_brain_manual(palette = pal)
 
 ```

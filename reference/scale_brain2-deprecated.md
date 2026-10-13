@@ -42,7 +42,7 @@ A ggplot2 scale object.
 
 ``` r
 pal <- c("transversetemporal" = "#FF0000", "insula" = "#00FF00")
-suppressWarnings(scale_fill_brain_manual(palette = pal))
+suppressWarnings(scale_fill_brain2(palette = pal))
 #> <ggproto object: Class ScaleDiscrete, Scale, gg>
 #>     aesthetics: fill
 #>     axis_order: function

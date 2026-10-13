@@ -36,6 +36,10 @@ annotate_brain(
   [`geom_brain()`](https://ggsegverse.github.io/ggseg/reference/ggbrain.md),
   from
   [`position_brain()`](https://ggsegverse.github.io/ggseg/reference/position_brain.md).
+  A layout formula or one of `"horizontal"`, `"vertical"`, `"identity"`
+  is accepted too, and coerced exactly as
+  [`geom_brain()`](https://ggsegverse.github.io/ggseg/reference/ggbrain.md)
+  coerces it.
 
 - hemi:
 

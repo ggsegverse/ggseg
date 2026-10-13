@@ -77,7 +77,7 @@ object.
 library(ggplot2)
 
 p <- ggplot() +
-  geom_brain(atlas = dk())
+  geom_brain(atlas = dk(), show.legend = FALSE)
 
 p +
   theme_brain()

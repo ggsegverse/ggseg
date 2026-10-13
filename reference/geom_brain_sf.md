@@ -62,8 +62,15 @@ geom_brain_sf(
 
 - position:
 
-  Position adjustment, either as a string or the result of a call to
+  Brain-view layout: the result of a call to
+  [`position_brain()`](https://ggsegverse.github.io/ggseg/reference/position_brain.md),
+  a layout string (e.g. `"horizontal"`, `"vertical"`), or a layout
+  formula (e.g. `hemi ~ view`). Strings and formulas are passed to
   [`position_brain()`](https://ggsegverse.github.io/ggseg/reference/position_brain.md).
+  Use `"identity"` to keep the atlas polygons' raw coordinates. Per-view
+  zoom is set through
+  [`position_brain()`](https://ggsegverse.github.io/ggseg/reference/position_brain.md)'s
+  `zoom`.
 
 - show.legend:
 
@@ -82,6 +89,21 @@ geom_brain_sf(
 ## Value
 
 A list of ggplot2 layer and coord objects.
+
+## GeomBrainSf ggproto
+
+`GeomBrainSf` is the
+[ggplot2::Geom](https://ggplot2.tidyverse.org/reference/Geom.html)
+backing the deprecated `geom_brain_sf()` sf path. It renders atlas
+geometry via
+[`sf::st_as_grob()`](https://r-spatial.github.io/sf/reference/st_as_grob.html)
+and requires
+[coord_sf()](https://ggplot2.tidyverse.org/reference/ggsf.html). Up to
+ggseg 2.2.1 this object was the exported `GeomBrain`; `GeomBrain` is now
+the polygon geom that backs the default
+[`geom_brain()`](https://ggsegverse.github.io/ggseg/reference/ggbrain.md),
+so extension code doing `ggplot2::layer(geom = GeomBrain)` against the
+sf path must switch to `GeomBrainSf`.
 
 ## Examples
 

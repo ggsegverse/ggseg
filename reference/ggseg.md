@@ -53,6 +53,9 @@ for the replacement API.
 
 Authors:
 
+- Athanasia Mo Mowinckel <a.m.mowinckel@psykologi.uio.no>
+  ([ORCID](https://orcid.org/0000-0002-5756-0223))
+
 - Didac Vidal-Piñeiro <d.v.pineiro@psykologi.uio.no>
   ([ORCID](https://orcid.org/0000-0001-9997-9156))
 

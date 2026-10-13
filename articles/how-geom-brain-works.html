@@ -30,7 +30,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">ggseg</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">2.2.1.9007</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">3.0.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -109,25 +109,25 @@ handful of regions. That comes from <code>StatBrain</code>, a ggplot2
 stat that <em>generates</em> the atlas geometry instead of reading it
 from your data. It is the same move <code><a href="https://ggplot2.tidyverse.org/reference/ggsf.html" class="external-link">geom_sf()</a></code> makes: the
 shape is computed, not supplied.</p>
-<p>A generated shape has a consequence worth stating plainly. A bare
-atlas has no values to colour, so it draws grey.
-<code><a href="../reference/ggbrain.html">geom_brain()</a></code> is for putting <em>your</em> numbers on the
-brain; when you want to look at the atlas itself, palette and all, reach
-for <code>plot(dk())</code>.</p>
+<p>Map nothing and there is nothing of yours to colour by, so
+<code><a href="../reference/ggbrain.html">geom_brain()</a></code> falls back to the atlas’s own palette: it maps
+<code>fill</code> to <code>label</code>, the key the palette is built
+on. That is the atlas looked at for its own sake.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="../reference/ggbrain.html">geom_brain</a></span><span class="op">(</span>atlas <span class="op">=</span> <span class="fu"><a href="https://ggsegverse.github.io/ggseg.formats/reference/dk.html">dk</a></span><span class="op">(</span><span class="op">)</span>, show.legend <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
 <div class="figure">
-<img src="how-geom-brain-works_files/figure-html/bare-1.png" class="r-plt" alt="The DK atlas in uniform grey with region outlines and no fill." width="672"><p class="caption">
-A bare atlas: the full shape, drawn grey.
+<img src="how-geom-brain-works_files/figure-html/bare-1.png" class="r-plt" alt="The DK atlas with every region in its own atlas palette colour." width="672"><p class="caption">
+A bare atlas: the full shape, in the atlas palette.
 </p>
 </div>
-<p>Give it data and the regions you have values for take colour.
-Everything else stays grey, so the brain remains legible even when you
-have measured only a corner of it.</p>
+<p>Give it data and your mapping takes over: the regions you have values
+for take colour from your scale. Everything else stays grey, so the
+brain remains legible even when you have measured only a corner of
+it.</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">results</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span></span>
-<span>  region <span class="op">=</span> <span class="fu">ggseg.formats</span><span class="fu">::</span><span class="fu"><a href="https://ggsegverse.github.io/ggseg.formats/reference/atlas_regions.html">atlas_regions</a></span><span class="op">(</span><span class="fu"><a href="https://ggsegverse.github.io/ggseg.formats/reference/dk.html">dk</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">3</span><span class="op">]</span>,</span>
+<span>  region <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sort.html" class="external-link">sort</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/unique.html" class="external-link">unique</a></span><span class="op">(</span><span class="fu">ggseg.formats</span><span class="fu">::</span><span class="fu"><a href="https://ggsegverse.github.io/ggseg.formats/reference/atlas_regions.html">atlas_regions</a></span><span class="op">(</span><span class="fu"><a href="https://ggsegverse.github.io/ggseg.formats/reference/dk.html">dk</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span><span class="op">)</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">3</span><span class="op">]</span>,</span>
 <span>  score <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2.1</span>, <span class="op">-</span><span class="fl">1.4</span>, <span class="fl">0.8</span><span class="op">)</span></span>
 <span><span class="op">)</span></span>
 <span></span>
@@ -150,14 +150,19 @@ before drawing. The default is the mean, and the <code>fun</code>
 argument takes any function that turns a vector into one number.</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">thickness</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span></span>
-<span>  region <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fu">ggseg.formats</span><span class="fu">::</span><span class="fu"><a href="https://ggsegverse.github.io/ggseg.formats/reference/atlas_regions.html">atlas_regions</a></span><span class="op">(</span><span class="fu"><a href="https://ggsegverse.github.io/ggseg.formats/reference/dk.html">dk</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">3</span><span class="op">]</span>, each <span class="op">=</span> <span class="fl">4</span><span class="op">)</span>,</span>
+<span>  region <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/sort.html" class="external-link">sort</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/unique.html" class="external-link">unique</a></span><span class="op">(</span><span class="fu">ggseg.formats</span><span class="fu">::</span><span class="fu"><a href="https://ggsegverse.github.io/ggseg.formats/reference/atlas_regions.html">atlas_regions</a></span><span class="op">(</span><span class="fu"><a href="https://ggsegverse.github.io/ggseg.formats/reference/dk.html">dk</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span><span class="op">)</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">3</span><span class="op">]</span>, each <span class="op">=</span> <span class="fl">4</span><span class="op">)</span>,</span>
 <span>  subject <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">4</span>, times <span class="op">=</span> <span class="fl">3</span><span class="op">)</span>,</span>
 <span>  thickness <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2.5</span>, <span class="fl">2.6</span>, <span class="fl">2.4</span>, <span class="fl">2.7</span>, <span class="fl">3.1</span>, <span class="fl">3.0</span>, <span class="fl">3.2</span>, <span class="fl">2.9</span>, <span class="fl">2.8</span>, <span class="fl">2.7</span>, <span class="fl">2.9</span>, <span class="fl">2.6</span><span class="op">)</span></span>
 <span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># mean per region (the default)</span></span>
 <span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="va">thickness</span>, <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>fill <span class="op">=</span> <span class="va">thickness</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="../reference/ggbrain.html">geom_brain</a></span><span class="op">(</span>atlas <span class="op">=</span> <span class="fu"><a href="https://ggsegverse.github.io/ggseg.formats/reference/dk.html">dk</a></span><span class="op">(</span><span class="op">)</span>, show.legend <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
+<span>  <span class="fu"><a href="../reference/ggbrain.html">geom_brain</a></span><span class="op">(</span>atlas <span class="op">=</span> <span class="fu"><a href="https://ggsegverse.github.io/ggseg.formats/reference/dk.html">dk</a></span><span class="op">(</span><span class="op">)</span>, show.legend <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Warning: <span style="color: #BBBB00;">!</span> Several `data` rows map to the same atlas region; combining them with `fun`.</span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> Before ggseg 3.0.0 these rows overplotted, so the last one won. Pass `fun =</span></span>
+<span><span class="co">#&gt;   dplyr::last` to keep that behaviour.</span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> Non-numeric columns take the first value regardless of `fun`.</span></span>
+<span><span class="co">#&gt; <span style="color: #555555;">This warning is displayed once per session.</span></span></span></code></pre></div>
 <div class="figure">
 <img src="how-geom-brain-works_files/figure-html/aggregate-1.png" class="r-plt" alt="The three regions summarised by mean, then by maximum." width="672"><p class="caption">
 Repeated-measures data summarised by mean and by maximum.
@@ -184,7 +189,7 @@ atlas by hand – <code><a href="https://ggplot2.tidyverse.org/reference/facet_w
 behave exactly as they do for any other geom.</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">cohorts</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/expand.grid.html" class="external-link">expand.grid</a></span><span class="op">(</span></span>
-<span>  region <span class="op">=</span> <span class="fu">ggseg.formats</span><span class="fu">::</span><span class="fu"><a href="https://ggsegverse.github.io/ggseg.formats/reference/atlas_regions.html">atlas_regions</a></span><span class="op">(</span><span class="fu"><a href="https://ggsegverse.github.io/ggseg.formats/reference/dk.html">dk</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">4</span><span class="op">]</span>,</span>
+<span>  region <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sort.html" class="external-link">sort</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/unique.html" class="external-link">unique</a></span><span class="op">(</span><span class="fu">ggseg.formats</span><span class="fu">::</span><span class="fu"><a href="https://ggsegverse.github.io/ggseg.formats/reference/atlas_regions.html">atlas_regions</a></span><span class="op">(</span><span class="fu"><a href="https://ggsegverse.github.io/ggseg.formats/reference/dk.html">dk</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span><span class="op">)</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">4</span><span class="op">]</span>,</span>
 <span>  group <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"patients"</span>, <span class="st">"controls"</span><span class="op">)</span>,</span>
 <span>  stringsAsFactors <span class="op">=</span> <span class="cn">FALSE</span></span>
 <span><span class="op">)</span></span>
@@ -253,20 +258,22 @@ the <code>group</code> and <code>subgroup</code> that encode ring
 structure and holes, and passes your <code>fill</code> straight
 through.</p>
 <p><code>GeomBrain</code> is a thin <code>GeomPolygon</code> subclass.
-Its only additions are the brain defaults – a grey fill and a
-<code>grey35</code> outline – and both step aside the moment you map an
-aesthetic of your own.</p>
+Its only additions are the brain defaults – a <code>grey35</code>
+outline and a grey fill for an atlas with no palette of its own – and
+both step aside the moment you map an aesthetic of your own.</p>
 <p><code>LayerBrain</code> is the layer that runs at plot-build time. It
 flattens the atlas, hands the geometry to the stat, and quietly maps the
-join keys as aesthetics so <code>region</code> and <code>label</code>
-survive into the stat.</p>
+join keys as aesthetics so <code>label</code> and <code>region</code>
+survive into the stat. Running at build time is also what lets it see a
+<code>fill</code> set in the top-level <code><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot()</a></code> call before
+deciding whether to supply the palette default.</p>
 <p><code><a href="../reference/stat_brain.html">stat_brain()</a></code> is the stat-first spelling of
 <code><a href="../reference/ggbrain.html">geom_brain()</a></code> – both build the same layer. Reach for it when
 you want <code>StatBrain</code> paired with a different geom, such as
 drawing the atlas vertices as a point cloud.</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="../reference/stat_brain.html">stat_brain</a></span><span class="op">(</span>atlas <span class="op">=</span> <span class="fu"><a href="https://ggsegverse.github.io/ggseg.formats/reference/dk.html">dk</a></span><span class="op">(</span><span class="op">)</span>, geom <span class="op">=</span> <span class="st">"point"</span>, size <span class="op">=</span> <span class="fl">0.1</span><span class="op">)</span></span></code></pre></div>
+<span>  <span class="fu"><a href="../reference/stat_brain.html">stat_brain</a></span><span class="op">(</span>atlas <span class="op">=</span> <span class="fu"><a href="https://ggsegverse.github.io/ggseg.formats/reference/dk.html">dk</a></span><span class="op">(</span><span class="op">)</span>, geom <span class="op">=</span> <span class="st">"point"</span>, size <span class="op">=</span> <span class="fl">0.1</span>, show.legend <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
 <div class="figure">
 <img src="how-geom-brain-works_files/figure-html/stat-brain-1.png" class="r-plt" alt="The atlas as a dense cloud of small grey points." width="672"><p class="caption">
 StatBrain with a point geom instead of the polygon default.

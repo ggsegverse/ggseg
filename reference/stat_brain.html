@@ -17,7 +17,7 @@ is the friendlier entry point."><meta property="og:image" content="https://ggseg
 
     <a class="navbar-brand me-2" href="../index.html">ggseg</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">2.2.1.9007</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">3.0.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -117,8 +117,11 @@ atlases: slice identifiers like <code>"axial_3"</code>. Defaults to all views.</
 
 
 <dt id="arg-position">position<a class="anchor" aria-label="anchor" href="#arg-position"></a></dt>
-<dd><p>Position adjustment, either as a string or the result of
-a call to <code><a href="position_brain.html">position_brain()</a></code>.</p></dd>
+<dd><p>Brain-view layout: the result of a call to
+<code><a href="position_brain.html">position_brain()</a></code>, a layout string (e.g. <code>"horizontal"</code>, <code>"vertical"</code>), or
+a layout formula (e.g. <code>hemi ~ view</code>). Strings and formulas are passed to
+<code><a href="position_brain.html">position_brain()</a></code>. Use <code>"identity"</code> to keep the atlas polygons' raw
+coordinates. Per-view zoom is set through <code><a href="position_brain.html">position_brain()</a></code>'s <code>zoom</code>.</p></dd>
 
 
 <dt id="arg-context">context<a class="anchor" aria-label="anchor" href="#arg-context"></a></dt>
@@ -130,7 +133,9 @@ the default), or show only the regions you're plotting (<code>FALSE</code>).</p>
 <dd><p>Function used to combine multiple <code>data</code> rows that map to the same
 atlas region, applied within each facet panel. Defaults to <code><a href="https://rdrr.io/r/base/mean.html" class="external-link">mean()</a></code>. Any
 function reducing a vector to a single value works (e.g. <code><a href="https://rdrr.io/r/stats/median.html" class="external-link">median()</a></code>,
-<code><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">max()</a></code>).</p></dd>
+<code><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">max()</a></code>). It applies to numeric columns only; non-numeric ones take the
+first value of the group. Up to ggseg 2.2.1 duplicate rows overplotted, so
+the last one won — <code>fun = dplyr::last</code> reproduces that.</p></dd>
 
 
 <dt id="arg-geom">geom<a class="anchor" aria-label="anchor" href="#arg-geom"></a></dt>
@@ -166,7 +171,7 @@ rather than combining with them.</p></dd>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Equivalent to geom_brain(atlas = dk())</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span></span>
-<span class="r-in"><span>  <span class="fu">stat_brain</span><span class="op">(</span>atlas <span class="op">=</span> <span class="fu"><a href="https://ggsegverse.github.io/ggseg.formats/reference/dk.html">dk</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="fu">stat_brain</span><span class="op">(</span>atlas <span class="op">=</span> <span class="fu"><a href="https://ggsegverse.github.io/ggseg.formats/reference/dk.html">dk</a></span><span class="op">(</span><span class="op">)</span>, show.legend <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></span>
 <span class="r-plt img"><img src="stat_brain-1.png" alt="" width="700" height="433"></span>
 </code></pre></div>
     </div>

@@ -33,7 +33,7 @@
 
     <a class="navbar-brand me-2" href="index.html">ggseg</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">2.2.1.9007</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">3.0.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -113,7 +113,7 @@
 <div class="section level3">
 <h3 id="built-in-atlases">Built-in atlases<a class="anchor" aria-label="anchor" href="#built-in-atlases"></a>
 </h3>
-<p>ggseg ships with three atlases: <code>dk</code> (Desikan-Killiany cortical parcellation), <code>aseg</code> (automatic subcortical segmentation), and <code>tracula</code> (white matter tracts). <code><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot()</a></code> gives you a quick overview:</p>
+<p>ggseg ships with four atlases: <code>dk</code> (Desikan-Killiany cortical parcellation), <code>aseg</code> (automatic subcortical segmentation), <code>tracula</code> (white matter tracts) and <code>suit</code> (cerebellar parcellation). <code><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot()</a></code> gives you a quick overview:</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="fu"><a href="https://ggsegverse.github.io/ggseg.formats/reference/dk.html">dk</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="fu"><a href="https://ggsegverse.github.io/ggseg.formats/reference/aseg.html">aseg</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
@@ -129,7 +129,7 @@
 <div class="section level3">
 <h3 id="plotting-your-own-data">Plotting your own data<a class="anchor" aria-label="anchor" href="#plotting-your-own-data"></a>
 </h3>
-<p>Pass a data frame to <code><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot()</a></code> with a column that matches the atlas (typically <code>region</code> or <code>label</code>). <code><a href="reference/ggbrain.html">geom_brain()</a></code> handles the join:</p>
+<p>Pass a data frame to <code><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot()</a></code> with a column that matches the atlas (typically <code>label</code> or <code>region</code>). <code><a href="reference/ggbrain.html">geom_brain()</a></code> handles the join:</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org" class="external-link">dplyr</a></span><span class="op">)</span></span>
 <span></span>

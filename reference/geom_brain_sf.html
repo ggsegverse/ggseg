@@ -19,7 +19,7 @@ toolkit (labels, other sf layers)."><meta property="og:image" content="https://g
 
     <a class="navbar-brand me-2" href="../index.html">ggseg</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">2.2.1.9007</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">3.0.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -117,8 +117,11 @@ atlases: slice identifiers like <code>"axial_3"</code>. Defaults to all views.</
 
 
 <dt id="arg-position">position<a class="anchor" aria-label="anchor" href="#arg-position"></a></dt>
-<dd><p>Position adjustment, either as a string or the result of
-a call to <code><a href="position_brain.html">position_brain()</a></code>.</p></dd>
+<dd><p>Brain-view layout: the result of a call to
+<code><a href="position_brain.html">position_brain()</a></code>, a layout string (e.g. <code>"horizontal"</code>, <code>"vertical"</code>), or
+a layout formula (e.g. <code>hemi ~ view</code>). Strings and formulas are passed to
+<code><a href="position_brain.html">position_brain()</a></code>. Use <code>"identity"</code> to keep the atlas polygons' raw
+coordinates. Per-view zoom is set through <code><a href="position_brain.html">position_brain()</a></code>'s <code>zoom</code>.</p></dd>
 
 
 <dt id="arg-show-legend">show.legend<a class="anchor" aria-label="anchor" href="#arg-show-legend"></a></dt>
@@ -137,6 +140,18 @@ rather than combining with them.</p></dd>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
     <p>A list of ggplot2 layer and coord objects.</p>
+    </div>
+    <div class="section level2">
+    <h2 id="geombrainsf-ggproto">GeomBrainSf ggproto<a class="anchor" aria-label="anchor" href="#geombrainsf-ggproto"></a></h2>
+
+
+<p><code>GeomBrainSf</code> is the <a href="https://ggplot2.tidyverse.org/reference/Geom.html" class="external-link">ggplot2::Geom</a> backing the deprecated
+<code>geom_brain_sf()</code> sf path. It renders atlas geometry via <code><a href="https://r-spatial.github.io/sf/reference/st_as_grob.html" class="external-link">sf::st_as_grob()</a></code>
+and requires <a href="https://ggplot2.tidyverse.org/reference/ggsf.html" class="external-link">coord_sf()</a>. Up to ggseg 2.2.1 this object
+was the exported <code>GeomBrain</code>; <code>GeomBrain</code> is now the polygon geom that backs
+the default <code><a href="ggbrain.html">geom_brain()</a></code>, so extension code doing
+<code>ggplot2::layer(geom = GeomBrain)</code> against the sf path must switch to
+<code>GeomBrainSf</code>.</p>
     </div>
 
     <div class="section level2">

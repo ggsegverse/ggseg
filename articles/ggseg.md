@@ -14,7 +14,7 @@ library(ggplot2)
 
 ## What’s in a brain atlas
 
-A `brain_atlas` object bundles four things: a name, a type (cortical,
+A `ggseg_atlas` object bundles four things: a name, a type (cortical,
 subcortical, or tract), region geometry, and an optional colour palette.
 
 ``` r
@@ -25,33 +25,33 @@ dk()
 #> Type: cortical
 #> Regions: 35
 #> Hemispheres: left, right
-#> Views: inferior, lateral, superior, medial
+#> Views: inferior, lateral, medial, superior
 #> Palette: ✔
 #> Rendering: ✔ ggseg
 #> ✔ ggseg3d (vertices)
 #> ────────────────────────────────────────────────────────────────────────────────
-#>    hemi                            region                      label
-#> 1  left banks of superior temporal sulcus                lh_bankssts
-#> 2  left         caudal anterior cingulate lh_caudalanteriorcingulate
-#> 3  left             caudal middle frontal     lh_caudalmiddlefrontal
-#> 4  left                   corpus callosum          lh_corpuscallosum
-#> 5  left                            cuneus                  lh_cuneus
-#> 6  left                        entorhinal              lh_entorhinal
-#> 7  left                          fusiform                lh_fusiform
-#> 8  left                 inferior parietal        lh_inferiorparietal
-#> 9  left                 inferior temporal        lh_inferiortemporal
-#> 10 left                 isthmus cingulate        lh_isthmuscingulate
-#>            lobe
-#> 1      temporal
-#> 2     cingulate
-#> 3       frontal
-#> 4  white matter
-#> 5     occipital
-#> 6      temporal
-#> 7      temporal
-#> 8      parietal
-#> 9      temporal
-#> 10    cingulate
+#>    hemi                  region                      label
+#> 1  left                bankssts                lh_bankssts
+#> 2  left caudalanteriorcingulate lh_caudalanteriorcingulate
+#> 3  left     caudalmiddlefrontal     lh_caudalmiddlefrontal
+#> 4  left          corpuscallosum          lh_corpuscallosum
+#> 5  left                  cuneus                  lh_cuneus
+#> 6  left              entorhinal              lh_entorhinal
+#> 7  left                fusiform                lh_fusiform
+#> 8  left        inferiorparietal        lh_inferiorparietal
+#> 9  left        inferiortemporal        lh_inferiortemporal
+#> 10 left        isthmuscingulate        lh_isthmuscingulate
+#>                              display         lobe
+#> 1  banks of superior temporal sulcus     temporal
+#> 2          caudal anterior cingulate    cingulate
+#> 3              caudal middle frontal      frontal
+#> 4                    corpus callosum white matter
+#> 5                             cuneus    occipital
+#> 6                         entorhinal     temporal
+#> 7                           fusiform     temporal
+#> 8                  inferior parietal     parietal
+#> 9                  inferior temporal     temporal
+#> 10                 isthmus cingulate    cingulate
 #> ... with 60 more rows
 ```
 
@@ -75,26 +75,26 @@ Two helpers pull out the names you’ll need for matching data:
 
 library(ggseg.formats)
 
-atlas_regions(dk())
-#>  [1] "banks of superior temporal sulcus" "caudal anterior cingulate"        
-#>  [3] "caudal middle frontal"             "corpus callosum"                  
-#>  [5] "cuneus"                            "entorhinal"                       
-#>  [7] "frontal pole"                      "fusiform"                         
-#>  [9] "inferior parietal"                 "inferior temporal"                
-#> [11] "insula"                            "isthmus cingulate"                
-#> [13] "lateral occipital"                 "lateral orbitofrontal"            
-#> [15] "lingual"                           "medial orbitofrontal"             
-#> [17] "middle temporal"                   "paracentral"                      
-#> [19] "parahippocampal"                   "pars opercularis"                 
-#> [21] "pars orbitalis"                    "pars triangularis"                
-#> [23] "pericalcarine"                     "postcentral"                      
-#> [25] "posterior cingulate"               "precentral"                       
-#> [27] "precuneus"                         "rostral anterior cingulate"       
-#> [29] "rostral middle frontal"            "superior frontal"                 
-#> [31] "superior parietal"                 "superior temporal"                
-#> [33] "supramarginal"                     "temporal pole"                    
-#> [35] "transverse temporal"
-atlas_labels(dk())
+sort(unique(atlas_regions(dk())))
+#>  [1] "bankssts"                 "caudalanteriorcingulate" 
+#>  [3] "caudalmiddlefrontal"      "corpuscallosum"          
+#>  [5] "cuneus"                   "entorhinal"              
+#>  [7] "frontalpole"              "fusiform"                
+#>  [9] "inferiorparietal"         "inferiortemporal"        
+#> [11] "insula"                   "isthmuscingulate"        
+#> [13] "lateraloccipital"         "lateralorbitofrontal"    
+#> [15] "lingual"                  "medialorbitofrontal"     
+#> [17] "middletemporal"           "paracentral"             
+#> [19] "parahippocampal"          "parsopercularis"         
+#> [21] "parsorbitalis"            "parstriangularis"        
+#> [23] "pericalcarine"            "postcentral"             
+#> [25] "posteriorcingulate"       "precentral"              
+#> [27] "precuneus"                "rostralanteriorcingulate"
+#> [29] "rostralmiddlefrontal"     "superiorfrontal"         
+#> [31] "superiorparietal"         "superiortemporal"        
+#> [33] "supramarginal"            "temporalpole"            
+#> [35] "transversetemporal"
+sort(unique(atlas_labels(dk())))
 #>  [1] "lh_bankssts"                 "lh_caudalanteriorcingulate" 
 #>  [3] "lh_caudalmiddlefrontal"      "lh_corpuscallosum"          
 #>  [5] "lh_cuneus"                   "lh_entorhinal"              
@@ -143,10 +143,10 @@ ggplot() +
   geom_brain(atlas = dk(), show.legend = FALSE)
 ```
 
-![Default brain plot using geom_brain() with the dk
-atlas.](ggseg_files/figure-html/fig-basic-brain-1.png)
+![A bare atlas: geom_brain() fills by \`label\` from the
+palette.](ggseg_files/figure-html/fig-basic-brain-1.png)
 
-Default brain plot using geom_brain() with the dk atlas.
+A bare atlas: geom_brain() fills by `label` from the palette.
 
 ## Arranging views
 
@@ -213,7 +213,7 @@ Brain plot showing only lateral views.
 ``` r
 
 ggplot() +
-  geom_brain(atlas = dk(), hemi = "left")
+  geom_brain(atlas = dk(), hemi = "left", show.legend = FALSE)
 ```
 
 ![Brain plot showing only the left
@@ -228,8 +228,8 @@ available with
 ``` r
 
 atlas_views(aseg())
-#> [1] "axial_3"   "axial_4"   "axial_5"   "sagittal"  "axial_6"   "coronal_1"
-#> [7] "coronal_2"
+#> [1] "axial_3"   "axial_4"   "axial_5"   "axial_6"   "coronal_1" "coronal_2"
+#> [7] "sagittal"
 ```
 
 ## Plotting your own data
@@ -252,7 +252,7 @@ library(dplyr)
 #>     intersect, setdiff, setequal, union
 
 some_data <- tibble(
-  region = atlas_regions(dk())[1:4],
+  region = sort(unique(atlas_regions(dk())))[1:4],
   p = sample(seq(0, 0.5, 0.001), 4)
 )
 
@@ -286,7 +286,7 @@ replicates the full atlas in each panel:
 ``` r
 
 some_data <- tibble(
-  region = rep(atlas_regions(dk())[1:4], 2),
+  region = rep(sort(unique(atlas_regions(dk())))[1:4], 2),
   p = sample(seq(0, 0.5, 0.001), 8),
   group = c(rep("A", 4), rep("B", 4))
 )
@@ -314,8 +314,8 @@ for the join (`region`) and one for the fill aesthetic:
 ``` r
 
 data <- data.frame(
-  region = atlas_regions(dk())[1:3],
-  reg_col = atlas_labels(dk())[1:3]
+  region = sort(unique(atlas_regions(dk())))[1:3],
+  reg_col = sort(unique(atlas_labels(dk())))[1:3]
 )
 
 palette <- atlas_palette(dk())[1:3]
@@ -332,9 +332,10 @@ Highlighting selected regions using the atlas colour palette.
 
 ## Scales and themes
 
-Atlas colour palettes are applied automatically by
-[`geom_brain()`](https://ggsegverse.github.io/ggseg/reference/ggbrain.md).
-For custom palettes, use
+With neither `fill` nor `colour` mapped,
+[`geom_brain()`](https://ggsegverse.github.io/ggseg/reference/ggbrain.md)
+applies the atlas palette for you, keyed on `label`. For custom
+palettes, use
 [`scale_fill_brain_manual()`](https://ggsegverse.github.io/ggseg/reference/scale_brain_manual.md).
 
 Built-in themes strip axes and grids for cleaner figures:
@@ -342,7 +343,7 @@ Built-in themes strip axes and grids for cleaner figures:
 ``` r
 
 ggplot() +
-  geom_brain(atlas = dk()) +
+  geom_brain(atlas = dk(), show.legend = FALSE) +
   theme_brain()
 ```
 

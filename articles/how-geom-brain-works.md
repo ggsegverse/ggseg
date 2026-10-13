@@ -24,11 +24,11 @@ is the same move
 [`geom_sf()`](https://ggplot2.tidyverse.org/reference/ggsf.html) makes:
 the shape is computed, not supplied.
 
-A generated shape has a consequence worth stating plainly. A bare atlas
-has no values to colour, so it draws grey.
+Map nothing and there is nothing of yours to colour by, so
 [`geom_brain()`](https://ggsegverse.github.io/ggseg/reference/ggbrain.md)
-is for putting *your* numbers on the brain; when you want to look at the
-atlas itself, palette and all, reach for `plot(dk())`.
+falls back to the atlas’s own palette: it maps `fill` to `label`, the
+key the palette is built on. That is the atlas looked at for its own
+sake.
 
 ``` r
 
@@ -36,19 +36,19 @@ ggplot() +
   geom_brain(atlas = dk(), show.legend = FALSE)
 ```
 
-![The DK atlas in uniform grey with region outlines and no
-fill.](how-geom-brain-works_files/figure-html/bare-1.png)
+![The DK atlas with every region in its own atlas palette
+colour.](how-geom-brain-works_files/figure-html/bare-1.png)
 
-A bare atlas: the full shape, drawn grey.
+A bare atlas: the full shape, in the atlas palette.
 
-Give it data and the regions you have values for take colour. Everything
-else stays grey, so the brain remains legible even when you have
-measured only a corner of it.
+Give it data and your mapping takes over: the regions you have values
+for take colour from your scale. Everything else stays grey, so the
+brain remains legible even when you have measured only a corner of it.
 
 ``` r
 
 results <- data.frame(
-  region = ggseg.formats::atlas_regions(dk())[1:3],
+  region = sort(unique(ggseg.formats::atlas_regions(dk())))[1:3],
   score = c(2.1, -1.4, 0.8)
 )
 
@@ -73,7 +73,7 @@ turns a vector into one number.
 ``` r
 
 thickness <- data.frame(
-  region = rep(ggseg.formats::atlas_regions(dk())[1:3], each = 4),
+  region = rep(sort(unique(ggseg.formats::atlas_regions(dk())))[1:3], each = 4),
   subject = rep(1:4, times = 3),
   thickness = c(2.5, 2.6, 2.4, 2.7, 3.1, 3.0, 3.2, 2.9, 2.8, 2.7, 2.9, 2.6)
 )
@@ -81,6 +81,11 @@ thickness <- data.frame(
 # mean per region (the default)
 ggplot(thickness, aes(fill = thickness)) +
   geom_brain(atlas = dk(), show.legend = FALSE)
+#> Warning: ! Several `data` rows map to the same atlas region; combining them with `fun`.
+#> ℹ Before ggseg 3.0.0 these rows overplotted, so the last one won. Pass `fun =
+#>   dplyr::last` to keep that behaviour.
+#> ℹ Non-numeric columns take the first value regardless of `fun`.
+#> This warning is displayed once per session.
 ```
 
 ![The three regions summarised by mean, then by
@@ -116,7 +121,7 @@ behave exactly as they do for any other geom.
 ``` r
 
 cohorts <- expand.grid(
-  region = ggseg.formats::atlas_regions(dk())[1:4],
+  region = sort(unique(ggseg.formats::atlas_regions(dk())))[1:4],
   group = c("patients", "controls"),
   stringsAsFactors = FALSE
 )
@@ -195,12 +200,16 @@ polygon `x` and `y`, the `group` and `subgroup` that encode ring
 structure and holes, and passes your `fill` straight through.
 
 `GeomBrain` is a thin `GeomPolygon` subclass. Its only additions are the
-brain defaults – a grey fill and a `grey35` outline – and both step
-aside the moment you map an aesthetic of your own.
+brain defaults – a `grey35` outline and a grey fill for an atlas with no
+palette of its own – and both step aside the moment you map an aesthetic
+of your own.
 
 `LayerBrain` is the layer that runs at plot-build time. It flattens the
 atlas, hands the geometry to the stat, and quietly maps the join keys as
-aesthetics so `region` and `label` survive into the stat.
+aesthetics so `label` and `region` survive into the stat. Running at
+build time is also what lets it see a `fill` set in the top-level
+[`ggplot()`](https://ggplot2.tidyverse.org/reference/ggplot.html) call
+before deciding whether to supply the palette default.
 
 [`stat_brain()`](https://ggsegverse.github.io/ggseg/reference/stat_brain.md)
 is the stat-first spelling of
@@ -212,7 +221,7 @@ point cloud.
 ``` r
 
 ggplot() +
-  stat_brain(atlas = dk(), geom = "point", size = 0.1)
+  stat_brain(atlas = dk(), geom = "point", size = 0.1, show.legend = FALSE)
 ```
 
 ![The atlas as a dense cloud of small grey

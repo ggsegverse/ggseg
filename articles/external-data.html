@@ -30,7 +30,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">ggseg</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">2.2.1.9007</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">3.0.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -112,39 +112,41 @@ ggseg.</p>
 <h2 id="how-matching-works">How matching works<a class="anchor" aria-label="anchor" href="#how-matching-works"></a>
 </h2>
 <p><code><a href="../reference/ggbrain.html">geom_brain()</a></code> joins your data to the atlas by
-<code>region</code> (and by <code>hemi</code> too, when both your data
-and the atlas carry it). That means your data needs at least one column
-with names that match the atlas. The two columns you’ll use most:</p>
+<code>label</code> or <code>region</code> (and by <code>hemi</code> too,
+when both your data and the atlas carry it). That means your data needs
+at least one column with names that match the atlas. The two columns
+you’ll use most:</p>
 <ul>
 <li>
-<strong>region</strong> – human-readable names like “insula” or
-“precentral”</li>
+<strong>label</strong> – FreeSurfer labels like “lh_bankssts”,
+unique per atlas row and the key atlas palettes are built on</li>
 <li>
-<strong>label</strong> – FreeSurfer labels like “lh_bankssts”</li>
+<strong>region</strong> – human-readable names like “insula” or
+“precentral”, which repeat across hemispheres</li>
 </ul>
 <p>Check what’s available:</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu">ggseg.formats</span><span class="fu">::</span><span class="fu"><a href="https://ggsegverse.github.io/ggseg.formats/reference/atlas_regions.html">atlas_regions</a></span><span class="op">(</span><span class="fu"><a href="https://ggsegverse.github.io/ggseg.formats/reference/dk.html">dk</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">##  [1] "banks of superior temporal sulcus" "caudal anterior cingulate"        </span></span>
-<span><span class="co">##  [3] "caudal middle frontal"             "corpus callosum"                  </span></span>
-<span><span class="co">##  [5] "cuneus"                            "entorhinal"                       </span></span>
-<span><span class="co">##  [7] "frontal pole"                      "fusiform"                         </span></span>
-<span><span class="co">##  [9] "inferior parietal"                 "inferior temporal"                </span></span>
-<span><span class="co">## [11] "insula"                            "isthmus cingulate"                </span></span>
-<span><span class="co">## [13] "lateral occipital"                 "lateral orbitofrontal"            </span></span>
-<span><span class="co">## [15] "lingual"                           "medial orbitofrontal"             </span></span>
-<span><span class="co">## [17] "middle temporal"                   "paracentral"                      </span></span>
-<span><span class="co">## [19] "parahippocampal"                   "pars opercularis"                 </span></span>
-<span><span class="co">## [21] "pars orbitalis"                    "pars triangularis"                </span></span>
-<span><span class="co">## [23] "pericalcarine"                     "postcentral"                      </span></span>
-<span><span class="co">## [25] "posterior cingulate"               "precentral"                       </span></span>
-<span><span class="co">## [27] "precuneus"                         "rostral anterior cingulate"       </span></span>
-<span><span class="co">## [29] "rostral middle frontal"            "superior frontal"                 </span></span>
-<span><span class="co">## [31] "superior parietal"                 "superior temporal"                </span></span>
-<span><span class="co">## [33] "supramarginal"                     "temporal pole"                    </span></span>
-<span><span class="co">## [35] "transverse temporal"</span></span></code></pre>
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/sort.html" class="external-link">sort</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/unique.html" class="external-link">unique</a></span><span class="op">(</span><span class="fu">ggseg.formats</span><span class="fu">::</span><span class="fu"><a href="https://ggsegverse.github.io/ggseg.formats/reference/atlas_regions.html">atlas_regions</a></span><span class="op">(</span><span class="fu"><a href="https://ggsegverse.github.io/ggseg.formats/reference/dk.html">dk</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<pre><code><span><span class="co">##  [1] "bankssts"                 "caudalanteriorcingulate" </span></span>
+<span><span class="co">##  [3] "caudalmiddlefrontal"      "corpuscallosum"          </span></span>
+<span><span class="co">##  [5] "cuneus"                   "entorhinal"              </span></span>
+<span><span class="co">##  [7] "frontalpole"              "fusiform"                </span></span>
+<span><span class="co">##  [9] "inferiorparietal"         "inferiortemporal"        </span></span>
+<span><span class="co">## [11] "insula"                   "isthmuscingulate"        </span></span>
+<span><span class="co">## [13] "lateraloccipital"         "lateralorbitofrontal"    </span></span>
+<span><span class="co">## [15] "lingual"                  "medialorbitofrontal"     </span></span>
+<span><span class="co">## [17] "middletemporal"           "paracentral"             </span></span>
+<span><span class="co">## [19] "parahippocampal"          "parsopercularis"         </span></span>
+<span><span class="co">## [21] "parsorbitalis"            "parstriangularis"        </span></span>
+<span><span class="co">## [23] "pericalcarine"            "postcentral"             </span></span>
+<span><span class="co">## [25] "posteriorcingulate"       "precentral"              </span></span>
+<span><span class="co">## [27] "precuneus"                "rostralanteriorcingulate"</span></span>
+<span><span class="co">## [29] "rostralmiddlefrontal"     "superiorfrontal"         </span></span>
+<span><span class="co">## [31] "superiorparietal"         "superiortemporal"        </span></span>
+<span><span class="co">## [33] "supramarginal"            "temporalpole"            </span></span>
+<span><span class="co">## [35] "transversetemporal"</span></span></code></pre>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu">ggseg.formats</span><span class="fu">::</span><span class="fu"><a href="https://ggsegverse.github.io/ggseg.formats/reference/atlas_labels.html">atlas_labels</a></span><span class="op">(</span><span class="fu"><a href="https://ggsegverse.github.io/ggseg.formats/reference/dk.html">dk</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/sort.html" class="external-link">sort</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/unique.html" class="external-link">unique</a></span><span class="op">(</span><span class="fu">ggseg.formats</span><span class="fu">::</span><span class="fu"><a href="https://ggsegverse.github.io/ggseg.formats/reference/atlas_labels.html">atlas_labels</a></span><span class="op">(</span><span class="fu"><a href="https://ggsegverse.github.io/ggseg.formats/reference/dk.html">dk</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">##  [1] "lh_bankssts"                 "lh_caudalanteriorcingulate" </span></span>
 <span><span class="co">##  [3] "lh_caudalmiddlefrontal"      "lh_corpuscallosum"          </span></span>
 <span><span class="co">##  [5] "lh_cuneus"                   "lh_entorhinal"              </span></span>
@@ -188,16 +190,16 @@ with names that match the atlas. The two columns you’ll use most:</p>
 <p>Three regions, three p-values:</p>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">some_data</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://tibble.tidyverse.org/reference/tibble.html" class="external-link">tibble</a></span><span class="op">(</span></span>
-<span>  region <span class="op">=</span> <span class="fu">ggseg.formats</span><span class="fu">::</span><span class="fu"><a href="https://ggsegverse.github.io/ggseg.formats/reference/atlas_regions.html">atlas_regions</a></span><span class="op">(</span><span class="fu"><a href="https://ggsegverse.github.io/ggseg.formats/reference/dk.html">dk</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">3</span><span class="op">]</span>,</span>
+<span>  region <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sort.html" class="external-link">sort</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/unique.html" class="external-link">unique</a></span><span class="op">(</span><span class="fu">ggseg.formats</span><span class="fu">::</span><span class="fu"><a href="https://ggsegverse.github.io/ggseg.formats/reference/atlas_regions.html">atlas_regions</a></span><span class="op">(</span><span class="fu"><a href="https://ggsegverse.github.io/ggseg.formats/reference/dk.html">dk</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span><span class="op">)</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">3</span><span class="op">]</span>,</span>
 <span>  p <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.03</span>, <span class="fl">0.6</span>, <span class="fl">0.05</span><span class="op">)</span></span>
 <span><span class="op">)</span></span>
 <span><span class="va">some_data</span></span></code></pre></div>
 <pre><code><span><span class="co">## <span style="color: #949494;"># A tibble: 3 × 2</span></span></span>
-<span><span class="co">##   region                                p</span></span>
-<span><span class="co">##   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                             <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
-<span><span class="co">## <span style="color: #BCBCBC;">1</span> banks of superior temporal sulcus  0.03</span></span>
-<span><span class="co">## <span style="color: #BCBCBC;">2</span> caudal anterior cingulate          0.6 </span></span>
-<span><span class="co">## <span style="color: #BCBCBC;">3</span> caudal middle frontal              0.05</span></span></code></pre>
+<span><span class="co">##   region                      p</span></span>
+<span><span class="co">##   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
+<span><span class="co">## <span style="color: #BCBCBC;">1</span> bankssts                 0.03</span></span>
+<span><span class="co">## <span style="color: #BCBCBC;">2</span> caudalanteriorcingulate  0.6 </span></span>
+<span><span class="co">## <span style="color: #BCBCBC;">3</span> caudalmiddlefrontal      0.05</span></span></code></pre>
 <p>Pass the data to <code><a href="../reference/ggbrain.html">geom_brain()</a></code> through its
 <code>data</code> argument and map <code>fill</code> to your
 variable:</p>
@@ -241,7 +243,7 @@ expect. <code><a href="../reference/ggbrain.html">geom_brain()</a></code> replic
 regions included – in each panel:</p>
 <div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">some_data</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://tibble.tidyverse.org/reference/tibble.html" class="external-link">tibble</a></span><span class="op">(</span></span>
-<span>  region <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fu">ggseg.formats</span><span class="fu">::</span><span class="fu"><a href="https://ggsegverse.github.io/ggseg.formats/reference/atlas_regions.html">atlas_regions</a></span><span class="op">(</span><span class="fu"><a href="https://ggsegverse.github.io/ggseg.formats/reference/dk.html">dk</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">4</span><span class="op">]</span>, <span class="fl">2</span><span class="op">)</span>,</span>
+<span>  region <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/sort.html" class="external-link">sort</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/unique.html" class="external-link">unique</a></span><span class="op">(</span><span class="fu">ggseg.formats</span><span class="fu">::</span><span class="fu"><a href="https://ggsegverse.github.io/ggseg.formats/reference/atlas_regions.html">atlas_regions</a></span><span class="op">(</span><span class="fu"><a href="https://ggsegverse.github.io/ggseg.formats/reference/dk.html">dk</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span><span class="op">)</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">4</span><span class="op">]</span>, <span class="fl">2</span><span class="op">)</span>,</span>
 <span>  p <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sample.html" class="external-link">sample</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">0.5</span>, <span class="fl">0.001</span><span class="op">)</span>, <span class="fl">8</span><span class="op">)</span>,</span>
 <span>  group <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="st">"Young"</span>, <span class="fl">4</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="st">"Old"</span>, <span class="fl">4</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="op">)</span></span>
@@ -271,8 +273,8 @@ to make – one per group.</p>
 <h2 id="troubleshooting">Troubleshooting<a class="anchor" aria-label="anchor" href="#troubleshooting"></a>
 </h2>
 <p><strong>Regions don’t show up.</strong> Check spelling and case.
-<code>ggseg.formats::atlas_regions(dk())</code> gives you the exact
-strings the atlas expects.</p>
+<code>sort(unique(ggseg.formats::atlas_regions(dk())))</code> gives you
+the exact strings the atlas expects.</p>
 <p><strong>Data lands on both hemispheres.</strong> Add a
 <code>hemi</code> column with <code>"left"</code> or
 <code>"right"</code> to constrain the match.</p>

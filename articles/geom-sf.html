@@ -30,7 +30,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">ggseg</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">2.2.1.9007</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">3.0.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -134,26 +134,27 @@ labels</li>
 <h2 id="getting-atlas-data-as-sf">Getting atlas data as sf<a class="anchor" aria-label="anchor" href="#getting-atlas-data-as-sf"></a>
 </h2>
 <p>A brain atlas stores its geometry in the <code>data</code> slot.
-Convert to a plain data frame to see all the columns:</p>
+Reach it through the accessor rather than by list indexing:</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://ggsegverse.github.io/ggseg.formats/reference/dk.html">dk</a></span><span class="op">(</span><span class="op">)</span><span class="op">$</span><span class="va">data</span></span>
+<code class="sourceCode R"><span><span class="fu">ggseg.formats</span><span class="fu">::</span><span class="fu"><a href="https://ggsegverse.github.io/ggseg.formats/reference/atlas_geom.html">atlas_geom</a></span><span class="op">(</span><span class="fu"><a href="https://ggsegverse.github.io/ggseg.formats/reference/dk.html">dk</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; ── <span style="font-weight: bold;">ggseg_data_cortical</span> ──</span></span>
+<span><span class="co">#&gt; ── <span style="font-weight: bold;">brain_polygons</span> ──</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; <span style="font-weight: bold;">2D (ggseg):</span> 72 labels (polygons), views: inferior, lateral, superior, medial</span></span>
-<span><span class="co">#&gt; <span style="font-weight: bold;">3D (ggseg3d):</span> vertex indices</span></span>
-<span><span class="co">#&gt;                         label    vertices</span></span>
-<span><span class="co">#&gt; 1                 lh_bankssts &lt;int [126]&gt;</span></span>
-<span><span class="co">#&gt; 2  lh_caudalanteriorcingulate  &lt;int [67]&gt;</span></span>
-<span><span class="co">#&gt; 3      lh_caudalmiddlefrontal &lt;int [232]&gt;</span></span>
-<span><span class="co">#&gt; 4           lh_corpuscallosum &lt;int [198]&gt;</span></span>
-<span><span class="co">#&gt; 5                   lh_cuneus &lt;int [102]&gt;</span></span>
-<span><span class="co">#&gt; 6               lh_entorhinal  &lt;int [48]&gt;</span></span>
-<span><span class="co">#&gt; 7                 lh_fusiform &lt;int [308]&gt;</span></span>
-<span><span class="co">#&gt; 8         lh_inferiorparietal &lt;int [484]&gt;</span></span>
-<span><span class="co">#&gt; 9         lh_inferiortemporal &lt;int [271]&gt;</span></span>
-<span><span class="co">#&gt; 10        lh_isthmuscingulate &lt;int [123]&gt;</span></span>
-<span><span class="co">#&gt; <span style="font-style: italic;">... with 60 more rows</span></span></span></code></pre></div>
+<span><span class="co">#&gt; <span style="font-weight: bold;">Labels:</span> 72</span></span>
+<span><span class="co">#&gt; <span style="font-weight: bold;">Views:</span> inferior, lateral, medial, superior</span></span>
+<span><span class="co">#&gt; <span style="font-weight: bold;">Total points:</span> 5391</span></span>
+<span><span class="co">#&gt;                      label       geometry</span></span>
+<span><span class="co">#&gt; 1               lh_unknown &lt;df [113 x 5]&gt;</span></span>
+<span><span class="co">#&gt; 2               rh_unknown &lt;df [111 x 5]&gt;</span></span>
+<span><span class="co">#&gt; 3            lh_precentral &lt;df [150 x 5]&gt;</span></span>
+<span><span class="co">#&gt; 4  lh_lateralorbitofrontal  &lt;df [89 x 5]&gt;</span></span>
+<span><span class="co">#&gt; 5      lh_superiortemporal &lt;df [178 x 5]&gt;</span></span>
+<span><span class="co">#&gt; 6      lh_lateraloccipital &lt;df [114 x 5]&gt;</span></span>
+<span><span class="co">#&gt; 7  lh_rostralmiddlefrontal &lt;df [117 x 5]&gt;</span></span>
+<span><span class="co">#&gt; 8                lh_insula &lt;df [132 x 5]&gt;</span></span>
+<span><span class="co">#&gt; 9       lh_parsopercularis  &lt;df [69 x 5]&gt;</span></span>
+<span><span class="co">#&gt; 10        lh_supramarginal &lt;df [117 x 5]&gt;</span></span>
+<span><span class="co">#&gt; <span style="font-style: italic;">... with 62 more rows</span></span></span></code></pre></div>
 <p>The <code>geometry</code> column holds the polygons. This is a
 standard sf object, so any sf-compatible tool works with it.</p>
 </div>
@@ -164,41 +165,52 @@ standard sf object, so any sf-compatible tool works with it.</p>
 preserves the sf geometry and handles column detection:</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">some_data</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://tibble.tidyverse.org/reference/tibble.html" class="external-link">tibble</a></span><span class="op">(</span></span>
-<span>  region <span class="op">=</span> <span class="fu">ggseg.formats</span><span class="fu">::</span><span class="fu"><a href="https://ggsegverse.github.io/ggseg.formats/reference/atlas_regions.html">atlas_regions</a></span><span class="op">(</span><span class="fu"><a href="https://ggsegverse.github.io/ggseg.formats/reference/dk.html">dk</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">4</span><span class="op">]</span>,</span>
+<span>  region <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sort.html" class="external-link">sort</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/unique.html" class="external-link">unique</a></span><span class="op">(</span><span class="fu">ggseg.formats</span><span class="fu">::</span><span class="fu"><a href="https://ggsegverse.github.io/ggseg.formats/reference/atlas_regions.html">atlas_regions</a></span><span class="op">(</span><span class="fu"><a href="https://ggsegverse.github.io/ggseg.formats/reference/dk.html">dk</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span><span class="op">)</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">4</span><span class="op">]</span>,</span>
 <span>  p <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sample.html" class="external-link">sample</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">0.5</span>, <span class="fl">0.001</span><span class="op">)</span>, <span class="fl">4</span><span class="op">)</span></span>
 <span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">some_data</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="../reference/brain_join.html">brain_join</a></span><span class="op">(</span><span class="fu"><a href="https://ggsegverse.github.io/ggseg.formats/reference/dk.html">dk</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Merging atlas and data by <span style="color: #00BB00;">region</span>.</span></span>
-<span><span class="co">#&gt; Simple feature collection with 191 features and 9 fields</span></span>
+<span><span class="co">#&gt; Simple feature collection with 185 features and 10 fields</span></span>
 <span><span class="co">#&gt; Geometry type: MULTIPOLYGON</span></span>
 <span><span class="co">#&gt; Dimension:     XY</span></span>
-<span><span class="co">#&gt; Bounding box:  xmin: 84.2049 ymin: 0 xmax: 5359.689 ymax: 429.9372</span></span>
+<span><span class="co">#&gt; Bounding box:  xmin: 0.899055 ymin: 0.0853615 xmax: 1938.834 ymax: 146.1192</span></span>
 <span><span class="co">#&gt; CRS:           NA</span></span>
 <span><span class="co">#&gt; First 10 features:</span></span>
-<span><span class="co">#&gt;                         label     view  hemi                            region</span></span>
-<span><span class="co">#&gt; 1                  lh_unknown  lateral  left                              &lt;NA&gt;</span></span>
-<span><span class="co">#&gt; 2                  lh_unknown   medial  left                              &lt;NA&gt;</span></span>
-<span><span class="co">#&gt; 3                  lh_unknown inferior  left                              &lt;NA&gt;</span></span>
-<span><span class="co">#&gt; 4                  rh_unknown  lateral right                              &lt;NA&gt;</span></span>
-<span><span class="co">#&gt; 5                  rh_unknown   medial right                              &lt;NA&gt;</span></span>
-<span><span class="co">#&gt; 6                  rh_unknown inferior right                              &lt;NA&gt;</span></span>
-<span><span class="co">#&gt; 7                 lh_bankssts  lateral  left banks of superior temporal sulcus</span></span>
-<span><span class="co">#&gt; 8                 lh_bankssts superior  left banks of superior temporal sulcus</span></span>
-<span><span class="co">#&gt; 9                 lh_bankssts inferior  left banks of superior temporal sulcus</span></span>
-<span><span class="co">#&gt; 10 lh_caudalanteriorcingulate   medial  left         caudal anterior cingulate</span></span>
-<span><span class="co">#&gt;         lobe atlas     type  colour     p                       geometry</span></span>
-<span><span class="co">#&gt; 1       &lt;NA&gt;    dk cortical    &lt;NA&gt;    NA MULTIPOLYGON (((926.5936 60...</span></span>
-<span><span class="co">#&gt; 2       &lt;NA&gt;    dk cortical    &lt;NA&gt;    NA MULTIPOLYGON (((1782.84 18....</span></span>
-<span><span class="co">#&gt; 3       &lt;NA&gt;    dk cortical    &lt;NA&gt;    NA MULTIPOLYGON (((367.1256 13...</span></span>
-<span><span class="co">#&gt; 4       &lt;NA&gt;    dk cortical    &lt;NA&gt;    NA MULTIPOLYGON (((3849.766 60...</span></span>
-<span><span class="co">#&gt; 5       &lt;NA&gt;    dk cortical    &lt;NA&gt;    NA MULTIPOLYGON (((4318.844 20...</span></span>
-<span><span class="co">#&gt; 6       &lt;NA&gt;    dk cortical    &lt;NA&gt;    NA MULTIPOLYGON (((3190.519 5....</span></span>
-<span><span class="co">#&gt; 7   temporal    dk cortical #196428 0.172 MULTIPOLYGON (((1121.478 12...</span></span>
-<span><span class="co">#&gt; 8   temporal    dk cortical #196428 0.172 MULTIPOLYGON (((2448.464 20...</span></span>
-<span><span class="co">#&gt; 9   temporal    dk cortical #196428 0.172 MULTIPOLYGON (((534.4782 21...</span></span>
-<span><span class="co">#&gt; 10 cingulate    dk cortical #7D64A0 0.406 MULTIPOLYGON (((1921.971 20...</span></span></code></pre></div>
+<span><span class="co">#&gt;                         label     view  hemi                  region</span></span>
+<span><span class="co">#&gt; 1                  lh_unknown inferior  left                    &lt;NA&gt;</span></span>
+<span><span class="co">#&gt; 2                  lh_unknown  lateral  left                    &lt;NA&gt;</span></span>
+<span><span class="co">#&gt; 3                  lh_unknown   medial  left                    &lt;NA&gt;</span></span>
+<span><span class="co">#&gt; 4                  rh_unknown inferior right                    &lt;NA&gt;</span></span>
+<span><span class="co">#&gt; 5                  rh_unknown  lateral right                    &lt;NA&gt;</span></span>
+<span><span class="co">#&gt; 6                  rh_unknown   medial right                    &lt;NA&gt;</span></span>
+<span><span class="co">#&gt; 7                 lh_bankssts inferior  left                bankssts</span></span>
+<span><span class="co">#&gt; 8                 lh_bankssts  lateral  left                bankssts</span></span>
+<span><span class="co">#&gt; 9                 lh_bankssts superior  left                bankssts</span></span>
+<span><span class="co">#&gt; 10 lh_caudalanteriorcingulate   medial  left caudalanteriorcingulate</span></span>
+<span><span class="co">#&gt;                              display      lobe atlas     type  colour     p</span></span>
+<span><span class="co">#&gt; 1                               &lt;NA&gt;      &lt;NA&gt;    dk cortical    &lt;NA&gt;    NA</span></span>
+<span><span class="co">#&gt; 2                               &lt;NA&gt;      &lt;NA&gt;    dk cortical    &lt;NA&gt;    NA</span></span>
+<span><span class="co">#&gt; 3                               &lt;NA&gt;      &lt;NA&gt;    dk cortical    &lt;NA&gt;    NA</span></span>
+<span><span class="co">#&gt; 4                               &lt;NA&gt;      &lt;NA&gt;    dk cortical    &lt;NA&gt;    NA</span></span>
+<span><span class="co">#&gt; 5                               &lt;NA&gt;      &lt;NA&gt;    dk cortical    &lt;NA&gt;    NA</span></span>
+<span><span class="co">#&gt; 6                               &lt;NA&gt;      &lt;NA&gt;    dk cortical    &lt;NA&gt;    NA</span></span>
+<span><span class="co">#&gt; 7  banks of superior temporal sulcus  temporal    dk cortical #196428 0.172</span></span>
+<span><span class="co">#&gt; 8  banks of superior temporal sulcus  temporal    dk cortical #196428 0.172</span></span>
+<span><span class="co">#&gt; 9  banks of superior temporal sulcus  temporal    dk cortical #196428 0.172</span></span>
+<span><span class="co">#&gt; 10         caudal anterior cingulate cingulate    dk cortical #7D64A0 0.406</span></span>
+<span><span class="co">#&gt;                          geometry</span></span>
+<span><span class="co">#&gt; 1  MULTIPOLYGON (((59.87309 38...</span></span>
+<span><span class="co">#&gt; 2  MULTIPOLYGON (((309.1881 20...</span></span>
+<span><span class="co">#&gt; 3  MULTIPOLYGON (((561.9354 46...</span></span>
+<span><span class="co">#&gt; 4  MULTIPOLYGON (((1056.938 47...</span></span>
+<span><span class="co">#&gt; 5  MULTIPOLYGON (((1376.635 14...</span></span>
+<span><span class="co">#&gt; 6  MULTIPOLYGON (((1539.551 20...</span></span>
+<span><span class="co">#&gt; 7  MULTIPOLYGON (((126.4784 10...</span></span>
+<span><span class="co">#&gt; 8  MULTIPOLYGON (((373.1208 44...</span></span>
+<span><span class="co">#&gt; 9  MULTIPOLYGON (((888.6798 41...</span></span>
+<span><span class="co">#&gt; 10 MULTIPOLYGON (((632.9766 10...</span></span></code></pre></div>
 <p>The result is a standard sf object you can pass to
 <code><a href="https://ggplot2.tidyverse.org/reference/ggsf.html" class="external-link">geom_sf()</a></code>.</p>
 </div>
@@ -255,7 +267,7 @@ repositioned sf data, you can layer any sf geom:</p>
 <span>    show.legend <span class="op">=</span> <span class="cn">FALSE</span></span>
 <span>  <span class="op">)</span></span>
 <span><span class="co">#&gt; Merging atlas and data by <span style="color: #00BB00;">region</span>.</span></span>
-<span><span class="co">#&gt; Warning: Removed 174 rows containing missing values or values outside the scale range</span></span>
+<span><span class="co">#&gt; Warning: Removed 171 rows containing missing values or values outside the scale range</span></span>
 <span><span class="co">#&gt; (`geom_label()`).</span></span></code></pre></div>
 <div class="figure">
 <img src="geom-sf_files/figure-html/fig-labels-1.png" class="r-plt" alt="Brain regions with text labels overlaid using geom_sf_label." width="576"><p class="caption">
@@ -273,7 +285,7 @@ overlapping labels.</p>
 atlas for each group:</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">some_data</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://tibble.tidyverse.org/reference/tibble.html" class="external-link">tibble</a></span><span class="op">(</span></span>
-<span>  region <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fu">ggseg.formats</span><span class="fu">::</span><span class="fu"><a href="https://ggsegverse.github.io/ggseg.formats/reference/atlas_regions.html">atlas_regions</a></span><span class="op">(</span><span class="fu"><a href="https://ggsegverse.github.io/ggseg.formats/reference/dk.html">dk</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">4</span><span class="op">]</span>, <span class="fl">2</span><span class="op">)</span>,</span>
+<span>  region <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/sort.html" class="external-link">sort</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/unique.html" class="external-link">unique</a></span><span class="op">(</span><span class="fu">ggseg.formats</span><span class="fu">::</span><span class="fu"><a href="https://ggsegverse.github.io/ggseg.formats/reference/atlas_regions.html">atlas_regions</a></span><span class="op">(</span><span class="fu"><a href="https://ggsegverse.github.io/ggseg.formats/reference/dk.html">dk</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span><span class="op">)</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">4</span><span class="op">]</span>, <span class="fl">2</span><span class="op">)</span>,</span>
 <span>  p <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sample.html" class="external-link">sample</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">0.5</span>, <span class="fl">0.001</span><span class="op">)</span>, <span class="fl">8</span><span class="op">)</span>,</span>
 <span>  group <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="st">"A"</span>, <span class="fl">4</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="st">"B"</span>, <span class="fl">4</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="op">)</span></span>

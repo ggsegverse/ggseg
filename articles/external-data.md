@@ -30,43 +30,45 @@ library(ggplot2)
 ## How matching works
 
 [`geom_brain()`](https://ggsegverse.github.io/ggseg/reference/ggbrain.md)
-joins your data to the atlas by `region` (and by `hemi` too, when both
-your data and the atlas carry it). That means your data needs at least
-one column with names that match the atlas. The two columns you’ll use
-most:
+joins your data to the atlas by `label` or `region` (and by `hemi` too,
+when both your data and the atlas carry it). That means your data needs
+at least one column with names that match the atlas. The two columns
+you’ll use most:
 
-- **region** – human-readable names like “insula” or “precentral”
-- **label** – FreeSurfer labels like “lh_bankssts”
+- **label** – FreeSurfer labels like “lh_bankssts”, unique per atlas row
+  and the key atlas palettes are built on
+- **region** – human-readable names like “insula” or “precentral”, which
+  repeat across hemispheres
 
 Check what’s available:
 
 ``` r
 
-ggseg.formats::atlas_regions(dk())
+sort(unique(ggseg.formats::atlas_regions(dk())))
 ```
 
-    ##  [1] "banks of superior temporal sulcus" "caudal anterior cingulate"        
-    ##  [3] "caudal middle frontal"             "corpus callosum"                  
-    ##  [5] "cuneus"                            "entorhinal"                       
-    ##  [7] "frontal pole"                      "fusiform"                         
-    ##  [9] "inferior parietal"                 "inferior temporal"                
-    ## [11] "insula"                            "isthmus cingulate"                
-    ## [13] "lateral occipital"                 "lateral orbitofrontal"            
-    ## [15] "lingual"                           "medial orbitofrontal"             
-    ## [17] "middle temporal"                   "paracentral"                      
-    ## [19] "parahippocampal"                   "pars opercularis"                 
-    ## [21] "pars orbitalis"                    "pars triangularis"                
-    ## [23] "pericalcarine"                     "postcentral"                      
-    ## [25] "posterior cingulate"               "precentral"                       
-    ## [27] "precuneus"                         "rostral anterior cingulate"       
-    ## [29] "rostral middle frontal"            "superior frontal"                 
-    ## [31] "superior parietal"                 "superior temporal"                
-    ## [33] "supramarginal"                     "temporal pole"                    
-    ## [35] "transverse temporal"
+    ##  [1] "bankssts"                 "caudalanteriorcingulate" 
+    ##  [3] "caudalmiddlefrontal"      "corpuscallosum"          
+    ##  [5] "cuneus"                   "entorhinal"              
+    ##  [7] "frontalpole"              "fusiform"                
+    ##  [9] "inferiorparietal"         "inferiortemporal"        
+    ## [11] "insula"                   "isthmuscingulate"        
+    ## [13] "lateraloccipital"         "lateralorbitofrontal"    
+    ## [15] "lingual"                  "medialorbitofrontal"     
+    ## [17] "middletemporal"           "paracentral"             
+    ## [19] "parahippocampal"          "parsopercularis"         
+    ## [21] "parsorbitalis"            "parstriangularis"        
+    ## [23] "pericalcarine"            "postcentral"             
+    ## [25] "posteriorcingulate"       "precentral"              
+    ## [27] "precuneus"                "rostralanteriorcingulate"
+    ## [29] "rostralmiddlefrontal"     "superiorfrontal"         
+    ## [31] "superiorparietal"         "superiortemporal"        
+    ## [33] "supramarginal"            "temporalpole"            
+    ## [35] "transversetemporal"
 
 ``` r
 
-ggseg.formats::atlas_labels(dk())
+sort(unique(ggseg.formats::atlas_labels(dk())))
 ```
 
     ##  [1] "lh_bankssts"                 "lh_caudalanteriorcingulate" 
@@ -114,18 +116,18 @@ Three regions, three p-values:
 ``` r
 
 some_data <- tibble(
-  region = ggseg.formats::atlas_regions(dk())[1:3],
+  region = sort(unique(ggseg.formats::atlas_regions(dk())))[1:3],
   p = c(0.03, 0.6, 0.05)
 )
 some_data
 ```
 
     ## # A tibble: 3 × 2
-    ##   region                                p
-    ##   <chr>                             <dbl>
-    ## 1 banks of superior temporal sulcus  0.03
-    ## 2 caudal anterior cingulate          0.6 
-    ## 3 caudal middle frontal              0.05
+    ##   region                      p
+    ##   <chr>                   <dbl>
+    ## 1 bankssts                 0.03
+    ## 2 caudalanteriorcingulate  0.6 
+    ## 3 caudalmiddlefrontal      0.05
 
 Pass the data to
 [`geom_brain()`](https://ggsegverse.github.io/ggseg/reference/ggbrain.md)
@@ -180,7 +182,7 @@ replicates the full atlas – context regions included – in each panel:
 ``` r
 
 some_data <- tibble(
-  region = rep(ggseg.formats::atlas_regions(dk())[1:4], 2),
+  region = rep(sort(unique(ggseg.formats::atlas_regions(dk())))[1:4], 2),
   p = sample(seq(0, 0.5, 0.001), 8),
   group = c(rep("Young", 4), rep("Old", 4))
 )
@@ -211,8 +213,8 @@ make – one per group.
 ## Troubleshooting
 
 **Regions don’t show up.** Check spelling and case.
-`ggseg.formats::atlas_regions(dk())` gives you the exact strings the
-atlas expects.
+`sort(unique(ggseg.formats::atlas_regions(dk())))` gives you the exact
+strings the atlas expects.
 
 **Data lands on both hemispheres.** Add a `hemi` column with `"left"` or
 `"right"` to constrain the match.

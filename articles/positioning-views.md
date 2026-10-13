@@ -182,8 +182,8 @@ order. Check what’s available with
 ``` r
 
 ggseg.formats::atlas_views(aseg())
-#> [1] "axial_3"   "axial_4"   "axial_5"   "sagittal"  "axial_6"   "coronal_1"
-#> [7] "coronal_2"
+#> [1] "axial_3"   "axial_4"   "axial_5"   "axial_6"   "coronal_1" "coronal_2"
+#> [7] "sagittal"
 ```
 
 ``` r
@@ -192,7 +192,7 @@ ggplot() +
   geom_brain(
     atlas = aseg(),
     position = position_brain(
-      views = c("sagittal", "axial_3", "coronal_3")
+      views = c("sagittal", "axial_3", "coronal_2")
     ),
     show.legend = FALSE
   ) +
@@ -212,7 +212,7 @@ ggplot() +
   geom_brain(
     atlas = aseg(),
     position = position_brain(
-      views = c("sagittal", "axial_3", "axial_5", "coronal_3"),
+      views = c("sagittal", "axial_3", "axial_5", "coronal_2"),
       nrow = 2
     ),
     show.legend = FALSE
@@ -326,7 +326,7 @@ allotted cell.
 ``` r
 
 my_data <- data.frame(
-  region = ggseg.formats::atlas_regions(aseg())[1:3],
+  region = sort(unique(ggseg.formats::atlas_regions(aseg())))[1:3],
   value = c(1, 2, 3)
 )
 
@@ -353,7 +353,7 @@ onto, independent of any data you plot:
 
 ``` r
 
-focus <- c("Thalamus Proper", "Putamen", "Hippocampus")
+focus <- c("thalamus", "putamen", "hippocampus")
 
 ggplot() +
   geom_brain(

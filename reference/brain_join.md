@@ -40,68 +40,90 @@ An `sf` object if the atlas contains geometry, otherwise a tibble.
 
 ``` r
 someData <- data.frame(
-  region = ggseg.formats::atlas_regions(dk())[1:4],
+  region = sort(unique(ggseg.formats::atlas_regions(dk())))[1:4],
   p = sample(seq(0, .5, .001), 4),
   stringsAsFactors = FALSE
 )
 
 brain_join(someData, dk())
 #> Merging atlas and data by region.
-#> Simple feature collection with 191 features and 9 fields
+#> Simple feature collection with 185 features and 10 fields
 #> Geometry type: MULTIPOLYGON
 #> Dimension:     XY
-#> Bounding box:  xmin: 84.2049 ymin: 0 xmax: 5359.689 ymax: 429.9372
+#> Bounding box:  xmin: 0.899055 ymin: 0.0853615 xmax: 1938.834 ymax: 146.1192
 #> CRS:           NA
 #> First 10 features:
-#>                         label     view  hemi                            region
-#> 1                  lh_unknown  lateral  left                              <NA>
-#> 2                  lh_unknown   medial  left                              <NA>
-#> 3                  lh_unknown inferior  left                              <NA>
-#> 4                  rh_unknown  lateral right                              <NA>
-#> 5                  rh_unknown   medial right                              <NA>
-#> 6                  rh_unknown inferior right                              <NA>
-#> 7                 lh_bankssts  lateral  left banks of superior temporal sulcus
-#> 8                 lh_bankssts superior  left banks of superior temporal sulcus
-#> 9                 lh_bankssts inferior  left banks of superior temporal sulcus
-#> 10 lh_caudalanteriorcingulate   medial  left         caudal anterior cingulate
-#>         lobe atlas     type  colour     p                       geometry
-#> 1       <NA>    dk cortical    <NA>    NA MULTIPOLYGON (((926.5936 60...
-#> 2       <NA>    dk cortical    <NA>    NA MULTIPOLYGON (((1782.84 18....
-#> 3       <NA>    dk cortical    <NA>    NA MULTIPOLYGON (((367.1256 13...
-#> 4       <NA>    dk cortical    <NA>    NA MULTIPOLYGON (((3849.766 60...
-#> 5       <NA>    dk cortical    <NA>    NA MULTIPOLYGON (((4318.844 20...
-#> 6       <NA>    dk cortical    <NA>    NA MULTIPOLYGON (((3190.519 5....
-#> 7   temporal    dk cortical #196428 0.172 MULTIPOLYGON (((1121.478 12...
-#> 8   temporal    dk cortical #196428 0.172 MULTIPOLYGON (((2448.464 20...
-#> 9   temporal    dk cortical #196428 0.172 MULTIPOLYGON (((534.4782 21...
-#> 10 cingulate    dk cortical #7D64A0 0.406 MULTIPOLYGON (((1921.971 20...
+#>                         label     view  hemi                  region
+#> 1                  lh_unknown inferior  left                    <NA>
+#> 2                  lh_unknown  lateral  left                    <NA>
+#> 3                  lh_unknown   medial  left                    <NA>
+#> 4                  rh_unknown inferior right                    <NA>
+#> 5                  rh_unknown  lateral right                    <NA>
+#> 6                  rh_unknown   medial right                    <NA>
+#> 7                 lh_bankssts inferior  left                bankssts
+#> 8                 lh_bankssts  lateral  left                bankssts
+#> 9                 lh_bankssts superior  left                bankssts
+#> 10 lh_caudalanteriorcingulate   medial  left caudalanteriorcingulate
+#>                              display      lobe atlas     type  colour     p
+#> 1                               <NA>      <NA>    dk cortical    <NA>    NA
+#> 2                               <NA>      <NA>    dk cortical    <NA>    NA
+#> 3                               <NA>      <NA>    dk cortical    <NA>    NA
+#> 4                               <NA>      <NA>    dk cortical    <NA>    NA
+#> 5                               <NA>      <NA>    dk cortical    <NA>    NA
+#> 6                               <NA>      <NA>    dk cortical    <NA>    NA
+#> 7  banks of superior temporal sulcus  temporal    dk cortical #196428 0.172
+#> 8  banks of superior temporal sulcus  temporal    dk cortical #196428 0.172
+#> 9  banks of superior temporal sulcus  temporal    dk cortical #196428 0.172
+#> 10         caudal anterior cingulate cingulate    dk cortical #7D64A0 0.406
+#>                          geometry
+#> 1  MULTIPOLYGON (((59.87309 38...
+#> 2  MULTIPOLYGON (((309.1881 20...
+#> 3  MULTIPOLYGON (((561.9354 46...
+#> 4  MULTIPOLYGON (((1056.938 47...
+#> 5  MULTIPOLYGON (((1376.635 14...
+#> 6  MULTIPOLYGON (((1539.551 20...
+#> 7  MULTIPOLYGON (((126.4784 10...
+#> 8  MULTIPOLYGON (((373.1208 44...
+#> 9  MULTIPOLYGON (((888.6798 41...
+#> 10 MULTIPOLYGON (((632.9766 10...
 brain_join(someData, dk(), "region")
-#> Simple feature collection with 191 features and 9 fields
+#> Simple feature collection with 185 features and 10 fields
 #> Geometry type: MULTIPOLYGON
 #> Dimension:     XY
-#> Bounding box:  xmin: 84.2049 ymin: 0 xmax: 5359.689 ymax: 429.9372
+#> Bounding box:  xmin: 0.899055 ymin: 0.0853615 xmax: 1938.834 ymax: 146.1192
 #> CRS:           NA
 #> First 10 features:
-#>                         label     view  hemi                            region
-#> 1                  lh_unknown  lateral  left                              <NA>
-#> 2                  lh_unknown   medial  left                              <NA>
-#> 3                  lh_unknown inferior  left                              <NA>
-#> 4                  rh_unknown  lateral right                              <NA>
-#> 5                  rh_unknown   medial right                              <NA>
-#> 6                  rh_unknown inferior right                              <NA>
-#> 7                 lh_bankssts  lateral  left banks of superior temporal sulcus
-#> 8                 lh_bankssts superior  left banks of superior temporal sulcus
-#> 9                 lh_bankssts inferior  left banks of superior temporal sulcus
-#> 10 lh_caudalanteriorcingulate   medial  left         caudal anterior cingulate
-#>         lobe atlas     type  colour     p                       geometry
-#> 1       <NA>    dk cortical    <NA>    NA MULTIPOLYGON (((926.5936 60...
-#> 2       <NA>    dk cortical    <NA>    NA MULTIPOLYGON (((1782.84 18....
-#> 3       <NA>    dk cortical    <NA>    NA MULTIPOLYGON (((367.1256 13...
-#> 4       <NA>    dk cortical    <NA>    NA MULTIPOLYGON (((3849.766 60...
-#> 5       <NA>    dk cortical    <NA>    NA MULTIPOLYGON (((4318.844 20...
-#> 6       <NA>    dk cortical    <NA>    NA MULTIPOLYGON (((3190.519 5....
-#> 7   temporal    dk cortical #196428 0.172 MULTIPOLYGON (((1121.478 12...
-#> 8   temporal    dk cortical #196428 0.172 MULTIPOLYGON (((2448.464 20...
-#> 9   temporal    dk cortical #196428 0.172 MULTIPOLYGON (((534.4782 21...
-#> 10 cingulate    dk cortical #7D64A0 0.406 MULTIPOLYGON (((1921.971 20...
+#>                         label     view  hemi                  region
+#> 1                  lh_unknown inferior  left                    <NA>
+#> 2                  lh_unknown  lateral  left                    <NA>
+#> 3                  lh_unknown   medial  left                    <NA>
+#> 4                  rh_unknown inferior right                    <NA>
+#> 5                  rh_unknown  lateral right                    <NA>
+#> 6                  rh_unknown   medial right                    <NA>
+#> 7                 lh_bankssts inferior  left                bankssts
+#> 8                 lh_bankssts  lateral  left                bankssts
+#> 9                 lh_bankssts superior  left                bankssts
+#> 10 lh_caudalanteriorcingulate   medial  left caudalanteriorcingulate
+#>                              display      lobe atlas     type  colour     p
+#> 1                               <NA>      <NA>    dk cortical    <NA>    NA
+#> 2                               <NA>      <NA>    dk cortical    <NA>    NA
+#> 3                               <NA>      <NA>    dk cortical    <NA>    NA
+#> 4                               <NA>      <NA>    dk cortical    <NA>    NA
+#> 5                               <NA>      <NA>    dk cortical    <NA>    NA
+#> 6                               <NA>      <NA>    dk cortical    <NA>    NA
+#> 7  banks of superior temporal sulcus  temporal    dk cortical #196428 0.172
+#> 8  banks of superior temporal sulcus  temporal    dk cortical #196428 0.172
+#> 9  banks of superior temporal sulcus  temporal    dk cortical #196428 0.172
+#> 10         caudal anterior cingulate cingulate    dk cortical #7D64A0 0.406
+#>                          geometry
+#> 1  MULTIPOLYGON (((59.87309 38...
+#> 2  MULTIPOLYGON (((309.1881 20...
+#> 3  MULTIPOLYGON (((561.9354 46...
+#> 4  MULTIPOLYGON (((1056.938 47...
+#> 5  MULTIPOLYGON (((1376.635 14...
+#> 6  MULTIPOLYGON (((1539.551 20...
+#> 7  MULTIPOLYGON (((126.4784 10...
+#> 8  MULTIPOLYGON (((373.1208 44...
+#> 9  MULTIPOLYGON (((888.6798 41...
+#> 10 MULTIPOLYGON (((632.9766 10...
 ```

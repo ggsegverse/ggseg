@@ -64,8 +64,15 @@ stat_brain(
 
 - position:
 
-  Position adjustment, either as a string or the result of a call to
+  Brain-view layout: the result of a call to
+  [`position_brain()`](https://ggsegverse.github.io/ggseg/reference/position_brain.md),
+  a layout string (e.g. `"horizontal"`, `"vertical"`), or a layout
+  formula (e.g. `hemi ~ view`). Strings and formulas are passed to
   [`position_brain()`](https://ggsegverse.github.io/ggseg/reference/position_brain.md).
+  Use `"identity"` to keep the atlas polygons' raw coordinates. Per-view
+  zoom is set through
+  [`position_brain()`](https://ggsegverse.github.io/ggseg/reference/position_brain.md)'s
+  `zoom`.
 
 - context:
 
@@ -79,7 +86,10 @@ stat_brain(
   [`mean()`](https://rdrr.io/r/base/mean.html). Any function reducing a
   vector to a single value works (e.g.
   [`median()`](https://rdrr.io/r/stats/median.html),
-  [`max()`](https://rdrr.io/r/base/Extremes.html)).
+  [`max()`](https://rdrr.io/r/base/Extremes.html)). It applies to
+  numeric columns only; non-numeric ones take the first value of the
+  group. Up to ggseg 2.2.1 duplicate rows overplotted, so the last one
+  won — `fun = dplyr::last` reproduces that.
 
 - geom:
 
@@ -115,5 +125,5 @@ library(ggplot2)
 
 # Equivalent to geom_brain(atlas = dk())
 ggplot() +
-  stat_brain(atlas = dk())
+  stat_brain(atlas = dk(), show.legend = FALSE)
 ```

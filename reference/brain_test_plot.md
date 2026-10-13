@@ -11,11 +11,7 @@ snapshot. It doubles as a quick way to preview an atlas.
 ## Usage
 
 ``` r
-brain_test_plot(
-  atlas,
-  position = NULL,
-  na.value = "grey"
-)
+brain_test_plot(atlas, position = NULL, na.value = "grey")
 ```
 
 ## Arguments

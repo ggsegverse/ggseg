@@ -31,27 +31,31 @@ position_brain(
 
 - nrow:
 
-  Number of rows for grid layout. If NULL (default), calculated
-  automatically. Only used for subcortical/tract atlases when position
-  is not a formula.
+  Number of rows for grid layout, a positive whole number. If `NULL`
+  (default), calculated automatically. Cannot be combined with a
+  `position` formula, which a grid layout would discard. Grid cells are
+  hemisphere/view pairs for a cortical atlas and views for a slice-based
+  one.
 
 - ncol:
 
-  Number of columns for grid layout. If NULL (default), calculated
-  automatically. Only used for subcortical/tract atlases when position
-  is not a formula.
+  Number of columns for grid layout, a positive whole number. If `NULL`
+  (default), calculated automatically. Cannot be combined with a
+  `position` formula.
 
 - views:
 
   Character vector specifying which views to include and their order. If
-  NULL (default), all views are included in their original order. Only
-  applies to subcortical/tract atlases.
+  `NULL` (default), all views are included in their original order.
+  Names the atlas does not have are dropped with a warning.
 
 - zoom:
 
   Controls per-view zoom. `NULL`/`FALSE` (default) draws each view at
-  full extent. `TRUE` zooms each view onto its focus regions; a
-  character vector names the focus regions explicitly.
+  full extent. `TRUE` zooms each view onto the regions your `data`
+  covers, taken from its `label` column when it has one and `region`
+  otherwise; a character vector names the focus explicitly, as either
+  labels or regions.
 
 - zoom_pad:
 

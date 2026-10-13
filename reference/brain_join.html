@@ -17,7 +17,7 @@ for brain_join() when you want the joined sf object yourself."><meta property="o
 
     <a class="navbar-brand me-2" href="../index.html">ggseg</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">2.2.1.9007</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">3.0.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -100,70 +100,92 @@ columns are detected automatically.</p></dd>
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">someData</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span></span></span>
-<span class="r-in"><span>  region <span class="op">=</span> <span class="fu">ggseg.formats</span><span class="fu">::</span><span class="fu"><a href="https://ggsegverse.github.io/ggseg.formats/reference/atlas_regions.html">atlas_regions</a></span><span class="op">(</span><span class="fu"><a href="https://ggsegverse.github.io/ggseg.formats/reference/dk.html">dk</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">4</span><span class="op">]</span>,</span></span>
+<span class="r-in"><span>  region <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sort.html" class="external-link">sort</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/unique.html" class="external-link">unique</a></span><span class="op">(</span><span class="fu">ggseg.formats</span><span class="fu">::</span><span class="fu"><a href="https://ggsegverse.github.io/ggseg.formats/reference/atlas_regions.html">atlas_regions</a></span><span class="op">(</span><span class="fu"><a href="https://ggsegverse.github.io/ggseg.formats/reference/dk.html">dk</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span><span class="op">)</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">4</span><span class="op">]</span>,</span></span>
 <span class="r-in"><span>  p <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sample.html" class="external-link">sample</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">.5</span>, <span class="fl">.001</span><span class="op">)</span>, <span class="fl">4</span><span class="op">)</span>,</span></span>
 <span class="r-in"><span>  stringsAsFactors <span class="op">=</span> <span class="cn">FALSE</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu">brain_join</span><span class="op">(</span><span class="va">someData</span>, <span class="fu"><a href="https://ggsegverse.github.io/ggseg.formats/reference/dk.html">dk</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Merging atlas and data by <span style="color: #00BB00;">region</span>.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Simple feature collection with 191 features and 9 fields</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Simple feature collection with 185 features and 10 fields</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Geometry type: MULTIPOLYGON</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Dimension:     XY</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Bounding box:  xmin: 84.2049 ymin: 0 xmax: 5359.689 ymax: 429.9372</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Bounding box:  xmin: 0.899055 ymin: 0.0853615 xmax: 1938.834 ymax: 146.1192</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> CRS:           NA</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> First 10 features:</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                         label     view  hemi                            region</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1                  lh_unknown  lateral  left                              &lt;NA&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2                  lh_unknown   medial  left                              &lt;NA&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3                  lh_unknown inferior  left                              &lt;NA&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4                  rh_unknown  lateral right                              &lt;NA&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 5                  rh_unknown   medial right                              &lt;NA&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 6                  rh_unknown inferior right                              &lt;NA&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 7                 lh_bankssts  lateral  left banks of superior temporal sulcus</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 8                 lh_bankssts superior  left banks of superior temporal sulcus</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 9                 lh_bankssts inferior  left banks of superior temporal sulcus</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 10 lh_caudalanteriorcingulate   medial  left         caudal anterior cingulate</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>         lobe atlas     type  colour     p                       geometry</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1       &lt;NA&gt;    dk cortical    &lt;NA&gt;    NA MULTIPOLYGON (((926.5936 60...</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2       &lt;NA&gt;    dk cortical    &lt;NA&gt;    NA MULTIPOLYGON (((1782.84 18....</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3       &lt;NA&gt;    dk cortical    &lt;NA&gt;    NA MULTIPOLYGON (((367.1256 13...</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4       &lt;NA&gt;    dk cortical    &lt;NA&gt;    NA MULTIPOLYGON (((3849.766 60...</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 5       &lt;NA&gt;    dk cortical    &lt;NA&gt;    NA MULTIPOLYGON (((4318.844 20...</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 6       &lt;NA&gt;    dk cortical    &lt;NA&gt;    NA MULTIPOLYGON (((3190.519 5....</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 7   temporal    dk cortical #196428 0.172 MULTIPOLYGON (((1121.478 12...</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 8   temporal    dk cortical #196428 0.172 MULTIPOLYGON (((2448.464 20...</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 9   temporal    dk cortical #196428 0.172 MULTIPOLYGON (((534.4782 21...</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 10 cingulate    dk cortical #7D64A0 0.406 MULTIPOLYGON (((1921.971 20...</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                         label     view  hemi                  region</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1                  lh_unknown inferior  left                    &lt;NA&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2                  lh_unknown  lateral  left                    &lt;NA&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3                  lh_unknown   medial  left                    &lt;NA&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4                  rh_unknown inferior right                    &lt;NA&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 5                  rh_unknown  lateral right                    &lt;NA&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 6                  rh_unknown   medial right                    &lt;NA&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 7                 lh_bankssts inferior  left                bankssts</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 8                 lh_bankssts  lateral  left                bankssts</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 9                 lh_bankssts superior  left                bankssts</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 10 lh_caudalanteriorcingulate   medial  left caudalanteriorcingulate</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                              display      lobe atlas     type  colour     p</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1                               &lt;NA&gt;      &lt;NA&gt;    dk cortical    &lt;NA&gt;    NA</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2                               &lt;NA&gt;      &lt;NA&gt;    dk cortical    &lt;NA&gt;    NA</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3                               &lt;NA&gt;      &lt;NA&gt;    dk cortical    &lt;NA&gt;    NA</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4                               &lt;NA&gt;      &lt;NA&gt;    dk cortical    &lt;NA&gt;    NA</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 5                               &lt;NA&gt;      &lt;NA&gt;    dk cortical    &lt;NA&gt;    NA</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 6                               &lt;NA&gt;      &lt;NA&gt;    dk cortical    &lt;NA&gt;    NA</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 7  banks of superior temporal sulcus  temporal    dk cortical #196428 0.172</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 8  banks of superior temporal sulcus  temporal    dk cortical #196428 0.172</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 9  banks of superior temporal sulcus  temporal    dk cortical #196428 0.172</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 10         caudal anterior cingulate cingulate    dk cortical #7D64A0 0.406</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                          geometry</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1  MULTIPOLYGON (((59.87309 38...</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2  MULTIPOLYGON (((309.1881 20...</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3  MULTIPOLYGON (((561.9354 46...</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4  MULTIPOLYGON (((1056.938 47...</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 5  MULTIPOLYGON (((1376.635 14...</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 6  MULTIPOLYGON (((1539.551 20...</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 7  MULTIPOLYGON (((126.4784 10...</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 8  MULTIPOLYGON (((373.1208 44...</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 9  MULTIPOLYGON (((888.6798 41...</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 10 MULTIPOLYGON (((632.9766 10...</span>
 <span class="r-in"><span><span class="fu">brain_join</span><span class="op">(</span><span class="va">someData</span>, <span class="fu"><a href="https://ggsegverse.github.io/ggseg.formats/reference/dk.html">dk</a></span><span class="op">(</span><span class="op">)</span>, <span class="st">"region"</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Simple feature collection with 191 features and 9 fields</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Simple feature collection with 185 features and 10 fields</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Geometry type: MULTIPOLYGON</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Dimension:     XY</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Bounding box:  xmin: 84.2049 ymin: 0 xmax: 5359.689 ymax: 429.9372</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Bounding box:  xmin: 0.899055 ymin: 0.0853615 xmax: 1938.834 ymax: 146.1192</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> CRS:           NA</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> First 10 features:</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                         label     view  hemi                            region</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1                  lh_unknown  lateral  left                              &lt;NA&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2                  lh_unknown   medial  left                              &lt;NA&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3                  lh_unknown inferior  left                              &lt;NA&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4                  rh_unknown  lateral right                              &lt;NA&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 5                  rh_unknown   medial right                              &lt;NA&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 6                  rh_unknown inferior right                              &lt;NA&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 7                 lh_bankssts  lateral  left banks of superior temporal sulcus</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 8                 lh_bankssts superior  left banks of superior temporal sulcus</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 9                 lh_bankssts inferior  left banks of superior temporal sulcus</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 10 lh_caudalanteriorcingulate   medial  left         caudal anterior cingulate</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>         lobe atlas     type  colour     p                       geometry</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1       &lt;NA&gt;    dk cortical    &lt;NA&gt;    NA MULTIPOLYGON (((926.5936 60...</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2       &lt;NA&gt;    dk cortical    &lt;NA&gt;    NA MULTIPOLYGON (((1782.84 18....</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3       &lt;NA&gt;    dk cortical    &lt;NA&gt;    NA MULTIPOLYGON (((367.1256 13...</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4       &lt;NA&gt;    dk cortical    &lt;NA&gt;    NA MULTIPOLYGON (((3849.766 60...</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 5       &lt;NA&gt;    dk cortical    &lt;NA&gt;    NA MULTIPOLYGON (((4318.844 20...</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 6       &lt;NA&gt;    dk cortical    &lt;NA&gt;    NA MULTIPOLYGON (((3190.519 5....</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 7   temporal    dk cortical #196428 0.172 MULTIPOLYGON (((1121.478 12...</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 8   temporal    dk cortical #196428 0.172 MULTIPOLYGON (((2448.464 20...</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 9   temporal    dk cortical #196428 0.172 MULTIPOLYGON (((534.4782 21...</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 10 cingulate    dk cortical #7D64A0 0.406 MULTIPOLYGON (((1921.971 20...</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                         label     view  hemi                  region</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1                  lh_unknown inferior  left                    &lt;NA&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2                  lh_unknown  lateral  left                    &lt;NA&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3                  lh_unknown   medial  left                    &lt;NA&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4                  rh_unknown inferior right                    &lt;NA&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 5                  rh_unknown  lateral right                    &lt;NA&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 6                  rh_unknown   medial right                    &lt;NA&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 7                 lh_bankssts inferior  left                bankssts</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 8                 lh_bankssts  lateral  left                bankssts</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 9                 lh_bankssts superior  left                bankssts</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 10 lh_caudalanteriorcingulate   medial  left caudalanteriorcingulate</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                              display      lobe atlas     type  colour     p</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1                               &lt;NA&gt;      &lt;NA&gt;    dk cortical    &lt;NA&gt;    NA</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2                               &lt;NA&gt;      &lt;NA&gt;    dk cortical    &lt;NA&gt;    NA</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3                               &lt;NA&gt;      &lt;NA&gt;    dk cortical    &lt;NA&gt;    NA</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4                               &lt;NA&gt;      &lt;NA&gt;    dk cortical    &lt;NA&gt;    NA</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 5                               &lt;NA&gt;      &lt;NA&gt;    dk cortical    &lt;NA&gt;    NA</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 6                               &lt;NA&gt;      &lt;NA&gt;    dk cortical    &lt;NA&gt;    NA</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 7  banks of superior temporal sulcus  temporal    dk cortical #196428 0.172</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 8  banks of superior temporal sulcus  temporal    dk cortical #196428 0.172</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 9  banks of superior temporal sulcus  temporal    dk cortical #196428 0.172</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 10         caudal anterior cingulate cingulate    dk cortical #7D64A0 0.406</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                          geometry</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1  MULTIPOLYGON (((59.87309 38...</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2  MULTIPOLYGON (((309.1881 20...</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3  MULTIPOLYGON (((561.9354 46...</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4  MULTIPOLYGON (((1056.938 47...</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 5  MULTIPOLYGON (((1376.635 14...</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 6  MULTIPOLYGON (((1539.551 20...</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 7  MULTIPOLYGON (((126.4784 10...</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 8  MULTIPOLYGON (((373.1208 44...</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 9  MULTIPOLYGON (((888.6798 41...</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 10 MULTIPOLYGON (((632.9766 10...</span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

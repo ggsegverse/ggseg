@@ -58,8 +58,15 @@ geom_brain(
 
 - position:
 
-  Position adjustment, either as a string or the result of a call to
+  Brain-view layout: the result of a call to
+  [`position_brain()`](https://ggsegverse.github.io/ggseg/reference/position_brain.md),
+  a layout string (e.g. `"horizontal"`, `"vertical"`), or a layout
+  formula (e.g. `hemi ~ view`). Strings and formulas are passed to
   [`position_brain()`](https://ggsegverse.github.io/ggseg/reference/position_brain.md).
+  Use `"identity"` to keep the atlas polygons' raw coordinates. Per-view
+  zoom is set through
+  [`position_brain()`](https://ggsegverse.github.io/ggseg/reference/position_brain.md)'s
+  `zoom`.
 
 - context:
 
@@ -73,7 +80,10 @@ geom_brain(
   [`mean()`](https://rdrr.io/r/base/mean.html). Any function reducing a
   vector to a single value works (e.g.
   [`median()`](https://rdrr.io/r/stats/median.html),
-  [`max()`](https://rdrr.io/r/base/Extremes.html)).
+  [`max()`](https://rdrr.io/r/base/Extremes.html)). It applies to
+  numeric columns only; non-numeric ones take the first value of the
+  group. Up to ggseg 2.2.1 duplicate rows overplotted, so the last one
+  won — `fun = dplyr::last` reproduces that.
 
 - show.legend:
 
@@ -94,6 +104,15 @@ geom_brain(
 A list of ggplot2 layer and coord objects.
 
 ## Details
+
+Map neither `fill` nor `colour` and `geom_brain()` colours the atlas by
+its own palette for you, by mapping `fill` to `label` – the key atlas
+palettes are built on, and the ecosystem's canonical matching key. Map
+either one and yours wins; your `data` then drives the colours and
+regions you supply no value for stay grey.
+
+Match your `data` to the atlas on `label` (hemisphere-qualified, unique
+per atlas row) or on `region` (which repeats across hemispheres).
 
 Regions are drawn in the order they appear in your `data`, so when
 outlines overlap (e.g. mapping `colour` to a threshold with a wide
@@ -118,9 +137,10 @@ ggproto that renders brain atlas polygons. It subclasses
 and supplies the brain defaults through `default_aes` – outline `colour`
 (grey35), `linewidth` (0.2), and `fill` (grey) – which apply when the
 user has not mapped those aesthetics but yield to a mapping when present
-(ggsegverse/ggseg#160). The grey default fill is why an atlas plotted
-without data renders grey, not palette-coloured. Used internally by
-`geom_brain()`; not typically called directly.
+(ggsegverse/ggseg#160). The grey default fill is what an atlas with no
+palette of its own falls back to; otherwise `geom_brain()` maps `fill`
+to `label` and applies the palette. Used internally by `geom_brain()`;
+not typically called directly.
 
 ## StatBrain ggproto
 
@@ -147,5 +167,5 @@ for the stat-first spelling.
 library(ggplot2)
 
 ggplot() +
-  geom_brain(atlas = dk())
+  geom_brain(atlas = dk(), show.legend = FALSE)
 ```

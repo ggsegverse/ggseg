@@ -54,7 +54,7 @@ A ggplot2 scale object.
 if (FALSE) { # \dontrun{
 library(ggplot2)
 ggplot() +
-  geom_brain(atlas = dk(), aes(fill = region), show.legend = FALSE) +
+  geom_brain(atlas = dk(), aes(fill = label), show.legend = FALSE) +
   scale_brain("dk")
 } # }
 ```

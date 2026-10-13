@@ -13,7 +13,7 @@ lays out the brain views for you. No data? It just draws the atlas."><meta prope
 
     <a class="navbar-brand me-2" href="../index.html">ggseg</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">2.2.1.9007</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">3.0.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -110,8 +110,11 @@ atlases: slice identifiers like <code>"axial_3"</code>. Defaults to all views.</
 
 
 <dt id="arg-position">position<a class="anchor" aria-label="anchor" href="#arg-position"></a></dt>
-<dd><p>Position adjustment, either as a string or the result of
-a call to <code><a href="position_brain.html">position_brain()</a></code>.</p></dd>
+<dd><p>Brain-view layout: the result of a call to
+<code><a href="position_brain.html">position_brain()</a></code>, a layout string (e.g. <code>"horizontal"</code>, <code>"vertical"</code>), or
+a layout formula (e.g. <code>hemi ~ view</code>). Strings and formulas are passed to
+<code><a href="position_brain.html">position_brain()</a></code>. Use <code>"identity"</code> to keep the atlas polygons' raw
+coordinates. Per-view zoom is set through <code><a href="position_brain.html">position_brain()</a></code>'s <code>zoom</code>.</p></dd>
 
 
 <dt id="arg-context">context<a class="anchor" aria-label="anchor" href="#arg-context"></a></dt>
@@ -123,7 +126,9 @@ the default), or show only the regions you're plotting (<code>FALSE</code>).</p>
 <dd><p>Function used to combine multiple <code>data</code> rows that map to the same
 atlas region, applied within each facet panel. Defaults to <code><a href="https://rdrr.io/r/base/mean.html" class="external-link">mean()</a></code>. Any
 function reducing a vector to a single value works (e.g. <code><a href="https://rdrr.io/r/stats/median.html" class="external-link">median()</a></code>,
-<code><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">max()</a></code>).</p></dd>
+<code><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">max()</a></code>). It applies to numeric columns only; non-numeric ones take the
+first value of the group. Up to ggseg 2.2.1 duplicate rows overplotted, so
+the last one won — <code>fun = dplyr::last</code> reproduces that.</p></dd>
 
 
 <dt id="arg-show-legend">show.legend<a class="anchor" aria-label="anchor" href="#arg-show-legend"></a></dt>
@@ -145,7 +150,14 @@ rather than combining with them.</p></dd>
     </div>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
-    <p>Regions are drawn in the order they appear in your <code>data</code>, so when outlines
+    <p>Map neither <code>fill</code> nor <code>colour</code> and <code>geom_brain()</code> colours the atlas by its
+own palette for you, by mapping <code>fill</code> to <code>label</code> – the key atlas palettes
+are built on, and the ecosystem's canonical matching key. Map either one and
+yours wins; your <code>data</code> then drives the colours and regions you supply no
+value for stay grey.</p>
+<p>Match your <code>data</code> to the atlas on <code>label</code> (hemisphere-qualified, unique per
+atlas row) or on <code>region</code> (which repeats across hemispheres).</p>
+<p>Regions are drawn in the order they appear in your <code>data</code>, so when outlines
 overlap (e.g. mapping <code>colour</code> to a threshold with a wide <code>linewidth</code>) the
 later rows draw on top. Reorder your data with <code><a href="https://dplyr.tidyverse.org/reference/arrange.html" class="external-link">dplyr::arrange()</a></code> to control
 the layering; regions you supply no value for stay underneath in atlas order.</p>
@@ -164,7 +176,8 @@ It subclasses <a href="https://ggplot2.tidyverse.org/reference/Geom.html" class=
 <code>default_aes</code> – outline <code>colour</code> (grey35), <code>linewidth</code> (0.2), and <code>fill</code>
 (grey) – which apply when the user has not mapped those aesthetics but yield
 to a mapping when present (ggsegverse/ggseg#160). The grey default fill is
-why an atlas plotted without data renders grey, not palette-coloured. Used
+what an atlas with no palette of its own falls back to; otherwise
+<code>geom_brain()</code> maps <code>fill</code> to <code>label</code> and applies the palette. Used
 internally by <code>geom_brain()</code>; not typically called directly.</p>
     </div>
     <div class="section level2">
@@ -189,7 +202,7 @@ layer.</p>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://ggplot2.tidyverse.org" class="external-link">ggplot2</a></span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span></span>
-<span class="r-in"><span>  <span class="fu">geom_brain</span><span class="op">(</span>atlas <span class="op">=</span> <span class="fu"><a href="https://ggsegverse.github.io/ggseg.formats/reference/dk.html">dk</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="fu">geom_brain</span><span class="op">(</span>atlas <span class="op">=</span> <span class="fu"><a href="https://ggsegverse.github.io/ggseg.formats/reference/dk.html">dk</a></span><span class="op">(</span><span class="op">)</span>, show.legend <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></span>
 <span class="r-plt img"><img src="ggbrain-1.png" alt="" width="700" height="433"></span>
 </code></pre></div>
     </div>

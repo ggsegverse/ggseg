@@ -42,9 +42,9 @@ library(ggplot2)
 
 ### Built-in atlases
 
-ggseg ships with three atlases: `dk` (Desikan-Killiany cortical
-parcellation), `aseg` (automatic subcortical segmentation), and
-`tracula` (white matter tracts).
+ggseg ships with four atlases: `dk` (Desikan-Killiany cortical
+parcellation), `aseg` (automatic subcortical segmentation), `tracula`
+(white matter tracts) and `suit` (cerebellar parcellation).
 [`plot()`](https://rdrr.io/r/graphics/plot.default.html) gives you a
 quick overview:
 
@@ -66,7 +66,7 @@ Figure 2: Overview of the dk and aseg built-in brain atlases.
 
 Pass a data frame to
 [`ggplot()`](https://ggplot2.tidyverse.org/reference/ggplot.html) with a
-column that matches the atlas (typically `region` or `label`).
+column that matches the atlas (typically `label` or `region`).
 [`geom_brain()`](https://ggsegverse.github.io/ggseg/reference/ggbrain.md)
 handles the join:
 

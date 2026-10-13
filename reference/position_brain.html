@@ -15,7 +15,7 @@ geom_brain() (or annotate_brain())."><meta property="og:image" content="https://
 
     <a class="navbar-brand me-2" href="../index.html">ggseg</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">2.2.1.9007</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">3.0.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -90,27 +90,31 @@ is extracted from view names like "axial_1" -&gt; "axial".</p></dd>
 
 
 <dt id="arg-nrow">nrow<a class="anchor" aria-label="anchor" href="#arg-nrow"></a></dt>
-<dd><p>Number of rows for grid layout. If NULL (default), calculated
-automatically. Only used for subcortical/tract atlases when position is
-not a formula.</p></dd>
+<dd><p>Number of rows for grid layout, a positive whole number. If
+<code>NULL</code> (default), calculated automatically. Cannot be combined with a
+<code>position</code> formula, which a grid layout would discard. Grid cells are
+hemisphere/view pairs for a cortical atlas and views for a slice-based
+one.</p></dd>
 
 
 <dt id="arg-ncol">ncol<a class="anchor" aria-label="anchor" href="#arg-ncol"></a></dt>
-<dd><p>Number of columns for grid layout. If NULL (default), calculated
-automatically. Only used for subcortical/tract atlases when position is
-not a formula.</p></dd>
+<dd><p>Number of columns for grid layout, a positive whole number. If
+<code>NULL</code> (default), calculated automatically. Cannot be combined with a
+<code>position</code> formula.</p></dd>
 
 
 <dt id="arg-views">views<a class="anchor" aria-label="anchor" href="#arg-views"></a></dt>
 <dd><p>Character vector specifying which views to include and their
-order. If NULL (default), all views are included in their original order.
-Only applies to subcortical/tract atlases.</p></dd>
+order. If <code>NULL</code> (default), all views are included in their original
+order. Names the atlas does not have are dropped with a warning.</p></dd>
 
 
 <dt id="arg-zoom">zoom<a class="anchor" aria-label="anchor" href="#arg-zoom"></a></dt>
 <dd><p>Controls per-view zoom. <code>NULL</code>/<code>FALSE</code> (default) draws each view
-at full extent. <code>TRUE</code> zooms each view onto its focus regions; a character
-vector names the focus regions explicitly.</p></dd>
+at full extent. <code>TRUE</code> zooms each view onto the regions your <code>data</code>
+covers, taken from its <code>label</code> column when it has one and <code>region</code>
+otherwise; a character vector names the focus explicitly, as either
+labels or regions.</p></dd>
 
 
 <dt id="arg-zoom-pad">zoom_pad<a class="anchor" aria-label="anchor" href="#arg-zoom-pad"></a></dt>
