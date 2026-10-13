@@ -1,3 +1,5 @@
+# ggseg (development version)
+
 # ggseg 3.0.0
 
 A major release. The atlas geometry now comes from the re-keyed `ggseg.formats`
