@@ -9,7 +9,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">ggseg</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">3.0.0.9000</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">2.2.1.9008</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -54,12 +54,9 @@
 
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="development version" id="ggseg-development-version">ggseg (development version)<a class="anchor" aria-label="anchor" href="#ggseg-development-version"></a></h2>
-</div>
-    <div class="section level2">
-<h2 class="pkg-version" data-toc-text="3.0.0" id="ggseg-300">ggseg 3.0.0<a class="anchor" aria-label="anchor" href="#ggseg-300"></a></h2>
 <p>A major release. The atlas geometry now comes from the re-keyed <code>ggseg.formats</code> atlases (<code>&gt;= 0.0.4.9008</code>), and <code><a href="../reference/ggbrain.html">geom_brain()</a></code> has been rebuilt on a <code>Stat</code> so that faceting, inherited <code>data</code>/<code><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes()</a></code>, and outline aesthetics work the way ggplot2 users expect. Several of those fixes change existing figures, so read the breaking changes before upgrading.</p>
 <div class="section level3">
-<h3 id="breaking-changes-3-0-0">Breaking changes<a class="anchor" aria-label="anchor" href="#breaking-changes-3-0-0"></a></h3>
+<h3 id="breaking-changes-development-version">Breaking changes<a class="anchor" aria-label="anchor" href="#breaking-changes-development-version"></a></h3>
 <ul><li><p><strong>Region keys changed.</strong> <code>ggseg.formats</code> re-keyed the bundled atlases: the <code>region</code> column now holds short keys (e.g. <code>"superiorparietal"</code>, <code>"transversetemporal"</code>) and the fully spelled-out names moved to a new <code>names</code> column. <strong>Any user data joined to an atlas by <code>region</code> must be re-keyed.</strong> Passing a long name where a <code>region</code> is expected no longer matches, and <code><a href="../reference/ggbrain.html">geom_brain()</a></code> warns that the rows were not merged. <code>ggseg.formats</code> ships a helper for translating old keys to new — look for <code><a href="https://ggsegverse.github.io/ggseg.formats/reference/legacy_region_map.html">legacy_region_map()</a></code> in the <code>ggseg.formats</code> reference — or join by the schema-stable <code>label</code> column instead. <code>ggseg</code> now requires <code>ggseg.formats (&gt;= 0.0.4.9008)</code>; the combination of an older <code>ggseg</code> with the re-keyed atlases is silently wrong, which the new floor rules out.</p></li>
 <li><p><strong><code>GeomBrain</code> is a different object.</strong> Both 2.2.1 and 3.0.0 export <code>GeomBrain</code>, but it is no longer the same ggproto: it is now the polygon geom (<code>GeomBrain</code> &lt; <code><a href="https://ggplot2.tidyverse.org/reference/Geom.html" class="external-link">ggplot2::GeomPolygon</a></code> &lt; <code><a href="https://ggplot2.tidyverse.org/reference/Geom.html" class="external-link">ggplot2::Geom</a></code>) that backs the default <code><a href="../reference/ggbrain.html">geom_brain()</a></code>. The sf geom it used to be is now <code>GeomBrainSf</code>, which <strong>this release also exports</strong> so extension code doing <code>ggplot2::layer(geom = GeomBrain)</code> against the sf path has a migration target: switch to <code>GeomBrainSf</code>. Because the export name did not change, the failure mode in extension code is a confusing rendering error rather than an object-not-found error — check any package that reaches for <code>GeomBrain</code> directly.</p></li>
 <li><p><strong><code><a href="../reference/ggbrain.html">geom_brain()</a></code> gained a <code>fun</code> argument, positionally before <code>show.legend</code>.</strong> The signature is now <code>geom_brain(mapping, data, atlas, hemi, view, position, context, fun, show.legend, inherit.aes, ...)</code>. Callers passing <code>show.legend</code> or <code>inherit.aes</code> positionally shift by one — name those arguments.</p></li>
@@ -69,13 +66,13 @@
 <li><p><strong><code><a href="../reference/position_brain.html">position_brain()</a></code> ignores the <code>hemi</code> term for slice-based atlases</strong> (subcortical, cerebellar, tract), with a warning. Those views are whole slices already containing both hemispheres, so <code>hemi ~ view</code> no longer splits the grey context into its own row away from the structures. Each view now renders with its anatomical context integrated, matching <code><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot()</a></code>. Subcortical and tract plots using <code>hemi ~ view</code> lay out differently (correctly).</p></li>
 </ul></div>
 <div class="section level3">
-<h3 id="new-features-3-0-0">New features<a class="anchor" aria-label="anchor" href="#new-features-3-0-0"></a></h3>
+<h3 id="new-features-development-version">New features<a class="anchor" aria-label="anchor" href="#new-features-development-version"></a></h3>
 <ul><li><p>New <code><a href="../reference/stat_brain.html">stat_brain()</a></code> and exported <code>StatBrain</code> ggproto: the stat-first spelling of <code><a href="../reference/ggbrain.html">geom_brain()</a></code>. Both build the same layer; use <code><a href="../reference/stat_brain.html">stat_brain()</a></code> to pair <code>StatBrain</code> with a different geom.</p></li>
 <li><p>New <code><a href="../reference/brain_test_plot.html">brain_test_plot()</a></code> builds a minimal, deterministic atlas plot (regions filled by <code>label</code>, no legend, <code><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html" class="external-link">theme_void()</a></code>) — the canonical construction for <code>vdiffr</code> snapshots across the ggsegverse, so a stray legend or title cannot creep into a snapshot and every atlas renders identically. It defaults to <code>position_brain(. ~ view)</code> for slice-based atlases and <code>position_brain(hemi ~ view)</code> for cortical ones.</p></li>
 <li><p><code>GeomBrainSf</code> is now exported (see above).</p></li>
 </ul></div>
 <div class="section level3">
-<h3 id="bug-fixes-3-0-0">Bug fixes<a class="anchor" aria-label="anchor" href="#bug-fixes-3-0-0"></a></h3>
+<h3 id="bug-fixes-development-version">Bug fixes<a class="anchor" aria-label="anchor" href="#bug-fixes-development-version"></a></h3>
 <ul><li><p>A bare <code><a href="../reference/ggbrain.html">geom_brain()</a></code> again colours the atlas by its palette, keyed on <code>label</code> — unchanged from 2.2.1. The default is now installed at build time, so a top-level <code>aes(fill = value)</code> wins instead of erroring with “Continuous value supplied to a discrete scale”.</p></li>
 <li><p>Faceting no longer needs <code><a href="https://dplyr.tidyverse.org/reference/group_by.html" class="external-link">dplyr::group_by()</a></code>. The atlas geometry is drawn by <code>StatBrain</code>, which ggplot2 recomputes per panel, so <code><a href="https://ggplot2.tidyverse.org/reference/facet_wrap.html" class="external-link">facet_wrap()</a></code> / <code><a href="https://ggplot2.tidyverse.org/reference/facet_grid.html" class="external-link">facet_grid()</a></code> work directly from your data. Faceting on a variable of your own draws the complete brain in every panel; faceting on an atlas column (<code>hemi</code>, <code>view</code>) draws that slice in each panel, as before.</p></li>
 <li><p><code><a href="../reference/ggbrain.html">geom_brain()</a></code> again respects <code>data</code> and aesthetics set in the top-level <code><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot()</a></code> call. The polygon renderer built the atlas eagerly, before the plot existed, so it never saw inherited <code>data</code>/<code><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes()</a></code> (<a href="https://github.com/ggsegverse/ggseg/issues/158" class="external-link">#158</a>).</p></li>
@@ -95,7 +92,7 @@
 <li><p>Laying out a data frame that mixes atlas types now errors with an explanation rather than R’s “condition has length &gt; 1”.</p></li>
 </ul></div>
 <div class="section level3">
-<h3 id="documentation-and-internals-3-0-0">Documentation and internals<a class="anchor" aria-label="anchor" href="#documentation-and-internals-3-0-0"></a></h3>
+<h3 id="documentation-and-internals-development-version">Documentation and internals<a class="anchor" aria-label="anchor" href="#documentation-and-internals-development-version"></a></h3>
 <ul><li><p>Roxygen documentation now uses markdown.</p></li>
 <li><p><code>positioning-views.Rmd</code> used region and view names no atlas has (<code>"Thalamus Proper"</code>, <code>coronal_3</code>), so three zoom figures and two view-selection figures demonstrated nothing.</p></li>
 <li><p>Tests, examples, and vignettes resolve region names dynamically through <code><a href="https://ggsegverse.github.io/ggseg.formats/reference/atlas_regions.html">ggseg.formats::atlas_regions()</a></code> and the schema-stable <code>label</code> column instead of hard-coding region strings.</p></li>
