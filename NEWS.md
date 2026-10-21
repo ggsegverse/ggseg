@@ -83,6 +83,12 @@ breaking changes before upgrading.
 
 ## Bug fixes
 
+- `brain_test_plot()` says why an atlas it rejects is invalid. An atlas built
+  against an older `core` schema failed with "`atlas` must be a
+  `<ggseg_atlas>`" while being one, which reads as the wrong argument having
+  been passed; it now reports the constructor's own complaint, such as a
+  `hemi` value outside the vocabulary.
+
 - A bare `geom_brain()` again colours the atlas by its palette, keyed on
   `label` — unchanged from 2.2.1. The default is now installed at build time, so
   a top-level `aes(fill = value)` wins instead of erroring with "Continuous

@@ -31,6 +31,17 @@ describe("brain_test_plot()", {
     expect_error(brain_test_plot(1), "ggseg_atlas")
   })
 
+  it("says why an atlas with a stale core is rejected", {
+    atlas <- dk()
+    atlas$core$hemi[1] <- "vermis"
+
+    expect_error(
+      brain_test_plot(atlas),
+      class = "ggseg.formats_invalid_atlas"
+    )
+    expect_error(brain_test_plot(atlas), "vermis")
+  })
+
   it("lays out slice-based atlases by view without a hemi warning", {
     expect_no_warning(ggplot2::ggplot_build(brain_test_plot(aseg())))
   })
