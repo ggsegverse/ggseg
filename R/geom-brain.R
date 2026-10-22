@@ -185,7 +185,9 @@ geom_brain_sf <- function(
   )
 
   has_fill_aes <- "fill" %in% names(mapping)
-  palette <- atlas_palette(atlas)
+  # Resolved at drawing time, so an atlas with no palette of its own still
+  # comes out with its regions told apart.
+  palette <- ggseg.formats::atlas_plot_palette(atlas)
   if (!is.null(palette) && !has_fill_aes) {
     result <- c(
       result,

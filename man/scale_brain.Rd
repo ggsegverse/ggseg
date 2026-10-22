@@ -25,7 +25,7 @@ scale_fill_brain(name = "dk", na.value = "grey", ...)
 
 \item{na.value}{Colour for \code{NA} entries (default: \code{"grey"}).}
 
-\item{...}{Additional arguments passed to \code{\link[ggseg.formats:atlas_palette]{ggseg.formats::atlas_palette()}}.}
+\item{...}{Ignored; the atlas palette is resolved at drawing time.}
 
 \item{aesthetics}{Which aesthetic to scale: \code{"fill"}, \code{"colour"}, or
 \code{"color"}.}

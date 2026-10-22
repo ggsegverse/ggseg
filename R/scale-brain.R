@@ -11,7 +11,7 @@
 #' @param na.value Colour for `NA` entries (default: `"grey"`).
 #' @param aesthetics Which aesthetic to scale: `"fill"`, `"colour"`, or
 #'   `"color"`.
-#' @param ... Additional arguments passed to [ggseg.formats::atlas_palette()].
+#' @param ... Ignored; the atlas palette is resolved at drawing time.
 #'
 #' @return A ggplot2 scale object.
 #' @rdname scale_brain
@@ -299,7 +299,7 @@ scale_labs_brain <- function(
 #' fails with an atlas error rather than that function's own.
 #'
 #' @param name Name of an atlas function, e.g. `"dk"`.
-#' @param ... Passed to [ggseg.formats::atlas_palette()].
+#' @param ... Ignored; kept for callers that passed it through.
 #' @return Named character vector of colours.
 #' @keywords internal
 #' @noRd
@@ -322,7 +322,10 @@ atlas_palette_by_name <- function(name, ...) {
     ))
   }
 
-  atlas_palette(atlas, ...)
+  # Resolved rather than stored: a palette is optional, and
+  # `scale_fill_brain()` on an atlas that ships none should still colour the
+  # regions instead of failing on a NULL.
+  ggseg.formats::atlas_plot_palette(atlas)
 }
 
 #' Warn when no mapped value matches the palette's keys

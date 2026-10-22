@@ -336,7 +336,7 @@ needs_default_atlas_fill <- function(mapping, aes_params) {
 #' @keywords internal
 #' @noRd
 add_atlas_fill_scale <- function(plot, atlas) {
-  palette <- ggseg.formats::atlas_palette(atlas)
+  palette <- ggseg.formats::atlas_plot_palette(atlas)
   if (is.null(palette) || length(palette) == 0) {
     return(FALSE)
   }

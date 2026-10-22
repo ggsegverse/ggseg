@@ -54,7 +54,10 @@ brain_test_plot <- function(
     ) +
     ggplot2::theme_void()
 
-  palette <- ggseg.formats::atlas_palette(atlas)
+  # `atlas_plot_palette()` rather than the stored palette: an atlas may ship
+  # none, or ship one that cannot tell its regions apart, and drawing is
+  # where that is resolved into colours.
+  palette <- ggseg.formats::atlas_plot_palette(atlas)
   if (!is.null(palette)) {
     p <- p +
       ggplot2::scale_fill_manual(

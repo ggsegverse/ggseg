@@ -83,6 +83,16 @@ breaking changes before upgrading.
 
 ## Bug fixes
 
+- Colour is resolved when the atlas is drawn, not read from what it stores.
+  `geom_brain()`, `brain_test_plot()` and `scale_fill_brain()` went to the
+  stored palette directly, so an atlas that ships none drew every region in
+  the same ink and one that ships an unusable palette drew it anyway --
+  MarsAtlas came out as eight black brains. They go through
+  `ggseg.formats::atlas_plot_palette()` now, which uses the atlas's palette
+  when it has one and generates distinguishable colours when it does not,
+  knowing which labels are regions and which are backdrop. `ggseg3d` has
+  done this since 2.1.2.9003.
+
 - `brain_test_plot()` says why an atlas it rejects is invalid. An atlas built
   against an older `core` schema failed with "`atlas` must be a
   `<ggseg_atlas>`" while being one, which reads as the wrong argument having

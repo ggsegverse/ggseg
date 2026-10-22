@@ -20,11 +20,17 @@ describe("brain_test_plot()", {
     expect_false(is.null(p$scales$get_scales("fill")))
   })
 
-  it("omits the manual fill scale when the atlas has no palette", {
+  it("colours an atlas that ships no palette", {
+    # A palette is optional. Drawing is where that is resolved, and it is
+    # the only place that knows which labels are regions and which are
+    # backdrop, so it colours rather than leaving the atlas one flat shade.
     atlas <- dk()
     atlas$palette <- NULL
     p <- brain_test_plot(atlas)
-    expect_null(p$scales$get_scales("fill"))
+
+    expect_false(is.null(p$scales$get_scales("fill")))
+    fills <- ggplot2::layer_data(p)$fill
+    expect_gt(length(unique(fills[!is.na(fills)])), 1L)
   })
 
   it("errors on a non-atlas input", {
