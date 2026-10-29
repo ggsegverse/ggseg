@@ -31,12 +31,11 @@ brain_test_plot <- function(
   position = NULL,
   na.value = "grey"
 ) {
-  if (!ggseg.formats::is_ggseg_atlas(atlas)) {
-    cli::cli_abort(c(
-      "{.arg atlas} must be a {.cls ggseg_atlas} object.",
-      "i" = "Got {.cls {class(atlas)}}."
-    ))
-  }
+  # An atlas carrying the class but failing its own constructor needs to be
+  # told why: "must be a <ggseg_atlas>" reads as a wrong-argument mistake
+  # when what it means is that this atlas was built against an older core
+  # schema. `assert_ggseg_atlas()` chains the constructor's own error.
+  ggseg.formats::assert_ggseg_atlas(atlas)
 
   if (is.null(position)) {
     position <- if (identical(ggseg.formats::atlas_type(atlas), "cortical")) {
@@ -55,7 +54,10 @@ brain_test_plot <- function(
     ) +
     ggplot2::theme_void()
 
-  palette <- ggseg.formats::atlas_palette(atlas)
+  # `atlas_plot_palette()` rather than the stored palette: an atlas may ship
+  # none, or ship one that cannot tell its regions apart, and drawing is
+  # where that is resolved into colours.
+  palette <- ggseg.formats::atlas_plot_palette(atlas)
   if (!is.null(palette)) {
     p <- p +
       ggplot2::scale_fill_manual(

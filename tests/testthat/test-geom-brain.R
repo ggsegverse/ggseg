@@ -433,10 +433,11 @@ describe("default atlas fill", {
     expect_true("white" %in% built$data[[1]]$fill)
   })
 
-  it("installs no scale, so no fill mapping, for a palette-less atlas", {
+  it("installs a resolved scale for a palette-less atlas", {
+    # The atlas ships none; drawing supplies one.
     atlas <- atlas_without_2d_geometry()
     expect_null(ggseg.formats::atlas_palette(atlas))
-    expect_false(add_atlas_fill_scale(ggplot(), atlas))
+    expect_true(add_atlas_fill_scale(ggplot(), atlas))
   })
 
   it("asks for the default only when neither fill nor colour is supplied", {
