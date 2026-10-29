@@ -1,0 +1,18 @@
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, ready_for_review, edited]
+
+name: pr-risk-tier.yaml
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  pr-risk-tier:
+    uses: ggsegverse/.github/.github/workflows/pr-risk-tier.yaml@main
+    secrets: inherit
+    with:
+      # The exported plotting surface. A changed geom, stat, layer or join signature re-renders every atlas package's snapshots, so it carries release-level risk however small the diff.
+      extra-t2-paths: |
+        R/geom-brain.R R/geom-brain-polygon.R R/layer-brain.R R/stat-brain.R R/brain_join.R
