@@ -37,8 +37,7 @@ scale_fill_brain(name = "dk", na.value = "grey", ...)
 
 - ...:
 
-  Additional arguments passed to
-  [`ggseg.formats::atlas_palette()`](https://ggsegverse.github.io/ggseg.formats/reference/atlas_palette.html).
+  Ignored; the atlas palette is resolved at drawing time.
 
 - aesthetics:
 

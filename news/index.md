@@ -114,6 +114,29 @@ upgrading.
 
 ### Bug fixes
 
+- Colour is resolved when the atlas is drawn, not read from what it
+  stores.
+  [`geom_brain()`](https://ggsegverse.github.io/ggseg/reference/ggbrain.md),
+  [`brain_test_plot()`](https://ggsegverse.github.io/ggseg/reference/brain_test_plot.md)
+  and
+  [`scale_fill_brain()`](https://ggsegverse.github.io/ggseg/reference/scale_brain.md)
+  went to the stored palette directly, so an atlas that ships none drew
+  every region in the same ink and one that ships an unusable palette
+  drew it anyway – MarsAtlas came out as eight black brains. They go
+  through
+  [`ggseg.formats::atlas_plot_palette()`](https://ggsegverse.github.io/ggseg.formats/reference/atlas_plot_palette.html)
+  now, which uses the atlas’s palette when it has one and generates
+  distinguishable colours when it does not, knowing which labels are
+  regions and which are backdrop. `ggseg3d` has done this since
+  2.1.2.9003.
+
+- [`brain_test_plot()`](https://ggsegverse.github.io/ggseg/reference/brain_test_plot.md)
+  says why an atlas it rejects is invalid. An atlas built against an
+  older `core` schema failed with “`atlas` must be a `<ggseg_atlas>`”
+  while being one, which reads as the wrong argument having been passed;
+  it now reports the constructor’s own complaint, such as a `hemi` value
+  outside the vocabulary.
+
 - A bare
   [`geom_brain()`](https://ggsegverse.github.io/ggseg/reference/ggbrain.md)
   again colours the atlas by its palette, keyed on `label` — unchanged
