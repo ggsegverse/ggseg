@@ -8,6 +8,10 @@ breaking changes before upgrading.
 
 ## Breaking changes
 
+- A `"wm"` atlas gets the same axis scales as a subcortical one. White-matter
+  atlases carry the same polygons and slab views, so their axes are labelled
+  by view rather than hemisphere.
+
 - **Region keys changed.** `ggseg.formats` re-keyed the bundled atlases: the
   `region` column now holds short keys (e.g. `"superiorparietal"`,
   `"transversetemporal"`) and the fully spelled-out names moved to a new `names`
