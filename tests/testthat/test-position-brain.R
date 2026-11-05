@@ -540,12 +540,49 @@ describe("warn_unmatched_views()", {
   })
 
   it("warns from the layout itself", {
+    real_view <- atlas_views(aseg())[1]
     expect_warning(
       prepare_polygon_atlas(
         aseg(),
-        position = position_brain(views = c("sagittal", "coronal_3"))
+        position = position_brain(views = c(real_view, "coronal_99"))
       ),
       class = "ggseg_unmatched_views"
+    )
+  })
+})
+
+
+describe("select_views()", {
+  layout <- data.frame(view = c("a", "b", "c", "a"), id = 1:4)
+
+  it("keeps the requested views in the requested order", {
+    kept <- select_views(layout, c("c", "a"))
+    expect_identical(kept$view, c("c", "a", "a"))
+    expect_identical(kept$id, c(3L, 1L, 4L))
+  })
+
+  it("warns about the requested views it drops", {
+    expect_warning(
+      kept <- select_views(layout, c("b", "z")),
+      class = "ggseg_unmatched_views"
+    )
+    expect_identical(kept$view, "b")
+  })
+
+  it("errors when none of the requested views exist", {
+    expect_error(
+      select_views(layout, c("y", "z")),
+      class = "ggseg_no_matching_views"
+    )
+  })
+
+  it("errors from the layout instead of failing downstream", {
+    expect_error(
+      prepare_polygon_atlas(
+        aseg(),
+        position = position_brain(views = c("coronal_98", "coronal_99"))
+      ),
+      class = "ggseg_no_matching_views"
     )
   })
 })

@@ -194,3 +194,11 @@ slice_layout_permutations <- function(ncol = 3) {
 tract_layout_permutations <- function() {
   slice_layout_permutations(ncol = 2)
 }
+
+#' aseg has one slice per orientation, so `type ~ .` is `"vertical"` and every
+#' `ncol` repeats `"horizontal"`, `"vertical"` or `nrow = 2`. Only the three
+#' distinct layouts are snapshotted; tracula covers `ncol` and `type ~ .`.
+#' @rdname cortical_layout_permutations
+aseg_layout_permutations <- function() {
+  slice_layout_permutations()[c("default horizontal", "vertical", "nrow 2")]
+}
