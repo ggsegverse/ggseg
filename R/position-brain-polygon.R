@@ -58,11 +58,7 @@ frame_2_position_flat <- function(
   zoom_pad = 0.05
 ) {
   if (!is.null(views)) {
-    warn_unmatched_views(views, unique(data$view))
-    data <- data[data$view %in% views, , drop = FALSE]
-    data$view <- factor(data$view, levels = views)
-    data <- data[order(data$view), ]
-    data$view <- as.character(data$view)
+    data <- select_views(data, views)
   }
 
   if (!is.null(nrow) || !is.null(ncol)) {

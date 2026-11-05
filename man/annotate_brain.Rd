@@ -53,7 +53,7 @@ A ggplot2 annotation layer.
 Annotates each brain view with a text label positioned above the
 view's bounding box. For cortical atlases, labels show hemisphere
 and view (e.g., "left lateral"). For subcortical and tract atlases,
-labels show the view name directly (e.g., "axial_1", "sagittal").
+labels show the view name directly (e.g., "axial_2", "sagittal_left").
 }
 \details{
 Pass the same \code{position} you gave \code{\link[=geom_brain]{geom_brain()}} and the labels line up with

@@ -26,7 +26,7 @@ describe("position_brain visual", {
   }
 
   snapshot_each_permutation("dk", dk_fixture, cortical_layout_permutations())
-  snapshot_each_permutation("aseg", aseg_fixture, slice_layout_permutations())
+  snapshot_each_permutation("aseg", aseg_fixture, aseg_layout_permutations())
   snapshot_each_permutation(
     "tracula",
     tracula_fixture,

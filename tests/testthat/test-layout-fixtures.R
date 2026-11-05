@@ -81,7 +81,7 @@ describe("layout fixtures still discriminate between permutations", {
   })
 
   it("subcortical permutations all lay out differently", {
-    sigs <- signatures(aseg_fixture(), slice_layout_permutations())
+    sigs <- signatures(aseg_fixture(), aseg_layout_permutations())
     expect_identical(anyDuplicated(sigs), 0L)
   })
 
@@ -121,7 +121,7 @@ describe("layout fixtures still discriminate between permutations", {
     }
     cases <- list(
       list(dk_fixture(), cortical_layout_permutations()),
-      list(aseg_fixture(), slice_layout_permutations()),
+      list(aseg_fixture(), aseg_layout_permutations()),
       list(tracula_fixture(), tract_layout_permutations())
     )
     for (case in cases) {
@@ -160,6 +160,6 @@ describe("layout fixtures still discriminate between permutations", {
       layout_cells(aseg_fixture(), position_brain(hemi ~ view))
     )
     expect_length(unique(cells$y), 1)
-    expect_length(unique(cells$x), 7)
+    expect_length(unique(cells$x), length(atlas_views(aseg_fixture())))
   })
 })
