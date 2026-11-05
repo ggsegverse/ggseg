@@ -3,7 +3,7 @@
 #' Annotates each brain view with a text label positioned above the
 #' view's bounding box. For cortical atlases, labels show hemisphere
 #' and view (e.g., "left lateral"). For subcortical and tract atlases,
-#' labels show the view name directly (e.g., "axial_1", "sagittal").
+#' labels show the view name directly (e.g., "axial_2", "sagittal_left").
 #'
 #' Pass the same `position` you gave [geom_brain()] and the labels line up with
 #' the views automatically.

@@ -121,6 +121,35 @@ describe("adapt_scales type dispatch", {
     expect_false(is.null(x$labels))
   })
 
+  it("handles white-matter atlases like slice-based ones", {
+    # A white-matter atlas carries the same polygons and slab views a
+    # subcortical one does, so its axes are labelled by view. Built by
+    # relabelling a subcortical atlas rather than from scratch: the point is
+    # that the type reaches the same branch, not that the geometry differs.
+    geo <- atlas_scale_coords(aseg())
+    geo$type <- "wm"
+
+    labs <- adapt_scales(geo, position = "dispersed", aesthetics = "labs")
+    expect_identical(labs$x, "view")
+
+    x <- adapt_scales(geo, position = "dispersed", aesthetics = "x")
+    expect_false(is.null(x$breaks))
+    expect_false(is.null(x$labels))
+  })
+
+  it("gives a white-matter atlas the same scales as a subcortical one", {
+    # The claim the branch makes. If "wm" fell through to the error, or to
+    # the cortical branch, these would differ.
+    sub <- atlas_scale_coords(aseg())
+    wm <- sub
+    wm$type <- "wm"
+
+    expect_identical(
+      adapt_scales(wm, position = "dispersed", aesthetics = "x"),
+      adapt_scales(sub, position = "dispersed", aesthetics = "x")
+    )
+  })
+
   it("errors on an atlas type it has no scales for", {
     geo <- atlas_scale_coords(dk())
     geo$type <- "nonesuch"

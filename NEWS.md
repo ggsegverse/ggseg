@@ -8,6 +8,10 @@ breaking changes before upgrading.
 
 ## Breaking changes
 
+- A `"wm"` atlas gets the same axis scales as a subcortical one. White-matter
+  atlases carry the same polygons and slab views, so their axes are labelled
+  by view rather than hemisphere.
+
 - **Region keys changed.** `ggseg.formats` re-keyed the bundled atlases: the
   `region` column now holds short keys (e.g. `"superiorparietal"`,
   `"transversetemporal"`) and the fully spelled-out names moved to a new `names`
@@ -90,6 +94,13 @@ show.legend, inherit.aes, ...)`. Callers passing `show.legend` or
   `ggsegCraddock::adhd200_400_subcortical()` came out blank. `ggseg.formats`
   already re-orders this way in `atlas_sf()` and `as.data.frame()`; the
   polygon renderer was the one path that did not (#181).
+
+- `position_brain(views = )` and `reposition_brain(views = )` error with the
+  atlas's available views when none of the requested views exist. They warned
+  and then failed far downstream in `st_as_sf()`, which is what the
+  `reposition_brain()` example did once ggseg.formats rebuilt `aseg` with new
+  view names. Examples and the positioning vignette use the rebuilt atlas's
+  views (`axial_2`, `coronal_2`, `sagittal_left`).
 
 - Colour is resolved when the atlas is drawn, not read from what it stores.
   `geom_brain()`, `brain_test_plot()` and `scale_fill_brain()` went to the

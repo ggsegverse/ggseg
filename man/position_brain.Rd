@@ -80,7 +80,7 @@ ggplot() +
   geom_brain(
     atlas = aseg(), aes(fill = region),
     position = position_brain(
-      views = c("sagittal", "axial_3", "coronal_2"),
+      views = c("sagittal_left", "axial_2", "coronal_2"),
       nrow = 1
     )
   )

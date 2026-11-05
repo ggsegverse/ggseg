@@ -33,7 +33,7 @@ draw one brain per group.}
 
 \item{view}{Character vector of views to include, as recorded in the atlas
 data. For cortical atlases: \code{"lateral"}, \code{"medial"}. For subcortical/tract
-atlases: slice identifiers like \code{"axial_3"}. Defaults to all views.}
+atlases: slice identifiers like \code{"axial_2"}. Defaults to all views.}
 
 \item{position}{Brain-view layout: the result of a call to
 \code{\link[=position_brain]{position_brain()}}, a layout string (e.g. \code{"horizontal"}, \code{"vertical"}), or

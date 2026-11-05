@@ -51,7 +51,7 @@ reposition_brain(dk(), . ~ hemi + view)
 
 \donttest{
 reposition_brain(aseg(), nrow = 2)
-reposition_brain(aseg(), views = c("sagittal", "axial_3"))
+reposition_brain(aseg(), views = c("sagittal_left", "axial_2"))
 }
 \dontshow{\}) # examplesIf}
 }
