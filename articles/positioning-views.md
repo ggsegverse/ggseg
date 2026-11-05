@@ -97,8 +97,8 @@ All brain views stacked in a single column.
 
 Subcortical atlases like `aseg` and tract atlases like `tracula` don’t
 have the hemisphere/view pairing that cortical atlases do. Their views
-are individual slices (e.g. `"axial_3"`, `"sagittal"`). That opens up a
-different set of positioning tools.
+are individual slices (e.g. `"axial_2"`, `"sagittal_left"`). That opens
+up a different set of positioning tools.
 
 ### Horizontal and vertical
 
@@ -191,13 +191,11 @@ ggplot() +
   geom_brain(
     atlas = aseg(),
     position = position_brain(
-      views = c("sagittal", "axial_3", "coronal_2")
+      views = c("sagittal_left", "axial_2", "coronal_2")
     ),
     show.legend = FALSE
   ) +
   theme_void()
-#> Warning: ! Views "sagittal" and "axial_3" are not in the atlas and were dropped.
-#> ℹ Available views: "axial_2", "coronal_2", and "sagittal_left".
 ```
 
 ![A subset of subcortical views selected by
@@ -213,15 +211,12 @@ ggplot() +
   geom_brain(
     atlas = aseg(),
     position = position_brain(
-      views = c("sagittal", "axial_3", "axial_5", "coronal_2"),
+      views = c("sagittal_left", "axial_2", "coronal_2"),
       nrow = 2
     ),
     show.legend = FALSE
   ) +
   theme_void()
-#> Warning: ! Views "sagittal", "axial_3", and "axial_5" are not in the atlas and were
-#>   dropped.
-#> ℹ Available views: "axial_2", "coronal_2", and "sagittal_left".
 ```
 
 ![Custom two-row grid with selected subcortical

@@ -118,6 +118,15 @@ upgrading.
 
 ### Bug fixes
 
+- `position_brain(views = )` and `reposition_brain(views = )` error with
+  the atlas’s available views when none of the requested views exist.
+  They warned and then failed far downstream in `st_as_sf()`, which is
+  what the
+  [`reposition_brain()`](https://ggsegverse.github.io/ggseg/reference/reposition_brain.md)
+  example did once ggseg.formats rebuilt `aseg` with new view names.
+  Examples and the positioning vignette use the rebuilt atlas’s views
+  (`axial_2`, `coronal_2`, `sagittal_left`).
+
 - Colour is resolved when the atlas is drawn, not read from what it
   stores.
   [`geom_brain()`](https://ggsegverse.github.io/ggseg/reference/ggbrain.md),

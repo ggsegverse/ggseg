@@ -173,8 +173,8 @@ All brain views stacked in a single column.
 <p>Subcortical atlases like <code>aseg</code> and tract atlases like
 <code>tracula</code> don’t have the hemisphere/view pairing that
 cortical atlases do. Their views are individual slices
-(e.g. <code>"axial_3"</code>, <code>"sagittal"</code>). That opens up a
-different set of positioning tools.</p>
+(e.g. <code>"axial_2"</code>, <code>"sagittal_left"</code>). That opens
+up a different set of positioning tools.</p>
 <div class="section level3">
 <h3 id="horizontal-and-vertical">Horizontal and vertical<a class="anchor" aria-label="anchor" href="#horizontal-and-vertical"></a>
 </h3>
@@ -252,13 +252,11 @@ include and in what order. Check what’s available with
 <span>  <span class="fu"><a href="../reference/ggbrain.html">geom_brain</a></span><span class="op">(</span></span>
 <span>    atlas <span class="op">=</span> <span class="fu"><a href="https://ggsegverse.github.io/ggseg.formats/reference/aseg.html">aseg</a></span><span class="op">(</span><span class="op">)</span>,</span>
 <span>    position <span class="op">=</span> <span class="fu"><a href="../reference/position_brain.html">position_brain</a></span><span class="op">(</span></span>
-<span>      views <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"sagittal"</span>, <span class="st">"axial_3"</span>, <span class="st">"coronal_2"</span><span class="op">)</span></span>
+<span>      views <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"sagittal_left"</span>, <span class="st">"axial_2"</span>, <span class="st">"coronal_2"</span><span class="op">)</span></span>
 <span>    <span class="op">)</span>,</span>
 <span>    show.legend <span class="op">=</span> <span class="cn">FALSE</span></span>
 <span>  <span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html" class="external-link">theme_void</a></span><span class="op">(</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Warning: <span style="color: #BBBB00;">!</span> Views <span style="color: #0000BB;">"sagittal"</span> and <span style="color: #0000BB;">"axial_3"</span> are not in the atlas and were dropped.</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> Available views: <span style="color: #0000BB;">"axial_2"</span>, <span style="color: #0000BB;">"coronal_2"</span>, and <span style="color: #0000BB;">"sagittal_left"</span>.</span></span></code></pre></div>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html" class="external-link">theme_void</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <div class="figure">
 <img src="positioning-views_files/figure-html/fig-aseg-select-views-1.png" class="r-plt" alt="A subset of subcortical views selected by name." width="576"><p class="caption">
 A subset of subcortical views selected by name.
@@ -271,15 +269,12 @@ A subset of subcortical views selected by name.
 <span>  <span class="fu"><a href="../reference/ggbrain.html">geom_brain</a></span><span class="op">(</span></span>
 <span>    atlas <span class="op">=</span> <span class="fu"><a href="https://ggsegverse.github.io/ggseg.formats/reference/aseg.html">aseg</a></span><span class="op">(</span><span class="op">)</span>,</span>
 <span>    position <span class="op">=</span> <span class="fu"><a href="../reference/position_brain.html">position_brain</a></span><span class="op">(</span></span>
-<span>      views <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"sagittal"</span>, <span class="st">"axial_3"</span>, <span class="st">"axial_5"</span>, <span class="st">"coronal_2"</span><span class="op">)</span>,</span>
+<span>      views <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"sagittal_left"</span>, <span class="st">"axial_2"</span>, <span class="st">"coronal_2"</span><span class="op">)</span>,</span>
 <span>      nrow <span class="op">=</span> <span class="fl">2</span></span>
 <span>    <span class="op">)</span>,</span>
 <span>    show.legend <span class="op">=</span> <span class="cn">FALSE</span></span>
 <span>  <span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html" class="external-link">theme_void</a></span><span class="op">(</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Warning: <span style="color: #BBBB00;">!</span> Views <span style="color: #0000BB;">"sagittal"</span>, <span style="color: #0000BB;">"axial_3"</span>, and <span style="color: #0000BB;">"axial_5"</span> are not in the atlas and were</span></span>
-<span><span class="co">#&gt;   dropped.</span></span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> Available views: <span style="color: #0000BB;">"axial_2"</span>, <span style="color: #0000BB;">"coronal_2"</span>, and <span style="color: #0000BB;">"sagittal_left"</span>.</span></span></code></pre></div>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html" class="external-link">theme_void</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <div class="figure">
 <img src="positioning-views_files/figure-html/fig-aseg-custom-grid-1.png" class="r-plt" alt="Custom two-row grid with selected subcortical views." width="412.8"><p class="caption">
 Custom two-row grid with selected subcortical views.

@@ -60,7 +60,7 @@ stat_brain(
 
   Character vector of views to include, as recorded in the atlas data.
   For cortical atlases: `"lateral"`, `"medial"`. For subcortical/tract
-  atlases: slice identifiers like `"axial_3"`. Defaults to all views.
+  atlases: slice identifiers like `"axial_2"`. Defaults to all views.
 
 - position:
 

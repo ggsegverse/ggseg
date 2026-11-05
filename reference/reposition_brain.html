@@ -245,15 +245,46 @@ and pass it to <code><a href="ggbrain.html">geom_brain()</a></code>.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 21 MULTIPOLYGON (((74.71875 12...</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 24 MULTIPOLYGON (((58.09375 88...</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 27 MULTIPOLYGON (((77 103.9062...</span>
-<span class="r-in"><span><span class="fu">reposition_brain</span><span class="op">(</span><span class="fu"><a href="https://ggsegverse.github.io/ggseg.formats/reference/aseg.html">aseg</a></span><span class="op">(</span><span class="op">)</span>, views <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"sagittal"</span>, <span class="st">"axial_3"</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span><span style="color: #BBBB00;">!</span> Views <span style="color: #0000BB;">"sagittal"</span> and <span style="color: #0000BB;">"axial_3"</span> are not in the atlas and were dropped.</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Available views: <span style="color: #0000BB;">"axial_2"</span>, <span style="color: #0000BB;">"coronal_2"</span>, and <span style="color: #0000BB;">"sagittal_left"</span>.</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>no non-missing arguments to max; returning -Inf</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>no non-missing arguments to max; returning -Inf</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>no non-missing arguments to max; returning -Inf</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>no non-missing arguments to max; returning -Inf</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>no non-missing arguments to max; returning -Inf</span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in UseMethod("st_as_sf"):</span> no applicable method for 'st_as_sf' applied to an object of class "NULL"</span>
+<span class="r-in"><span><span class="fu">reposition_brain</span><span class="op">(</span><span class="fu"><a href="https://ggsegverse.github.io/ggseg.formats/reference/aseg.html">aseg</a></span><span class="op">(</span><span class="op">)</span>, views <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"sagittal_left"</span>, <span class="st">"axial_2"</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Simple feature collection with 51 features and 9 fields</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Geometry type: MULTIPOLYGON</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Dimension:     XY</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Bounding box:  xmin: -3.630688 ymin: -3.630688 xmax: 366.6994 ymax: 172.5682</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> CRS:           NA</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> First 10 features:</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                  label          view    hemi           region</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3               cortex sagittal_left    &lt;NA&gt;             &lt;NA&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 6           Brain-Stem sagittal_left midline       brain stem</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 8          CC_Anterior sagittal_left midline      cc anterior</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 11          CC_Central sagittal_left midline       cc central</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 14     CC_Mid_Anterior sagittal_left midline  cc mid anterior</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 17    CC_Mid_Posterior sagittal_left midline cc mid posterior</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 20        CC_Posterior sagittal_left midline     cc posterior</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 23 Left-Accumbens-area sagittal_left    left   accumbens area</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 26       Left-Amygdala sagittal_left    left         amygdala</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 29        Left-Caudate sagittal_left    left          caudate</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                          display       structure atlas        type  colour</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3                           &lt;NA&gt;            &lt;NA&gt;  aseg subcortical    &lt;NA&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 6                     brain stem       brainstem  aseg subcortical #779FB0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 8       corpus callosum anterior corpus callosum  aseg subcortical #0000FF</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 11       corpus callosum central corpus callosum  aseg subcortical #0000A0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 14  corpus callosum mid-anterior corpus callosum  aseg subcortical #0000D0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 17 corpus callosum mid-posterior corpus callosum  aseg subcortical #000070</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 20     corpus callosum posterior corpus callosum  aseg subcortical #000040</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 23                     accumbens   basal ganglia  aseg subcortical #FFA500</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 26                      amygdala          limbic  aseg subcortical #67FFFF</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 29                       caudate   basal ganglia  aseg subcortical #7ABADC</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                          geometry</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3  MULTIPOLYGON (((75.625 49.9...</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 6  MULTIPOLYGON (((102.4375 79...</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 8  MULTIPOLYGON (((49.4375 92....</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 11 MULTIPOLYGON (((78 111.3828...</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 14 MULTIPOLYGON (((62.125 108....</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 17 MULTIPOLYGON (((81.76562 10...</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 20 MULTIPOLYGON (((106.3333 88...</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 23 MULTIPOLYGON (((65 66.94531...</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 26 MULTIPOLYGON (((80.5625 65....</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 29 MULTIPOLYGON (((43 74.94531...</span>
 <span class="r-in"><span><span class="co"># }</span></span></span>
 </code></pre></div>
     </div>

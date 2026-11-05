@@ -185,14 +185,45 @@ reposition_brain(aseg(), nrow = 2)
 #> 21 MULTIPOLYGON (((74.71875 12...
 #> 24 MULTIPOLYGON (((58.09375 88...
 #> 27 MULTIPOLYGON (((77 103.9062...
-reposition_brain(aseg(), views = c("sagittal", "axial_3"))
-#> Warning: ! Views "sagittal" and "axial_3" are not in the atlas and were dropped.
-#> ℹ Available views: "axial_2", "coronal_2", and "sagittal_left".
-#> Warning: no non-missing arguments to max; returning -Inf
-#> Warning: no non-missing arguments to max; returning -Inf
-#> Warning: no non-missing arguments to max; returning -Inf
-#> Warning: no non-missing arguments to max; returning -Inf
-#> Warning: no non-missing arguments to max; returning -Inf
-#> Error in UseMethod("st_as_sf"): no applicable method for 'st_as_sf' applied to an object of class "NULL"
+reposition_brain(aseg(), views = c("sagittal_left", "axial_2"))
+#> Simple feature collection with 51 features and 9 fields
+#> Geometry type: MULTIPOLYGON
+#> Dimension:     XY
+#> Bounding box:  xmin: -3.630688 ymin: -3.630688 xmax: 366.6994 ymax: 172.5682
+#> CRS:           NA
+#> First 10 features:
+#>                  label          view    hemi           region
+#> 3               cortex sagittal_left    <NA>             <NA>
+#> 6           Brain-Stem sagittal_left midline       brain stem
+#> 8          CC_Anterior sagittal_left midline      cc anterior
+#> 11          CC_Central sagittal_left midline       cc central
+#> 14     CC_Mid_Anterior sagittal_left midline  cc mid anterior
+#> 17    CC_Mid_Posterior sagittal_left midline cc mid posterior
+#> 20        CC_Posterior sagittal_left midline     cc posterior
+#> 23 Left-Accumbens-area sagittal_left    left   accumbens area
+#> 26       Left-Amygdala sagittal_left    left         amygdala
+#> 29        Left-Caudate sagittal_left    left          caudate
+#>                          display       structure atlas        type  colour
+#> 3                           <NA>            <NA>  aseg subcortical    <NA>
+#> 6                     brain stem       brainstem  aseg subcortical #779FB0
+#> 8       corpus callosum anterior corpus callosum  aseg subcortical #0000FF
+#> 11       corpus callosum central corpus callosum  aseg subcortical #0000A0
+#> 14  corpus callosum mid-anterior corpus callosum  aseg subcortical #0000D0
+#> 17 corpus callosum mid-posterior corpus callosum  aseg subcortical #000070
+#> 20     corpus callosum posterior corpus callosum  aseg subcortical #000040
+#> 23                     accumbens   basal ganglia  aseg subcortical #FFA500
+#> 26                      amygdala          limbic  aseg subcortical #67FFFF
+#> 29                       caudate   basal ganglia  aseg subcortical #7ABADC
+#>                          geometry
+#> 3  MULTIPOLYGON (((75.625 49.9...
+#> 6  MULTIPOLYGON (((102.4375 79...
+#> 8  MULTIPOLYGON (((49.4375 92....
+#> 11 MULTIPOLYGON (((78 111.3828...
+#> 14 MULTIPOLYGON (((62.125 108....
+#> 17 MULTIPOLYGON (((81.76562 10...
+#> 20 MULTIPOLYGON (((106.3333 88...
+#> 23 MULTIPOLYGON (((65 66.94531...
+#> 26 MULTIPOLYGON (((80.5625 65....
+#> 29 MULTIPOLYGON (((43 74.94531...
 # }
 ```
