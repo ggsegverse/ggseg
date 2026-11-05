@@ -146,84 +146,53 @@ reposition_brain(dk(), . ~ hemi + view)
 
 # \donttest{
 reposition_brain(aseg(), nrow = 2)
-#> Simple feature collection with 157 features and 9 fields
+#> Simple feature collection with 78 features and 9 fields
 #> Geometry type: MULTIPOLYGON
 #> Dimension:     XY
-#> Bounding box:  xmin: -12.15 ymin: -12.15 xmax: 1227.15 ymax: 592.75
+#> Bounding box:  xmin: -3.606703 ymin: -3.606703 xmax: 359.6442 ymax: 364.277
 #> CRS:           NA
 #> First 10 features:
-#>                     label    view hemi            region
-#> 1                  cortex axial_3 <NA>              <NA>
-#> 11             Brain-Stem axial_3 <NA>        brain stem
-#> 28       CC_Mid_Posterior axial_3 <NA>  cc mid posterior
-#> 36    Left-Accumbens-area axial_3 left    accumbens area
-#> 40          Left-Amygdala axial_3 left          amygdala
-#> 48           Left-Caudate axial_3 left           caudate
-#> 54 Left-Cerebellum-Cortex axial_3 left cerebellum cortex
-#> 58       Left-Hippocampus axial_3 left       hippocampus
-#> 60          Left-Pallidum axial_3 left          pallidum
-#> 71           Left-Putamen axial_3 left           putamen
+#>                  label    view    hemi           region
+#> 1               cortex axial_2    <NA>             <NA>
+#> 4           Brain-Stem axial_2 midline       brain stem
+#> 7          CC_Anterior axial_2 midline      cc anterior
+#> 9           CC_Central axial_2 midline       cc central
+#> 12     CC_Mid_Anterior axial_2 midline  cc mid anterior
+#> 15    CC_Mid_Posterior axial_2 midline cc mid posterior
+#> 18        CC_Posterior axial_2 midline     cc posterior
+#> 21 Left-Accumbens-area axial_2    left   accumbens area
+#> 24       Left-Amygdala axial_2    left         amygdala
+#> 27        Left-Caudate axial_2    left          caudate
 #>                          display       structure atlas        type  colour
 #> 1                           <NA>            <NA>  aseg subcortical    <NA>
-#> 11                    brain stem       brainstem  aseg subcortical #779FB0
-#> 28 corpus callosum mid-posterior corpus callosum  aseg subcortical #000070
-#> 36                     accumbens   basal ganglia  aseg subcortical #FFA500
-#> 40                      amygdala          limbic  aseg subcortical #67FFFF
-#> 48                       caudate   basal ganglia  aseg subcortical #7ABADC
-#> 54             cerebellum cortex      cerebellum  aseg subcortical #E69422
-#> 58                   hippocampus          limbic  aseg subcortical #DCD814
-#> 60                      pallidum   basal ganglia  aseg subcortical #0C30FF
-#> 71                       putamen   basal ganglia  aseg subcortical #EC0DB0
+#> 4                     brain stem       brainstem  aseg subcortical #779FB0
+#> 7       corpus callosum anterior corpus callosum  aseg subcortical #0000FF
+#> 9        corpus callosum central corpus callosum  aseg subcortical #0000A0
+#> 12  corpus callosum mid-anterior corpus callosum  aseg subcortical #0000D0
+#> 15 corpus callosum mid-posterior corpus callosum  aseg subcortical #000070
+#> 18     corpus callosum posterior corpus callosum  aseg subcortical #000040
+#> 21                     accumbens   basal ganglia  aseg subcortical #FFA500
+#> 24                      amygdala          limbic  aseg subcortical #67FFFF
+#> 27                       caudate   basal ganglia  aseg subcortical #7ABADC
 #>                          geometry
-#> 1  MULTIPOLYGON (((28.21102 11...
-#> 11 MULTIPOLYGON (((108.1522 12...
-#> 28 MULTIPOLYGON (((132 116.647...
-#> 36 MULTIPOLYGON (((112.0139 17...
-#> 40 MULTIPOLYGON (((82.12316 15...
-#> 48 MULTIPOLYGON (((163.0132 13...
-#> 54 MULTIPOLYGON (((76.07872 55...
-#> 58 MULTIPOLYGON (((74.15219 11...
-#> 60 MULTIPOLYGON (((169.0135 17...
-#> 71 MULTIPOLYGON (((98.01321 17...
+#> 1  MULTIPOLYGON (((55.09375 16...
+#> 4  MULTIPOLYGON (((76.54613 63...
+#> 7  MULTIPOLYGON (((85.28125 13...
+#> 9  MULTIPOLYGON (((83.53125 99...
+#> 12 MULTIPOLYGON (((84.09375 10...
+#> 15 MULTIPOLYGON (((86.40625 92...
+#> 18 MULTIPOLYGON (((89.53125 60...
+#> 21 MULTIPOLYGON (((74.71875 12...
+#> 24 MULTIPOLYGON (((58.09375 88...
+#> 27 MULTIPOLYGON (((77 103.9062...
 reposition_brain(aseg(), views = c("sagittal", "axial_3"))
-#> Simple feature collection with 40 features and 9 fields
-#> Geometry type: MULTIPOLYGON
-#> Dimension:     XY
-#> Bounding box:  xmin: -5.67 ymin: -5.67 xmax: 572.67 ymax: 269.67
-#> CRS:           NA
-#> First 10 features:
-#>                     label     view hemi            region
-#> 7                 cortex_ sagittal <NA>              <NA>
-#> 12             Brain-Stem sagittal <NA>        brain stem
-#> 17            CC_Anterior sagittal <NA>       cc anterior
-#> 22             CC_Central sagittal <NA>        cc central
-#> 26        CC_Mid_Anterior sagittal <NA>   cc mid anterior
-#> 30       CC_Mid_Posterior sagittal <NA>  cc mid posterior
-#> 34           CC_Posterior sagittal <NA>      cc posterior
-#> 53 Left-Cerebellum-Cortex sagittal left cerebellum cortex
-#> 77          Left-Thalamus sagittal left          thalamus
-#> 83         Left-VentralDC sagittal left         ventraldc
-#>                          display       structure atlas        type  colour
-#> 7                           <NA>            <NA>  aseg subcortical    <NA>
-#> 12                    brain stem       brainstem  aseg subcortical #779FB0
-#> 17      corpus callosum anterior corpus callosum  aseg subcortical #0000FF
-#> 22       corpus callosum central corpus callosum  aseg subcortical #0000A0
-#> 26  corpus callosum mid-anterior corpus callosum  aseg subcortical #0000D0
-#> 30 corpus callosum mid-posterior corpus callosum  aseg subcortical #000070
-#> 34     corpus callosum posterior corpus callosum  aseg subcortical #000040
-#> 53             cerebellum cortex      cerebellum  aseg subcortical #E69422
-#> 77                      thalamus   basal ganglia  aseg subcortical #00760E
-#> 83          ventral diencephalon    diencephalon  aseg subcortical #A52A2A
-#>                          geometry
-#> 7  MULTIPOLYGON (((163.9007 11...
-#> 12 MULTIPOLYGON (((86.01362 39...
-#> 17 MULTIPOLYGON (((184.0132 13...
-#> 22 MULTIPOLYGON (((144.0822 16...
-#> 26 MULTIPOLYGON (((167.1522 16...
-#> 30 MULTIPOLYGON (((119.0132 16...
-#> 34 MULTIPOLYGON (((92.01345 14...
-#> 53 MULTIPOLYGON (((38.01395 87...
-#> 77 MULTIPOLYGON (((145 130.352...
-#> 83 MULTIPOLYGON (((144.0132 10...
+#> Warning: ! Views "sagittal" and "axial_3" are not in the atlas and were dropped.
+#> ℹ Available views: "axial_2", "coronal_2", and "sagittal_left".
+#> Warning: no non-missing arguments to max; returning -Inf
+#> Warning: no non-missing arguments to max; returning -Inf
+#> Warning: no non-missing arguments to max; returning -Inf
+#> Warning: no non-missing arguments to max; returning -Inf
+#> Warning: no non-missing arguments to max; returning -Inf
+#> Error in UseMethod("st_as_sf"): no applicable method for 'st_as_sf' applied to an object of class "NULL"
 # }
 ```

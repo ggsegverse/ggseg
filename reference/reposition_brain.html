@@ -15,7 +15,7 @@ by wanted order of appearance."><meta property="og:image" content="https://ggseg
 
     <a class="navbar-brand me-2" href="../index.html">ggseg</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">2.2.1.9010</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">2.2.1.9011</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -206,85 +206,54 @@ and pass it to <code><a href="ggbrain.html">geom_brain()</a></code>.</p>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># \donttest{</span></span></span>
 <span class="r-in"><span><span class="fu">reposition_brain</span><span class="op">(</span><span class="fu"><a href="https://ggsegverse.github.io/ggseg.formats/reference/aseg.html">aseg</a></span><span class="op">(</span><span class="op">)</span>, nrow <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Simple feature collection with 157 features and 9 fields</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Simple feature collection with 78 features and 9 fields</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Geometry type: MULTIPOLYGON</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Dimension:     XY</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Bounding box:  xmin: -12.15 ymin: -12.15 xmax: 1227.15 ymax: 592.75</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Bounding box:  xmin: -3.606703 ymin: -3.606703 xmax: 359.6442 ymax: 364.277</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> CRS:           NA</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> First 10 features:</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                     label    view hemi            region</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1                  cortex axial_3 &lt;NA&gt;              &lt;NA&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 11             Brain-Stem axial_3 &lt;NA&gt;        brain stem</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 28       CC_Mid_Posterior axial_3 &lt;NA&gt;  cc mid posterior</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 36    Left-Accumbens-area axial_3 left    accumbens area</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 40          Left-Amygdala axial_3 left          amygdala</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 48           Left-Caudate axial_3 left           caudate</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 54 Left-Cerebellum-Cortex axial_3 left cerebellum cortex</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 58       Left-Hippocampus axial_3 left       hippocampus</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 60          Left-Pallidum axial_3 left          pallidum</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 71           Left-Putamen axial_3 left           putamen</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                  label    view    hemi           region</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1               cortex axial_2    &lt;NA&gt;             &lt;NA&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4           Brain-Stem axial_2 midline       brain stem</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 7          CC_Anterior axial_2 midline      cc anterior</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 9           CC_Central axial_2 midline       cc central</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 12     CC_Mid_Anterior axial_2 midline  cc mid anterior</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 15    CC_Mid_Posterior axial_2 midline cc mid posterior</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 18        CC_Posterior axial_2 midline     cc posterior</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 21 Left-Accumbens-area axial_2    left   accumbens area</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 24       Left-Amygdala axial_2    left         amygdala</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 27        Left-Caudate axial_2    left          caudate</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>                          display       structure atlas        type  colour</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 1                           &lt;NA&gt;            &lt;NA&gt;  aseg subcortical    &lt;NA&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 11                    brain stem       brainstem  aseg subcortical #779FB0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 28 corpus callosum mid-posterior corpus callosum  aseg subcortical #000070</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 36                     accumbens   basal ganglia  aseg subcortical #FFA500</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 40                      amygdala          limbic  aseg subcortical #67FFFF</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 48                       caudate   basal ganglia  aseg subcortical #7ABADC</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 54             cerebellum cortex      cerebellum  aseg subcortical #E69422</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 58                   hippocampus          limbic  aseg subcortical #DCD814</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 60                      pallidum   basal ganglia  aseg subcortical #0C30FF</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 71                       putamen   basal ganglia  aseg subcortical #EC0DB0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4                     brain stem       brainstem  aseg subcortical #779FB0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 7       corpus callosum anterior corpus callosum  aseg subcortical #0000FF</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 9        corpus callosum central corpus callosum  aseg subcortical #0000A0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 12  corpus callosum mid-anterior corpus callosum  aseg subcortical #0000D0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 15 corpus callosum mid-posterior corpus callosum  aseg subcortical #000070</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 18     corpus callosum posterior corpus callosum  aseg subcortical #000040</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 21                     accumbens   basal ganglia  aseg subcortical #FFA500</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 24                      amygdala          limbic  aseg subcortical #67FFFF</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 27                       caudate   basal ganglia  aseg subcortical #7ABADC</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>                          geometry</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1  MULTIPOLYGON (((28.21102 11...</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 11 MULTIPOLYGON (((108.1522 12...</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 28 MULTIPOLYGON (((132 116.647...</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 36 MULTIPOLYGON (((112.0139 17...</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 40 MULTIPOLYGON (((82.12316 15...</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 48 MULTIPOLYGON (((163.0132 13...</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 54 MULTIPOLYGON (((76.07872 55...</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 58 MULTIPOLYGON (((74.15219 11...</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 60 MULTIPOLYGON (((169.0135 17...</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 71 MULTIPOLYGON (((98.01321 17...</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1  MULTIPOLYGON (((55.09375 16...</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4  MULTIPOLYGON (((76.54613 63...</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 7  MULTIPOLYGON (((85.28125 13...</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 9  MULTIPOLYGON (((83.53125 99...</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 12 MULTIPOLYGON (((84.09375 10...</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 15 MULTIPOLYGON (((86.40625 92...</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 18 MULTIPOLYGON (((89.53125 60...</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 21 MULTIPOLYGON (((74.71875 12...</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 24 MULTIPOLYGON (((58.09375 88...</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 27 MULTIPOLYGON (((77 103.9062...</span>
 <span class="r-in"><span><span class="fu">reposition_brain</span><span class="op">(</span><span class="fu"><a href="https://ggsegverse.github.io/ggseg.formats/reference/aseg.html">aseg</a></span><span class="op">(</span><span class="op">)</span>, views <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"sagittal"</span>, <span class="st">"axial_3"</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Simple feature collection with 40 features and 9 fields</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Geometry type: MULTIPOLYGON</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Dimension:     XY</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Bounding box:  xmin: -5.67 ymin: -5.67 xmax: 572.67 ymax: 269.67</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> CRS:           NA</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> First 10 features:</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                     label     view hemi            region</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 7                 cortex_ sagittal &lt;NA&gt;              &lt;NA&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 12             Brain-Stem sagittal &lt;NA&gt;        brain stem</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 17            CC_Anterior sagittal &lt;NA&gt;       cc anterior</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 22             CC_Central sagittal &lt;NA&gt;        cc central</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 26        CC_Mid_Anterior sagittal &lt;NA&gt;   cc mid anterior</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 30       CC_Mid_Posterior sagittal &lt;NA&gt;  cc mid posterior</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 34           CC_Posterior sagittal &lt;NA&gt;      cc posterior</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 53 Left-Cerebellum-Cortex sagittal left cerebellum cortex</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 77          Left-Thalamus sagittal left          thalamus</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 83         Left-VentralDC sagittal left         ventraldc</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                          display       structure atlas        type  colour</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 7                           &lt;NA&gt;            &lt;NA&gt;  aseg subcortical    &lt;NA&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 12                    brain stem       brainstem  aseg subcortical #779FB0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 17      corpus callosum anterior corpus callosum  aseg subcortical #0000FF</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 22       corpus callosum central corpus callosum  aseg subcortical #0000A0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 26  corpus callosum mid-anterior corpus callosum  aseg subcortical #0000D0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 30 corpus callosum mid-posterior corpus callosum  aseg subcortical #000070</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 34     corpus callosum posterior corpus callosum  aseg subcortical #000040</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 53             cerebellum cortex      cerebellum  aseg subcortical #E69422</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 77                      thalamus   basal ganglia  aseg subcortical #00760E</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 83          ventral diencephalon    diencephalon  aseg subcortical #A52A2A</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                          geometry</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 7  MULTIPOLYGON (((163.9007 11...</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 12 MULTIPOLYGON (((86.01362 39...</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 17 MULTIPOLYGON (((184.0132 13...</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 22 MULTIPOLYGON (((144.0822 16...</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 26 MULTIPOLYGON (((167.1522 16...</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 30 MULTIPOLYGON (((119.0132 16...</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 34 MULTIPOLYGON (((92.01345 14...</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 53 MULTIPOLYGON (((38.01395 87...</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 77 MULTIPOLYGON (((145 130.352...</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 83 MULTIPOLYGON (((144.0132 10...</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span><span style="color: #BBBB00;">!</span> Views <span style="color: #0000BB;">"sagittal"</span> and <span style="color: #0000BB;">"axial_3"</span> are not in the atlas and were dropped.</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Available views: <span style="color: #0000BB;">"axial_2"</span>, <span style="color: #0000BB;">"coronal_2"</span>, and <span style="color: #0000BB;">"sagittal_left"</span>.</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>no non-missing arguments to max; returning -Inf</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>no non-missing arguments to max; returning -Inf</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>no non-missing arguments to max; returning -Inf</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>no non-missing arguments to max; returning -Inf</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>no non-missing arguments to max; returning -Inf</span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in UseMethod("st_as_sf"):</span> no applicable method for 'st_as_sf' applied to an object of class "NULL"</span>
 <span class="r-in"><span><span class="co"># }</span></span></span>
 </code></pre></div>
     </div>

@@ -182,8 +182,7 @@ order. Check what’s available with
 ``` r
 
 ggseg.formats::atlas_views(aseg())
-#> [1] "axial_3"   "axial_4"   "axial_5"   "axial_6"   "coronal_1" "coronal_2"
-#> [7] "sagittal"
+#> [1] "axial_2"       "coronal_2"     "sagittal_left"
 ```
 
 ``` r
@@ -197,6 +196,8 @@ ggplot() +
     show.legend = FALSE
   ) +
   theme_void()
+#> Warning: ! Views "sagittal" and "axial_3" are not in the atlas and were dropped.
+#> ℹ Available views: "axial_2", "coronal_2", and "sagittal_left".
 ```
 
 ![A subset of subcortical views selected by
@@ -218,6 +219,9 @@ ggplot() +
     show.legend = FALSE
   ) +
   theme_void()
+#> Warning: ! Views "sagittal", "axial_3", and "axial_5" are not in the atlas and were
+#>   dropped.
+#> ℹ Available views: "axial_2", "coronal_2", and "sagittal_left".
 ```
 
 ![Custom two-row grid with selected subcortical

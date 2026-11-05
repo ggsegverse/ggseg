@@ -228,8 +228,7 @@ available with
 ``` r
 
 atlas_views(aseg())
-#> [1] "axial_3"   "axial_4"   "axial_5"   "axial_6"   "coronal_1" "coronal_2"
-#> [7] "sagittal"
+#> [1] "axial_2"       "coronal_2"     "sagittal_left"
 ```
 
 ## Plotting your own data

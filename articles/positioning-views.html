@@ -29,7 +29,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">ggseg</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">2.2.1.9010</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">2.2.1.9011</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -246,8 +246,7 @@ include and in what order. Check what’s available with
 <code><a href="https://ggsegverse.github.io/ggseg.formats/reference/atlas_views.html">ggseg.formats::atlas_views()</a></code>:</p>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">ggseg.formats</span><span class="fu">::</span><span class="fu"><a href="https://ggsegverse.github.io/ggseg.formats/reference/atlas_views.html">atlas_views</a></span><span class="op">(</span><span class="fu"><a href="https://ggsegverse.github.io/ggseg.formats/reference/aseg.html">aseg</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="co">#&gt; [1] "axial_3"   "axial_4"   "axial_5"   "axial_6"   "coronal_1" "coronal_2"</span></span>
-<span><span class="co">#&gt; [7] "sagittal"</span></span></code></pre></div>
+<span><span class="co">#&gt; [1] "axial_2"       "coronal_2"     "sagittal_left"</span></span></code></pre></div>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="../reference/ggbrain.html">geom_brain</a></span><span class="op">(</span></span>
@@ -257,7 +256,9 @@ include and in what order. Check what’s available with
 <span>    <span class="op">)</span>,</span>
 <span>    show.legend <span class="op">=</span> <span class="cn">FALSE</span></span>
 <span>  <span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html" class="external-link">theme_void</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html" class="external-link">theme_void</a></span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Warning: <span style="color: #BBBB00;">!</span> Views <span style="color: #0000BB;">"sagittal"</span> and <span style="color: #0000BB;">"axial_3"</span> are not in the atlas and were dropped.</span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> Available views: <span style="color: #0000BB;">"axial_2"</span>, <span style="color: #0000BB;">"coronal_2"</span>, and <span style="color: #0000BB;">"sagittal_left"</span>.</span></span></code></pre></div>
 <div class="figure">
 <img src="positioning-views_files/figure-html/fig-aseg-select-views-1.png" class="r-plt" alt="A subset of subcortical views selected by name." width="576"><p class="caption">
 A subset of subcortical views selected by name.
@@ -275,7 +276,10 @@ A subset of subcortical views selected by name.
 <span>    <span class="op">)</span>,</span>
 <span>    show.legend <span class="op">=</span> <span class="cn">FALSE</span></span>
 <span>  <span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html" class="external-link">theme_void</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html" class="external-link">theme_void</a></span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Warning: <span style="color: #BBBB00;">!</span> Views <span style="color: #0000BB;">"sagittal"</span>, <span style="color: #0000BB;">"axial_3"</span>, and <span style="color: #0000BB;">"axial_5"</span> are not in the atlas and were</span></span>
+<span><span class="co">#&gt;   dropped.</span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> Available views: <span style="color: #0000BB;">"axial_2"</span>, <span style="color: #0000BB;">"coronal_2"</span>, and <span style="color: #0000BB;">"sagittal_left"</span>.</span></span></code></pre></div>
 <div class="figure">
 <img src="positioning-views_files/figure-html/fig-aseg-custom-grid-1.png" class="r-plt" alt="Custom two-row grid with selected subcortical views." width="412.8"><p class="caption">
 Custom two-row grid with selected subcortical views.

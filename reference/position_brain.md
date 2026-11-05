@@ -105,6 +105,8 @@ ggplot() +
       nrow = 1
     )
   )
+#> Warning: ! Views "sagittal" and "axial_3" are not in the atlas and were dropped.
+#> ℹ Available views: "axial_2", "coronal_2", and "sagittal_left".
 
 
 ggplot() +
