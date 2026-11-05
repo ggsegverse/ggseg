@@ -5,6 +5,25 @@ export(GeomBrainSf)
 export(StatBrain)
 export(annotate_brain)
 export(aseg)
+export(atlas_centerlines)
+export(atlas_context)
+export(atlas_display)
+export(atlas_geom)
+export(atlas_geometry_type)
+export(atlas_hemi)
+export(atlas_labels)
+export(atlas_meshes)
+export(atlas_palette)
+export(atlas_plot_palette)
+export(atlas_polygons)
+export(atlas_provenance)
+export(atlas_region_semantics)
+export(atlas_regions)
+export(atlas_sf)
+export(atlas_type)
+export(atlas_undrawn)
+export(atlas_vertices)
+export(atlas_views)
 export(brain_join)
 export(brain_test_plot)
 export(coord_brain)
@@ -12,6 +31,7 @@ export(dk)
 export(geom_brain)
 export(geom_brain_sf)
 export(ggseg)
+export(legacy_region_map)
 export(position_brain)
 export(position_brain_sf)
 export(reposition_brain)
@@ -70,8 +90,27 @@ importFrom(ggplot2,
 )
 importFrom(ggseg.formats,
   aseg,
+  atlas_centerlines,
+  atlas_context,
+  atlas_display,
+  atlas_geom,
+  atlas_geometry_type,
+  atlas_hemi,
+  atlas_labels,
+  atlas_meshes,
   atlas_palette,
+  atlas_plot_palette,
+  atlas_polygons,
+  atlas_provenance,
+  atlas_region_semantics,
+  atlas_regions,
+  atlas_sf,
+  atlas_type,
+  atlas_undrawn,
+  atlas_vertices,
+  atlas_views,
   dk,
+  legacy_region_map,
   suit,
   tracula
 )
