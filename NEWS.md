@@ -34,7 +34,7 @@ breaking changes before upgrading.
 - **`geom_brain()` gained a `fun` argument, positionally before
   `show.legend`.** The signature is now
   `geom_brain(mapping, data, atlas, hemi, view, position, context, fun,
-  show.legend, inherit.aes, ...)`. Callers passing `show.legend` or
+show.legend, inherit.aes, ...)`. Callers passing `show.legend` or
   `inherit.aes` positionally shift by one — name those arguments.
 
 - **Multiple `data` rows per region are now combined, not overplotted.** `fun`
@@ -82,6 +82,14 @@ breaking changes before upgrading.
 - `GeomBrainSf` is now exported (see above).
 
 ## Bug fixes
+
+- `geom_brain()` draws an atlas's context (the backdrop silhouette) behind its
+  structures, whatever order the atlas stores its geometry in. It painted rows
+  in stored order, so an atlas built with its context last hid every
+  structure under a grey silhouette -- the sagittal panel of
+  `ggsegCraddock::adhd200_400_subcortical()` came out blank. `ggseg.formats`
+  already re-orders this way in `atlas_sf()` and `as.data.frame()`; the
+  polygon renderer was the one path that did not (#181).
 
 - Colour is resolved when the atlas is drawn, not read from what it stores.
   `geom_brain()`, `brain_test_plot()` and `scale_fill_brain()` went to the
@@ -450,7 +458,9 @@ and adaptability of the plots.
 - Moved palettes of ggsegExtra atlases to ggsegExtra package
 
 - Added a `NEWS.md` file to track changes to the package.
+
 <!-- # * Changes all `data` options to `.data` to decrease possibility of column naming overlap -->
+
 - Added compatibility with `grouped` data.frames
 - Reduced internal atlases, to improve CRAN compatibility
 - Added function to install extra atlases from github easily
