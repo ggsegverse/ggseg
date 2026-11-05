@@ -31,7 +31,7 @@
 #'
 #' \donttest{
 #' reposition_brain(aseg(), nrow = 2)
-#' reposition_brain(aseg(), views = c("sagittal", "axial_3"))
+#' reposition_brain(aseg(), views = c("sagittal_left", "axial_2"))
 #' }
 reposition_brain <- function(
   data,
@@ -116,7 +116,7 @@ reposition_brain <- function(
 #'   geom_brain(
 #'     atlas = aseg(), aes(fill = region),
 #'     position = position_brain(
-#'       views = c("sagittal", "axial_3", "coronal_2"),
+#'       views = c("sagittal_left", "axial_2", "coronal_2"),
 #'       nrow = 1
 #'     )
 #'   )
@@ -383,6 +383,38 @@ warn_unmatched_views <- function(views, available) {
   invisible(NULL)
 }
 
+#' Keep and order the requested views of a layout
+#'
+#' Warns about requested views the atlas lacks, and errors when none of them
+#' exist: an empty layout has no extent to lay out and would otherwise fail
+#' far downstream with an unrelated message.
+#'
+#' @param data A data.frame with a `view` column.
+#' @param views Requested view names, in display order.
+#' @return `data` restricted to `views`, ordered as `views`.
+#' @keywords internal
+#' @noRd
+select_views <- function(data, views, call = rlang::caller_env()) {
+  available <- unique(data$view)
+  if (!any(views %in% available)) {
+    cli::cli_abort(
+      c(
+        "None of the requested views are in the atlas.",
+        "x" = "Requested: {.val {views}}.",
+        "i" = "Available views: {.val {available}}."
+      ),
+      class = "ggseg_no_matching_views",
+      call = call
+    )
+  }
+  warn_unmatched_views(views, available)
+  data <- data[data$view %in% views, , drop = FALSE]
+  data$view <- factor(data$view, levels = views)
+  data <- data[order(data$view), ]
+  data$view <- as.character(data$view)
+  data
+}
+
 #' Atlas values closest to a set of unmatched ones
 #'
 #' Cheap fuzzy lookup used to turn "that name is unknown" into "did you mean
@@ -612,11 +644,7 @@ frame_2_position <- function(
   validate_grid_args(pos, nrow, ncol)
 
   if (!is.null(views)) {
-    warn_unmatched_views(views, unique(data$view))
-    data <- data[data$view %in% views, , drop = FALSE]
-    data$view <- factor(data$view, levels = views)
-    data <- data[order(data$view), ]
-    data$view <- as.character(data$view)
+    data <- select_views(data, views)
   }
 
   if (!is.null(nrow) || !is.null(ncol)) {
