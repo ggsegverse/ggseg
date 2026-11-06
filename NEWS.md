@@ -72,6 +72,12 @@ show.legend, inherit.aes, ...)`. Callers passing `show.legend` or
 
 ## New features
 
+- The read-only atlas accessors from `ggseg.formats` are re-exported, so
+  `atlas_palette()`, `atlas_regions()`, `atlas_labels()`, `atlas_sf()` and
+  their siblings work after `library(ggseg)` and an atlas package, without
+  attaching `ggseg.formats`. The atlas-editing verbs stay in `ggseg.extra`.
+  Requires `ggseg.formats (>= 0.0.4.9015)` (#183).
+
 - New `stat_brain()` and exported `StatBrain` ggproto: the stat-first spelling
   of `geom_brain()`. Both build the same layer; use `stat_brain()` to pair
   `StatBrain` with a different geom.
