@@ -118,6 +118,18 @@ upgrading.
 
 ### Bug fixes
 
+- [`geom_brain()`](https://ggsegverse.github.io/ggseg/reference/ggbrain.md)
+  draws an atlas’s context (the backdrop silhouette) behind its
+  structures, whatever order the atlas stores its geometry in. It
+  painted rows in stored order, so an atlas built with its context last
+  hid every structure under a grey silhouette – the sagittal panel of
+  `ggsegCraddock::adhd200_400_subcortical()` came out blank.
+  `ggseg.formats` already re-orders this way in
+  [`atlas_sf()`](https://ggsegverse.github.io/ggseg.formats/reference/atlas_sf.html)
+  and [`as.data.frame()`](https://rdrr.io/r/base/as.data.frame.html);
+  the polygon renderer was the one path that did not
+  ([\#181](https://github.com/ggsegverse/ggseg/issues/181)).
+
 - `position_brain(views = )` and `reposition_brain(views = )` error with
   the atlas’s available views when none of the requested views exist.
   They warned and then failed far downstream in `st_as_sf()`, which is
@@ -635,10 +647,9 @@ adaptability of the plots.
 
 - Added a `NEWS.md` file to track changes to the package.
 
+&nbsp;
+
 - Added compatibility with `grouped` data.frames
-
 - Reduced internal atlases, to improve CRAN compatibility
-
 - Added function to install extra atlases from github easily
-
 - Changes vignettes to comply with new functionality
