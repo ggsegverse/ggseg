@@ -373,7 +373,7 @@ prepare_polygon_atlas <- function(
   }
 
   flat <- tidyr::unnest(
-    ggseg.formats::atlas_polygons(atlas),
+    order_context_first(ggseg.formats::atlas_polygons(atlas), atlas$core$label),
     cols = "geometry"
   )
   # Namespace the polygon-ring grouping as `.group` before joining `core`:
@@ -488,4 +488,21 @@ warn_unmatched_polygon_data <- function(data, flat, by) {
     )
   ))
   invisible(NULL)
+}
+
+
+#' Move context geometry ahead of the atlas's own regions
+#'
+#' Rows draw in order, so context (labels absent from `core`) must come first
+#' to sit behind the regions it overlaps. A stored geometry table's row order
+#' is not guaranteed, so this is enforced at render time. Stable within each
+#' group.
+#'
+#' @param geom A `brain_polygons` data.frame with a `label` column.
+#' @param core_labels Labels of the atlas's own regions.
+#' @keywords internal
+#' @noRd
+order_context_first <- function(geom, core_labels) {
+  is_core <- geom$label %in% core_labels
+  geom[c(which(!is_core), which(is_core)), , drop = FALSE]
 }

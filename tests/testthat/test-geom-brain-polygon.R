@@ -167,6 +167,30 @@ describe("prepare_polygon_atlas()", {
     keys <- unique(paste(flat$label, flat$view, flat$.group, sep = "@@"))
     expect_length(unique(flat$.feature_id), length(keys))
   })
+
+  it("draws context behind structures whatever the stored order (ggseg#181)", {
+    poly <- ggseg.formats::as_polygon_atlas(aseg())
+    geom <- poly$data$geom
+    is_context <- !geom$label %in% poly$core$label
+    poly$data$geom <- geom[c(which(!is_context), which(is_context)), ]
+
+    flat <- prepare_polygon_atlas(poly)
+    context_rows <- which(!flat$label %in% poly$core$label)
+    core_rows <- which(flat$label %in% poly$core$label)
+
+    expect_gt(length(context_rows), 0)
+    expect_lt(max(context_rows), min(core_rows))
+  })
+
+  it("keeps the stored order within context and within structures", {
+    poly <- ggseg.formats::as_polygon_atlas(aseg())
+    stored <- unique(poly$data$geom$label)
+    flat <- prepare_polygon_atlas(poly)
+    expect_identical(
+      unique(flat$label[flat$label %in% poly$core$label]),
+      stored[stored %in% poly$core$label]
+    )
+  })
 })
 
 describe("warn_unmatched_polygon_data() (ggseg#121)", {
