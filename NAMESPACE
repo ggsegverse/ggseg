@@ -31,6 +31,8 @@ export(dk)
 export(geom_brain)
 export(geom_brain_sf)
 export(ggseg)
+export(is_atlas_polygon)
+export(is_atlas_sf)
 export(legacy_region_map)
 export(position_brain)
 export(position_brain_sf)
@@ -110,6 +112,8 @@ importFrom(ggseg.formats,
   atlas_vertices,
   atlas_views,
   dk,
+  is_atlas_polygon,
+  is_atlas_sf,
   legacy_region_map,
   suit,
   tracula

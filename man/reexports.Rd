@@ -27,6 +27,8 @@
 \alias{atlas_meshes}
 \alias{atlas_provenance}
 \alias{legacy_region_map}
+\alias{is_atlas_sf}
+\alias{is_atlas_polygon}
 \title{Objects exported from other packages}
 \keyword{internal}
 \description{
@@ -34,6 +36,6 @@ These objects are imported from other packages. Follow the links
 below to see their documentation.
 
 \describe{
-  \item{ggseg.formats}{\code{\link[ggseg.formats:aseg]{aseg()}}, \code{\link[ggseg.formats:atlas_centerlines]{atlas_centerlines()}}, \code{\link[ggseg.formats:atlas_context]{atlas_context()}}, \code{\link[ggseg.formats:atlas_display]{atlas_display()}}, \code{\link[ggseg.formats:atlas_geom]{atlas_geom()}}, \code{\link[ggseg.formats:atlas_geometry_type]{atlas_geometry_type()}}, \code{\link[ggseg.formats:atlas_hemi]{atlas_hemi()}}, \code{\link[ggseg.formats:atlas_labels]{atlas_labels()}}, \code{\link[ggseg.formats:atlas_meshes]{atlas_meshes()}}, \code{\link[ggseg.formats:atlas_palette]{atlas_palette()}}, \code{\link[ggseg.formats:atlas_plot_palette]{atlas_plot_palette()}}, \code{\link[ggseg.formats:atlas_polygons]{atlas_polygons()}}, \code{\link[ggseg.formats:atlas_provenance]{atlas_provenance()}}, \code{\link[ggseg.formats:atlas_region_semantics]{atlas_region_semantics()}}, \code{\link[ggseg.formats:atlas_regions]{atlas_regions()}}, \code{\link[ggseg.formats:atlas_sf]{atlas_sf()}}, \code{\link[ggseg.formats:atlas_type]{atlas_type()}}, \code{\link[ggseg.formats:atlas_undrawn]{atlas_undrawn()}}, \code{\link[ggseg.formats:atlas_vertices]{atlas_vertices()}}, \code{\link[ggseg.formats:atlas_views]{atlas_views()}}, \code{\link[ggseg.formats:dk]{dk()}}, \code{\link[ggseg.formats:legacy_region_map]{legacy_region_map()}}, \code{\link[ggseg.formats:suit]{suit()}}, \code{\link[ggseg.formats:tracula]{tracula()}}}
+  \item{ggseg.formats}{\code{\link[ggseg.formats:aseg]{aseg()}}, \code{\link[ggseg.formats:atlas_centerlines]{atlas_centerlines()}}, \code{\link[ggseg.formats:atlas_context]{atlas_context()}}, \code{\link[ggseg.formats:atlas_display]{atlas_display()}}, \code{\link[ggseg.formats:atlas_geom]{atlas_geom()}}, \code{\link[ggseg.formats:atlas_geometry_type]{atlas_geometry_type()}}, \code{\link[ggseg.formats:atlas_hemi]{atlas_hemi()}}, \code{\link[ggseg.formats:atlas_labels]{atlas_labels()}}, \code{\link[ggseg.formats:atlas_meshes]{atlas_meshes()}}, \code{\link[ggseg.formats:atlas_palette]{atlas_palette()}}, \code{\link[ggseg.formats:atlas_plot_palette]{atlas_plot_palette()}}, \code{\link[ggseg.formats:atlas_polygons]{atlas_polygons()}}, \code{\link[ggseg.formats:atlas_provenance]{atlas_provenance()}}, \code{\link[ggseg.formats:atlas_region_semantics]{atlas_region_semantics()}}, \code{\link[ggseg.formats:atlas_regions]{atlas_regions()}}, \code{\link[ggseg.formats:atlas_sf]{atlas_sf()}}, \code{\link[ggseg.formats:atlas_type]{atlas_type()}}, \code{\link[ggseg.formats:atlas_undrawn]{atlas_undrawn()}}, \code{\link[ggseg.formats:atlas_vertices]{atlas_vertices()}}, \code{\link[ggseg.formats:atlas_views]{atlas_views()}}, \code{\link[ggseg.formats:dk]{dk()}}, \code{\link[ggseg.formats:is_atlas_polygon]{is_atlas_polygon()}}, \code{\link[ggseg.formats:is_atlas_sf]{is_atlas_sf()}}, \code{\link[ggseg.formats:legacy_region_map]{legacy_region_map()}}, \code{\link[ggseg.formats:suit]{suit()}}, \code{\link[ggseg.formats:tracula]{tracula()}}}
 }}
 
