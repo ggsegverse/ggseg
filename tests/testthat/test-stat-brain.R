@@ -338,3 +338,51 @@ describe("geom_brain() with no data (atlas identity drives the stat)", {
     expect_identical(d$group, d$.feature_id)
   })
 })
+
+describe("a mapped fill does not reach the context backdrop (#182)", {
+  it("draws every context row in the scale's na.value, not a palette colour", {
+    atlas <- ggseg.formats::aseg()
+    expect_true(length(ggseg.formats::atlas_context(atlas)) > 0)
+
+    p <- ggplot2::ggplot() +
+      geom_brain(atlas = atlas, mapping = ggplot2::aes(fill = label))
+    # layer_data() is post-scale, so the NA this sets has already become
+    # na.value by the time it is visible here.
+    d <- ggplot2::layer_data(p)
+    na_value <- ggplot2::ggplot_build(p)$plot$scales$get_scales("fill")$na.value
+
+    is_context <- is.na(d$region)
+    expect_true(any(is_context))
+    expect_identical(unique(d$fill[is_context]), na_value)
+    expect_false(any(d$fill[!is_context] %in% na_value))
+  })
+
+  it("keeps context out of the fill scale's domain, so it claims no key", {
+    atlas <- ggseg.formats::aseg()
+    context <- ggseg.formats::atlas_context(atlas)
+
+    p <- ggplot2::ggplot() +
+      geom_brain(atlas = atlas, mapping = ggplot2::aes(fill = label))
+    limits <- ggplot2::ggplot_build(p)$plot$scales$get_scales(
+      "fill"
+    )$get_limits()
+
+    expect_false(any(context %in% limits))
+    expect_true(all(ggseg.formats::atlas_labels(atlas) %in% limits))
+  })
+
+  it("leaves a mapped fill alone when there is no context", {
+    atlas <- ggseg.formats::dk()
+    flat <- data.frame(
+      region = c("a", "b"),
+      fill = c(1, 2),
+      stringsAsFactors = FALSE
+    )
+    expect_identical(blank_context_fill(flat), flat)
+  })
+
+  it("does nothing when no fill is mapped", {
+    flat <- data.frame(region = c("a", NA), stringsAsFactors = FALSE)
+    expect_identical(blank_context_fill(flat), flat)
+  })
+})

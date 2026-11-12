@@ -64,6 +64,12 @@ figures, so read the breaking changes before upgrading.
 
 ## Bug fixes
 
+- A mapped `fill` no longer colours the context backdrop. `aes(fill = label)`
+  used to paint the whole silhouette as though it were one enormous parcel,
+  because context rows carry a `label` but no `region`. Context now leaves the
+  fill scale's domain, so it claims no legend key and is drawn by `na.value`
+  (#182).
+
 - `geom_brain()` draws an atlas's context behind its structures, whatever
   order the atlas stores its geometry in. An atlas built with its context
   last hid every structure under a grey silhouette (#181).
