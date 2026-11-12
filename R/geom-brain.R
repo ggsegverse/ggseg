@@ -36,6 +36,10 @@
 #'   coordinates. Per-view zoom is set through [position_brain()]'s `zoom`.
 #' @param context Keep the rest of the brain as a soft grey backdrop (`TRUE`,
 #'   the default), or show only the regions you're plotting (`FALSE`).
+#'
+#'   The backdrop carries no value of its own, so a mapped `fill` does not
+#'   reach it: it is drawn by the fill scale's `na.value`, alongside any
+#'   region your data has no value for. Set `na.value` to recolour both.
 #' @param fun Function used to combine multiple `data` rows that map to the same
 #'   atlas region, applied within each facet panel. Defaults to [mean()]. Any
 #'   function reducing a vector to a single value works (e.g. [median()],

@@ -44,7 +44,11 @@ a layout formula (e.g. \code{hemi ~ view}). Strings and formulas are passed to
 coordinates. Per-view zoom is set through \code{\link[=position_brain]{position_brain()}}'s \code{zoom}.}
 
 \item{context}{Keep the rest of the brain as a soft grey backdrop (\code{TRUE},
-the default), or show only the regions you're plotting (\code{FALSE}).}
+the default), or show only the regions you're plotting (\code{FALSE}).
+
+The backdrop carries no value of its own, so a mapped \code{fill} does not
+reach it: it is drawn by the fill scale's \code{na.value}, alongside any
+region your data has no value for. Set \code{na.value} to recolour both.}
 
 \item{fun}{Function used to combine multiple \code{data} rows that map to the same
 atlas region, applied within each facet panel. Defaults to \code{\link[=mean]{mean()}}. Any
