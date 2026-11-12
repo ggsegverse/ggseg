@@ -95,6 +95,17 @@ upgrading.
 
 ### New features
 
+- The read-only atlas accessors from `ggseg.formats` are re-exported, so
+  [`atlas_palette()`](https://ggsegverse.github.io/ggseg.formats/reference/atlas_palette.html),
+  [`atlas_regions()`](https://ggsegverse.github.io/ggseg.formats/reference/atlas_regions.html),
+  [`atlas_labels()`](https://ggsegverse.github.io/ggseg.formats/reference/atlas_labels.html),
+  [`atlas_sf()`](https://ggsegverse.github.io/ggseg.formats/reference/atlas_sf.html)
+  and their siblings work after
+  [`library(ggseg)`](https://ggsegverse.github.io/ggseg/) and an atlas
+  package, without attaching `ggseg.formats`. The atlas-editing verbs
+  stay in `ggseg.extra`. Requires `ggseg.formats (>= 0.0.4.9015)`
+  ([\#183](https://github.com/ggsegverse/ggseg/issues/183)).
+
 - New
   [`stat_brain()`](https://ggsegverse.github.io/ggseg/reference/stat_brain.md)
   and exported `StatBrain` ggproto: the stat-first spelling of
