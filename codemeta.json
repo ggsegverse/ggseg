@@ -233,7 +233,7 @@
       "@type": "SoftwareApplication",
       "identifier": "ggseg.formats",
       "name": "ggseg.formats",
-      "version": ">= 0.0.4.9010",
+      "version": ">= 0.0.4.9015",
       "provider": {
         "@id": "https://cran.r-project.org",
         "@type": "Organization",
@@ -291,7 +291,7 @@
     },
     "SystemRequirements": null
   },
-  "fileSize": "4177.212KB",
+  "fileSize": "3110.799KB",
   "citation": [
     {
       "@type": "CreativeWork",
