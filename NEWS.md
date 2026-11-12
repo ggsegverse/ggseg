@@ -8,6 +8,11 @@ figures, so read the breaking changes before upgrading.
 
 ## Breaking changes
 
+- **`geom_brain()` adds two layers.** The context backdrop is drawn by a layer
+  of its own, underneath the regions, so a mapped `fill` cannot reach it and it
+  claims no legend key (#182). `layer_data(p)` and `p$layers[[1]]` therefore
+  return the backdrop; use `brain_layer_data()` for the regions.
+
 - **Region keys changed.** The `region` column now holds short keys (e.g.
   `"superiorparietal"`) and the spelled-out names moved to `display`. **Any
   user data joined by `region` must be re-keyed**; `geom_brain()` warns that
@@ -50,6 +55,12 @@ figures, so read the breaking changes before upgrading.
 
 ## New features
 
+- `geom_brain()` and `stat_brain()` gain `context_fill`, the colour of the
+  context backdrop (default `"grey"`).
+
+- New `brain_layer_data()` returns a brain plot's region data whatever the
+  layer order, with `context = TRUE` for the backdrop.
+
 - The read-only atlas accessors from `ggseg.formats` are re-exported, so
   `atlas_palette()`, `atlas_regions()` and their siblings work after
   `library(ggseg)` without attaching `ggseg.formats`. The atlas-editing verbs
@@ -65,10 +76,8 @@ figures, so read the breaking changes before upgrading.
 ## Bug fixes
 
 - A mapped `fill` no longer colours the context backdrop. `aes(fill = label)`
-  used to paint the whole silhouette as though it were one enormous parcel,
-  because context rows carry a `label` but no `region`. Context now leaves the
-  fill scale's domain, so it claims no legend key and is drawn by `na.value`
-  (#182).
+  used to paint the whole silhouette as one enormous parcel, because context
+  rows carry a `label` but no `region` (#182).
 
 - `geom_brain()` draws an atlas's context behind its structures, whatever
   order the atlas stores its geometry in. An atlas built with its context

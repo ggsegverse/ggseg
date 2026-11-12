@@ -29,7 +29,7 @@ describe("brain_test_plot()", {
     p <- brain_test_plot(atlas)
 
     expect_false(is.null(p$scales$get_scales("fill")))
-    fills <- ggplot2::layer_data(p)$fill
+    fills <- brain_layer_data(p)$fill
     expect_gt(length(unique(fills[!is.na(fills)])), 1L)
   })
 

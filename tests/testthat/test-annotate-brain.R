@@ -124,7 +124,7 @@ describe("annotate_brain (polygon path)", {
       geom_brain(atlas = dk(), hemi = "left", show.legend = FALSE) +
       layer
     bd <- ggplot2::ggplot_build(built)
-    labels <- bd$data[[2]]$label
+    labels <- bd$data[[length(bd$data)]]$label
     expect_true(all(grepl("^left", labels)))
   })
 
@@ -138,7 +138,7 @@ describe("annotate_brain (polygon path)", {
       geom_brain(atlas = dk(), view = "lateral", show.legend = FALSE) +
       layer
     bd <- ggplot2::ggplot_build(built)
-    labels <- bd$data[[2]]$label
+    labels <- bd$data[[length(bd$data)]]$label
     expect_true(all(grepl("lateral$", labels)))
   })
 

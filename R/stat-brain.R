@@ -61,46 +61,9 @@ StatBrain <- ggproto(
     # per panel rather than replicating it; faceting on a user column replicates
     # the whole atlas. This mirrors the pre-StatBrain contract.
     flat <- subset_flat_to_facet(flat, data, facet_atlas_cols)
-    joined <- join_brain_values(
-      data,
-      flat,
-      fun,
-      reorder = reorder,
-      has_data = has_data
-    )
-    blank_context_fill(joined)
+    join_brain_values(data, flat, fun, reorder = reorder, has_data = has_data)
   }
 )
-
-
-#' Clear a mapped fill from the context rows
-#'
-#' Context is the anatomical backdrop, not a parcel: it has a `label` but no
-#' `region`, so `aes(fill = label)` would otherwise colour the whole silhouette
-#' as though it were one enormous structure (ggsegverse/ggseg#182). Setting the
-#' value to `NA` here, before the scale is trained, takes the backdrop out of
-#' the scale's domain -- it no longer claims a key of its own -- and leaves it
-#' to the fill scale's `na.value`, which is the grey the documentation
-#' promises. This is what the deprecated sf path already does by attaching
-#' `scale_fill_manual(na.value = "grey")`.
-#'
-#' Only `fill` is cleared. The outline aesthetics are styling rather than data,
-#' and a user who maps `colour` is asking for an outline, not a parcellation.
-#' @param joined The joined atlas geometry from `join_brain_values()`.
-#' @return `joined`, with `fill` set to `NA` on context rows.
-#' @keywords internal
-#' @noRd
-blank_context_fill <- function(joined) {
-  if (!all(c("fill", "region") %in% names(joined))) {
-    return(joined)
-  }
-  is_context <- is.na(joined$region)
-  if (!any(is_context)) {
-    return(joined)
-  }
-  joined$fill[is_context] <- NA
-  joined
-}
 
 
 #' Stat-first constructor for a brain atlas layer
@@ -133,6 +96,7 @@ stat_brain <- function(
   view = NULL,
   position = position_brain(),
   context = TRUE,
+  context_fill = "grey",
   fun = mean,
   geom = GeomBrain,
   show.legend = NA,
@@ -147,6 +111,7 @@ stat_brain <- function(
     view = view,
     position = position,
     context = context,
+    context_fill = context_fill,
     fun = fun,
     geom = geom,
     show.legend = show.legend,

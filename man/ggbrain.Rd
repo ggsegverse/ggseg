@@ -15,6 +15,7 @@ geom_brain(
   view = NULL,
   position = position_brain(),
   context = TRUE,
+  context_fill = "grey",
   fun = mean,
   show.legend = NA,
   inherit.aes = TRUE,
@@ -46,9 +47,12 @@ coordinates. Per-view zoom is set through \code{\link[=position_brain]{position_
 \item{context}{Keep the rest of the brain as a soft grey backdrop (\code{TRUE},
 the default), or show only the regions you're plotting (\code{FALSE}).
 
-The backdrop carries no value of its own, so a mapped \code{fill} does not
-reach it: it is drawn by the fill scale's \code{na.value}, alongside any
-region your data has no value for. Set \code{na.value} to recolour both.}
+The backdrop is drawn as a layer of its own, underneath the regions and
+outside any fill scale, so a mapped \code{fill} never reaches it and it claims
+no legend key. Set its colour with \code{context_fill}.}
+
+\item{context_fill}{Colour of the context backdrop. Defaults to \code{"grey"}.
+Only used when \code{context = TRUE}.}
 
 \item{fun}{Function used to combine multiple \code{data} rows that map to the same
 atlas region, applied within each facet panel. Defaults to \code{\link[=mean]{mean()}}. Any

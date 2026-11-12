@@ -70,7 +70,7 @@ describe("geom_brain_sf (deprecated sf path)", {
       built <- ggplot_build(p),
       "Merging"
     )
-    expect_gt(nrow(built$data[[1]]), 0)
+    expect_gt(nrow(brain_regions_built(built)), 0)
   })
 
   it("works with show.legend FALSE", {
@@ -129,7 +129,7 @@ describe("geom_brain faceting", {
       built <- ggplot_build(p),
       "Merging"
     )
-    panels <- unique(built$data[[1]]$PANEL)
+    panels <- unique(brain_regions_built(built)$PANEL)
     expect_length(panels, 2)
   })
 
@@ -145,8 +145,8 @@ describe("geom_brain faceting", {
     )
     atlas_rows <- nrow(as.data.frame(dk()))
     rows_per_panel <- tapply(
-      built$data[[1]]$PANEL,
-      built$data[[1]]$PANEL,
+      brain_regions_built(built)$PANEL,
+      brain_regions_built(built)$PANEL,
       length
     )
     expect_true(all(rows_per_panel == atlas_rows))
@@ -164,7 +164,7 @@ describe("geom_brain faceting", {
       built <- ggplot_build(p),
       "Merging"
     )
-    panels <- unique(built$data[[1]]$PANEL)
+    panels <- unique(brain_regions_built(built)$PANEL)
     expect_length(panels, 2)
   })
 
@@ -178,7 +178,7 @@ describe("geom_brain faceting", {
       built <- ggplot_build(p),
       "Merging"
     )
-    panels <- unique(built$data[[1]]$PANEL)
+    panels <- unique(brain_regions_built(built)$PANEL)
     expect_length(panels, 2)
   })
 
@@ -273,7 +273,7 @@ describe("LayerBrainSf", {
     p <- ggplot() + geom_brain_sf(atlas = dk())
     built <- ggplot_build(p)
     atlas_rows <- nrow(as.data.frame(dk()))
-    expect_identical(nrow(built$data[[1]]), atlas_rows)
+    expect_identical(nrow(brain_regions_built(built)), atlas_rows)
   })
 
   it("auto-maps geometry, hemi, view, type, fill, label", {
@@ -281,7 +281,7 @@ describe("LayerBrainSf", {
     withr::local_options(lifecycle_verbosity = "quiet")
     p <- ggplot() + geom_brain_sf(atlas = dk())
     built <- ggplot_build(p)
-    expect_true("fill" %in% names(built$data[[1]]))
+    expect_true("fill" %in% names(brain_regions_built(built)))
   })
 })
 
@@ -346,7 +346,7 @@ describe("geom_brain_sf() unmerged data", {
 describe("default atlas fill", {
   it("colours a bare geom_brain() with the atlas palette, keyed on label", {
     built <- ggplot_build(ggplot() + geom_brain(atlas = dk()))
-    fills <- unique(built$data[[1]]$fill)
+    fills <- unique(brain_regions_built(built)$fill)
     palette <- ggseg.formats::atlas_palette(dk())
 
     expect_false(all(fills == "grey"))
@@ -358,7 +358,7 @@ describe("default atlas fill", {
 
   it("maps fill to label, not region", {
     built <- ggplot_build(ggplot() + geom_brain(atlas = dk()))
-    mapping <- built$plot$layers[[1]]$computed_mapping
+    mapping <- brain_regions_mapping(built)
     expect_identical(
       rlang::as_label(mapping$fill),
       "ggplot2::after_stat(label)"
@@ -373,7 +373,7 @@ describe("default atlas fill", {
     built <- ggplot_build(
       ggplot(dt) + geom_brain(atlas = dk(), mapping = aes(linewidth = w))
     )
-    fills <- unique(built$data[[1]]$fill)
+    fills <- unique(brain_regions_built(built)$fill)
     expect_gt(length(fills), 1)
     expect_true(all(
       setdiff(fills, "grey") %in%
@@ -387,10 +387,10 @@ describe("default atlas fill", {
     built <- ggplot_build(
       ggplot() + geom_brain(atlas = dk(), mapping = aes(fill = region))
     )
-    mapping <- built$plot$layers[[1]]$computed_mapping
+    mapping <- brain_regions_mapping(built)
     expect_identical(rlang::as_label(mapping$fill), "region")
     expect_false(any(
-      built$data[[1]]$fill %in%
+      brain_regions_built(built)$fill %in%
         ggseg.formats::atlas_palette(
           dk()
         )
@@ -405,23 +405,23 @@ describe("default atlas fill", {
     built <- ggplot_build(
       ggplot(dt, aes(fill = value)) + geom_brain(atlas = dk(), data = dt)
     )
-    mapping <- built$plot$layers[[1]]$computed_mapping
+    mapping <- brain_regions_mapping(built)
     expect_identical(rlang::as_label(mapping$fill), "value")
     expect_s3_class(built$plot$scales$get_scales("fill"), "ScaleContinuous")
   })
 
   it("leaves a fixed fill parameter alone", {
     built <- ggplot_build(ggplot() + geom_brain(atlas = dk(), fill = "red"))
-    expect_null(built$plot$layers[[1]]$computed_mapping$fill)
-    expect_true(all(built$data[[1]]$fill == "red"))
+    expect_null(brain_regions_mapping(built)$fill)
+    expect_true(all(brain_regions_built(built)$fill == "red"))
   })
 
   it("does not fill by label when the user maps colour", {
     built <- ggplot_build(
       ggplot() + geom_brain(atlas = dk(), mapping = aes(colour = region))
     )
-    expect_null(built$plot$layers[[1]]$computed_mapping$fill)
-    expect_true(all(built$data[[1]]$fill == "grey"))
+    expect_null(brain_regions_mapping(built)$fill)
+    expect_true(all(brain_regions_built(built)$fill == "grey"))
   })
 
   it("leaves an explicit scale_fill_*() in charge", {
@@ -430,7 +430,7 @@ describe("default atlas fill", {
         geom_brain(atlas = dk(), mapping = aes(fill = label)) +
         scale_fill_manual(values = c(lh_bankssts = "red"), na.value = "white")
     )
-    expect_true("white" %in% built$data[[1]]$fill)
+    expect_true("white" %in% brain_regions_built(built)$fill)
   })
 
   it("installs a resolved scale for a palette-less atlas", {

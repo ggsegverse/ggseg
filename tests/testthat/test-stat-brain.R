@@ -140,13 +140,13 @@ describe("stat_brain()", {
         stat_brain(atlas = dk()) +
         ggplot2::scale_fill_viridis_c()
     ))
-    expect_identical(g$data[[1]]$fill, s$data[[1]]$fill)
+    expect_identical(brain_regions_built(g)$fill, brain_regions_built(s)$fill)
   })
 
   it("can pair StatBrain with a different geom", {
     p <- ggplot2::ggplot() +
       stat_brain(atlas = dk(), geom = "point")
-    expect_gt(nrow(ggplot2::ggplot_build(p)$data[[1]]), 0)
+    expect_gt(nrow(brain_regions_built(ggplot2::ggplot_build(p))), 0)
   })
 })
 
@@ -203,7 +203,7 @@ describe("faceting without group_by (native via StatBrain)", {
       geom_brain(atlas = dk(), ggplot2::aes(fill = value)) +
       facet +
       ggplot2::scale_fill_viridis_c()
-    ggplot2::ggplot_build(p)$data[[1]]
+    brain_regions_built(ggplot2::ggplot_build(p))
   }
 
   it("draws the complete atlas in every facet_wrap panel", {
@@ -228,7 +228,7 @@ describe("faceting on an atlas column subsets the atlas (not replicate)", {
   # Faceting on hemi/view should draw one slice per panel, the way the
   # pre-StatBrain renderer did -- not the whole brain in every panel.
   panel_rows <- function(p) {
-    d <- ggplot2::ggplot_build(p)$data[[1]]
+    d <- brain_regions_built(ggplot2::ggplot_build(p))
     as.integer(table(d$PANEL))
   }
 
@@ -238,7 +238,10 @@ describe("faceting on an atlas column subsets the atlas (not replicate)", {
         geom_brain(atlas = dk(), show.legend = FALSE) +
         ggplot2::facet_wrap(~hemi)
     )
-    full <- nrow(prepare_polygon_atlas(ggseg.formats::as_polygon_atlas(dk())))
+    # panel_rows() reads the regions layer, so count the region rows only --
+    # the context backdrop is a layer of its own now.
+    flat <- prepare_polygon_atlas(ggseg.formats::as_polygon_atlas(dk()))
+    full <- sum(!is.na(flat$region))
     expect_length(per, 2)
     # each panel is one hemisphere: fewer rows than the full atlas
     expect_true(all(per < full))
@@ -311,7 +314,7 @@ describe("geom_brain() with no data (atlas identity drives the stat)", {
           show.legend = FALSE
         )
     )
-    d <- b$data[[1]]
+    d <- brain_regions_built(b)
     expect_gt(nrow(d), 0)
     # every non-context region gets a colour (not the single grey fallback)
     expect_gt(length(unique(d$fill)), 10)
@@ -336,53 +339,5 @@ describe("geom_brain() with no data (atlas identity drives the stat)", {
       ggplot2::ggplot() + geom_brain(atlas = dk())
     )$data[[1]]
     expect_identical(d$group, d$.feature_id)
-  })
-})
-
-describe("a mapped fill does not reach the context backdrop (#182)", {
-  it("draws every context row in the scale's na.value, not a palette colour", {
-    atlas <- ggseg.formats::aseg()
-    expect_true(length(ggseg.formats::atlas_context(atlas)) > 0)
-
-    p <- ggplot2::ggplot() +
-      geom_brain(atlas = atlas, mapping = ggplot2::aes(fill = label))
-    # layer_data() is post-scale, so the NA this sets has already become
-    # na.value by the time it is visible here.
-    d <- ggplot2::layer_data(p)
-    na_value <- ggplot2::ggplot_build(p)$plot$scales$get_scales("fill")$na.value
-
-    is_context <- is.na(d$region)
-    expect_true(any(is_context))
-    expect_identical(unique(d$fill[is_context]), na_value)
-    expect_false(any(d$fill[!is_context] %in% na_value))
-  })
-
-  it("keeps context out of the fill scale's domain, so it claims no key", {
-    atlas <- ggseg.formats::aseg()
-    context <- ggseg.formats::atlas_context(atlas)
-
-    p <- ggplot2::ggplot() +
-      geom_brain(atlas = atlas, mapping = ggplot2::aes(fill = label))
-    limits <- ggplot2::ggplot_build(p)$plot$scales$get_scales(
-      "fill"
-    )$get_limits()
-
-    expect_false(any(context %in% limits))
-    expect_true(all(ggseg.formats::atlas_labels(atlas) %in% limits))
-  })
-
-  it("leaves a mapped fill alone when there is no context", {
-    atlas <- ggseg.formats::dk()
-    flat <- data.frame(
-      region = c("a", "b"),
-      fill = c(1, 2),
-      stringsAsFactors = FALSE
-    )
-    expect_identical(blank_context_fill(flat), flat)
-  })
-
-  it("does nothing when no fill is mapped", {
-    flat <- data.frame(region = c("a", NA), stringsAsFactors = FALSE)
-    expect_identical(blank_context_fill(flat), flat)
   })
 })

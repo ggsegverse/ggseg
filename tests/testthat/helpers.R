@@ -57,3 +57,19 @@ atlas_without_2d_geometry <- function() {
     data = ggseg.formats::ggseg_data_cortical(vertices = vertices)
   )
 }
+
+# geom_brain() adds the context backdrop as a layer of its own, so the regions
+# are not layer 1. Find them by identity rather than position.
+brain_regions_layer <- function(built) {
+  idx <- which(vapply(
+    built$plot$layers,
+    function(l) isTRUE(l$brain_rows %in% c("regions", "all")),
+    logical(1)
+  ))
+  # The deprecated sf path sets no `brain_rows`, and adds one layer.
+  if (length(idx) == 0) 1L else idx[[1]]
+}
+brain_regions_built <- function(built) built$data[[brain_regions_layer(built)]]
+brain_regions_mapping <- function(built) {
+  built$plot$layers[[brain_regions_layer(built)]]$computed_mapping
+}
