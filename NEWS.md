@@ -99,9 +99,10 @@ figures, so read the breaking changes before upgrading.
   `aesthetics`.
 
 - `position_brain(views = )` and `reposition_brain(views = )` error with the
-  atlas's available views when none exist, and warn on an individual view or
-  `zoom` region the atlas lacks. `zoom = TRUE` resolves its focus from
-  `label` before `region`.
+  atlas's available views when none of the requested views exist, and warn
+  on individual views the atlas lacks. `position_brain(zoom = )` warns on
+  regions the atlas lacks; `zoom = TRUE` resolves its focus from `label`
+  before `region`.
 
 - `position_brain(hemi ~ view, nrow = 2)` errors instead of silently
   discarding the formula, and `nrow`/`ncol` must be positive whole numbers. A
