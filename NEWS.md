@@ -28,7 +28,8 @@ figures, so read the breaking changes before upgrading.
 - **Multiple `data` rows per region are combined, not overplotted.** `fun`
   (default `mean`) reduces them within each panel; it used to be last-wins.
   `geom_brain()` warns once per session when `fun` collapses rows. Pass
-  `fun = dplyr::last` for the old behaviour. Numeric columns only.
+  `fun = dplyr::last` for the old numeric behaviour. Non-numeric columns
+  take the first value regardless of `fun`.
 
 - **`aes()` mappings for `x`, `y`, `group` and `subgroup` are ignored, with a
   warning.** They are derived from the atlas geometry, so mapping them
