@@ -13,73 +13,43 @@ upgrading.
 
 ### Breaking changes
 
-- A `"wm"` atlas gets the same axis scales as a subcortical one.
-  White-matter atlases carry the same polygons and slab views, so their
-  axes are labelled by view rather than hemisphere.
-
-- **Region keys changed.** `ggseg.formats` re-keyed the bundled atlases:
-  the `region` column now holds short keys (e.g. `"superiorparietal"`,
-  `"transversetemporal"`) and the fully spelled-out names moved to a new
-  `names` column. **Any user data joined to an atlas by `region` must be
-  re-keyed.** Passing a long name where a `region` is expected no longer
-  matches, and
+- **Region keys changed.** The `region` column now holds short keys
+  (e.g. `"superiorparietal"`) and the spelled-out names moved to
+  `display`. **Any user data joined by `region` must be re-keyed**;
   [`geom_brain()`](https://ggsegverse.github.io/ggseg/reference/ggbrain.md)
-  warns that the rows were not merged. `ggseg.formats` ships a helper
-  for translating old keys to new — look for
-  [`legacy_region_map()`](https://ggsegverse.github.io/ggseg.formats/reference/legacy_region_map.html)
-  in the `ggseg.formats` reference — or join by the schema-stable
-  `label` column instead. `ggseg` now requires
-  `ggseg.formats (>= 0.0.4.9008)`; the combination of an older `ggseg`
-  with the re-keyed atlases is silently wrong, which the new floor rules
-  out.
+  warns that the rows were not merged. Use
+  [`ggseg.formats::legacy_region_map()`](https://ggsegverse.github.io/ggseg.formats/reference/legacy_region_map.html)
+  to translate, or join by the schema-stable `label` instead. Requires
+  `ggseg.formats (>= 0.0.4.9008)`.
 
-- **`GeomBrain` is a different object.** Both 2.2.1 and 3.0.0 export
-  `GeomBrain`, but it is no longer the same ggproto: it is now the
-  polygon geom (`GeomBrain` \<
-  [`ggplot2::GeomPolygon`](https://ggplot2.tidyverse.org/reference/Geom.html)
-  \<
-  [`ggplot2::Geom`](https://ggplot2.tidyverse.org/reference/Geom.html))
-  that backs the default
+- **`GeomBrain` is a different object**: the polygon geom backing the
+  default
   [`geom_brain()`](https://ggsegverse.github.io/ggseg/reference/ggbrain.md).
-  The sf geom it used to be is now `GeomBrainSf`, which **this release
-  also exports** so extension code doing
-  `ggplot2::layer(geom = GeomBrain)` against the sf path has a migration
-  target: switch to `GeomBrainSf`. Because the export name did not
-  change, the failure mode in extension code is a confusing rendering
-  error rather than an object-not-found error — check any package that
-  reaches for `GeomBrain` directly.
+  The sf geom it used to be is now `GeomBrainSf`, which this release
+  exports as a migration target. The export name did not change, so
+  extension code reaching for `GeomBrain` fails as a rendering error
+  rather than an object-not-found error.
 
 - **[`geom_brain()`](https://ggsegverse.github.io/ggseg/reference/ggbrain.md)
-  gained a `fun` argument, positionally before `show.legend`.** The
-  signature is now
-  `geom_brain(mapping, data, atlas, hemi, view, position, context, fun, show.legend, inherit.aes, ...)`.
-  Callers passing `show.legend` or `inherit.aes` positionally shift by
-  one — name those arguments.
+  gained `fun`, positionally before `show.legend`.** Callers passing
+  `show.legend` or `inherit.aes` positionally shift by one – name those
+  arguments.
 
-- **Multiple `data` rows per region are now combined, not overplotted.**
-  `fun` (default `mean`) reduces them within each facet panel. Long data
-  with several rows per region — one per subject, say — used to
-  overplot, so the last row silently won; it is now averaged. This is a
-  silent numeric change for anyone plotting an unaggregated cohort, so
+- **Multiple `data` rows per region are combined, not overplotted.**
+  `fun` (default `mean`) reduces them within each panel; it used to be
+  last-wins.
   [`geom_brain()`](https://ggsegverse.github.io/ggseg/reference/ggbrain.md)
-  warns once per session when `fun` actually collapses rows. Pass
-  `fun = dplyr::last` to recover the old last-wins behaviour. `fun`
-  applies to numeric columns only — non-numeric columns take the first
-  value of the group regardless.
+  warns once per session when `fun` collapses rows. Pass
+  `fun = dplyr::last` for the old numeric behaviour. Non-numeric columns
+  take the first value regardless of `fun`.
 
 - **[`aes()`](https://ggplot2.tidyverse.org/reference/aes.html) mappings
-  for `x`, `y`, `group`, and `subgroup` are ignored, with a warning.**
-  They are derived from the atlas geometry (`group` is the polygon
-  feature id, `subgroup` marks holes), so mapping them previously
-  corrupted the rendering silently — `aes(group = region)` collapsed
-  each region’s separate polygon pieces.
+  for `x`, `y`, `group` and `subgroup` are ignored, with a warning.**
+  They are derived from the atlas geometry, so mapping them corrupted
+  the rendering silently.
 
-- **Polygon draw order now follows your data’s row order.** It used to
-  be the atlas’s own polygon order regardless of your data, so when you
-  mapped a variable to `colour` the outlines stacked in an order
-  unrelated to it. Regions now draw in the order they appear in your
-  `data` (later rows on top); regions you supply no value for stay
-  underneath in atlas order.
+- **Polygon draw order follows your data’s row order** (later rows on
+  top); regions you supply no value for stay underneath in atlas order.
   [`arrange()`](https://dplyr.tidyverse.org/reference/arrange.html) your
   data to control layering. Visual-only, but it restacks overlapping
   outlines ([\#162](https://github.com/ggsegverse/ggseg/issues/162)).
@@ -87,225 +57,129 @@ upgrading.
 - **[`position_brain()`](https://ggsegverse.github.io/ggseg/reference/position_brain.md)
   ignores the `hemi` term for slice-based atlases** (subcortical,
   cerebellar, tract), with a warning. Those views are whole slices
-  already containing both hemispheres, so `hemi ~ view` no longer splits
-  the grey context into its own row away from the structures. Each view
-  now renders with its anatomical context integrated, matching
-  [`plot()`](https://rdrr.io/r/graphics/plot.default.html). Subcortical
-  and tract plots using `hemi ~ view` lay out differently (correctly).
+  containing both hemispheres. Plots using `hemi ~ view` lay out
+  differently.
+
+- A `"wm"` atlas gets the same axis scales as a subcortical one,
+  labelled by view rather than hemisphere.
 
 ### New features
 
 - The read-only atlas accessors from `ggseg.formats` are re-exported, so
   [`atlas_palette()`](https://ggsegverse.github.io/ggseg.formats/reference/atlas_palette.html),
-  [`atlas_regions()`](https://ggsegverse.github.io/ggseg.formats/reference/atlas_regions.html),
-  [`atlas_labels()`](https://ggsegverse.github.io/ggseg.formats/reference/atlas_labels.html),
-  [`atlas_sf()`](https://ggsegverse.github.io/ggseg.formats/reference/atlas_sf.html)
+  [`atlas_regions()`](https://ggsegverse.github.io/ggseg.formats/reference/atlas_regions.html)
   and their siblings work after
-  [`library(ggseg)`](https://ggsegverse.github.io/ggseg/) and an atlas
-  package, without attaching `ggseg.formats`. The atlas-editing verbs
-  stay in `ggseg.extra`. Requires `ggseg.formats (>= 0.0.4.9015)`
+  [`library(ggseg)`](https://ggsegverse.github.io/ggseg/) without
+  attaching `ggseg.formats`. The atlas-editing verbs stay in
+  `ggseg.extra`. Requires `ggseg.formats (>= 0.0.4.9015)`
   ([\#183](https://github.com/ggsegverse/ggseg/issues/183)).
 
-- New
-  [`stat_brain()`](https://ggsegverse.github.io/ggseg/reference/stat_brain.md)
-  and exported `StatBrain` ggproto: the stat-first spelling of
+- [`stat_brain()`](https://ggsegverse.github.io/ggseg/reference/stat_brain.md)
+  and `StatBrain`: the stat-first spelling of
   [`geom_brain()`](https://ggsegverse.github.io/ggseg/reference/ggbrain.md).
-  Both build the same layer; use
-  [`stat_brain()`](https://ggsegverse.github.io/ggseg/reference/stat_brain.md)
-  to pair `StatBrain` with a different geom.
 
-- New
-  [`brain_test_plot()`](https://ggsegverse.github.io/ggseg/reference/brain_test_plot.md)
-  builds a minimal, deterministic atlas plot (regions filled by `label`,
-  no legend,
-  [`theme_void()`](https://ggplot2.tidyverse.org/reference/ggtheme.html))
-  — the canonical construction for `vdiffr` snapshots across the
-  ggsegverse, so a stray legend or title cannot creep into a snapshot
-  and every atlas renders identically. It defaults to
-  `position_brain(. ~ view)` for slice-based atlases and
-  `position_brain(hemi ~ view)` for cortical ones.
+- [`brain_test_plot()`](https://ggsegverse.github.io/ggseg/reference/brain_test_plot.md)
+  builds a minimal, deterministic atlas plot – the canonical
+  construction for `vdiffr` snapshots across the ggsegverse.
 
-- `GeomBrainSf` is now exported (see above).
+- `GeomBrainSf` is exported.
 
 ### Bug fixes
 
 - [`geom_brain()`](https://ggsegverse.github.io/ggseg/reference/ggbrain.md)
-  draws an atlas’s context (the backdrop silhouette) behind its
-  structures, whatever order the atlas stores its geometry in. It
-  painted rows in stored order, so an atlas built with its context last
-  hid every structure under a grey silhouette – the sagittal panel of
-  `ggsegCraddock::adhd200_400_subcortical()` came out blank.
-  `ggseg.formats` already re-orders this way in
-  [`atlas_sf()`](https://ggsegverse.github.io/ggseg.formats/reference/atlas_sf.html)
-  and [`as.data.frame()`](https://rdrr.io/r/base/as.data.frame.html);
-  the polygon renderer was the one path that did not
+  draws an atlas’s context behind its structures, whatever order the
+  atlas stores its geometry in. An atlas built with its context last hid
+  every structure under a grey silhouette
   ([\#181](https://github.com/ggsegverse/ggseg/issues/181)).
 
-- `position_brain(views = )` and `reposition_brain(views = )` error with
-  the atlas’s available views when none of the requested views exist.
-  They warned and then failed far downstream in `st_as_sf()`, which is
-  what the
-  [`reposition_brain()`](https://ggsegverse.github.io/ggseg/reference/reposition_brain.md)
-  example did once ggseg.formats rebuilt `aseg` with new view names.
-  Examples and the positioning vignette use the rebuilt atlas’s views
-  (`axial_2`, `coronal_2`, `sagittal_left`).
-
 - Colour is resolved when the atlas is drawn, not read from what it
-  stores.
-  [`geom_brain()`](https://ggsegverse.github.io/ggseg/reference/ggbrain.md),
-  [`brain_test_plot()`](https://ggsegverse.github.io/ggseg/reference/brain_test_plot.md)
-  and
-  [`scale_fill_brain()`](https://ggsegverse.github.io/ggseg/reference/scale_brain.md)
-  went to the stored palette directly, so an atlas that ships none drew
-  every region in the same ink and one that ships an unusable palette
-  drew it anyway – MarsAtlas came out as eight black brains. They go
-  through
-  [`ggseg.formats::atlas_plot_palette()`](https://ggsegverse.github.io/ggseg.formats/reference/atlas_plot_palette.html)
-  now, which uses the atlas’s palette when it has one and generates
-  distinguishable colours when it does not, knowing which labels are
-  regions and which are backdrop. `ggseg3d` has done this since
-  2.1.2.9003.
-
-- [`brain_test_plot()`](https://ggsegverse.github.io/ggseg/reference/brain_test_plot.md)
-  says why an atlas it rejects is invalid. An atlas built against an
-  older `core` schema failed with “`atlas` must be a `<ggseg_atlas>`”
-  while being one, which reads as the wrong argument having been passed;
-  it now reports the constructor’s own complaint, such as a `hemi` value
-  outside the vocabulary.
+  stores, via
+  [`ggseg.formats::atlas_plot_palette()`](https://ggsegverse.github.io/ggseg.formats/reference/atlas_plot_palette.html).
+  An atlas shipping no palette drew every region in the same ink.
 
 - A bare
   [`geom_brain()`](https://ggsegverse.github.io/ggseg/reference/ggbrain.md)
-  again colours the atlas by its palette, keyed on `label` — unchanged
-  from 2.2.1. The default is now installed at build time, so a top-level
-  `aes(fill = value)` wins instead of erroring with “Continuous value
-  supplied to a discrete scale”.
+  colours the atlas by its palette, keyed on `label`. The default is
+  installed at build time, so a top-level `aes(fill = value)` wins
+  instead of erroring.
 
 - Faceting no longer needs
-  [`dplyr::group_by()`](https://dplyr.tidyverse.org/reference/group_by.html).
-  The atlas geometry is drawn by `StatBrain`, which ggplot2 recomputes
-  per panel, so
-  [`facet_wrap()`](https://ggplot2.tidyverse.org/reference/facet_wrap.html)
-  /
-  [`facet_grid()`](https://ggplot2.tidyverse.org/reference/facet_grid.html)
-  work directly from your data. Faceting on a variable of your own draws
-  the complete brain in every panel; faceting on an atlas column
-  (`hemi`, `view`) draws that slice in each panel, as before.
+  [`dplyr::group_by()`](https://dplyr.tidyverse.org/reference/group_by.html):
+  the geometry is drawn by `StatBrain`, which ggplot2 recomputes per
+  panel.
 
 - [`geom_brain()`](https://ggsegverse.github.io/ggseg/reference/ggbrain.md)
-  again respects `data` and aesthetics set in the top-level
-  [`ggplot()`](https://ggplot2.tidyverse.org/reference/ggplot.html)
-  call. The polygon renderer built the atlas eagerly, before the plot
-  existed, so it never saw inherited
-  `data`/[`aes()`](https://ggplot2.tidyverse.org/reference/aes.html)
-  ([\#158](https://github.com/ggsegverse/ggseg/issues/158)).
-
-- [`geom_brain()`](https://ggsegverse.github.io/ggseg/reference/ggbrain.md)
-  again maps `aes(colour = ...)` and `aes(linewidth = ...)` to region
-  outlines. The defaults (`grey35`, `0.2`) were injected as fixed geom
-  parameters, which silently overrode any mapping; they are now
-  `default_aes` on `GeomBrain`
-  ([\#160](https://github.com/ggsegverse/ggseg/issues/160)).
-
-- [`geom_brain()`](https://ggsegverse.github.io/ggseg/reference/ggbrain.md)
-  again warns when rows of your `data` match no atlas region. The
-  polygon renderer’s left join dropped unmatched rows silently
+  respects `data` and aesthetics set in the top-level
+  [`ggplot()`](https://ggplot2.tidyverse.org/reference/ggplot.html) call
+  ([\#158](https://github.com/ggsegverse/ggseg/issues/158)), maps
+  `aes(colour = )` and `aes(linewidth = )` to region outlines
+  ([\#160](https://github.com/ggsegverse/ggseg/issues/160)), and warns
+  when rows of your `data` match no region
   ([\#121](https://github.com/ggsegverse/ggseg/issues/121)).
 
 - [`scale_x_brain()`](https://ggsegverse.github.io/ggseg/reference/scale_continous_brain.md),
   [`scale_y_brain()`](https://ggsegverse.github.io/ggseg/reference/scale_continous_brain.md)
   and
   [`scale_labs_brain()`](https://ggsegverse.github.io/ggseg/reference/scale_continous_brain.md)
-  no longer require the optional `sf` package. They derived their axis
-  breaks by converting the atlas to `sf` and reading coordinates back
-  out, so on a system without `sf` they errored instead of working –
-  even though `sf` moved to Suggests in 2.2.0 and everything else on the
-  default path had been made sf-free. They now read the coordinates from
-  the polygon representation
-  ([`ggseg.formats::atlas_polygons()`](https://ggsegverse.github.io/ggseg.formats/reference/atlas_polygons.html)).
-  The breaks and labels are unchanged for
-  [`dk()`](https://ggsegverse.github.io/ggseg.formats/reference/dk.html),
-  [`aseg()`](https://ggsegverse.github.io/ggseg.formats/reference/aseg.html)
-  and
-  [`tracula()`](https://ggsegverse.github.io/ggseg.formats/reference/tracula.html);
-  a test pins them to the sf-derived values.
+  no longer require the optional `sf`; they read coordinates from the
+  polygon representation. Breaks and labels are unchanged.
 
-- `geom_brain(position = )` again applies a layout string or formula.
-  Previously only a
+- `geom_brain(position = )` applies a layout string or formula;
+  previously only a
   [`position_brain()`](https://ggsegverse.github.io/ggseg/reference/position_brain.md)
-  spec took effect; everything else, including an invalid value, was
-  silently dropped. Strings and formulas are now coerced, `"identity"`
-  opts out, and anything else errors.
+  spec took effect and anything else was silently dropped.
 
 - Axis scales work for cerebellar atlases such as
-  [`suit()`](https://ggsegverse.github.io/ggseg.formats/reference/suit.html).
-  `adapt_scales()` returned `NULL` for any type outside
-  cortical/subcortical/tract, so
-  [`scale_x_brain()`](https://ggsegverse.github.io/ggseg/reference/scale_continous_brain.md)
-  and friends produced empty scales. Unsupported types now error.
+  [`suit()`](https://ggsegverse.github.io/ggseg.formats/reference/suit.html);
+  unsupported types now error rather than producing empty scales.
 
 - [`scale_continous_brain()`](https://ggsegverse.github.io/ggseg/reference/scale_continous_brain.md)
-  no longer returns a scale without breaks at its default
-  `aesthetics = c("y", "x")`; the argument was matched after it was
-  used.
+  returns a scale with breaks at its default `aesthetics`.
 
-- `position_brain(hemi ~ view, nrow = 2)` now errors instead of silently
+- `position_brain(views = )` and `reposition_brain(views = )` error with
+  the atlas’s available views when none of the requested views exist,
+  and warn on individual views the atlas lacks.
+  `position_brain(zoom = )` warns on regions the atlas lacks;
+  `zoom = TRUE` resolves its focus from `label` before `region`.
+
+- `position_brain(hemi ~ view, nrow = 2)` errors instead of silently
   discarding the formula, and `nrow`/`ncol` must be positive whole
-  numbers (`ncol = 0` produced `Inf` grid indices). The deprecated
-  [`position_brain_sf()`](https://ggsegverse.github.io/ggseg/reference/position_brain_sf.md)
-  and
-  [`reposition_brain()`](https://ggsegverse.github.io/ggseg/reference/reposition_brain.md)
-  validate the same way, and before their `sf` guard, so a bad argument
-  is not reported as a missing `sf`.
-
-- A `nrow`/`ncol` grid on a cortical atlas now gives each
-  hemisphere/view pair its own cell; it split on `view` alone, putting
-  both hemispheres in every cell.
-
-- `position_brain(views = )` warns when a named view is not in the
-  atlas, and `zoom =` warns when a named region is not, instead of
-  silently dropping it. `zoom = TRUE` resolves its focus from `label`
-  before `region`, and a named focus may use either vocabulary.
+  numbers. A `nrow`/`ncol` grid on a cortical atlas gives each
+  hemisphere/view pair its own cell.
 
 - A layout formula variable containing a dot (e.g. `my.col ~ view`) is
-  no longer dropped along with the `.` placeholder.
+  no longer dropped.
 
 - [`annotate_brain()`](https://ggsegverse.github.io/ggseg/reference/annotate_brain.md)
-  accepts a layout string or formula without requiring the optional
-  `sf`; it routed every non-spec `position` into the sf implementation.
+  accepts a layout string or formula without requiring `sf`.
 
 - [`scale_brain()`](https://ggsegverse.github.io/ggseg/reference/scale_brain.md)
   and friends error with the available atlas names when `name` is not an
-  atlas; [`match.fun()`](https://rdrr.io/r/base/match.fun.html) resolved
-  any visible function.
+  atlas.
 
 - The deprecated `scale_*_brain()` scales warn at build time when no
-  mapped value is a palette key. Atlas palettes are keyed by `label`, so
-  `aes(fill = region)` drew every region in `na.value` with no signal.
+  mapped value is a palette key.
 
-- Laying out a data frame that mixes atlas types now errors with an
-  explanation rather than R’s “condition has length \> 1”.
+- [`brain_test_plot()`](https://ggsegverse.github.io/ggseg/reference/brain_test_plot.md)
+  reports why an atlas it rejects is invalid.
+
+- Laying out a data frame that mixes atlas types errors with an
+  explanation.
 
 ### Documentation and internals
 
-- Roxygen documentation now uses markdown.
+- Roxygen documentation uses markdown.
 
-- `positioning-views.Rmd` used region and view names no atlas has
-  (`"Thalamus Proper"`, `coronal_3`), so three zoom figures and two
-  view-selection figures demonstrated nothing.
-
-- Tests, examples, and vignettes resolve region names dynamically
-  through
+- Tests, examples and vignettes resolve region names through
   [`ggseg.formats::atlas_regions()`](https://ggsegverse.github.io/ggseg.formats/reference/atlas_regions.html)
-  and the schema-stable `label` column instead of hard-coding region
-  strings.
+  and the schema-stable `label` rather than hard-coding them;
+  `positioning-views.Rmd` no longer uses names no atlas has.
 
 - `vdiffr` snapshots are keyed by atlas schema through testthat’s
-  `variant` mechanism, so one snapshot set per `ggseg.formats` schema
-  can be committed side by side.
+  `variant` mechanism.
 
 - The test helpers no longer attach Suggests packages unconditionally,
-  so the suite degrades to skips rather than erroring under
-  `_R_CHECK_DEPENDS_ONLY_=true`.
+  so the suite degrades to skips under `_R_CHECK_DEPENDS_ONLY_=true`.
 
 ## ggseg 2.2.1
 
