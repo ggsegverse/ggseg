@@ -53,7 +53,7 @@ figures, so read the breaking changes before upgrading.
 - The read-only atlas accessors from `ggseg.formats` are re-exported, so
   `atlas_palette()`, `atlas_regions()` and their siblings work after
   `library(ggseg)` without attaching `ggseg.formats`. The atlas-editing verbs
-  stay in `ggseg.extra` (#183).
+  stay in `ggseg.extra`. Requires `ggseg.formats (>= 0.0.4.9015)` (#183).
 
 - `stat_brain()` and `StatBrain`: the stat-first spelling of `geom_brain()`.
 
