@@ -13,7 +13,7 @@ lays out the brain views for you. No data? It just draws the atlas."><meta prope
 
     <a class="navbar-brand me-2" href="../index.html">ggseg</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">2.2.1.9011</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">2.2.1.9012</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -161,11 +161,6 @@ atlas row) or on <code>region</code> (which repeats across hemispheres).</p>
 overlap (e.g. mapping <code>colour</code> to a threshold with a wide <code>linewidth</code>) the
 later rows draw on top. Reorder your data with <code><a href="https://dplyr.tidyverse.org/reference/arrange.html" class="external-link">dplyr::arrange()</a></code> to control
 the layering; regions you supply no value for stay underneath in atlas order.</p>
-<p>Faceting works without any <code><a href="https://dplyr.tidyverse.org/reference/group_by.html" class="external-link">dplyr::group_by()</a></code>: the atlas geometry is drawn
-by StatBrain, which ggplot2 recomputes per panel, so the complete brain
-appears in every facet. If your <code>data</code> has several rows for the same region
-(e.g. one per subject), they are combined with <code>fun</code> (mean by default) before
-drawing.</p>
     </div>
     <div class="section level2">
     <h2 id="geombrain-ggproto">GeomBrain ggproto<a class="anchor" aria-label="anchor" href="#geombrain-ggproto"></a></h2>

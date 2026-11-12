@@ -121,13 +121,6 @@ outlines overlap (e.g. mapping `colour` to a threshold with a wide
 to control the layering; regions you supply no value for stay underneath
 in atlas order.
 
-Faceting works without any
-[`dplyr::group_by()`](https://dplyr.tidyverse.org/reference/group_by.html):
-the atlas geometry is drawn by StatBrain, which ggplot2 recomputes per
-panel, so the complete brain appears in every facet. If your `data` has
-several rows for the same region (e.g. one per subject), they are
-combined with `fun` (mean by default) before drawing.
-
 ## GeomBrain ggproto
 
 `GeomBrain` is the
