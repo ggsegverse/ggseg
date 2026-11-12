@@ -24,6 +24,7 @@ export(atlas_type)
 export(atlas_undrawn)
 export(atlas_vertices)
 export(atlas_views)
+export(atlas_views_empty)
 export(brain_join)
 export(brain_test_plot)
 export(coord_brain)
@@ -111,6 +112,7 @@ importFrom(ggseg.formats,
   atlas_undrawn,
   atlas_vertices,
   atlas_views,
+  atlas_views_empty,
   dk,
   is_atlas_polygon,
   is_atlas_sf,

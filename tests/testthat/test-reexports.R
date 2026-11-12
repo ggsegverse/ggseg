@@ -8,6 +8,7 @@ describe("re-exported ggseg.formats accessors (ggseg#183)", {
     "atlas_views",
     "atlas_context",
     "atlas_undrawn",
+    "atlas_views_empty",
     "atlas_region_semantics",
     "atlas_palette",
     "atlas_plot_palette",
