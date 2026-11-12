@@ -25,6 +25,7 @@ to see their documentation.
   [`atlas_undrawn()`](https://ggsegverse.github.io/ggseg.formats/reference/atlas_undrawn.html),
   [`atlas_vertices()`](https://ggsegverse.github.io/ggseg.formats/reference/atlas_vertices.html),
   [`atlas_views()`](https://ggsegverse.github.io/ggseg.formats/reference/atlas_views.html),
+  [`atlas_views_empty()`](https://ggsegverse.github.io/ggseg.formats/reference/atlas_views_empty.html),
   [`dk()`](https://ggsegverse.github.io/ggseg.formats/reference/dk.html),
   [`is_atlas_polygon()`](https://ggsegverse.github.io/ggseg.formats/reference/atlas_geometry_type.html),
   [`is_atlas_sf()`](https://ggsegverse.github.io/ggseg.formats/reference/atlas_geometry_type.html),
