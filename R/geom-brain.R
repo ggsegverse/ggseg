@@ -19,12 +19,6 @@
 #' later rows draw on top. Reorder your data with [dplyr::arrange()] to control
 #' the layering; regions you supply no value for stay underneath in atlas order.
 #'
-#' Faceting works without any [dplyr::group_by()]: the atlas geometry is drawn
-#' by [StatBrain], which ggplot2 recomputes per panel, so the complete brain
-#' appears in every facet. If your `data` has several rows for the same region
-#' (e.g. one per subject), they are combined with `fun` (mean by default) before
-#' drawing.
-#'
 #' @param mapping Set of aesthetic mappings created by [ggplot2::aes()].
 #' @param data A data.frame containing variables to map. If `NULL`, the atlas
 #'   is plotted without user data. Add a facet with [ggplot2::facet_wrap()] to

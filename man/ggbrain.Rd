@@ -82,12 +82,6 @@ Regions are drawn in the order they appear in your \code{data}, so when outlines
 overlap (e.g. mapping \code{colour} to a threshold with a wide \code{linewidth}) the
 later rows draw on top. Reorder your data with \code{\link[dplyr:arrange]{dplyr::arrange()}} to control
 the layering; regions you supply no value for stay underneath in atlas order.
-
-Faceting works without any \code{\link[dplyr:group_by]{dplyr::group_by()}}: the atlas geometry is drawn
-by \link{StatBrain}, which ggplot2 recomputes per panel, so the complete brain
-appears in every facet. If your \code{data} has several rows for the same region
-(e.g. one per subject), they are combined with \code{fun} (mean by default) before
-drawing.
 }
 \section{GeomBrain ggproto}{
 
