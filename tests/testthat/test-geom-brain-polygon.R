@@ -258,7 +258,7 @@ describe("geom_brain() inherits top-level data and aes (ggseg#158)", {
   # top-level ggplot() call were dropped by the eager polygon build, so fill
   # fell back to the region labels instead of the user's mapped values.
   fill_column <- function(p) {
-    ggplot2::ggplot_build(p)$data[[1]]$fill
+    brain_regions_built(ggplot2::ggplot_build(p))$fill
   }
 
   labelled_values <- function() {
@@ -364,7 +364,7 @@ describe("geom_brain() outline aesthetics (ggseg#160)", {
   # injected as fixed geom params, which silently overrode a user's
   # aes(colour = ...) / aes(linewidth = ...) mapping. GeomBrain now
   # supplies them through default_aes, which yields to a mapping.
-  built <- function(p) ggplot2::ggplot_build(p)$data[[1]]
+  built <- function(p) brain_regions_built(ggplot2::ggplot_build(p))
 
   outline_data <- function() {
     data.frame(
@@ -546,7 +546,7 @@ describe("draw order follows the data row order (ggseg#162)", {
 describe("geom_brain() position coercion", {
   built <- function(position) {
     p <- ggplot2::ggplot() + geom_brain(atlas = dk(), position = position)
-    muffle_breaking_warnings(ggplot2::ggplot_build(p))$data[[1]]
+    brain_regions_built(muffle_breaking_warnings(ggplot2::ggplot_build(p)))
   }
 
   it("applies a layout string the same way as a position_brain() spec", {
@@ -572,5 +572,70 @@ describe("geom_brain() position coercion", {
 
   it("errors on an invalid position instead of silently ignoring it", {
     expect_error(built("nonsense"), "position")
+  })
+})
+
+describe("the context backdrop is a layer of its own (#182)", {
+  it("adds a context layer under the regions when context = TRUE", {
+    p <- ggplot2::ggplot() + geom_brain(atlas = ggseg.formats::aseg())
+    rows <- unname(
+      vapply(p$layers, function(l) l$brain_rows %||% NA_character_, "")
+    )
+    # the backdrop is first, so it draws underneath
+    expect_identical(rows, c("context", "regions"))
+  })
+
+  it("adds no context layer when context = FALSE", {
+    p <- ggplot2::ggplot() +
+      geom_brain(atlas = ggseg.formats::aseg(), context = FALSE)
+    rows <- unname(
+      vapply(p$layers, function(l) l$brain_rows %||% NA_character_, "")
+    )
+    expect_identical(rows, "all")
+  })
+
+  it("keeps a mapped fill off the backdrop", {
+    atlas <- ggseg.formats::aseg()
+    p <- ggplot2::ggplot() +
+      geom_brain(atlas = atlas, mapping = ggplot2::aes(fill = label))
+
+    backdrop <- brain_layer_data(p, context = TRUE)
+    regions <- brain_layer_data(p)
+
+    expect_identical(unique(backdrop$fill), "grey")
+    expect_gt(length(unique(regions$fill)), 10)
+    expect_setequal(
+      unique(backdrop$label),
+      ggseg.formats::atlas_context(atlas)
+    )
+  })
+
+  it("leaves the backdrop out of the fill scale, so it claims no key", {
+    atlas <- ggseg.formats::aseg()
+    p <- ggplot2::ggplot() +
+      geom_brain(atlas = atlas, mapping = ggplot2::aes(fill = label))
+    limits <- ggplot2::ggplot_build(p)$plot$scales$get_scales(
+      "fill"
+    )$get_limits()
+
+    expect_false(anyNA(limits))
+    expect_false(any(ggseg.formats::atlas_context(atlas) %in% limits))
+    expect_setequal(limits, ggseg.formats::atlas_labels(atlas))
+  })
+
+  it("recolours the backdrop with context_fill", {
+    p <- ggplot2::ggplot() +
+      geom_brain(atlas = ggseg.formats::aseg(), context_fill = "white")
+    expect_identical(unique(brain_layer_data(p, context = TRUE)$fill), "white")
+  })
+
+  it("lays both layers out on the same coordinates", {
+    atlas <- ggseg.formats::aseg()
+    p <- ggplot2::ggplot() + geom_brain(atlas = atlas)
+    backdrop <- brain_layer_data(p, context = TRUE)
+    regions <- brain_layer_data(p)
+    # the regions sit inside the backdrop's extent: one shared layout
+    expect_gte(min(regions$x), min(backdrop$x))
+    expect_lte(max(regions$x), max(backdrop$x))
   })
 })

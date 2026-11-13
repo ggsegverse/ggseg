@@ -60,6 +60,7 @@ geom_brain_polygon <- function(
   view = NULL,
   position = position_brain_polygon(),
   context = TRUE,
+  context_fill = "grey",
   fun = mean,
   geom = GeomBrain,
   show.legend = NA,
@@ -111,12 +112,40 @@ geom_brain_polygon <- function(
   brain_layer$brain_view <- view
   brain_layer$brain_position <- position
   brain_layer$brain_context <- context
+  brain_layer$brain_rows <- if (context) "regions" else "all"
 
   # When the user maps neither `fill` nor `colour`, LayerBrain$setup_layer()
   # maps `fill` to `label` and installs the atlas palette, so a bare
   # geom_brain() comes out palette-coloured. `label` -- not `region` -- is the
   # key the palette (and the rest of the ecosystem) is built on.
-  list(brain_layer, coord_brain())
+  if (!context) {
+    return(list(brain_layer, coord_brain()))
+  }
+
+  # The backdrop is drawn first, underneath, by a layer of its own. It carries
+  # no mapping, so no fill scale ever sees it: it claims no legend key and a
+  # mapped `fill` cannot colour it (ggsegverse/ggseg#182).
+  context_layer <- layer(
+    geom = geom,
+    stat = StatBrain, # nolint: object_usage_linter.
+    data = NULL,
+    mapping = aes(),
+    position = "identity",
+    show.legend = FALSE,
+    inherit.aes = FALSE,
+    params = c(list(fun = fun, na.rm = FALSE, fill = context_fill), dots),
+    layer_class = LayerBrain,
+    check.aes = FALSE,
+    check.param = FALSE
+  )
+  context_layer$brain_atlas <- atlas
+  context_layer$brain_hemi <- hemi
+  context_layer$brain_view <- view
+  context_layer$brain_position <- position
+  context_layer$brain_context <- TRUE
+  context_layer$brain_rows <- "context"
+
+  list(context_layer, brain_layer, coord_brain())
 }
 
 
@@ -187,7 +216,12 @@ LayerBrain <- ggproto(
     # A bare geom_brain() colours the atlas by its own palette, keyed on
     # `label`. Both halves or neither: a `fill = label` mapping with no palette
     # would hand ggplot2's hue ramp to 100-odd labels.
-    if (needs_default_atlas_fill(self$computed_mapping, self$aes_params)) {
+    # The context layer carries a fixed fill and no mapping; handing it the
+    # atlas palette would put the backdrop back in the fill scale.
+    if (
+      !identical(self$brain_rows, "context") &&
+        needs_default_atlas_fill(self$computed_mapping, self$aes_params)
+    ) {
       if (add_atlas_fill_scale(plot, atlas)) {
         # `after_stat()`: `label` is a column of the atlas geometry StatBrain
         # emits, not of the user's `data`, which need not carry it at all (it
@@ -206,14 +240,19 @@ LayerBrain <- ggproto(
     }
     focus <- resolve_zoom_focus(zoom_spec, if (has_data) dt else NULL, atlas)
 
+    # Both halves of a context/regions pair flatten the *same* rows, because
+    # prepare_polygon_atlas() lays the views out from whatever it is given and
+    # context is the largest shape in the atlas. Preparing the full atlas and
+    # splitting afterwards is what keeps the two layers on one layout.
     flat <- prepare_polygon_atlas(
       atlas,
       hemi = self$brain_hemi,
       view = self$brain_view,
       position = self$brain_position,
-      context = self$brain_context,
+      context = self$brain_context || !identical(self$brain_rows, "all"),
       focus = focus
     )
+    flat <- select_brain_rows(flat, self$brain_rows)
 
     # All atlas metadata columns (region/label/hemi/view/lobe/... whatever the
     # core carries), derived from flat so no atlas column is missed.
@@ -267,6 +306,29 @@ LayerBrain <- ggproto(
     dt
   }
 )
+
+
+#' Keep one half of a flattened atlas
+#'
+#' `geom_brain()` draws the backdrop and the parcellation as two layers so a
+#' mapped `fill` can reach the parcels without touching the backdrop
+#' (ggsegverse/ggseg#182). Both layers flatten the whole atlas, so the view
+#' layout is computed over identical rows, and each then keeps its half: the
+#' context rows are the ones with no `region`.
+#'
+#' @param flat A flattened atlas from [prepare_polygon_atlas()].
+#' @param rows `"all"`, `"context"`, or `"regions"`.
+#' @return `flat`, subset to the requested rows.
+#' @keywords internal
+#' @noRd
+select_brain_rows <- function(flat, rows) {
+  if (is.null(rows) || identical(rows, "all") || !"region" %in% names(flat)) {
+    return(flat)
+  }
+  is_context <- is.na(flat$region)
+  keep <- if (identical(rows, "context")) is_context else !is_context
+  flat[keep, , drop = FALSE]
+}
 
 
 #' Auto-group user data by facet variables for atlas replication (sf path)

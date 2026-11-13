@@ -12,6 +12,7 @@ stat_brain(
   view = NULL,
   position = position_brain(),
   context = TRUE,
+  context_fill = "grey",
   fun = mean,
   geom = GeomBrain,
   show.legend = NA,
@@ -42,7 +43,14 @@ a layout formula (e.g. \code{hemi ~ view}). Strings and formulas are passed to
 coordinates. Per-view zoom is set through \code{\link[=position_brain]{position_brain()}}'s \code{zoom}.}
 
 \item{context}{Keep the rest of the brain as a soft grey backdrop (\code{TRUE},
-the default), or show only the regions you're plotting (\code{FALSE}).}
+the default), or show only the regions you're plotting (\code{FALSE}).
+
+The backdrop is drawn as a layer of its own, underneath the regions and
+outside any fill scale, so a mapped \code{fill} never reaches it and it claims
+no legend key. Set its colour with \code{context_fill}.}
+
+\item{context_fill}{Colour of the context backdrop. Defaults to \code{"grey"}.
+Only used when \code{context = TRUE}.}
 
 \item{fun}{Function used to combine multiple \code{data} rows that map to the same
 atlas region, applied within each facet panel. Defaults to \code{\link[=mean]{mean()}}. Any

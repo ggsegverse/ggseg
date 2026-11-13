@@ -43,16 +43,20 @@ articles:
       - freesurfer-files
 
 reference:
+  # Selectors rather than a hand-kept list: a new geom_*/stat_*/position_*
+  # lands in the index on its own, instead of failing the pkgdown build the
+  # first time someone adds one and forgets this file.
   - title: Plotting
     desc: Core geom and positioning for brain plots
     contents:
-      - geom_brain
-      - stat_brain
-      - position_brain
-      - annotate_brain
-      - coord_brain
+      - starts_with("geom_")
+      - starts_with("stat_")
+      - starts_with("position_")
+      - starts_with("coord_")
+      - starts_with("annotate_")
       - reposition_brain
       - brain_test_plot
+      - brain_layer_data
 
   - title: Data
     desc: Joining user data to brain atlases

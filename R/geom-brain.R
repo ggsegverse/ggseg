@@ -36,6 +36,12 @@
 #'   coordinates. Per-view zoom is set through [position_brain()]'s `zoom`.
 #' @param context Keep the rest of the brain as a soft grey backdrop (`TRUE`,
 #'   the default), or show only the regions you're plotting (`FALSE`).
+#'
+#'   The backdrop is drawn as a layer of its own, underneath the regions and
+#'   outside any fill scale, so a mapped `fill` never reaches it and it claims
+#'   no legend key. Set its colour with `context_fill`.
+#' @param context_fill Colour of the context backdrop. Defaults to `"grey"`.
+#'   Only used when `context = TRUE`.
 #' @param fun Function used to combine multiple `data` rows that map to the same
 #'   atlas region, applied within each facet panel. Defaults to [mean()]. Any
 #'   function reducing a vector to a single value works (e.g. [median()],
@@ -66,6 +72,7 @@ geom_brain <- function(
   view = NULL,
   position = position_brain(),
   context = TRUE,
+  context_fill = "grey",
   fun = mean,
   show.legend = NA,
   inherit.aes = TRUE,
@@ -94,6 +101,7 @@ geom_brain <- function(
         view = view,
         position = position,
         context = context,
+        context_fill = context_fill,
         fun = fun,
         show.legend = show.legend,
         inherit.aes = inherit.aes

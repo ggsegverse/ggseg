@@ -274,6 +274,6 @@ describe("warn_palette_key_mismatch()", {
       ) +
       scale_fill_brain("dk")
     built <- muffle_breaking_warnings(ggplot2::ggplot_build(p))
-    expect_gt(length(unique(built$data[[1]]$fill)), 2)
+    expect_gt(length(unique(brain_regions_built(built)$fill)), 2)
   })
 })
