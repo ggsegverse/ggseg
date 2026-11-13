@@ -13,6 +13,13 @@ figures, so read the breaking changes before upgrading.
   claims no legend key (#182). `layer_data(p)` and `p$layers[[1]]` therefore
   return the backdrop; use `brain_layer_data()` for the regions.
 
+- **`na.value` no longer sets the backdrop colour.** It now means what it says
+  on a fill scale -- the colour of regions your data has no value for -- and
+  the backdrop takes `context_fill` instead. Previously one setting did both,
+  so reddening `na.value` to find your data's gaps also reddened the whole
+  silhouette. Code that set `na.value` to style the backdrop wants
+  `context_fill`.
+
 - **Region keys changed.** The `region` column now holds short keys (e.g.
   `"superiorparietal"`) and the spelled-out names moved to `display`. **Any
   user data joined by `region` must be re-keyed**; `geom_brain()` warns that
