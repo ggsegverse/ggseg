@@ -140,14 +140,16 @@ Core geom and positioning for brain plots
   : Stat-first constructor for a brain atlas layer
 - [`position_brain()`](https://ggsegverse.github.io/ggseg/reference/position_brain.md)
   : Arrange brain atlas views
-- [`annotate_brain()`](https://ggsegverse.github.io/ggseg/reference/annotate_brain.md)
-  : Add view labels to brain atlas plots
 - [`coord_brain()`](https://ggsegverse.github.io/ggseg/reference/coord_brain.md)
   : Keep brain shapes undistorted
+- [`annotate_brain()`](https://ggsegverse.github.io/ggseg/reference/annotate_brain.md)
+  : Add view labels to brain atlas plots
 - [`reposition_brain()`](https://ggsegverse.github.io/ggseg/reference/reposition_brain.md)
   : Reposition brain slices
 - [`brain_test_plot()`](https://ggsegverse.github.io/ggseg/reference/brain_test_plot.md)
   : Render a brain atlas with default snapshot styling
+- [`brain_layer_data()`](https://ggsegverse.github.io/ggseg/reference/brain_layer_data.md)
+  : The drawn data for a brain plot's regions
 
 ## Data
 

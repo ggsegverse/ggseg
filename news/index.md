@@ -13,6 +13,22 @@ upgrading.
 
 ### Breaking changes
 
+- **[`geom_brain()`](https://ggsegverse.github.io/ggseg/reference/ggbrain.md)
+  adds two layers.** The context backdrop is drawn by a layer of its
+  own, underneath the regions, so a mapped `fill` cannot reach it and it
+  claims no legend key
+  ([\#182](https://github.com/ggsegverse/ggseg/issues/182)).
+  `layer_data(p)` and `p$layers[[1]]` therefore return the backdrop; use
+  [`brain_layer_data()`](https://ggsegverse.github.io/ggseg/reference/brain_layer_data.md)
+  for the regions.
+
+- **`na.value` no longer sets the backdrop colour.** It now means what
+  it says on a fill scale – the colour of regions your data has no value
+  for – and the backdrop takes `context_fill` instead. Previously one
+  setting did both, so reddening `na.value` to find your data’s gaps
+  also reddened the whole silhouette. Code that set `na.value` to style
+  the backdrop wants `context_fill`.
+
 - **Region keys changed.** The `region` column now holds short keys
   (e.g. `"superiorparietal"`) and the spelled-out names moved to
   `display`. **Any user data joined by `region` must be re-keyed**;
@@ -65,6 +81,17 @@ upgrading.
 
 ### New features
 
+- [`geom_brain()`](https://ggsegverse.github.io/ggseg/reference/ggbrain.md)
+  and
+  [`stat_brain()`](https://ggsegverse.github.io/ggseg/reference/stat_brain.md)
+  gain `context_fill`, the colour of the context backdrop (default
+  `"grey"`).
+
+- New
+  [`brain_layer_data()`](https://ggsegverse.github.io/ggseg/reference/brain_layer_data.md)
+  returns a brain plot’s region data whatever the layer order, with
+  `context = TRUE` for the backdrop.
+
 - The read-only atlas accessors from `ggseg.formats` are re-exported, so
   [`atlas_palette()`](https://ggsegverse.github.io/ggseg.formats/reference/atlas_palette.html),
   [`atlas_regions()`](https://ggsegverse.github.io/ggseg.formats/reference/atlas_regions.html)
@@ -85,6 +112,11 @@ upgrading.
 - `GeomBrainSf` is exported.
 
 ### Bug fixes
+
+- A mapped `fill` no longer colours the context backdrop.
+  `aes(fill = label)` used to paint the whole silhouette as one enormous
+  parcel, because context rows carry a `label` but no `region`
+  ([\#182](https://github.com/ggsegverse/ggseg/issues/182)).
 
 - [`geom_brain()`](https://ggsegverse.github.io/ggseg/reference/ggbrain.md)
   draws an atlas’s context behind its structures, whatever order the

@@ -17,6 +17,7 @@ geom_brain(
   view = NULL,
   position = position_brain(),
   context = TRUE,
+  context_fill = "grey",
   fun = mean,
   show.legend = NA,
   inherit.aes = TRUE,
@@ -72,6 +73,15 @@ geom_brain(
 
   Keep the rest of the brain as a soft grey backdrop (`TRUE`, the
   default), or show only the regions you're plotting (`FALSE`).
+
+  The backdrop is drawn as a layer of its own, underneath the regions
+  and outside any fill scale, so a mapped `fill` never reaches it and it
+  claims no legend key. Set its colour with `context_fill`.
+
+- context_fill:
+
+  Colour of the context backdrop. Defaults to `"grey"`. Only used when
+  `context = TRUE`.
 
 - fun:
 

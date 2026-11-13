@@ -55,6 +55,10 @@ results <- data.frame(
 ggplot(results, aes(fill = score)) +
   geom_brain(atlas = dk(), show.legend = FALSE) +
   scale_fill_gradient2()
+#> Warning: Some data not merged properly.
+#> ℹ Check for naming errors in `data`:
+#>   # A tibble: 3 × 2 region score <chr> <dbl> 1 bankssts 2.1 2
+#>   caudalanteriorcingulate -1.4 3 caudalmiddlefrontal 0.8
 ```
 
 ![Three regions on a red-blue diverging scale, the rest
@@ -81,6 +85,14 @@ thickness <- data.frame(
 # mean per region (the default)
 ggplot(thickness, aes(fill = thickness)) +
   geom_brain(atlas = dk(), show.legend = FALSE)
+#> Warning: Some data not merged properly.
+#> ℹ Check for naming errors in `data`:
+#>   # A tibble: 12 × 3 region subject thickness <chr> <int> <dbl>  1 bankssts 1
+#>   2.5  2 bankssts 2 2.6  3 bankssts 3 2.4  4 bankssts 4 2.7  5
+#>   caudalanteriorcingulate 1 3.1  6 caudalanteriorcingulate 2 3  7
+#>   caudalanteriorcingulate 3 3.2  8 caudalanteriorcingulate 4 2.9  9
+#>   caudalmiddlefrontal 1 2.8 10 caudalmiddlefrontal 2 2.7 11 caudalmiddlefrontal
+#>   3 2.9 12 caudalmiddlefrontal 4 2.6
 #> Warning: ! Several `data` rows map to the same atlas region; combining them with `fun`.
 #> ℹ Before ggseg 3.0.0 these rows overplotted, so the last one won. Pass `fun =
 #>   dplyr::last` to keep that behaviour.
@@ -99,6 +111,14 @@ Repeated-measures data summarised by mean and by maximum.
 # the maximum instead
 ggplot(thickness, aes(fill = thickness)) +
   geom_brain(atlas = dk(), fun = max, show.legend = FALSE)
+#> Warning: Some data not merged properly.
+#> ℹ Check for naming errors in `data`:
+#>   # A tibble: 12 × 3 region subject thickness <chr> <int> <dbl>  1 bankssts 1
+#>   2.5  2 bankssts 2 2.6  3 bankssts 3 2.4  4 bankssts 4 2.7  5
+#>   caudalanteriorcingulate 1 3.1  6 caudalanteriorcingulate 2 3  7
+#>   caudalanteriorcingulate 3 3.2  8 caudalanteriorcingulate 4 2.9  9
+#>   caudalmiddlefrontal 1 2.8 10 caudalmiddlefrontal 2 2.7 11 caudalmiddlefrontal
+#>   3 2.9 12 caudalmiddlefrontal 4 2.6
 ```
 
 ![The three regions summarised by mean, then by
@@ -131,6 +151,13 @@ ggplot(cohorts, aes(fill = score)) +
   geom_brain(atlas = dk(), show.legend = FALSE) +
   facet_wrap(~group, ncol = 1) +
   scale_fill_gradient2()
+#> Warning: Some data not merged properly.
+#> ℹ Check for naming errors in `data`:
+#>   # A tibble: 8 × 3 region group score <chr> <chr> <dbl> 1 bankssts patients
+#>   -0.626 2 caudalanteriorcingulate patients 0.184 3 caudalmiddlefrontal
+#>   patients -0.836 4 corpuscallosum patients 1.60 5 bankssts controls 0.330 6
+#>   caudalanteriorcingulate controls -0.820 7 caudalmiddlefrontal controls 0.487
+#>   8 corpuscallosum controls 0.738
 ```
 
 ![Two stacked brains, one per cohort, four regions
@@ -156,6 +183,14 @@ stepped scale bins the aggregated value for you.
 ggplot(thickness, aes(fill = thickness)) +
   geom_brain(atlas = dk()) +
   scale_fill_steps(n.breaks = 4)
+#> Warning: Some data not merged properly.
+#> ℹ Check for naming errors in `data`:
+#>   # A tibble: 12 × 3 region subject thickness <chr> <int> <dbl>  1 bankssts 1
+#>   2.5  2 bankssts 2 2.6  3 bankssts 3 2.4  4 bankssts 4 2.7  5
+#>   caudalanteriorcingulate 1 3.1  6 caudalanteriorcingulate 2 3  7
+#>   caudalanteriorcingulate 3 3.2  8 caudalanteriorcingulate 4 2.9  9
+#>   caudalmiddlefrontal 1 2.8 10 caudalmiddlefrontal 2 2.7 11 caudalmiddlefrontal
+#>   3 2.9 12 caudalmiddlefrontal 4 2.6
 ```
 
 ![The atlas in four discrete colour steps from a binned
@@ -176,6 +211,14 @@ thickness$band <- cut(
 
 ggplot(thickness, aes(fill = band)) +
   geom_brain(atlas = dk())
+#> Warning: Some data not merged properly.
+#> ℹ Check for naming errors in `data`:
+#>   # A tibble: 12 × 4 region subject thickness band <chr> <int> <dbl> <fct>  1
+#>   bankssts 1 2.5 thin  2 bankssts 2 2.6 thin  3 bankssts 3 2.4 thin  4 bankssts 4
+#>   2.7 thin  5 caudalanteriorcingulate 1 3.1 thick  6 caudalanteriorcingulate 2 3
+#>   typical  7 caudalanteriorcingulate 3 3.2 thick  8 caudalanteriorcingulate 4 2.9
+#>   typical  9 caudalmiddlefrontal 1 2.8 typical 10 caudalmiddlefrontal 2 2.7 thin
+#>   11 caudalmiddlefrontal 3 2.9 typical 12 caudalmiddlefrontal 4 2.6 thin
 ```
 
 ![Regions coloured by a factor: thin, typical, and
