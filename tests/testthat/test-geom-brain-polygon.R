@@ -618,7 +618,7 @@ describe("the context backdrop is a layer of its own (#182)", {
       "fill"
     )$get_limits()
 
-    expect_false(any(is.na(limits)))
+    expect_false(anyNA(limits))
     expect_false(any(ggseg.formats::atlas_context(atlas) %in% limits))
     expect_setequal(limits, ggseg.formats::atlas_labels(atlas))
   })
