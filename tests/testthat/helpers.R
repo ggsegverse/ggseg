@@ -92,3 +92,12 @@ brain_regions_built <- function(built) built$data[[brain_regions_layer(built)]]
 brain_regions_mapping <- function(built) {
   built$plot$layers[[brain_regions_layer(built)]]$computed_mapping
 }
+
+# Pairing a label with its region by row position breaks silently when the
+# atlas is rebuilt in a different order, so fixtures that need both take them
+# from the same rows rather than hard-coding one side.
+atlas_label_region_pairs <- function(atlas, n) {
+  rows <- as.data.frame(atlas)
+  rows <- rows[!is.na(rows$region) & !is.na(rows$label), c("label", "region")]
+  utils::head(unique(rows), n)
+}
