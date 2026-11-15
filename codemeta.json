@@ -8,7 +8,7 @@
   "codeRepository": "https://github.com/ggsegverse/ggseg",
   "issueTracker": "https://github.com/ggsegverse/ggseg/issues",
   "license": "https://spdx.org/licenses/MIT",
-  "version": "2.2.1.9018",
+  "version": "2.2.1.9019",
   "programmingLanguage": {
     "@type": "ComputerLanguage",
     "name": "R",
@@ -291,7 +291,7 @@
     },
     "SystemRequirements": null
   },
-  "fileSize": "3095.962KB",
+  "fileSize": "3097.366KB",
   "citation": [
     {
       "@type": "CreativeWork",
