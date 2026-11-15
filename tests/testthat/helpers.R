@@ -37,10 +37,29 @@ muffle_breaking_warnings <- function(expr) {
   )
 }
 
+# vdiffr writes a baseline and passes whenever one is absent, so a variant with
+# no committed `_snaps/` directory turns every visual test in the suite into a
+# silent self-accept. That is the one failure mode these tests exist to catch,
+# so an unknown variant fails here instead.
+require_snapshot_baselines <- function(variant) {
+  if (dir.exists(testthat::test_path("_snaps", variant))) {
+    return(invisible(TRUE))
+  }
+  testthat::fail(paste0(
+    "No committed snapshot baselines for variant '",
+    variant,
+    "'. ",
+    "Every visual test would write a fresh baseline and pass. ",
+    "Commit baselines for this variant, or correct the atlas schema."
+  ))
+}
+
 expect_brain_doppelganger <- function(title, fig) {
   testthat::skip_if_not_installed("vdiffr")
+  variant <- atlas_schema_variant()
+  require_snapshot_baselines(variant)
   muffle_breaking_warnings(
-    vdiffr::expect_doppelganger(title, fig, variant = atlas_schema_variant())
+    vdiffr::expect_doppelganger(title, fig, variant = variant)
   )
 }
 

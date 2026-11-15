@@ -20,6 +20,19 @@ describe("atlas_schema_variant()", {
   })
 })
 
+describe("require_snapshot_baselines()", {
+  it("passes when the variant has committed baselines", {
+    expect_true(require_snapshot_baselines(atlas_schema_variant()))
+  })
+
+  it("fails rather than letting visual tests write fresh baselines", {
+    expect_failure(
+      require_snapshot_baselines("schema-that-was-never-committed"),
+      "No committed snapshot baselines"
+    )
+  })
+})
+
 describe("warn_collapsed_rows()", {
   duplicated_data <- function() {
     regs <- rep(sort(unique(ggseg.formats::atlas_regions(dk())))[1:2], each = 2)
