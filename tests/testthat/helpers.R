@@ -1,3 +1,5 @@
+library(testthat)
+
 attach_if_installed <- function(pkgs) {
   for (pkg in pkgs) {
     if (requireNamespace(pkg, quietly = TRUE)) {
@@ -42,10 +44,10 @@ muffle_breaking_warnings <- function(expr) {
 # silent self-accept. That is the one failure mode these tests exist to catch,
 # so an unknown variant fails here instead.
 require_snapshot_baselines <- function(variant) {
-  if (dir.exists(testthat::test_path("_snaps", variant))) {
+  if (dir.exists(test_path("_snaps", variant))) {
     return(invisible(TRUE))
   }
-  testthat::fail(paste0(
+  fail(paste0(
     "No committed snapshot baselines for variant '",
     variant,
     "'. ",
@@ -55,7 +57,7 @@ require_snapshot_baselines <- function(variant) {
 }
 
 expect_brain_doppelganger <- function(title, fig) {
-  testthat::skip_if_not_installed("vdiffr")
+  skip_if_not_installed("vdiffr")
   variant <- atlas_schema_variant()
   require_snapshot_baselines(variant)
   muffle_breaking_warnings(

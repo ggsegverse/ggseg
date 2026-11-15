@@ -98,9 +98,9 @@ describe("layout fixtures still discriminate between permutations", {
   })
 
   it("renders every permutation to a distinct SVG", {
-    testthat::skip_if_not_installed("vdiffr")
-    testthat::skip_if_not_installed("withr")
-    testthat::skip_on_cran()
+    skip_if_not_installed("vdiffr")
+    skip_if_not_installed("withr")
+    skip_on_cran()
     render <- function(atlas, position) {
       path <- withr::local_tempfile(fileext = ".svg")
       muffle_breaking_warnings(

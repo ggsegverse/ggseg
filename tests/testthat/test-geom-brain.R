@@ -336,7 +336,7 @@ describe("geom_brain_sf() unmerged data", {
     p <- ggplot2::ggplot() +
       geom_brain_sf(atlas = dk(), data = dt, mapping = ggplot2::aes(fill = p))
 
-    warns <- testthat::capture_warnings(
+    warns <- capture_warnings(
       suppressMessages(ggplot2::ggplot_build(p))
     )
     expect_length(grep("not merged", warns, fixed = TRUE), 1)

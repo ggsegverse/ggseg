@@ -10,7 +10,7 @@ describe("position_brain visual", {
         this_label <- label
         this_position <- permutations[[label]]
         it(paste(atlas_name, this_label), {
-          testthat::skip_on_cran()
+          skip_on_cran()
           expect_brain_doppelganger(
             paste(atlas_name, this_label),
             ggplot() +
