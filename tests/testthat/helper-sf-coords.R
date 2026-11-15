@@ -1,3 +1,5 @@
+library(testthat)
+
 # The sf coordinate path these two functions implement is the oracle the
 # polygon renderer is checked against: test-ggseg-adapt_scales.R asserts the
 # polygon path reproduces sf-derived coordinates exactly. Nothing in R/ calls
@@ -41,7 +43,7 @@ sf2coords <- function(x) {
 # claim about a function the test itself supplies.
 local_sf_unusable <- function(.env = parent.frame()) {
   reject <- function(...) stop("the sf coordinate path was used")
-  testthat::local_mocked_bindings(
+  local_mocked_bindings(
     st_combine = reject,
     st_coordinates = reject,
     st_as_sf = reject,

@@ -187,7 +187,7 @@ describe("annotate_brain visual", {
   # minimal fixtures from helper-layout-fixtures.R exercise the placement just
   # as the full atlases did -- and keep the baselines small enough for CRAN.
   it("dk default with labels", {
-    testthat::skip_on_cran()
+    skip_on_cran()
     atlas <- dk_fixture()
     expect_brain_doppelganger(
       "dk default labels",
@@ -198,7 +198,7 @@ describe("annotate_brain visual", {
   })
 
   it("dk hemi ~ view with labels", {
-    testthat::skip_on_cran()
+    skip_on_cran()
     atlas <- dk_fixture()
     expect_brain_doppelganger(
       "dk hemi view labels",
@@ -216,7 +216,7 @@ describe("annotate_brain visual", {
   })
 
   it("aseg default with labels", {
-    testthat::skip_on_cran()
+    skip_on_cran()
     atlas <- aseg_fixture()
     expect_brain_doppelganger(
       "aseg default labels",
@@ -227,7 +227,7 @@ describe("annotate_brain visual", {
   })
 
   it("aseg nrow 2 with labels", {
-    testthat::skip_on_cran()
+    skip_on_cran()
     atlas <- aseg_fixture()
     expect_brain_doppelganger(
       "aseg nrow 2 labels",

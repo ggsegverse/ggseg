@@ -1,3 +1,5 @@
+library(testthat)
+
 attach_if_installed <- function(pkgs) {
   for (pkg in pkgs) {
     if (requireNamespace(pkg, quietly = TRUE)) {
@@ -37,10 +39,29 @@ muffle_breaking_warnings <- function(expr) {
   )
 }
 
+# vdiffr writes a baseline and passes whenever one is absent, so a variant with
+# no committed `_snaps/` directory turns every visual test in the suite into a
+# silent self-accept. That is the one failure mode these tests exist to catch,
+# so an unknown variant fails here instead.
+require_snapshot_baselines <- function(variant) {
+  if (dir.exists(test_path("_snaps", variant))) {
+    return(invisible(TRUE))
+  }
+  fail(paste0(
+    "No committed snapshot baselines for variant '",
+    variant,
+    "'. ",
+    "Every visual test would write a fresh baseline and pass. ",
+    "Commit baselines for this variant, or correct the atlas schema."
+  ))
+}
+
 expect_brain_doppelganger <- function(title, fig) {
-  testthat::skip_if_not_installed("vdiffr")
+  skip_if_not_installed("vdiffr")
+  variant <- atlas_schema_variant()
+  require_snapshot_baselines(variant)
   muffle_breaking_warnings(
-    vdiffr::expect_doppelganger(title, fig, variant = atlas_schema_variant())
+    vdiffr::expect_doppelganger(title, fig, variant = variant)
   )
 }
 
@@ -72,4 +93,13 @@ brain_regions_layer <- function(built) {
 brain_regions_built <- function(built) built$data[[brain_regions_layer(built)]]
 brain_regions_mapping <- function(built) {
   built$plot$layers[[brain_regions_layer(built)]]$computed_mapping
+}
+
+# Pairing a label with its region by row position breaks silently when the
+# atlas is rebuilt in a different order, so fixtures that need both take them
+# from the same rows rather than hard-coding one side.
+atlas_label_region_pairs <- function(atlas, n) {
+  rows <- as.data.frame(atlas)
+  rows <- rows[!is.na(rows$region) & !is.na(rows$label), c("label", "region")]
+  utils::head(unique(rows), n)
 }

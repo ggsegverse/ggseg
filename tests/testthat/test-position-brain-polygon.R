@@ -159,9 +159,9 @@ describe("resolve_zoom_focus", {
 
   it("prefers labels in data when zoom = TRUE", {
     atlas <- aseg()
-    labs <- ggseg.formats::atlas_labels(atlas)[1:2]
-    data <- data.frame(label = labs, region = c("thalamus proper", "caudate"))
-    expect_setequal(resolve_zoom_focus(TRUE, data, atlas), labs)
+    rows <- atlas_label_region_pairs(atlas, 2)
+    data <- data.frame(label = rows$label, region = rows$region)
+    expect_setequal(resolve_zoom_focus(TRUE, data, atlas), rows$label)
   })
 
   it("uses regions present in data when zoom = TRUE and there is no label", {

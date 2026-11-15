@@ -506,7 +506,7 @@ describe("draw order follows the data row order (ggseg#162)", {
   })
 
   it("layers overlapping outlines by data order", {
-    testthat::skip_on_cran()
+    skip_on_cran()
     # Mirrors ggseg#162: fill by a statistic, outline by a threshold factor.
     # The factor levels are fixed, so each region keeps its colour and only the
     # row order differs between the two plots -- isolating the draw order.
