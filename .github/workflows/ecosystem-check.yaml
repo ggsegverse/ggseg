@@ -17,4 +17,10 @@ permissions:
 jobs:
   ecosystem-check:
     uses: ggsegverse/.github/.github/workflows/ecosystem-check.yaml@main
+    with:
+      # The reusable builds ggsegverse for every caller, ggsegverse imports
+      # ggseg.meshes, and meshes is the one ecosystem package it does not
+      # check out and that is not on CRAN. Without this, resolution fails
+      # before anything is installed. This was the last caller missing it.
+      extra-repositories: https://ggsegverse.r-universe.dev
     secrets: inherit
