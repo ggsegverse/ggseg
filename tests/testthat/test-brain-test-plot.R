@@ -25,7 +25,9 @@ describe("brain_test_plot()", {
     # the only place that knows which labels are regions and which are
     # backdrop, so it colours rather than leaving the atlas one flat shade.
     atlas <- dk()
-    atlas$palette <- NULL
+    # `set_atlas_palette()` cannot clear a palette, so this goes via the
+    # property.
+    atlas@palette <- NULL
     p <- brain_test_plot(atlas)
 
     expect_false(is.null(p$scales$get_scales("fill")))
@@ -38,7 +40,14 @@ describe("brain_test_plot()", {
   })
 
   it("says why an atlas with a stale core is rejected", {
-    atlas <- dk()
+    # The hemi vocabulary is an invariant of the S7 class, so a stale core is
+    # only reachable as a legacy list atlas -- which is exactly what a
+    # published atlas built before ggseg.formats 3.0.0 is, and what this
+    # message exists to explain.
+    atlas <- structure(
+      as.list(dk()),
+      class = c("cortical_atlas", "ggseg_atlas", "list")
+    )
     atlas$core$hemi[1] <- "vermis"
 
     expect_error(

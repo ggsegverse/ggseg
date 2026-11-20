@@ -345,11 +345,12 @@ select_brain_rows <- function(flat, rows) {
 group_by_facet_vars <- function(data, plot, atlas) {
   facet_vars <- plot$facet$vars()
   group_vars <- intersect(facet_vars, names(data))
-  # Sanctioned `$core` access: ggseg.formats has no accessor for the set of
-  # core column names, because the schema allows user-defined classification
-  # columns (lobe, structure, ...) that no accessor could enumerate.
+  # ggseg.formats has no accessor for the set of core column names, because the
+  # schema allows user-defined classification columns (lobe, structure, ...)
+  # that no accessor could enumerate, so the whole core is fetched for its
+  # names.
   atlas_cols <- unique(c(
-    names(atlas$core),
+    names(ggseg.formats::atlas_core(atlas)),
     "view",
     "type",
     "atlas",
@@ -409,7 +410,7 @@ add_atlas_fill_scale <- function(plot, atlas) {
 
 #' Flatten a polygon atlas into a row-per-point data.frame for geom_polygon
 #'
-#' Unnests `ggseg.formats::atlas_polygons(atlas)`, joins with `atlas$core`,
+#' Unnests `ggseg.formats::atlas_polygons(atlas)`, joins with the atlas core,
 #' applies optional
 #' hemi/view filters, and adds the `.feature_id` helper column that the
 #' polygon renderer maps to `group` so each (label, view, group) polygon
@@ -435,18 +436,21 @@ prepare_polygon_atlas <- function(
   }
 
   flat <- tidyr::unnest(
-    order_context_first(ggseg.formats::atlas_polygons(atlas), atlas$core$label),
+    order_context_first(
+      ggseg.formats::atlas_polygons(atlas),
+      ggseg.formats::atlas_labels(atlas)
+    ),
     cols = "geometry"
   )
   # Namespace the polygon-ring grouping as `.group` before joining `core`:
   # some atlases (e.g. tracula) carry their own `group` column in `core`,
   # which would otherwise collide and suffix this one away.
   names(flat)[names(flat) == "group"] <- ".group"
-  # Sanctioned `$core` access: see group_by_facet_vars(). The whole core is
-  # joined precisely so user-defined classification columns survive.
+  # The whole core is joined precisely so user-defined classification columns
+  # survive.
   flat <- dplyr::left_join(
     flat,
-    atlas$core,
+    ggseg.formats::atlas_core(atlas),
     by = "label",
     relationship = "many-to-many"
   )
@@ -477,10 +481,8 @@ prepare_polygon_atlas <- function(
     flat <- flat[!is.na(flat$region), , drop = FALSE]
   }
 
-  # `$atlas` (the atlas's own name) has no accessor in ggseg.formats; `$type`
-  # does, so it goes through it.
   atlas_type <- ggseg.formats::atlas_type(atlas)
-  flat$atlas <- atlas$atlas
+  flat$atlas <- ggseg.formats::atlas_name(atlas)
   flat$type <- atlas_type
 
   if (atlas_type == "cortical") {

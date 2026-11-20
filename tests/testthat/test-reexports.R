@@ -1,5 +1,8 @@
 describe("re-exported ggseg.formats accessors (ggseg#183)", {
   accessors <- c(
+    "atlas_name",
+    "atlas_core",
+    "atlas_data",
     "atlas_regions",
     "atlas_labels",
     "atlas_hemi",

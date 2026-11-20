@@ -54,7 +54,7 @@ describe("geom_brain_polygon()", {
 
   it("joins user data on region", {
     poly <- ggseg.formats::as_polygon_atlas(dk())
-    regs <- unique(poly$core$region)
+    regs <- unique(ggseg.formats::atlas_regions(poly))
     regs <- regs[!is.na(regs)]
     user <- data.frame(
       region = regs,
@@ -129,7 +129,7 @@ describe("geom_brain_polygon()", {
 
   it("zoom = TRUE focuses on regions present in user data", {
     poly <- ggseg.formats::as_polygon_atlas(aseg())
-    regs <- unique(poly$core$region)
+    regs <- unique(ggseg.formats::atlas_regions(poly))
     regs <- regs[!is.na(regs)][1:2]
     user <- data.frame(region = regs, measure = c(1, 2))
     p <- ggplot2::ggplot() +
@@ -170,13 +170,16 @@ describe("prepare_polygon_atlas()", {
 
   it("draws context behind structures whatever the stored order (ggseg#181)", {
     poly <- ggseg.formats::as_polygon_atlas(aseg())
-    geom <- poly$data$geom
-    is_context <- !geom$label %in% poly$core$label
-    poly$data$geom <- geom[c(which(!is_context), which(is_context)), ]
+    geom <- ggseg.formats::atlas_geom(poly)
+    core_labels <- ggseg.formats::atlas_labels(poly)
+    is_context <- !geom$label %in% core_labels
+    # No setter reorders stored geometry, so the reordering goes via the
+    # property.
+    poly@data$geom <- geom[c(which(!is_context), which(is_context)), ]
 
     flat <- prepare_polygon_atlas(poly)
-    context_rows <- which(!flat$label %in% poly$core$label)
-    core_rows <- which(flat$label %in% poly$core$label)
+    context_rows <- which(!flat$label %in% core_labels)
+    core_rows <- which(flat$label %in% core_labels)
 
     expect_gt(length(context_rows), 0)
     expect_lt(max(context_rows), min(core_rows))
@@ -184,11 +187,12 @@ describe("prepare_polygon_atlas()", {
 
   it("keeps the stored order within context and within structures", {
     poly <- ggseg.formats::as_polygon_atlas(aseg())
-    stored <- unique(poly$data$geom$label)
+    core_labels <- ggseg.formats::atlas_labels(poly)
+    stored <- unique(ggseg.formats::atlas_geom(poly)$label)
     flat <- prepare_polygon_atlas(poly)
     expect_identical(
-      unique(flat$label[flat$label %in% poly$core$label]),
-      stored[stored %in% poly$core$label]
+      unique(flat$label[flat$label %in% core_labels]),
+      stored[stored %in% core_labels]
     )
   })
 })

@@ -7,12 +7,15 @@ export(annotate_brain)
 export(aseg)
 export(atlas_centerlines)
 export(atlas_context)
+export(atlas_core)
+export(atlas_data)
 export(atlas_display)
 export(atlas_geom)
 export(atlas_geometry_type)
 export(atlas_hemi)
 export(atlas_labels)
 export(atlas_meshes)
+export(atlas_name)
 export(atlas_palette)
 export(atlas_plot_palette)
 export(atlas_polygons)
@@ -96,12 +99,15 @@ importFrom(ggseg.formats,
   aseg,
   atlas_centerlines,
   atlas_context,
+  atlas_core,
+  atlas_data,
   atlas_display,
   atlas_geom,
   atlas_geometry_type,
   atlas_hemi,
   atlas_labels,
   atlas_meshes,
+  atlas_name,
   atlas_palette,
   atlas_plot_palette,
   atlas_polygons,
