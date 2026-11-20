@@ -97,3 +97,27 @@ ggseg.formats::is_atlas_sf
 
 #' @export
 ggseg.formats::is_atlas_polygon
+
+#' @export
+ggseg.formats::atlas_schema
+
+#' @export
+ggseg.formats::atlas_schema_version
+
+#' @export
+ggseg.formats::atlas_schema_is_current
+
+#' @export
+ggseg.formats::has_atlas_geom
+
+#' @export
+ggseg.formats::has_atlas_vertices
+
+#' @export
+ggseg.formats::has_atlas_meshes
+
+#' @export
+ggseg.formats::has_atlas_centerlines
+
+#' @export
+ggseg.formats::has_atlas_3d
