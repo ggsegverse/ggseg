@@ -103,6 +103,8 @@ stat_brain <- function(
   inherit.aes = TRUE,
   ...
 ) {
+  atlas <- ggseg.formats::atlas_input(atlas)
+
   geom_brain_polygon(
     mapping = mapping,
     data = data,

@@ -53,6 +53,8 @@ annotate_brain <- function(
   nudge_y = 0,
   ...
 ) {
+  atlas <- ggseg.formats::atlas_input(atlas)
+
   # Only an explicit `PositionBrain` ggproto selects the deprecated sf
   # renderer. Everything else -- a spec, a formula, "horizontal"/"vertical",
   # "identity", NULL -- is coerced the same way `geom_brain()` coerces it, so
