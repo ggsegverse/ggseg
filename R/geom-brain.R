@@ -78,7 +78,7 @@ geom_brain <- function(
   inherit.aes = TRUE,
   ...
 ) {
-  atlas <- ggseg.formats::atlas_input(atlas)
+  atlas <- ggseg.formats::as_ggseg_atlas(atlas)
 
   dots <- list(...)
   if ("side" %in% names(dots)) {
@@ -156,7 +156,7 @@ geom_brain_sf <- function(
     )
   )
   require_sf("geom_brain_sf()")
-  atlas <- ggseg.formats::atlas_input(atlas)
+  atlas <- ggseg.formats::as_ggseg_atlas(atlas)
   if (is.null(position)) {
     position <- make_position_brain_sf()
   }

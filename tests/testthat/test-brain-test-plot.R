@@ -39,22 +39,22 @@ describe("brain_test_plot()", {
     expect_error(brain_test_plot(1), "ggseg_atlas")
   })
 
-  it("says why an atlas with a stale core is rejected", {
-    # The hemi vocabulary is an invariant of the S7 class, so a stale core is
-    # only reachable as a legacy list atlas -- which is exactly what a
-    # published atlas built before ggseg.formats 3.0.0 is, and what this
-    # message exists to explain.
+  it("says why an atlas with a broken core is rejected", {
+    # A structurally broken core is only reachable as a legacy list atlas --
+    # which is exactly what a published atlas built before ggseg.formats
+    # 3.0.0 is, and what this message exists to explain. A legacy `hemi`
+    # spelling is not broken: those atlases ship `vermis`, and the boundary
+    # normalises it rather than refusing the atlas.
     atlas <- structure(
       as.list(dk()),
       class = c("cortical_atlas", "ggseg_atlas", "list")
     )
-    atlas$core$hemi[1] <- "vermis"
+    atlas$core$label <- NULL
 
     expect_error(
       brain_test_plot(atlas),
       class = "ggseg.formats_invalid_atlas"
     )
-    expect_error(brain_test_plot(atlas), "vermis")
   })
 
   it("lays out slice-based atlases by view without a hemi warning", {

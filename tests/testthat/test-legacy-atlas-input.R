@@ -19,9 +19,20 @@ legacy_atlas <- function(atlas = ggseg.formats::dk()) {
   )
 }
 
-# A legacy list whose core breaks an invariant the current class enforces
-# (`hemi` is a closed vocabulary). The upgrade must reject it at the boundary.
+# A legacy list whose core is structurally broken -- a required column is
+# gone. The upgrade must reject it at the boundary.
+#
+# A legacy `hemi` spelling is deliberately NOT this: `vermis`, `middle`, `lh`
+# and `rh` are spellings published 2.x atlases shipped, so they are accepted
+# as input and normalised on the way in. Rejecting them is what stopped six
+# published atlas objects loading.
 stale_legacy_atlas <- function(atlas = ggseg.formats::dk()) {
+  out <- legacy_atlas(atlas)
+  out$core$label <- NULL
+  out
+}
+
+legacy_hemi_atlas <- function(atlas = ggseg.formats::dk()) {
   out <- legacy_atlas(atlas)
   out$core$hemi[1] <- "vermis"
   out
@@ -252,7 +263,13 @@ describe("the boundary errors survive the upgrade", {
           f(stale_legacy_atlas()),
           class = "ggseg.formats_invalid_atlas"
         )
-        expect_error(f(stale_legacy_atlas()), "vermis")
+      })
+
+      it(paste(name, "accepts a legacy hemi spelling"), {
+        # Published 2.x atlases ship `vermis`; the boundary normalises it
+        # rather than refusing the atlas.
+        skip_if_not_installed("sf")
+        expect_no_error(f(legacy_hemi_atlas()))
       })
     })
   }
