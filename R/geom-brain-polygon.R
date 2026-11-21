@@ -80,8 +80,12 @@ geom_brain_polygon <- function(
         "{.field subgroup} from the atlas geometry."
       )
     ))
-    mapping <- as.list(mapping)[setdiff(names(mapping), reserved)]
-    class(mapping) <- "uneval"
+    # Subset rather than rebuild. A mapping is an S7 object from ggplot2 4.0
+    # (`ggplot2::mapping`/`uneval`/`gg`/`S7_object`), and reconstructing it as
+    # a bare list classed `"uneval"` drops the rest of that, after which
+    # `layer()` refuses it: "`mapping` must be created by `aes()`". Subsetting
+    # keeps the class the object already had.
+    mapping <- mapping[setdiff(names(mapping), reserved)]
   }
 
   dots <- list(...)
