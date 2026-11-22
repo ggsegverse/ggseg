@@ -451,10 +451,17 @@ prepare_polygon_atlas <- function(
   # which would otherwise collide and suffix this one away.
   names(flat)[names(flat) == "group"] <- ".group"
   # The whole core is joined precisely so user-defined classification columns
-  # survive.
+  # survive. `core` is authoritative for its own columns, and a legacy atlas
+  # can carry them in its geometry as well -- ggsegDemoatlas ships `hemi` and
+  # `region` there. Joining both suffixes the core's copy away as `region.y`,
+  # leaving no `region` column at all, so `context` silently stops filtering
+  # and user data keyed on region cannot be joined.
+  core <- ggseg.formats::atlas_core(atlas)
+  shadowed <- setdiff(intersect(names(flat), names(core)), "label")
+  flat[shadowed] <- NULL
   flat <- dplyr::left_join(
     flat,
-    ggseg.formats::atlas_core(atlas),
+    core,
     by = "label",
     relationship = "many-to-many"
   )

@@ -643,3 +643,37 @@ describe("the context backdrop is a layer of its own (#182)", {
     expect_lte(max(regions$x), max(backdrop$x))
   })
 })
+
+describe("an atlas whose geometry carries core columns", {
+  # ggsegDemoatlas ships `hemi` and `region` inside its geometry as well as in
+  # `core`. Joining both suffixed the core's copy away as `region.y`, so the
+  # flattened atlas had no `region` column at all: `context` stopped
+  # filtering and user data keyed on region could not be joined.
+  shadowing_atlas <- function() {
+    atlas <- ggseg.formats::dk()
+    geom <- ggseg.formats::atlas_geom(atlas)
+    core <- ggseg.formats::atlas_core(atlas)
+    geom$region <- core$region[match(geom$label, core$label)]
+    geom$hemi <- core$hemi[match(geom$label, core$label)]
+    ggseg.formats::set_atlas_geom(atlas, geom)
+  }
+
+  it("keeps one unsuffixed core column of each name", {
+    flat <- prepare_polygon_atlas(shadowing_atlas())
+
+    expect_true("region" %in% names(flat))
+    expect_true("hemi" %in% names(flat))
+    expect_false(any(grepl("[.][xy]$", names(flat))))
+  })
+
+  it("still joins user data keyed on region", {
+    atlas <- shadowing_atlas()
+    regions <- sort(unique(stats::na.omit(ggseg.formats::atlas_regions(atlas))))
+    user <- data.frame(region = regions[1:3], value = 1:3)
+
+    p <- ggplot2::ggplot() +
+      geom_brain(atlas = atlas, data = user, ggplot2::aes(fill = value))
+
+    expect_no_error(ggplot2::ggplot_build(p))
+  })
+})

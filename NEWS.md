@@ -82,6 +82,9 @@ figures, so read the breaking changes before upgrading.
 
 ## Bug fixes
 
+- Requires R >= 4.2, which is the floor of `S7`, and so of `ggseg.formats`.
+  The package advertised an older R than its own dependency could install on.
+
 - A mapped `fill` no longer colours the context backdrop. `aes(fill = label)`
   used to paint the whole silhouette as one enormous parcel, because context
   rows carry a `label` but no `region` (#182).

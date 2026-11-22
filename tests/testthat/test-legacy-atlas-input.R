@@ -105,7 +105,14 @@ describe("geom_brain() takes a legacy list atlas", {
 
   it("upgrades silently", {
     expect_no_message(geom_brain(atlas = legacy_atlas()))
-    expect_no_warning(geom_brain(atlas = legacy_atlas()))
+    # The only warning the upgrade can emit is a lifecycle deprecation, which
+    # a bare expect_no_warning() cannot see. `class =
+    # "lifecycle_warning_deprecated"` does see it, but lifecycle throttles a
+    # warning raised from another package to once per session, so whichever
+    # test ran first absorbs it. Escalating to an error is unthrottled, so
+    # this fires whatever the test order.
+    withr::local_options(lifecycle_verbosity = "error")
+    expect_no_error(geom_brain(atlas = legacy_atlas()))
   })
 })
 
