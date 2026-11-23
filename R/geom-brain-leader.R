@@ -142,7 +142,9 @@ justify_away_from_anchor <- function(data, nudged) {
   }
 
   from_direction <- function(delta) {
-    ifelse(delta > 0, 0, ifelse(delta < 0, 1, 0.5))
+    # `TRUE ~` rather than `.default =`, which needs dplyr 1.1 and the
+    # package floors on 1.0.
+    dplyr::case_when(delta > 0 ~ 0, delta < 0 ~ 1, TRUE ~ 0.5)
   }
 
   implied_h <- from_direction(data$x - data$x_orig)
