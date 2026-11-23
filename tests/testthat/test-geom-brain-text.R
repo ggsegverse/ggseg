@@ -398,6 +398,24 @@ describe("geom_brain_text(nudge_x=, nudge_y=)", {
     expect_identical(unique(drawn$x - drawn$x_orig), 25)
   })
 
+  it("lets the connector's own arguments through to the geom", {
+    # ggplot2 reads a geom's parameters off `draw_group` when `draw_panel`
+    # takes `...`, so these were accepted, warned about, and silently
+    # dropped -- the line drew default padding in a default colour.
+    layer <- geom_brain_text(
+      data = data.frame(label = "lh_insula"),
+      nudge_x = 20,
+      box.padding = grid::unit(0.8, "lines"),
+      segment.colour = "grey40"
+    )
+
+    expect_identical(
+      layer$geom_params$box.padding,
+      grid::unit(0.8, "lines")
+    )
+    expect_identical(layer$geom_params$segment.colour, "grey40")
+  })
+
   it("adds no anchor column when nothing is nudged", {
     built <- ggplot2::ggplot_build(nudged_plot())
     drawn <- built$data[[length(built$data)]]
