@@ -259,6 +259,26 @@ describe("justify_away_from_anchor()", {
 })
 
 
+describe("the label geoms", {
+  it("declares the connector's arguments as its own parameters", {
+    # ggplot2 filters a geom's parameters twice, and the second filter reads
+    # `parameters(extra = FALSE)`. Declaring them only in `extra_params`
+    # cleared the first filter -- so the "unknown parameter" warning stopped
+    # -- while the second still dropped them, and the line drew default
+    # padding in default black. This is that contract, stated once.
+    for (geom in list(GeomBrainText, GeomBrainLabel)) {
+      expect_true(all(connector_params %in% geom$parameters()))
+      expect_true(all(connector_params %in% geom$parameters(extra = TRUE)))
+    }
+  })
+
+  it("keeps what it inherits from the geom it wraps", {
+    expect_true("check_overlap" %in% GeomBrainText$parameters())
+    expect_true("label.padding" %in% GeomBrainLabel$parameters())
+  })
+})
+
+
 describe("makeContent.brain_leader()", {
   leader <- function(
     label_x,
@@ -398,62 +418,6 @@ describe("geom_brain_text(nudge_x=, nudge_y=)", {
     expect_identical(unique(drawn$x - drawn$x_orig), 25)
   })
 
-  it("lets the connector's own arguments reach the drawn line", {
-    # Two separate filters drop these. `layer()` rejects a parameter the geom
-    # does not declare, and `Geom$draw_layer()` then strips anything outside
-    # `parameters(extra = FALSE)` before `draw_panel()` runs. Asserting on the
-    # layer passes the first and misses the second, which is how a silently
-    # default-coloured line survived a green suite: assert on the grob.
-    plot <- ggplot2::ggplot() +
-      geom_brain(
-        atlas = ggseg.formats::dk(),
-        hemi = "left",
-        view = "lateral"
-      ) +
-      geom_brain_text(
-        data = data.frame(label = "lh_insula"),
-        nudge_x = 40,
-        segment.colour = "red",
-        segment.linewidth = 3,
-        box.padding = grid::unit(0.8, "lines")
-      )
-
-    leader <- ggplot2::layer_grob(plot, i = 3)[[1]][[1]]
-
-    expect_s3_class(leader, "brain_leader")
-    expect_identical(leader$colour, "red")
-    expect_identical(leader$linewidth, 3)
-    expect_identical(leader$box_padding, grid::unit(0.8, "lines"))
-  })
-
-  it("draws a shorter line when min.segment.length is raised", {
-    # The guard is only meaningful if the argument reaches it.
-    drawn_segments <- function(...) {
-      plot <- ggplot2::ggplot() +
-        geom_brain(
-          atlas = ggseg.formats::dk(),
-          hemi = "left",
-          view = "lateral"
-        ) +
-        geom_brain_text(
-          data = data.frame(label = "lh_insula"),
-          nudge_x = 15,
-          ...
-        )
-      leader <- ggplot2::layer_grob(plot, i = 3)[[1]][[1]]
-      grDevices::pdf(NULL)
-      on.exit(grDevices::dev.off(), add = TRUE)
-      grid::grid.newpage()
-      length(grid::makeContent(leader)$children)
-    }
-
-    expect_identical(drawn_segments(), 1L)
-    expect_identical(
-      drawn_segments(min.segment.length = grid::unit(10, "lines")),
-      0L
-    )
-  })
-
   it("adds no anchor column when nothing is nudged", {
     built <- ggplot2::ggplot_build(nudged_plot())
     drawn <- built$data[[length(built$data)]]
@@ -465,6 +429,24 @@ describe("geom_brain_text(nudge_x=, nudge_y=)", {
     expect_brain_doppelganger(
       "nudged label with leader line",
       nudged_plot(nudge_x = c(0, -40), nudge_y = c(0, -30), size = 3)
+    )
+  })
+
+  it("renders the connector the way it was asked to", {
+    # The end-to-end half of the parameters contract. A styled connector is
+    # the only evidence that does not depend on ggplot2's internal shape:
+    # when these arguments were silently dropped, two plots differing only in
+    # `segment.colour` and `segment.linewidth` rendered byte-identically.
+    expect_brain_doppelganger(
+      "nudged label with a styled leader line",
+      nudged_plot(
+        nudge_x = c(0, -40),
+        nudge_y = c(0, -30),
+        size = 3,
+        segment.colour = "red",
+        segment.linewidth = 1.4,
+        box.padding = grid::unit(1, "lines")
+      )
     )
   })
 })
