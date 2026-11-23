@@ -398,22 +398,60 @@ describe("geom_brain_text(nudge_x=, nudge_y=)", {
     expect_identical(unique(drawn$x - drawn$x_orig), 25)
   })
 
-  it("lets the connector's own arguments through to the geom", {
-    # ggplot2 reads a geom's parameters off `draw_group` when `draw_panel`
-    # takes `...`, so these were accepted, warned about, and silently
-    # dropped -- the line drew default padding in a default colour.
-    layer <- geom_brain_text(
-      data = data.frame(label = "lh_insula"),
-      nudge_x = 20,
-      box.padding = grid::unit(0.8, "lines"),
-      segment.colour = "grey40"
-    )
+  it("lets the connector's own arguments reach the drawn line", {
+    # Two separate filters drop these. `layer()` rejects a parameter the geom
+    # does not declare, and `Geom$draw_layer()` then strips anything outside
+    # `parameters(extra = FALSE)` before `draw_panel()` runs. Asserting on the
+    # layer passes the first and misses the second, which is how a silently
+    # default-coloured line survived a green suite: assert on the grob.
+    plot <- ggplot2::ggplot() +
+      geom_brain(
+        atlas = ggseg.formats::dk(),
+        hemi = "left",
+        view = "lateral"
+      ) +
+      geom_brain_text(
+        data = data.frame(label = "lh_insula"),
+        nudge_x = 40,
+        segment.colour = "red",
+        segment.linewidth = 3,
+        box.padding = grid::unit(0.8, "lines")
+      )
 
+    leader <- ggplot2::layer_grob(plot, i = 3)[[1]][[1]]
+
+    expect_s3_class(leader, "brain_leader")
+    expect_identical(leader$colour, "red")
+    expect_identical(leader$linewidth, 3)
+    expect_identical(leader$box_padding, grid::unit(0.8, "lines"))
+  })
+
+  it("draws a shorter line when min.segment.length is raised", {
+    # The guard is only meaningful if the argument reaches it.
+    drawn_segments <- function(...) {
+      plot <- ggplot2::ggplot() +
+        geom_brain(
+          atlas = ggseg.formats::dk(),
+          hemi = "left",
+          view = "lateral"
+        ) +
+        geom_brain_text(
+          data = data.frame(label = "lh_insula"),
+          nudge_x = 15,
+          ...
+        )
+      leader <- ggplot2::layer_grob(plot, i = 3)[[1]][[1]]
+      grDevices::pdf(NULL)
+      on.exit(grDevices::dev.off(), add = TRUE)
+      grid::grid.newpage()
+      length(grid::makeContent(leader)$children)
+    }
+
+    expect_identical(drawn_segments(), 1L)
     expect_identical(
-      layer$geom_params$box.padding,
-      grid::unit(0.8, "lines")
+      drawn_segments(min.segment.length = grid::unit(10, "lines")),
+      0L
     )
-    expect_identical(layer$geom_params$segment.colour, "grey40")
   })
 
   it("adds no anchor column when nothing is nudged", {
