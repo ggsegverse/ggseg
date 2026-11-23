@@ -80,7 +80,7 @@ figures, so read the breaking changes before upgrading.
 
 - The label geoms gain `nudge_x`/`nudge_y`, in atlas units, for a region too
   small for its name. A nudged label keeps a leader line back to its region
-  and turns to face away from it; an un-nudged one draws no line at all. The
+  and turns to face away from it; a label left where it is draws no line. The
   line's gaps are `box.padding` and `point.padding`, and `min.segment.length`
   is the length below which it is not drawn.
 

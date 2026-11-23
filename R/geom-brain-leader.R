@@ -1,3 +1,48 @@
+#' Trim both ends of each connector, then drop the ones left too short
+#'
+#' Runs at draw time because millimetres do not exist until there is a device:
+#' the endpoints arrive in npc, and the only way to take a perceptible gap off
+#' them is to convert, trim along the segment's own direction, and convert back.
+#' @noRd
+#' @exportS3Method grid::makeContent
+makeContent.brain_leader <- function(x) {
+  anchor_x <- grid::convertX(grid::unit(x$anchor_x, "npc"), "mm", TRUE)
+  anchor_y <- grid::convertY(grid::unit(x$anchor_y, "npc"), "mm", TRUE)
+  label_x <- grid::convertX(grid::unit(x$label_x, "npc"), "mm", TRUE)
+  label_y <- grid::convertY(grid::unit(x$label_y, "npc"), "mm", TRUE)
+
+  box_padding <- grid::convertWidth(x$box_padding, "mm", TRUE)
+  point_padding <- grid::convertWidth(x$point_padding, "mm", TRUE)
+  min_length <- grid::convertWidth(x$min_length, "mm", TRUE)
+
+  run_x <- label_x - anchor_x
+  run_y <- label_y - anchor_y
+  length_mm <- sqrt(run_x^2 + run_y^2)
+
+  drawn <- length_mm > 0 &
+    length_mm - box_padding - point_padding >= min_length
+  if (!any(drawn)) {
+    return(grid::setChildren(x, grid::gList()))
+  }
+
+  unit_x <- run_x[drawn] / length_mm[drawn]
+  unit_y <- run_y[drawn] / length_mm[drawn]
+
+  grid::setChildren(
+    x,
+    grid::gList(grid::segmentsGrob(
+      x0 = grid::unit(anchor_x[drawn] + unit_x * point_padding, "mm"),
+      y0 = grid::unit(anchor_y[drawn] + unit_y * point_padding, "mm"),
+      x1 = grid::unit(label_x[drawn] - unit_x * box_padding, "mm"),
+      y1 = grid::unit(label_y[drawn] - unit_y * box_padding, "mm"),
+      gp = grid::gpar(
+        col = recycle_to(x$colour, length(drawn))[drawn],
+        lwd = x$linewidth * ggplot2::.pt
+      )
+    ))
+  )
+}
+
 #' @noRd
 connector_params <- c(
   "box.padding",
@@ -146,51 +191,6 @@ brain_leader_grob <- function(
 #' @noRd
 as_padding_unit <- function(x) {
   if (grid::is.unit(x)) x else grid::unit(x, "mm")
-}
-
-#' Trim both ends of each connector, then drop the ones left too short
-#'
-#' Runs at draw time because millimetres do not exist until there is a device:
-#' the endpoints arrive in npc, and the only way to take a perceptible gap off
-#' them is to convert, trim along the segment's own direction, and convert back.
-#' @noRd
-#' @exportS3Method grid::makeContent
-makeContent.brain_leader <- function(x) {
-  anchor_x <- grid::convertX(grid::unit(x$anchor_x, "npc"), "mm", TRUE)
-  anchor_y <- grid::convertY(grid::unit(x$anchor_y, "npc"), "mm", TRUE)
-  label_x <- grid::convertX(grid::unit(x$label_x, "npc"), "mm", TRUE)
-  label_y <- grid::convertY(grid::unit(x$label_y, "npc"), "mm", TRUE)
-
-  box_padding <- grid::convertWidth(x$box_padding, "mm", TRUE)
-  point_padding <- grid::convertWidth(x$point_padding, "mm", TRUE)
-  min_length <- grid::convertWidth(x$min_length, "mm", TRUE)
-
-  run_x <- label_x - anchor_x
-  run_y <- label_y - anchor_y
-  length_mm <- sqrt(run_x^2 + run_y^2)
-
-  drawn <- length_mm > 0 &
-    length_mm - box_padding - point_padding >= min_length
-  if (!any(drawn)) {
-    return(grid::setChildren(x, grid::gList()))
-  }
-
-  unit_x <- run_x[drawn] / length_mm[drawn]
-  unit_y <- run_y[drawn] / length_mm[drawn]
-
-  grid::setChildren(
-    x,
-    grid::gList(grid::segmentsGrob(
-      x0 = grid::unit(anchor_x[drawn] + unit_x * point_padding, "mm"),
-      y0 = grid::unit(anchor_y[drawn] + unit_y * point_padding, "mm"),
-      x1 = grid::unit(label_x[drawn] - unit_x * box_padding, "mm"),
-      y1 = grid::unit(label_y[drawn] - unit_y * box_padding, "mm"),
-      gp = grid::gpar(
-        col = recycle_to(x$colour, length(drawn))[drawn],
-        lwd = x$linewidth * ggplot2::.pt
-      )
-    ))
-  )
 }
 
 #' @noRd
