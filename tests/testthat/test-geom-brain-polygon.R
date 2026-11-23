@@ -54,7 +54,7 @@ describe("geom_brain_polygon()", {
 
   it("joins user data on region", {
     poly <- ggseg.formats::as_polygon_atlas(dk())
-    regs <- unique(poly$core$region)
+    regs <- unique(ggseg.formats::atlas_regions(poly))
     regs <- regs[!is.na(regs)]
     user <- data.frame(
       region = regs,
@@ -129,7 +129,7 @@ describe("geom_brain_polygon()", {
 
   it("zoom = TRUE focuses on regions present in user data", {
     poly <- ggseg.formats::as_polygon_atlas(aseg())
-    regs <- unique(poly$core$region)
+    regs <- unique(ggseg.formats::atlas_regions(poly))
     regs <- regs[!is.na(regs)][1:2]
     user <- data.frame(region = regs, measure = c(1, 2))
     p <- ggplot2::ggplot() +
@@ -170,25 +170,43 @@ describe("prepare_polygon_atlas()", {
 
   it("draws context behind structures whatever the stored order (ggseg#181)", {
     poly <- ggseg.formats::as_polygon_atlas(aseg())
-    geom <- poly$data$geom
-    is_context <- !geom$label %in% poly$core$label
-    poly$data$geom <- geom[c(which(!is_context), which(is_context)), ]
+    geom <- ggseg.formats::atlas_geom(poly)
+    core_labels <- ggseg.formats::atlas_labels(poly)
+    is_context <- !geom$label %in% core_labels
+    # No setter reorders stored geometry, so the reordering goes via the
+    # property.
+    poly@data$geom <- geom[c(which(!is_context), which(is_context)), ]
 
     flat <- prepare_polygon_atlas(poly)
-    context_rows <- which(!flat$label %in% poly$core$label)
-    core_rows <- which(flat$label %in% poly$core$label)
+    context_rows <- which(!flat$label %in% core_labels)
+    core_rows <- which(flat$label %in% core_labels)
 
     expect_gt(length(context_rows), 0)
     expect_lt(max(context_rows), min(core_rows))
   })
 
+  it("keeps the medial wall when filtering on hemi (ggseg#210)", {
+    # Contextual geometry holds no `core` row, so the join leaves its `hemi`
+    # NA and `NA %in% "right"` is FALSE. Filtering before the hemisphere is
+    # inferred dropped the medial wall, so `hemi = "right"` drew no backdrop
+    # at all while `position_brain("right lateral")` drew one.
+    core_labels <- ggseg.formats::atlas_labels(dk())
+    flat <- prepare_polygon_atlas(dk(), hemi = "right")
+    context <- unique(flat$label[!flat$label %in% core_labels])
+
+    expect_length(context, 1)
+    expect_match(context, "^rh[_.]")
+    expect_false(anyNA(flat$hemi))
+  })
+
   it("keeps the stored order within context and within structures", {
     poly <- ggseg.formats::as_polygon_atlas(aseg())
-    stored <- unique(poly$data$geom$label)
+    core_labels <- ggseg.formats::atlas_labels(poly)
+    stored <- unique(ggseg.formats::atlas_geom(poly)$label)
     flat <- prepare_polygon_atlas(poly)
     expect_identical(
-      unique(flat$label[flat$label %in% poly$core$label]),
-      stored[stored %in% poly$core$label]
+      unique(flat$label[flat$label %in% core_labels]),
+      stored[stored %in% core_labels]
     )
   })
 })
@@ -637,5 +655,139 @@ describe("the context backdrop is a layer of its own (#182)", {
     # the regions sit inside the backdrop's extent: one shared layout
     expect_gte(min(regions$x), min(backdrop$x))
     expect_lte(max(regions$x), max(backdrop$x))
+  })
+})
+
+describe("an atlas whose geometry carries core columns", {
+  # ggsegDemoatlas ships `hemi` and `region` inside its geometry as well as in
+  # `core`. Joining both suffixed the core's copy away as `region.y`, so the
+  # flattened atlas had no `region` column at all: `context` stopped
+  # filtering and user data keyed on region could not be joined.
+  shadowing_atlas <- function() {
+    atlas <- ggseg.formats::dk()
+    geom <- ggseg.formats::atlas_geom(atlas)
+    core <- ggseg.formats::atlas_core(atlas)
+    geom$region <- core$region[match(geom$label, core$label)]
+    geom$hemi <- core$hemi[match(geom$label, core$label)]
+    ggseg.formats::set_atlas_geom(atlas, geom)
+  }
+
+  it("keeps one unsuffixed core column of each name", {
+    flat <- prepare_polygon_atlas(shadowing_atlas())
+
+    expect_true("region" %in% names(flat))
+    expect_true("hemi" %in% names(flat))
+    expect_false(any(grepl("[.][xy]$", names(flat))))
+  })
+
+  it("still joins user data keyed on region", {
+    atlas <- shadowing_atlas()
+    regions <- sort(unique(stats::na.omit(ggseg.formats::atlas_regions(atlas))))
+    user <- data.frame(region = regions[1:3], value = 1:3)
+
+    p <- ggplot2::ggplot() +
+      geom_brain(atlas = atlas, data = user, ggplot2::aes(fill = value))
+
+    expect_no_error(ggplot2::ggplot_build(p))
+  })
+})
+
+describe("the brain is drawn whole", {
+  # The invariant the package exists to keep: however few regions carry data,
+  # every region of the atlas is still drawn, and the non-region anatomy (the
+  # medial wall, subcortical backdrop) is still drawn behind it. A plot that
+  # silently loses shapes reads as a brain with a hole in it, which is how
+  # issue 210 was reported.
+  shapes <- function(p) {
+    built <- ggplot2::ggplot_build(p)
+    vapply(built$data, function(d) length(unique(d$group)), integer(1))
+  }
+
+  it("draws the same shapes however many regions carry data", {
+    atlas <- ggseg.formats::dk()
+    regions <- sort(unique(stats::na.omit(ggseg.formats::atlas_regions(atlas))))
+
+    bare <- shapes(ggplot2::ggplot() + geom_brain(atlas = atlas))
+    one <- shapes(
+      ggplot2::ggplot() +
+        geom_brain(
+          atlas = atlas,
+          data = data.frame(region = regions[1], value = 1),
+          ggplot2::aes(fill = value)
+        )
+    )
+    several <- shapes(
+      ggplot2::ggplot() +
+        geom_brain(
+          atlas = atlas,
+          data = data.frame(region = regions[1:3], value = 1:3),
+          ggplot2::aes(fill = value)
+        )
+    )
+
+    expect_identical(one, bare)
+    expect_identical(several, bare)
+  })
+
+  it("does not lose context geometry to a filter", {
+    # Not every view has context -- `superior` has none, because looking down
+    # on a brain there is no medial wall to see. The invariant is that a
+    # filter never drops context the unfiltered plot has.
+    #
+    # Looping the bundled atlases is the point: #210 was fixed for `dk` by
+    # inferring a hemisphere from an `lh_`/`rh_` label prefix, which `aseg`
+    # and `tracula` do not have, so their whole-brain backdrop was still
+    # being deleted while a dk-only test called it fixed.
+    for (name in c("dk", "aseg", "tracula")) {
+      atlas <- getExportedValue("ggseg.formats", name)()
+      whole <- shapes(ggplot2::ggplot() + geom_brain(atlas = atlas))[[1]]
+
+      sided <- vapply(
+        c("left", "right"),
+        function(h) {
+          shapes(ggplot2::ggplot() + geom_brain(atlas = atlas, hemi = h))[[1]]
+        },
+        integer(1)
+      )
+
+      # Every context shape survives into at least one hemisphere: a backdrop
+      # that spans both is kept twice, a sided one lands in its own.
+      expect_gte(sum(sided), whole)
+      expect_true(all(sided > 0))
+    }
+  })
+
+  it("draws the medial wall when one hemisphere is asked for", {
+    # The exact shape of ggsegverse/ggseg#210: `hemi = "right"` across both
+    # views drew the regions but no backdrop, leaving a hole in the medial
+    # view where the wall belongs.
+    atlas <- ggseg.formats::dk()
+
+    built <- ggplot2::ggplot_build(
+      ggplot2::ggplot() +
+        geom_brain(atlas = atlas, hemi = "right", view = c("lateral", "medial"))
+    )
+
+    expect_gt(nrow(built$data[[1]]), 0)
+  })
+
+  it("leaves no region unfilled", {
+    atlas <- ggseg.formats::dk()
+    regions <- sort(unique(stats::na.omit(ggseg.formats::atlas_regions(atlas))))
+
+    built <- ggplot2::ggplot_build(
+      ggplot2::ggplot() +
+        geom_brain(
+          atlas = atlas,
+          data = data.frame(region = regions[1:3], value = 1:3),
+          ggplot2::aes(fill = value)
+        )
+    )
+
+    # A region with no value is grey, not invisible: an NA fill would punch a
+    # hole in the outline exactly where a reader expects anatomy.
+    for (layer in built$data) {
+      expect_false(anyNA(layer$fill))
+    }
   })
 })

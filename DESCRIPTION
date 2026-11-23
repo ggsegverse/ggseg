@@ -22,12 +22,12 @@ URL: https://ggsegverse.github.io/ggseg/,
     https://github.com/ggsegverse/ggseg
 BugReports: https://github.com/ggsegverse/ggseg/issues
 Depends:
-    R (>= 3.3)
+    R (>= 4.2.0)
 Imports:
     cli,
     dplyr (>= 1.0.0),
     ggplot2 (>= 3.3),
-    ggseg.formats (>= 0.0.4.9025),
+    ggseg.formats (>= 0.0.4.9032),
     grid,
     lifecycle,
     rlang,

@@ -1,5 +1,8 @@
 describe("re-exported ggseg.formats accessors (ggseg#183)", {
   accessors <- c(
+    "atlas_name",
+    "atlas_core",
+    "atlas_data",
     "atlas_regions",
     "atlas_labels",
     "atlas_hemi",
@@ -20,6 +23,14 @@ describe("re-exported ggseg.formats accessors (ggseg#183)", {
     "atlas_centerlines",
     "atlas_meshes",
     "atlas_provenance",
+    "atlas_schema",
+    "atlas_schema_version",
+    "atlas_schema_is_current",
+    "has_atlas_geom",
+    "has_atlas_vertices",
+    "has_atlas_meshes",
+    "has_atlas_centerlines",
+    "has_atlas_3d",
     "is_atlas_sf",
     "is_atlas_polygon",
     "legacy_region_map"

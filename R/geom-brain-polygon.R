@@ -80,8 +80,12 @@ geom_brain_polygon <- function(
         "{.field subgroup} from the atlas geometry."
       )
     ))
-    mapping <- as.list(mapping)[setdiff(names(mapping), reserved)]
-    class(mapping) <- "uneval"
+    # Subset rather than rebuild. A mapping is an S7 object from ggplot2 4.0
+    # (`ggplot2::mapping`/`uneval`/`gg`/`S7_object`), and reconstructing it as
+    # a bare list classed `"uneval"` drops the rest of that, after which
+    # `layer()` refuses it: "`mapping` must be created by `aes()`". Subsetting
+    # keeps the class the object already had.
+    mapping <- mapping[setdiff(names(mapping), reserved)]
   }
 
   dots <- list(...)
@@ -345,11 +349,12 @@ select_brain_rows <- function(flat, rows) {
 group_by_facet_vars <- function(data, plot, atlas) {
   facet_vars <- plot$facet$vars()
   group_vars <- intersect(facet_vars, names(data))
-  # Sanctioned `$core` access: ggseg.formats has no accessor for the set of
-  # core column names, because the schema allows user-defined classification
-  # columns (lobe, structure, ...) that no accessor could enumerate.
+  # ggseg.formats has no accessor for the set of core column names, because the
+  # schema allows user-defined classification columns (lobe, structure, ...)
+  # that no accessor could enumerate, so the whole core is fetched for its
+  # names.
   atlas_cols <- unique(c(
-    names(atlas$core),
+    names(ggseg.formats::atlas_core(atlas)),
     "view",
     "type",
     "atlas",
@@ -409,7 +414,7 @@ add_atlas_fill_scale <- function(plot, atlas) {
 
 #' Flatten a polygon atlas into a row-per-point data.frame for geom_polygon
 #'
-#' Unnests `ggseg.formats::atlas_polygons(atlas)`, joins with `atlas$core`,
+#' Unnests `ggseg.formats::atlas_polygons(atlas)`, joins with the atlas core,
 #' applies optional
 #' hemi/view filters, and adds the `.feature_id` helper column that the
 #' polygon renderer maps to `group` so each (label, view, group) polygon
@@ -435,21 +440,51 @@ prepare_polygon_atlas <- function(
   }
 
   flat <- tidyr::unnest(
-    order_context_first(ggseg.formats::atlas_polygons(atlas), atlas$core$label),
+    order_context_first(
+      ggseg.formats::atlas_polygons(atlas),
+      ggseg.formats::atlas_labels(atlas)
+    ),
     cols = "geometry"
   )
   # Namespace the polygon-ring grouping as `.group` before joining `core`:
   # some atlases (e.g. tracula) carry their own `group` column in `core`,
   # which would otherwise collide and suffix this one away.
   names(flat)[names(flat) == "group"] <- ".group"
-  # Sanctioned `$core` access: see group_by_facet_vars(). The whole core is
-  # joined precisely so user-defined classification columns survive.
+  # The whole core is joined precisely so user-defined classification columns
+  # survive. `core` is authoritative for its own columns, and a legacy atlas
+  # can carry them in its geometry as well -- ggsegDemoatlas ships `hemi` and
+  # `region` there. Joining both suffixes the core's copy away as `region.y`,
+  # leaving no `region` column at all, so `context` silently stops filtering
+  # and user data keyed on region cannot be joined.
+  core <- ggseg.formats::atlas_core(atlas)
+  shadowed <- setdiff(intersect(names(flat), names(core)), "label")
+  flat[shadowed] <- NULL
   flat <- dplyr::left_join(
     flat,
-    atlas$core,
+    core,
     by = "label",
     relationship = "many-to-many"
   )
+
+  # Before any filtering: contextual geometry (the medial wall) holds no `core`
+  # row, so the join leaves its `hemi` NA, and `NA %in% "right"` is FALSE. With
+  # this below the filter, `hemi = "right"` dropped the medial wall and then
+  # inferred a hemisphere for rows that had already gone (ggsegverse/ggseg#210).
+  atlas_type <- ggseg.formats::atlas_type(atlas)
+  flat$atlas <- ggseg.formats::atlas_name(atlas)
+  flat$type <- atlas_type
+
+  if (atlas_type == "cortical") {
+    if (!"hemi" %in% names(flat)) {
+      flat$hemi <- NA_character_
+    }
+    missing_hemi <- is.na(flat$hemi)
+    flat$hemi[missing_hemi] <- dplyr::case_when(
+      grepl("^lh[_.]", flat$label[missing_hemi]) ~ "left",
+      grepl("^rh[_.]", flat$label[missing_hemi]) ~ "right",
+      .default = NA_character_
+    )
+  }
 
   if (!is.null(view)) {
     avail <- unique(flat$view)
@@ -463,36 +498,28 @@ prepare_polygon_atlas <- function(
   }
 
   if (!is.null(hemi)) {
-    avail <- unique(flat$hemi)
+    # The atlas decides which hemispheres exist, not the geometry: inferring
+    # from a label prefix would let a `rh_` row in a left-only atlas pass for
+    # an available hemisphere and draw a region-less plot.
+    avail <- unique(stats::na.omit(ggseg.formats::atlas_core(atlas)$hemi))
     invalid <- setdiff(hemi, avail)
     if (length(invalid)) {
       cli::cli_abort(
         "Invalid hemisphere(s): {.val {invalid}}. Available: {.val {avail}}"
       )
     }
-    flat <- flat[flat$hemi %in% hemi, , drop = FALSE]
+    # Context geometry belongs to no hemisphere -- `aseg`'s and `tracula`'s
+    # whole-brain silhouette spans both, and a cortical atlas only gets a
+    # hemisphere for it by the `lh_`/`rh_` naming convention. Filtering on
+    # hemisphere must not delete anatomy that has none, or the brain is drawn
+    # with a hole in it (ggsegverse/ggseg#210).
+    is_context <- is.na(flat$hemi) &
+      (!"region" %in% names(flat) | is.na(flat$region))
+    flat <- flat[flat$hemi %in% hemi | is_context, , drop = FALSE]
   }
 
   if (!context && "region" %in% names(flat)) {
     flat <- flat[!is.na(flat$region), , drop = FALSE]
-  }
-
-  # `$atlas` (the atlas's own name) has no accessor in ggseg.formats; `$type`
-  # does, so it goes through it.
-  atlas_type <- ggseg.formats::atlas_type(atlas)
-  flat$atlas <- atlas$atlas
-  flat$type <- atlas_type
-
-  if (atlas_type == "cortical") {
-    if (!"hemi" %in% names(flat)) {
-      flat$hemi <- NA_character_
-    }
-    missing_hemi <- is.na(flat$hemi)
-    flat$hemi[missing_hemi] <- dplyr::case_when(
-      grepl("^lh[_.]", flat$label[missing_hemi]) ~ "left",
-      grepl("^rh[_.]", flat$label[missing_hemi]) ~ "right",
-      .default = NA_character_
-    )
   }
 
   # Draw order follows row order: feature ids increase in the order features

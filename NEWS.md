@@ -8,6 +8,11 @@ figures, so read the breaking changes before upgrading.
 
 ## Breaking changes
 
+- Passing an sf-backed atlas to `geom_brain()` is deprecated. It still draws:
+  `geom_brain()` converts it with `atlas_polygons()`, but it does so on every
+  build of the plot. Convert once with `ggseg.formats::as_polygon_atlas()`, or
+  use `ggplot2::geom_sf()` directly for an sf workflow.
+
 - **`geom_brain()` adds two layers.** The context backdrop is drawn by a layer
   of its own, underneath the regions, so a mapped `fill` cannot reach it and it
   claims no legend key (#182). `layer_data(p)` and `p$layers[[1]]` therefore
@@ -81,6 +86,19 @@ figures, so read the breaking changes before upgrading.
 - `GeomBrainSf` is exported.
 
 ## Bug fixes
+
+- Filtering on `hemi` no longer deletes an atlas's backdrop. Context geometry
+  belongs to no hemisphere, so `aseg` and `tracula` lost their whole-brain
+  silhouette entirely, and a cortical atlas kept its medial wall only by the
+  `lh_`/`rh_` naming convention.
+
+- Requires R >= 4.2, which is the floor of `S7`, and so of `ggseg.formats`.
+  The package advertised an older R than its own dependency could install on.
+
+- `geom_brain(hemi = ...)` draws the medial wall again. The hemisphere was
+  inferred from the `lh_`/`rh_` label prefix only after the filter had run, so
+  contextual geometry -- which carries no `core` row and so no `hemi` -- was
+  dropped before it could be assigned one (#210).
 
 - A mapped `fill` no longer colours the context backdrop. `aes(fill = label)`
   used to paint the whole silhouette as one enormous parcel, because context

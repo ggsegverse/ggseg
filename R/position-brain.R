@@ -44,6 +44,7 @@ reposition_brain <- function(
   # or not sf is installed, and "install sf" would hide the real mistake.
   validate_grid_args(position, nrow, ncol)
   require_sf("reposition_brain()")
+  data <- atlas_or_frame_input(data)
   data <- as.data.frame(data, stringsAsFactors = FALSE)
   frame_2_position(
     data,

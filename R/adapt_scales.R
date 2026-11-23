@@ -16,13 +16,11 @@ adapt_scales <- function(
   position = "dispersed",
   aesthetics = "labs"
 ) {
+  # The door for the exported `scale_x_brain()`/`scale_y_brain()`/
+  # `scale_labs_brain()` family, whose only job is to call this: they share one
+  # implementation, so they share one boundary.
+  geobrain <- atlas_or_frame_input(geobrain, arg = "atlas")
   if (!is.data.frame(geobrain)) {
-    if (!ggseg.formats::is_ggseg_atlas(geobrain)) {
-      cli::cli_abort(c(
-        "{.arg atlas} must be a {.cls ggseg_atlas}.",
-        "i" = "Got {.cls {class(geobrain)}}."
-      ))
-    }
     geobrain <- atlas_scale_coords(geobrain)
   }
 

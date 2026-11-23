@@ -34,8 +34,8 @@ brain_test_plot <- function(
   # An atlas carrying the class but failing its own constructor needs to be
   # told why: "must be a <ggseg_atlas>" reads as a wrong-argument mistake
   # when what it means is that this atlas was built against an older core
-  # schema. `assert_ggseg_atlas()` chains the constructor's own error.
-  ggseg.formats::assert_ggseg_atlas(atlas)
+  # schema. `as_ggseg_atlas()` chains the constructor's own error.
+  atlas <- ggseg.formats::as_ggseg_atlas(atlas)
 
   if (is.null(position)) {
     position <- if (identical(ggseg.formats::atlas_type(atlas), "cortical")) {

@@ -28,6 +28,7 @@
 #' brain_join(someData, dk(), "region")
 #'
 brain_join <- function(data, atlas, by = NULL) {
+  atlas <- atlas_or_frame_input(atlas)
   atlas <- as.data.frame(atlas)
 
   # Guard up front rather than after the join: the return value is an sf

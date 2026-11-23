@@ -78,6 +78,9 @@ geom_brain <- function(
   inherit.aes = TRUE,
   ...
 ) {
+  atlas <- ggseg.formats::as_ggseg_atlas(atlas)
+  warn_sf_atlas(atlas)
+
   dots <- list(...)
   if ("side" %in% names(dots)) {
     cli::cli_warn(c(
@@ -154,6 +157,7 @@ geom_brain_sf <- function(
     )
   )
   require_sf("geom_brain_sf()")
+  atlas <- ggseg.formats::as_ggseg_atlas(atlas)
   if (is.null(position)) {
     position <- make_position_brain_sf()
   }
@@ -324,4 +328,33 @@ modify_list <- function(old, new) {
     old[[i]] <- new[[i]]
   }
   old
+}
+
+#' Warn that an sf-backed atlas is converted on every build
+#'
+#' `geom_brain()` draws polygons. Handed an sf atlas it converts one with
+#' `ggseg.formats::atlas_polygons()`, and does so again on every build of the
+#' plot, which is work the caller can do once instead.
+#' @noRd
+warn_sf_atlas <- function(atlas) {
+  if (!ggseg.formats::is_ggseg_atlas(atlas)) {
+    return(invisible(atlas))
+  }
+  if (!ggseg.formats::has_atlas_geom(atlas)) {
+    return(invisible(atlas))
+  }
+  if (!identical(ggseg.formats::atlas_geometry_type(atlas), "sf")) {
+    return(invisible(atlas))
+  }
+
+  lifecycle::deprecate_warn(
+    "3.0.0",
+    I("Passing an sf-backed atlas to `geom_brain()`"),
+    details = paste(
+      "Convert it once with `ggseg.formats::as_polygon_atlas()`, or use",
+      "`ggplot2::geom_sf()` directly for an sf workflow."
+    )
+  )
+
+  invisible(atlas)
 }
