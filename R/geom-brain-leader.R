@@ -1,3 +1,12 @@
+#' @noRd
+connector_params <- c(
+  "box.padding",
+  "point.padding",
+  "min.segment.length",
+  "segment.colour",
+  "segment.linewidth"
+)
+
 #' Geoms that draw a leader line back to the region they name
 #'
 #' A label nudged clear of a cramped region has to say which region it belongs
@@ -22,17 +31,15 @@ brain_text_geom <- function(parent, name) {
       defaults
     },
     # ggplot2 reads a geom's parameters off `draw_group` whenever `draw_panel`
-    # takes `...`, which ours must in order to pass the rest through. Without
-    # these named here the connector's arguments are dropped with a warning
-    # and the defaults are drawn instead.
-    extra_params = c(
-      parent$extra_params,
-      "box.padding",
-      "point.padding",
-      "min.segment.length",
-      "segment.colour",
-      "segment.linewidth"
-    ),
+    # takes `...`, which ours must in order to pass the rest through, so the
+    # connector's own arguments are invisible to it. `extra_params` is what
+    # lets `layer()` accept them; `parameters()` is what stops
+    # `Geom$draw_layer()` filtering them back out before `draw_panel()` runs,
+    # because it filters on `parameters()` with `extra = FALSE`.
+    extra_params = c(parent$extra_params, connector_params),
+    parameters = function(self, extra = FALSE) {
+      union(parent$parameters(extra), connector_params)
+    },
     draw_panel = function(
       self,
       data,
