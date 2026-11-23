@@ -169,3 +169,246 @@ describe("geom_brain_text()", {
     expect_s3_class(geom_brain_label()$geom, "GeomLabel")
   })
 })
+
+
+describe("nudge_label_anchors()", {
+  anchors <- function(n = 2) {
+    data.frame(
+      label = head(c("a", "b", "c"), n),
+      x = seq_len(n) * 10,
+      y = seq_len(n) * 100
+    )
+  }
+
+  it("records where the label came from before moving it", {
+    # The recorded anchor is the whole mechanism: it is what the leader line
+    # is drawn to and what the justification is derived from.
+    moved <- nudge_label_anchors(anchors(), list(x = 5, y = -7))
+
+    expect_identical(moved$x_orig, c(10, 20))
+    expect_identical(moved$y_orig, c(100, 200))
+    expect_identical(moved$x, c(15, 25))
+    expect_identical(moved$y, c(93, 193))
+  })
+
+  it("leaves no trace at all when nothing is nudged", {
+    # Absence of the column is what makes the connector disable itself, so an
+    # un-nudged label must not merely have x_orig == x.
+    untouched <- nudge_label_anchors(anchors(), list(x = 0, y = 0))
+
+    expect_false(any(c("x_orig", "y_orig") %in% names(untouched)))
+  })
+
+  it("moves each label by its own amount", {
+    moved <- nudge_label_anchors(anchors(), list(x = c(1, 2), y = c(0, 0)))
+
+    expect_identical(moved$x, c(11, 22))
+  })
+
+  it("refuses a nudge that does not line up with the labels", {
+    # Recycling three values over two labels would silently mislabel the plot.
+    expect_error(
+      nudge_label_anchors(anchors(), list(x = c(1, 2, 3), y = 0)),
+      "one per label"
+    )
+  })
+})
+
+
+describe("justify_away_from_anchor()", {
+  drawn <- function(dx, dy, hjust = NA, vjust = NA) {
+    justify_away_from_anchor(
+      data.frame(
+        x = 10 + dx,
+        y = 10 + dy,
+        x_orig = 10,
+        y_orig = 10,
+        hjust = hjust,
+        vjust = vjust
+      ),
+      nudged = TRUE
+    )
+  }
+
+  it("turns the text away from the region it points at", {
+    # A label nudged left reads as belonging to its region only if its right
+    # edge is the end nearest the line.
+    expect_identical(drawn(dx = -5, dy = 0)$hjust, 1)
+    expect_identical(drawn(dx = 5, dy = 0)$hjust, 0)
+    expect_identical(drawn(dx = 0, dy = -5)$vjust, 1)
+    expect_identical(drawn(dx = 0, dy = 5)$vjust, 0)
+  })
+
+  it("centres a label that was not moved on that axis", {
+    expect_identical(drawn(dx = 5, dy = 0)$vjust, 0.5)
+  })
+
+  it("keeps a justification the caller asked for", {
+    expect_identical(drawn(dx = -5, dy = 0, hjust = 0)$hjust, 0)
+  })
+
+  it("centres everything when no label was nudged", {
+    centred <- justify_away_from_anchor(
+      data.frame(x = 1, y = 1, hjust = NA, vjust = NA),
+      nudged = FALSE
+    )
+
+    expect_identical(centred$hjust, 0.5)
+    expect_identical(centred$vjust, 0.5)
+  })
+})
+
+
+describe("makeContent.brain_leader()", {
+  leader <- function(
+    label_x,
+    min_length = grid::unit(0.5, "lines"),
+    padding = grid::unit(0.3, "lines")
+  ) {
+    grid::gTree(
+      anchor_x = 0.1,
+      anchor_y = 0.5,
+      label_x = label_x,
+      label_y = 0.5,
+      box_padding = padding,
+      point_padding = padding,
+      min_length = min_length,
+      colour = "black",
+      linewidth = 0.4,
+      cl = "brain_leader"
+    )
+  }
+
+  # Millimetres do not exist without a device, and `convertX()` returns a
+  # plausible wrong number rather than erroring when there is none.
+  on_a_device <- function(code) {
+    grDevices::pdf(NULL)
+    on.exit(grDevices::dev.off(), add = TRUE)
+    grid::grid.newpage()
+    force(code)
+  }
+
+  it("insets both ends, so the line touches neither text nor region", {
+    content <- on_a_device(grid::makeContent(leader(label_x = 0.9)))
+    segment <- content$children[[1]]
+
+    anchor_mm <- grid::convertX(grid::unit(0.1, "npc"), "mm", TRUE)
+    label_mm <- grid::convertX(grid::unit(0.9, "npc"), "mm", TRUE)
+    pad_mm <- grid::convertWidth(grid::unit(0.3, "lines"), "mm", TRUE)
+
+    expect_equal(
+      grid::convertX(segment$x0, "mm", TRUE),
+      anchor_mm + pad_mm,
+      tolerance = 1e-6
+    )
+    expect_equal(
+      grid::convertX(segment$x1, "mm", TRUE),
+      label_mm - pad_mm,
+      tolerance = 1e-6
+    )
+  })
+
+  it("draws nothing rather than a stub", {
+    # A barely-nudged label sits on its own region; a 1mm line into it is
+    # noise, which is why ggrepel has min.segment.length at all.
+    content <- on_a_device(grid::makeContent(leader(label_x = 0.102)))
+
+    expect_length(content$children, 0)
+  })
+
+  it("counts the padding against the minimum, not just the raw distance", {
+    # A segment long enough before trimming can be nothing afterwards.
+    short <- on_a_device(grid::makeContent(
+      leader(label_x = 0.14, padding = grid::unit(2, "lines"))
+    ))
+    long <- on_a_device(grid::makeContent(
+      leader(label_x = 0.14, padding = grid::unit(0, "lines"))
+    ))
+
+    expect_length(short$children, 0)
+    expect_length(long$children, 1)
+  })
+})
+
+
+describe("geom_brain_text(nudge_x=, nudge_y=)", {
+  nudged_plot <- function(...) {
+    ggplot2::ggplot() +
+      geom_brain(
+        atlas = ggseg.formats::dk(),
+        hemi = "left",
+        view = "lateral"
+      ) +
+      geom_brain_text(
+        data = data.frame(label = c("lh_insula", "lh_temporalpole")),
+        ...
+      )
+  }
+
+  it("carries the recorded anchor through to the geom", {
+    # ggplot2 drops any column the mapping does not claim, so the anchor only
+    # survives because `default_label_mapping()` maps it.
+    built <- ggplot2::ggplot_build(
+      nudged_plot(nudge_x = c(0, -40), nudge_y = c(0, -30))
+    )
+    drawn <- built$data[[length(built$data)]]
+
+    expect_true(all(c("x_orig", "y_orig") %in% names(drawn)))
+    expect_identical(drawn$x - drawn$x_orig, c(0, -40))
+  })
+
+  it("moves each label by the nudge written beside it", {
+    # `merge()` returns rows in key order, so a nudge vector written against
+    # the caller's own row order landed on the wrong labels: a region asked to
+    # move up moved down instead, silently and only visibly in the render.
+    built <- ggplot2::ggplot_build(
+      ggplot2::ggplot() +
+        geom_brain(
+          atlas = ggseg.formats::dk(),
+          hemi = "left",
+          view = "lateral"
+        ) +
+        geom_brain_text(
+          data = data.frame(label = c("lh_superiorfrontal", "lh_insula")),
+          nudge_x = c(0, 0),
+          nudge_y = c(60, -60)
+        )
+    )
+    drawn <- built$data[[length(built$data)]]
+    moved <- stats::setNames(drawn$y - drawn$y_orig, drawn$label)
+
+    expect_identical(moved[["superior frontal"]], 60)
+    expect_identical(moved[["insula"]], -60)
+  })
+
+  it("moves a region the same way in every view it is drawn in", {
+    # One row written by the caller is one nudge, however many anchors that
+    # row turns into.
+    built <- ggplot2::ggplot_build(
+      ggplot2::ggplot() +
+        geom_brain(atlas = ggseg.formats::dk(), hemi = "left") +
+        geom_brain_text(
+          data = data.frame(label = "lh_insula"),
+          nudge_x = 25
+        )
+    )
+    drawn <- built$data[[length(built$data)]]
+
+    expect_gt(nrow(drawn), 1)
+    expect_identical(unique(drawn$x - drawn$x_orig), 25)
+  })
+
+  it("adds no anchor column when nothing is nudged", {
+    built <- ggplot2::ggplot_build(nudged_plot())
+    drawn <- built$data[[length(built$data)]]
+
+    expect_false("x_orig" %in% names(drawn))
+  })
+
+  it("renders a nudged label with its leader line", {
+    expect_brain_doppelganger(
+      "nudged label with leader line",
+      nudged_plot(nudge_x = c(0, -40), nudge_y = c(0, -30), size = 3)
+    )
+  })
+})
