@@ -10,7 +10,8 @@ geom_brain_text(
   position = position_brain(),
   hemi = NULL,
   view = NULL,
-  regions = NULL,
+  pattern = NULL,
+  match_on = c("label", "region"),
   label = NULL,
   ...
 )
@@ -20,7 +21,8 @@ geom_brain_label(
   position = position_brain(),
   hemi = NULL,
   view = NULL,
-  regions = NULL,
+  pattern = NULL,
+  match_on = c("label", "region"),
   label = NULL,
   ...
 )
@@ -33,9 +35,12 @@ geom_brain_label(
 \item{hemi, view}{Restrict to these hemispheres or views, as in
 \code{\link[=geom_brain]{geom_brain()}}.}
 
-\item{regions}{Label only these regions, matched on \code{region} or \code{label}.
-Naming the few regions a figure is about is usually what is wanted;
-every region of a cortical atlas at once is unreadable.}
+\item{pattern}{Label only the regions matching this pattern. Naming the few
+regions a figure is about is usually what is wanted; every region of a
+cortical atlas at once is unreadable.}
+
+\item{match_on}{Column the pattern is matched against, \code{label} by default
+as everywhere else in the ecosystem.}
 
 \item{label}{Column of the atlas core to write. Defaults to \code{display}, the
 human-readable name, falling back to \code{label} where an atlas has none.}
@@ -56,7 +61,9 @@ Pass the same \code{atlas}, \code{position}, \code{hemi} and \code{view} you gav
 laid-out geometry from the same place.
 
 Every region of a cortical atlas at once is unreadable whatever is done
-with it, so name the regions a figure is actually about with \code{regions}.
+with it, so pick out the regions a figure is actually about with \code{pattern},
+which matches \code{label} by default and takes \code{match_on = "region"} like the
+atlas verbs do.
 \code{...} reaches the underlying ggplot2 layer, so \code{size}, \code{colour},
 \code{fontface}, \code{nudge_x} and \code{nudge_y} all work as usual.
 }

@@ -9,7 +9,9 @@
 #' laid-out geometry from the same place.
 #'
 #' Every region of a cortical atlas at once is unreadable whatever is done
-#' with it, so name the regions a figure is actually about with `regions`.
+#' with it, so pick out the regions a figure is actually about with `pattern`,
+#' which matches `label` by default and takes `match_on = "region"` like the
+#' atlas verbs do.
 #' `...` reaches the underlying ggplot2 layer, so `size`, `colour`,
 #' `fontface`, `nudge_x` and `nudge_y` all work as usual.
 #'
@@ -26,9 +28,11 @@
 #' @param position The layout passed to [geom_brain()]. Labels follow it.
 #' @param hemi,view Restrict to these hemispheres or views, as in
 #'   [geom_brain()].
-#' @param regions Label only these regions, matched on `region` or `label`.
-#'   Naming the few regions a figure is about is usually what is wanted;
-#'   every region of a cortical atlas at once is unreadable.
+#' @param pattern Label only the regions matching this pattern. Naming the few
+#'   regions a figure is about is usually what is wanted; every region of a
+#'   cortical atlas at once is unreadable.
+#' @param match_on Column the pattern is matched against, `label` by default
+#'   as everywhere else in the ecosystem.
 #' @param label Column of the atlas core to write. Defaults to `display`, the
 #'   human-readable name, falling back to `label` where an atlas has none.
 #' @param ... Passed to [ggplot2::geom_text()] or [ggplot2::geom_label()].
@@ -47,7 +51,8 @@ geom_brain_text <- function(
   position = position_brain(),
   hemi = NULL,
   view = NULL,
-  regions = NULL,
+  pattern = NULL,
+  match_on = c("label", "region"),
   label = NULL,
   ...
 ) {
@@ -56,7 +61,8 @@ geom_brain_text <- function(
     position = position,
     hemi = hemi,
     view = view,
-    regions = regions,
+    pattern = pattern,
+    match_on = match_on,
     label = label,
     boxed = FALSE,
     ...
@@ -70,7 +76,8 @@ geom_brain_label <- function(
   position = position_brain(),
   hemi = NULL,
   view = NULL,
-  regions = NULL,
+  pattern = NULL,
+  match_on = c("label", "region"),
   label = NULL,
   ...
 ) {
@@ -79,7 +86,8 @@ geom_brain_label <- function(
     position = position,
     hemi = hemi,
     view = view,
-    regions = regions,
+    pattern = pattern,
+    match_on = match_on,
     label = label,
     boxed = TRUE,
     ...
@@ -93,7 +101,8 @@ brain_text_layer <- function(
   position,
   hemi,
   view,
-  regions,
+  pattern,
+  match_on,
   label,
   boxed,
   ...
@@ -103,7 +112,8 @@ brain_text_layer <- function(
     position = position,
     hemi = hemi,
     view = view,
-    regions = regions,
+    pattern = pattern,
+    match_on = match_on,
     label = label
   )
 
@@ -133,7 +143,8 @@ brain_label_anchors <- function(
   position = NULL,
   hemi = NULL,
   view = NULL,
-  regions = NULL,
+  pattern = NULL,
+  match_on = c("label", "region"),
   label = NULL
 ) {
   atlas <- ggseg.formats::as_ggseg_atlas(atlas)
@@ -145,19 +156,15 @@ brain_label_anchors <- function(
     context = FALSE
   )
 
-  if (!is.null(regions)) {
-    # Match what the user can see as well as what the atlas stores: the name
-    # on the plot is `display` ("superior frontal"), while `region` is
-    # "superiorfrontal" -- asking for the former must not silently miss.
-    matched <- flat$region %in%
-      regions |
-      flat$label %in% regions |
-      ("display" %in% names(flat) & flat$display %in% regions)
+  match_on <- match.arg(match_on)
+  if (!is.null(pattern)) {
+    matched <- grepl(pattern, flat[[match_on]], ignore.case = TRUE)
+    matched[is.na(flat[[match_on]])] <- FALSE
     if (!any(matched)) {
       cli::cli_abort(c(
-        "No region of {.arg atlas} matches {.arg regions}.",
-        "i" = "Match on {.field region}, {.field display} or {.field label};
-               see {.fn ggseg.formats::atlas_regions}."
+        "No region of {.arg atlas} matches {.val {pattern}}.",
+        "i" = "Matched against {.field {match_on}}; pass
+               {.code match_on = \"region\"} to match the region text."
       ))
     }
     flat <- flat[matched, , drop = FALSE]
