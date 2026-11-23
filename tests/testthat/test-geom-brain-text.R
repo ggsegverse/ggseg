@@ -99,20 +99,26 @@ describe("geom_brain_text()", {
     expect_identical(nrow(built$data[[length(built$data)]]), nrow(anchors))
   })
 
-  it("labels only the regions asked for, by any name they are known by", {
-    # A user types the name they see on the plot, which is `display`
-    # ("superior frontal"), not what the atlas stores ("superiorfrontal").
+  it("matches the pattern on label, as the atlas verbs do", {
+    # `label` is the canonical matching key ecosystem-wide; `match_on` is the
+    # documented way to ask for the region text instead.
     atlas <- ggseg.formats::dk()
-    want <- c("insula", "superior frontal")
 
-    anchors <- brain_label_anchors(atlas, hemi = "left", regions = want)
+    on_label <- brain_label_anchors(atlas, hemi = "left", pattern = "insula")
+    on_region <- brain_label_anchors(
+      atlas,
+      hemi = "left",
+      pattern = "superiorfrontal",
+      match_on = "region"
+    )
 
-    expect_setequal(unique(anchors$.brain_label), want)
+    expect_true(all(grepl("insula", on_label$label, ignore.case = TRUE)))
+    expect_identical(unique(on_region$.brain_label), "superior frontal")
   })
 
-  it("says so when no region matches", {
+  it("says what it matched against when nothing does", {
     expect_error(
-      brain_label_anchors(ggseg.formats::dk(), regions = "not a region"),
+      brain_label_anchors(ggseg.formats::dk(), pattern = "not a region"),
       "No region"
     )
   })
