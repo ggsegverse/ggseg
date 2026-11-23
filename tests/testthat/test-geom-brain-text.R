@@ -39,7 +39,7 @@ describe("brain_label_anchors()", {
   it("names each region once per view", {
     anchors <- brain_label_anchors(ggseg.formats::dk())
 
-    expect_false(any(duplicated(anchors[, c("label", "view")])))
+    expect_identical(anyDuplicated(anchors[, c("label", "view")]), 0L)
     expect_setequal(
       unique(anchors$view),
       ggseg.formats::atlas_views(ggseg.formats::dk())
