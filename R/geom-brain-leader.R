@@ -21,6 +21,18 @@ brain_text_geom <- function(parent, name) {
       defaults$vjust <- NA
       defaults
     },
+    # ggplot2 reads a geom's parameters off `draw_group` whenever `draw_panel`
+    # takes `...`, which ours must in order to pass the rest through. Without
+    # these named here the connector's arguments are dropped with a warning
+    # and the defaults are drawn instead.
+    extra_params = c(
+      parent$extra_params,
+      "box.padding",
+      "point.padding",
+      "min.segment.length",
+      "segment.colour",
+      "segment.linewidth"
+    ),
     draw_panel = function(
       self,
       data,
