@@ -67,6 +67,14 @@ figures, so read the breaking changes before upgrading.
 
 ## New features
 
+- `geom_brain_text()` and `geom_brain_label()` write region names onto a
+  brain, working out where each one goes. The anchor is the middle of the
+  widest run of region a horizontal line crosses, not the centroid: a crescent
+  region has its centroid outside itself, which would print the name on a
+  neighbour, and that is 9% of `dk`'s shapes and 41% of `tracula`'s. Name the
+  regions a figure is about with `regions`, matched on `display`, `region` or
+  `label`.
+
 - `geom_brain()` and `stat_brain()` gain `context_fill`, the colour of the
   context backdrop (default `"grey"`).
 
