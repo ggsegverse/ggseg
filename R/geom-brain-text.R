@@ -36,9 +36,36 @@
 #'   follows when not given.
 #' @param position,hemi,view Taken from the [geom_brain()] layer it follows
 #'   when not given, so the labels sit where the regions are.
+#' @param nudge_x,nudge_y Move the label off its region, in atlas units -- the
+#'   same units the plot's axes are in, so a `dk` view being about 215 units
+#'   wide, 30 is a visible shift. One value moves every label; a vector as long
+#'   as the data moves each one separately. A nudged label keeps a leader line
+#'   back to its region and turns to face away from it.
 #' @param ... Passed to [ggplot2::geom_text()] or [ggplot2::geom_label()]:
-#'   `size`, `colour`, `fontface`, `nudge_x` and the rest.
+#'   `size`, `colour`, `fontface` and the rest. The leader line takes
+#'   `box.padding` and `point.padding` (its gap from the text and from the
+#'   region), `min.segment.length` (below which it is not drawn at all),
+#'   `segment.colour` and `segment.linewidth`.
 #' @param inherit.aes Whether to inherit the plot's aesthetic mapping.
+#'
+#' @section Moving a label off a cramped region:
+#'
+#' A region too small or too narrow for its own name is the normal case, not
+#' the exception -- `banks of superior temporal sulcus` is wider than a quarter
+#' of a `dk` view at 8pt. Nudge those labels clear and the connector back to
+#' the region is drawn for you, so nothing has to be said twice:
+#'
+#' ```r
+#' ggplot() +
+#'   geom_brain(atlas = dk(), hemi = "left", view = "lateral") +
+#'   geom_brain_text(
+#'     data = data.frame(label = c("lh_insula", "lh_temporalpole")),
+#'     nudge_x = c(0, -40),
+#'     nudge_y = c(0, -30)
+#'   )
+#' ```
+#'
+#' The label with no nudge is drawn plainly, on its region, with no line.
 #'
 #' @return A ggplot2 layer.
 #' @seealso [annotate_brain()], which labels the views rather than the regions.
@@ -59,6 +86,8 @@ geom_brain_text <- function(
   position = NULL,
   hemi = NULL,
   view = NULL,
+  nudge_x = 0,
+  nudge_y = 0,
   ...,
   inherit.aes = FALSE
 ) {
@@ -68,8 +97,10 @@ geom_brain_text <- function(
     atlas = atlas,
     position = position,
     hemi = hemi,
+    nudge_x = nudge_x,
+    nudge_y = nudge_y,
     view = view,
-    geom = ggplot2::GeomText,
+    geom = GeomBrainText,
     inherit.aes = inherit.aes,
     ...
   )
@@ -84,6 +115,8 @@ geom_brain_label <- function(
   position = NULL,
   hemi = NULL,
   view = NULL,
+  nudge_x = 0,
+  nudge_y = 0,
   ...,
   inherit.aes = FALSE
 ) {
@@ -93,8 +126,10 @@ geom_brain_label <- function(
     atlas = atlas,
     position = position,
     hemi = hemi,
+    nudge_x = nudge_x,
+    nudge_y = nudge_y,
     view = view,
-    geom = ggplot2::GeomLabel,
+    geom = GeomBrainLabel,
     inherit.aes = inherit.aes,
     ...
   )
@@ -108,6 +143,8 @@ brain_text_layer <- function(
   position,
   hemi,
   view,
+  nudge_x,
+  nudge_y,
   geom,
   inherit.aes,
   ...
@@ -128,6 +165,7 @@ brain_text_layer <- function(
   text_layer$brain_position <- position
   text_layer$brain_hemi <- hemi
   text_layer$brain_view <- view
+  text_layer$brain_nudge <- list(x = nudge_x, y = nudge_y)
   text_layer
 }
 
@@ -164,6 +202,7 @@ LayerBrainText <- ggproto(
       view = self$brain_view %||% source_layer$brain_view
     )
     anchors <- select_labelled_regions(anchors, user_data)
+    anchors <- nudge_label_anchors(anchors, self$brain_nudge)
 
     # `setup_layer()` hands back the data the layer will draw; the mapping is
     # settled on `self`, which is the environment the layer keeps.
@@ -210,6 +249,11 @@ select_labelled_regions <- function(anchors, user_data) {
   }
   key <- key[1]
 
+  # `.brain_row` is the caller's own row order, which `merge()` destroys and
+  # which a per-label `nudge_x` is written against. A region drawn in four
+  # views becomes four anchors that all belong to the one row the caller
+  # wrote, so the nudge follows the row, not the anchor.
+  user_data[[".brain_row"]] <- seq_len(nrow(user_data))
   named <- merge(anchors, user_data, by = key, suffixes = c("", ".data"))
   if (nrow(named) == 0) {
     cli::cli_warn(c(
@@ -217,10 +261,47 @@ select_labelled_regions <- function(anchors, user_data) {
       "i" = "No {.field {key}} in {.arg data} is drawn by the atlas."
     ))
   }
-  named[order(named$view, named[[key]]), , drop = FALSE]
+  named[order(named$.brain_row, named$view), , drop = FALSE]
 }
 
 #' Write the display name unless the caller mapped something else
+#' @noRd
+#' Move each label off its anchor, remembering where it came from
+#'
+#' The remembered anchor is what the leader line is drawn to and what the
+#' justification is derived from, so recording it is what makes the nudge
+#' self-documenting rather than just a shifted label.
+#' @noRd
+nudge_label_anchors <- function(anchors, nudge) {
+  if (is.null(nudge) || !nrow(anchors)) {
+    return(anchors)
+  }
+  if (all(nudge$x == 0) && all(nudge$y == 0)) {
+    return(anchors)
+  }
+
+  # One nudge per row the caller wrote, so a region drawn in several views
+  # moves the same way in each, and a count mismatch is their row count.
+  row <- anchors$.brain_row %||% seq_len(nrow(anchors))
+  wanted <- max(row)
+
+  for (arg in c("x", "y")) {
+    if (!length(nudge[[arg]]) %in% c(1L, wanted)) {
+      cli::cli_abort(c(
+        "{.arg nudge_{arg}} must be one value, or one per label.",
+        "x" = "It has {length(nudge[[arg]])}, for {wanted} label{?s}.",
+        "i" = "The labels are {.val {unique(anchors$label)}}."
+      ))
+    }
+  }
+
+  anchors$x_orig <- anchors$x
+  anchors$y_orig <- anchors$y
+  anchors$x <- anchors$x + rep_len(nudge$x, wanted)[row]
+  anchors$y <- anchors$y + rep_len(nudge$y, wanted)[row]
+  anchors
+}
+
 #' @noRd
 default_label_mapping <- function(mapping, anchors) {
   mapping <- mapping %||% ggplot2::aes()
@@ -230,6 +311,11 @@ default_label_mapping <- function(mapping, anchors) {
   }
   if (is.null(mapping$y)) {
     mapping$y <- ggplot2::aes(y = .data$y)$y
+  }
+  for (recorded in intersect(c("x_orig", "y_orig"), names(anchors))) {
+    if (is.null(mapping[[recorded]])) {
+      mapping[[recorded]] <- ggplot2::aes(z = .data[[recorded]])$z
+    }
   }
   if (is.null(mapping$label)) {
     text <- if ("display" %in% names(anchors)) "display" else "label"

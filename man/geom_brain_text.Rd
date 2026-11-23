@@ -12,6 +12,8 @@ geom_brain_text(
   position = NULL,
   hemi = NULL,
   view = NULL,
+  nudge_x = 0,
+  nudge_y = 0,
   ...,
   inherit.aes = FALSE
 )
@@ -23,6 +25,8 @@ geom_brain_label(
   position = NULL,
   hemi = NULL,
   view = NULL,
+  nudge_x = 0,
+  nudge_y = 0,
   ...,
   inherit.aes = FALSE
 )
@@ -41,8 +45,17 @@ follows when not given.}
 \item{position, hemi, view}{Taken from the \code{\link[=geom_brain]{geom_brain()}} layer it follows
 when not given, so the labels sit where the regions are.}
 
+\item{nudge_x, nudge_y}{Move the label off its region, in atlas units -- the
+same units the plot's axes are in, so a \code{dk} view being about 215 units
+wide, 30 is a visible shift. One value moves every label; a vector as long
+as the data moves each one separately. A nudged label keeps a leader line
+back to its region and turns to face away from it.}
+
 \item{...}{Passed to \code{\link[ggplot2:geom_text]{ggplot2::geom_text()}} or \code{\link[ggplot2:geom_label]{ggplot2::geom_label()}}:
-\code{size}, \code{colour}, \code{fontface}, \code{nudge_x} and the rest.}
+\code{size}, \code{colour}, \code{fontface} and the rest. The leader line takes
+\code{box.padding} and \code{point.padding} (its gap from the text and from the
+region), \code{min.segment.length} (below which it is not drawn at all),
+\code{segment.colour} and \code{segment.linewidth}.}
 
 \item{inherit.aes}{Whether to inherit the plot's aesthetic mapping.}
 }
@@ -77,6 +90,26 @@ name on a neighbouring structure: measured across the bundled atlases, a
 centroid falls outside its own region for 9\% of \code{dk} shapes and 41\% of
 \code{tracula} ones. The anchor is the middle of the widest run of region that a
 horizontal line crosses, which is inside the region by construction.
+}
+
+\section{Moving a label off a cramped region}{
+
+
+A region too small or too narrow for its own name is the normal case, not
+the exception -- \verb{banks of superior temporal sulcus} is wider than a quarter
+of a \code{dk} view at 8pt. Nudge those labels clear and the connector back to
+the region is drawn for you, so nothing has to be said twice:
+
+\if{html}{\out{<div class="sourceCode r">}}\preformatted{ggplot() +
+  geom_brain(atlas = dk(), hemi = "left", view = "lateral") +
+  geom_brain_text(
+    data = data.frame(label = c("lh_insula", "lh_temporalpole")),
+    nudge_x = c(0, -40),
+    nudge_y = c(0, -30)
+  )
+}\if{html}{\out{</div>}}
+
+The label with no nudge is drawn plainly, on its region, with no line.
 }
 
 \examples{
