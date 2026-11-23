@@ -139,9 +139,8 @@ brain_text_layer <- function(
 #' describing a different brain from the one drawn. The user's `data`, when
 #' there is any, selects which regions are named -- the ggplot2 way of taking
 #' a subset -- and its columns stay available to the mapping.
-#' @format NULL
-#' @usage NULL
-#' @export
+#' @keywords internal
+#' @noRd
 LayerBrainText <- ggproto(
   "LayerBrainText",
   ggplot2_Layer(),
