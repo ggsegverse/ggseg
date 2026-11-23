@@ -8,6 +8,11 @@ figures, so read the breaking changes before upgrading.
 
 ## Breaking changes
 
+- Passing an sf-backed atlas to `geom_brain()` is deprecated. It still draws:
+  `geom_brain()` converts it with `atlas_polygons()`, but it does so on every
+  build of the plot. Convert once with `ggseg.formats::as_polygon_atlas()`, or
+  use `ggplot2::geom_sf()` directly for an sf workflow.
+
 - **`geom_brain()` adds two layers.** The context backdrop is drawn by a layer
   of its own, underneath the regions, so a mapped `fill` cannot reach it and it
   claims no legend key (#182). `layer_data(p)` and `p$layers[[1]]` therefore

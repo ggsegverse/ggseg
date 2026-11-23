@@ -449,3 +449,37 @@ describe("default atlas fill", {
     expect_true(needs_default_atlas_fill(aes(alpha = region), list()))
   })
 })
+
+describe("an sf-backed atlas", {
+  it("deprecation-warns, because it is converted on every build", {
+    skip_if_not_installed("sf")
+    # `lifecycle_verbosity` is forced because the notice is throttled to once
+    # per session otherwise, and the suite's order would decide whether this
+    # test sees it.
+    withr::local_options(lifecycle_verbosity = "warning")
+    atlas <- suppressWarnings(ggseg.formats::as_sf_atlas(ggseg.formats::dk()))
+
+    expect_warning(
+      ggplot2::ggplot() + geom_brain(atlas = atlas),
+      class = "lifecycle_warning_deprecated"
+    )
+  })
+
+  it("says nothing for the polygon default", {
+    withr::local_options(lifecycle_verbosity = "warning")
+
+    expect_no_warning(
+      ggplot2::ggplot() + geom_brain(atlas = ggseg.formats::dk()),
+      class = "lifecycle_warning_deprecated"
+    )
+  })
+
+  it("says nothing for an atlas with no 2D geometry to convert", {
+    withr::local_options(lifecycle_verbosity = "warning")
+
+    expect_no_warning(
+      ggplot2::ggplot() + geom_brain(atlas = ggseg.formats::aseg()),
+      class = "lifecycle_warning_deprecated"
+    )
+  })
+})
