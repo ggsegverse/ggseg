@@ -6,46 +6,45 @@
 \title{Label brain regions}
 \usage{
 geom_brain_text(
-  atlas,
-  position = position_brain(),
+  mapping = NULL,
+  data = NULL,
+  atlas = NULL,
+  position = NULL,
   hemi = NULL,
   view = NULL,
-  pattern = NULL,
-  match_on = c("label", "region"),
-  label = NULL,
-  ...
+  ...,
+  inherit.aes = FALSE
 )
 
 geom_brain_label(
-  atlas,
-  position = position_brain(),
+  mapping = NULL,
+  data = NULL,
+  atlas = NULL,
+  position = NULL,
   hemi = NULL,
   view = NULL,
-  pattern = NULL,
-  match_on = c("label", "region"),
-  label = NULL,
-  ...
+  ...,
+  inherit.aes = FALSE
 )
 }
 \arguments{
-\item{atlas}{A \code{ggseg_atlas}, as given to \code{\link[=geom_brain]{geom_brain()}}.}
+\item{mapping}{Aesthetic mapping, as in any layer. The text defaults to the
+region's display name; map \code{label} to write something else.}
 
-\item{position}{The layout passed to \code{\link[=geom_brain]{geom_brain()}}. Labels follow it.}
+\item{data}{Regions to name. Defaults to every region the brain layer
+draws. A data frame keyed on \code{label} -- or on \code{region} -- names only the
+regions it holds.}
 
-\item{hemi, view}{Restrict to these hemispheres or views, as in
-\code{\link[=geom_brain]{geom_brain()}}.}
+\item{atlas}{The atlas to label. Taken from the \code{\link[=geom_brain]{geom_brain()}} layer it
+follows when not given.}
 
-\item{pattern}{Label only the regions matching this pattern. Naming the few
-regions a figure is about is usually what is wanted; every region of a
-cortical atlas at once is unreadable.}
+\item{position, hemi, view}{Taken from the \code{\link[=geom_brain]{geom_brain()}} layer it follows
+when not given, so the labels sit where the regions are.}
 
-\item{match_on}{Column the pattern is matched against, \code{label} by default
-as everywhere else in the ecosystem.}
+\item{...}{Passed to \code{\link[ggplot2:geom_text]{ggplot2::geom_text()}} or \code{\link[ggplot2:geom_label]{ggplot2::geom_label()}}:
+\code{size}, \code{colour}, \code{fontface}, \code{nudge_x} and the rest.}
 
-\item{label}{Column of the atlas core to write. Defaults to \code{display}, the
-human-readable name, falling back to \code{label} where an atlas has none.}
-
-\item{...}{Passed to \code{\link[ggplot2:geom_text]{ggplot2::geom_text()}} or \code{\link[ggplot2:geom_label]{ggplot2::geom_label()}}.}
+\item{inherit.aes}{Whether to inherit the plot's aesthetic mapping.}
 }
 \value{
 A ggplot2 layer.
@@ -56,16 +55,18 @@ A ggplot2 layer.
 between \code{\link[ggplot2:geom_text]{ggplot2::geom_text()}} and \code{\link[ggplot2:geom_label]{ggplot2::geom_label()}}.
 }
 \details{
-Pass the same \code{atlas}, \code{position}, \code{hemi} and \code{view} you gave
-\code{\link[=geom_brain]{geom_brain()}} and the labels land on the regions, because both read the
-laid-out geometry from the same place.
+Added after a \code{\link[=geom_brain]{geom_brain()}} layer, it takes that layer's atlas, layout,
+hemisphere and view, so the names land on the regions without repeating
+what the plot already says:
 
-Every region of a cortical atlas at once is unreadable whatever is done
-with it, so pick out the regions a figure is actually about with \code{pattern},
-which matches \code{label} by default and takes \code{match_on = "region"} like the
-atlas verbs do.
-\code{...} reaches the underlying ggplot2 layer, so \code{size}, \code{colour},
-\code{fontface}, \code{nudge_x} and \code{nudge_y} all work as usual.
+\if{html}{\out{<div class="sourceCode r">}}\preformatted{ggplot() +
+  geom_brain(atlas = dk(), hemi = "left") +
+  geom_brain_text()
+}\if{html}{\out{</div>}}
+
+To name some regions and not others, hand it \code{data} holding those regions,
+exactly as any other ggplot2 layer takes a subset. Its columns are
+available to the mapping, so the text can be anything the data carries.
 }
 \section{Where a label sits}{
 
@@ -74,16 +75,19 @@ Not at the region's centroid. A crescent or horseshoe region -- the
 cingulate, a tract -- has its centroid outside itself, which would print the
 name on a neighbouring structure: measured across the bundled atlases, a
 centroid falls outside its own region for 9\% of \code{dk} shapes and 41\% of
-\code{tracula} ones. The anchor here is the middle of the widest run of region
-that a horizontal line crosses, which is inside the region by construction.
+\code{tracula} ones. The anchor is the middle of the widest run of region that a
+horizontal line crosses, which is inside the region by construction.
 }
 
 \examples{
 library(ggplot2)
 
 ggplot() +
-  geom_brain(atlas = dk()) +
-  geom_brain_text(atlas = dk(), view = "lateral", hemi = "left", size = 2)
+  geom_brain(atlas = dk(), hemi = "left") +
+  geom_brain_text(
+    data = data.frame(label = c("lh_insula", "lh_precuneus")),
+    size = 3
+  )
 }
 \seealso{
 \code{\link[=annotate_brain]{annotate_brain()}}, which labels the views rather than the regions.

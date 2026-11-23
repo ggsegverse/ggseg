@@ -72,8 +72,11 @@ figures, so read the breaking changes before upgrading.
   widest run of region a horizontal line crosses, not the centroid: a crescent
   region has its centroid outside itself, which would print the name on a
   neighbour, and that is 9% of `dk`'s shapes and 41% of `tracula`'s. Name the
-  regions a figure is about with `pattern`, matched on `label` as everywhere
-  else, or on `region` with `match_on`.
+  regions a figure is about by handing the layer `data` holding them, keyed on
+  `label` or `region`, as any other ggplot2 layer takes a subset. Added after
+  a `geom_brain()` layer it takes that layer's atlas, layout, hemisphere and
+  view, so `ggplot() + geom_brain(atlas = dk()) + geom_brain_text()` names
+  every region it drew.
 
 - `geom_brain()` and `stat_brain()` gain `context_fill`, the colour of the
   context backdrop (default `"grey"`).

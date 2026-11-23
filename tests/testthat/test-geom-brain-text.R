@@ -46,90 +46,126 @@ describe("brain_label_anchors()", {
     )
   })
 
-  it("labels no context geometry", {
+  it("names no context geometry", {
     # The backdrop is anatomy without a name; labelling it would write `NA`
     # across the medial wall.
     anchors <- brain_label_anchors(ggseg.formats::dk())
     core <- ggseg.formats::atlas_core(ggseg.formats::dk())
 
     expect_true(all(anchors$label %in% core$label))
-    expect_false(anyNA(anchors$.brain_label))
-  })
-
-  it("writes the display name, and falls back to the label", {
-    atlas <- ggseg.formats::dk()
-    display <- brain_label_anchors(atlas)
-
-    expect_true(all(
-      display$.brain_label %in% ggseg.formats::atlas_display(atlas)
-    ))
-
-    explicit <- brain_label_anchors(atlas, label = "label")
-    expect_setequal(explicit$.brain_label, explicit$label)
-  })
-
-  it("rejects a column the atlas does not have", {
-    expect_error(
-      brain_label_anchors(ggseg.formats::dk(), label = "nope"),
-      "must name a column"
-    )
   })
 
   it("follows the same filtering as geom_brain()", {
-    atlas <- ggseg.formats::dk()
-    one <- brain_label_anchors(atlas, hemi = "left", view = "lateral")
+    anchors <- brain_label_anchors(
+      ggseg.formats::dk(),
+      hemi = "left",
+      view = "lateral"
+    )
 
-    expect_identical(unique(one$hemi), "left")
-    expect_identical(unique(one$view), "lateral")
+    expect_identical(unique(anchors$hemi), "left")
+    expect_identical(unique(anchors$view), "lateral")
   })
 })
 
 
 describe("geom_brain_text()", {
-  it("adds one text row per labelled region", {
-    atlas <- ggseg.formats::dk()
-    anchors <- brain_label_anchors(atlas, hemi = "left", view = "lateral")
+  drawn <- function(plot) {
+    built <- ggplot2::ggplot_build(plot)
+    built$data[[length(built$data)]]
+  }
 
-    built <- ggplot2::ggplot_build(
-      ggplot2::ggplot() +
-        geom_brain(atlas = atlas, hemi = "left", view = "lateral") +
-        geom_brain_text(atlas = atlas, hemi = "left", view = "lateral")
-    )
+  it("takes its atlas from the brain layer it follows", {
+    # The point of the layer: the plot already says which atlas it draws, and
+    # a label layer that disagreed with it would be drawing another brain.
+    plot <- ggplot2::ggplot() +
+      geom_brain(atlas = ggseg.formats::dk(), hemi = "left") +
+      geom_brain_text()
 
-    expect_identical(nrow(built$data[[length(built$data)]]), nrow(anchors))
+    anchors <- brain_label_anchors(ggseg.formats::dk(), hemi = "left")
+
+    expect_identical(nrow(drawn(plot)), nrow(anchors))
   })
 
-  it("matches the pattern on label, as the atlas verbs do", {
-    # `label` is the canonical matching key ecosystem-wide; `match_on` is the
-    # documented way to ask for the region text instead.
-    atlas <- ggseg.formats::dk()
+  it("takes the hemisphere and view with it", {
+    plot <- ggplot2::ggplot() +
+      geom_brain(atlas = ggseg.formats::dk(), hemi = "left", view = "lateral") +
+      geom_brain_text()
 
-    on_label <- brain_label_anchors(atlas, hemi = "left", pattern = "insula")
-    on_region <- brain_label_anchors(
-      atlas,
-      hemi = "left",
-      pattern = "superiorfrontal",
-      match_on = "region"
+    expect_identical(
+      nrow(drawn(plot)),
+      nrow(brain_label_anchors(
+        ggseg.formats::dk(),
+        hemi = "left",
+        view = "lateral"
+      ))
     )
-
-    expect_true(all(grepl("insula", on_label$label, ignore.case = TRUE)))
-    expect_identical(unique(on_region$.brain_label), "superior frontal")
   })
 
-  it("says what it matched against when nothing does", {
+  it("names only the regions in `data`", {
+    # Subsetting is ggplot2's job, done by handing a layer less data.
+    plot <- ggplot2::ggplot() +
+      geom_brain(atlas = ggseg.formats::dk(), hemi = "left") +
+      geom_brain_text(
+        data = data.frame(label = c("lh_insula", "lh_precuneus"))
+      )
+
+    expect_true(all(drawn(plot)$label %in% c("insula", "precuneus")))
+    expect_lt(nrow(drawn(plot)), 10)
+  })
+
+  it("accepts data keyed on region as well as label", {
+    plot <- ggplot2::ggplot() +
+      geom_brain(atlas = ggseg.formats::dk(), hemi = "left") +
+      geom_brain_text(data = data.frame(region = "insula"))
+
+    expect_gt(nrow(drawn(plot)), 0)
+    expect_true(all(drawn(plot)$label == "insula"))
+  })
+
+  it("writes what the mapping says, from the user's own column", {
+    plot <- ggplot2::ggplot() +
+      geom_brain(atlas = ggseg.formats::dk(), hemi = "left") +
+      geom_brain_text(
+        data = data.frame(label = "lh_insula", note = "look here"),
+        mapping = ggplot2::aes(label = .data$note)
+      )
+
+    expect_identical(unique(drawn(plot)$label), "look here")
+  })
+
+  it("writes the display name by default", {
+    plot <- ggplot2::ggplot() +
+      geom_brain(atlas = ggseg.formats::dk(), hemi = "left") +
+      geom_brain_text(data = data.frame(label = "lh_superiorfrontal"))
+
+    expect_identical(unique(drawn(plot)$label), "superior frontal")
+  })
+
+  it("says so when there is no atlas to label", {
     expect_error(
-      brain_label_anchors(ggseg.formats::dk(), pattern = "not a region"),
-      "No region"
+      ggplot2::ggplot_build(ggplot2::ggplot() + geom_brain_text()),
+      "atlas"
     )
+  })
+
+  it("says so when `data` is keyed on nothing the atlas knows", {
+    plot <- ggplot2::ggplot() +
+      geom_brain(atlas = ggseg.formats::dk()) +
+      geom_brain_text(data = data.frame(roi = "insula"))
+
+    expect_error(ggplot2::ggplot_build(plot), "no column in common")
+  })
+
+  it("warns when `data` names nothing the atlas draws", {
+    plot <- ggplot2::ggplot() +
+      geom_brain(atlas = ggseg.formats::dk()) +
+      geom_brain_text(data = data.frame(label = "not_a_label"))
+
+    expect_warning(ggplot2::ggplot_build(plot), "No region to label")
   })
 
   it("draws a box for geom_brain_label()", {
-    atlas <- ggseg.formats::dk()
-
-    text <- geom_brain_text(atlas, view = "lateral")
-    boxed <- geom_brain_label(atlas, view = "lateral")
-
-    expect_s3_class(text$geom, "GeomText")
-    expect_s3_class(boxed$geom, "GeomLabel")
+    expect_s3_class(geom_brain_text()$geom, "GeomText")
+    expect_s3_class(geom_brain_label()$geom, "GeomLabel")
   })
 })
