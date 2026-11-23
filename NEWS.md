@@ -78,6 +78,12 @@ figures, so read the breaking changes before upgrading.
   view, so `ggplot() + geom_brain(atlas = dk()) + geom_brain_text()` names
   every region it drew.
 
+- The label geoms gain `nudge_x`/`nudge_y`, in atlas units, for a region too
+  small for its name. A nudged label keeps a leader line back to its region
+  and turns to face away from it; an un-nudged one draws no line at all. The
+  line's gaps are `box.padding` and `point.padding`, and `min.segment.length`
+  is the length below which it is not drawn.
+
 - `geom_brain()` and `stat_brain()` gain `context_fill`, the colour of the
   context backdrop (default `"grey"`).
 
