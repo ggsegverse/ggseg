@@ -691,3 +691,97 @@ describe("an atlas whose geometry carries core columns", {
     expect_no_error(ggplot2::ggplot_build(p))
   })
 })
+
+describe("the brain is drawn whole", {
+  # The invariant the package exists to keep: however few regions carry data,
+  # every region of the atlas is still drawn, and the non-region anatomy (the
+  # medial wall, subcortical backdrop) is still drawn behind it. A plot that
+  # silently loses shapes reads as a brain with a hole in it, which is how
+  # ggsegverse/ggseg#210 was reported.
+  shapes <- function(p) {
+    built <- ggplot2::ggplot_build(p)
+    vapply(built$data, function(d) length(unique(d$group)), integer(1))
+  }
+
+  it("draws the same shapes however many regions carry data", {
+    atlas <- ggseg.formats::dk()
+    regions <- sort(unique(stats::na.omit(ggseg.formats::atlas_regions(atlas))))
+
+    bare <- shapes(ggplot2::ggplot() + geom_brain(atlas = atlas))
+    one <- shapes(
+      ggplot2::ggplot() +
+        geom_brain(
+          atlas = atlas,
+          data = data.frame(region = regions[1], value = 1),
+          ggplot2::aes(fill = value)
+        )
+    )
+    several <- shapes(
+      ggplot2::ggplot() +
+        geom_brain(
+          atlas = atlas,
+          data = data.frame(region = regions[1:3], value = 1:3),
+          ggplot2::aes(fill = value)
+        )
+    )
+
+    expect_identical(one, bare)
+    expect_identical(several, bare)
+  })
+
+  it("does not lose context geometry to a filter", {
+    # Not every view has context -- `superior` has none, because looking down
+    # on a brain there is no medial wall to see. The invariant is that a
+    # filter never drops context the unfiltered plot has, which is what broke
+    # in #210: `hemi` filtered on a column the context rows had not been
+    # given yet.
+    atlas <- ggseg.formats::dk()
+
+    for (hemi in c("left", "right")) {
+      counts <- shapes(
+        ggplot2::ggplot() + geom_brain(atlas = atlas, hemi = hemi)
+      )
+      expect_gt(counts[[1]], 0)
+    }
+    for (view in c("lateral", "medial", "inferior")) {
+      counts <- shapes(
+        ggplot2::ggplot() + geom_brain(atlas = atlas, view = view)
+      )
+      expect_gt(counts[[1]], 0)
+    }
+  })
+
+  it("draws the medial wall when one hemisphere is asked for", {
+    # The exact shape of ggsegverse/ggseg#210: `hemi = "right"` across both
+    # views drew the regions but no backdrop, leaving a hole in the medial
+    # view where the wall belongs.
+    atlas <- ggseg.formats::dk()
+
+    built <- ggplot2::ggplot_build(
+      ggplot2::ggplot() +
+        geom_brain(atlas = atlas, hemi = "right", view = c("lateral", "medial"))
+    )
+
+    expect_gt(nrow(built$data[[1]]), 0)
+  })
+
+  it("leaves no region unfilled", {
+    atlas <- ggseg.formats::dk()
+    regions <- sort(unique(stats::na.omit(ggseg.formats::atlas_regions(atlas))))
+
+    built <- ggplot2::ggplot_build(
+      ggplot2::ggplot() +
+        geom_brain(
+          atlas = atlas,
+          data = data.frame(region = regions[1:3], value = 1:3),
+          ggplot2::aes(fill = value)
+        )
+    )
+
+    # A region with no value is grey, not invisible: an NA fill would punch a
+    # hole in the outline exactly where a reader expects anatomy.
+    for (layer in built$data) {
+      expect_false(any(is.na(layer$fill)))
+    }
+  })
+})
