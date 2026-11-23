@@ -787,7 +787,7 @@ describe("the brain is drawn whole", {
     # A region with no value is grey, not invisible: an NA fill would punch a
     # hole in the outline exactly where a reader expects anatomy.
     for (layer in built$data) {
-      expect_false(any(is.na(layer$fill)))
+      expect_false(anyNA(layer$fill))
     }
   })
 })
