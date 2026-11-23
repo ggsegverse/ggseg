@@ -295,35 +295,43 @@ scanline_anchor <- function(x, y) {
 
   scanlines <- seq(min(y), max(y), length.out = 25L)
   scanlines <- scanlines[-c(1L, length(scanlines))]
-  best <- NULL
   nxt <- c(seq_along(x)[-1L], 1L)
 
-  for (line in scanlines) {
-    crosses <- (y <= line & y[nxt] > line) | (y[nxt] <= line & y > line)
-    if (!any(crosses)) {
-      next
-    }
-    at <- (line - y[crosses]) / (y[nxt][crosses] - y[crosses])
-    cuts <- sort(x[crosses] + at * (x[nxt][crosses] - x[crosses]))
-    if (length(cuts) < 2L) {
-      next
-    }
-    starts <- cuts[seq(1L, length(cuts) - 1L, by = 2L)]
-    ends <- cuts[seq(2L, length(cuts), by = 2L)]
-    widest <- which.max(ends - starts)
-    width <- ends[widest] - starts[widest]
-    if (is.null(best) || width > best$width) {
-      best <- list(
-        x = (starts[widest] + ends[widest]) / 2,
-        y = line,
-        width = width
-      )
-    }
+  runs <- lapply(scanlines, widest_run_at, x = x, y = y, nxt = nxt)
+  runs <- Filter(Negate(is.null), runs)
+  if (length(runs) == 0) {
+    return(list(mean(x), mean(y)))
   }
 
-  if (is.null(best)) {
-    list(mean(x), mean(y))
-  } else {
-    list(best$x, best$y)
+  widths <- vapply(runs, function(run) run$width, numeric(1))
+  best <- runs[[which.max(widths)]]
+  list(best$x, best$y)
+}
+
+#' The widest stretch of polygon one horizontal line crosses, or `NULL`
+#'
+#' A line can miss the polygon, or clip a single vertex, in which case there
+#' is no run to speak of.
+#' @noRd
+widest_run_at <- function(line, x, y, nxt) {
+  crosses <- (y <= line & y[nxt] > line) | (y[nxt] <= line & y > line)
+  if (!any(crosses)) {
+    return(NULL)
   }
+
+  at <- (line - y[crosses]) / (y[nxt][crosses] - y[crosses])
+  cuts <- sort(x[crosses] + at * (x[nxt][crosses] - x[crosses]))
+  if (length(cuts) < 2L) {
+    return(NULL)
+  }
+
+  starts <- cuts[seq(1L, length(cuts) - 1L, by = 2L)]
+  ends <- cuts[seq(2L, length(cuts), by = 2L)]
+  widest <- which.max(ends - starts)
+
+  list(
+    x = (starts[widest] + ends[widest]) / 2,
+    y = line,
+    width = ends[widest] - starts[widest]
+  )
 }
