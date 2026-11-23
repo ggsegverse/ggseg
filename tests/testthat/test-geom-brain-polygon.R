@@ -185,6 +185,20 @@ describe("prepare_polygon_atlas()", {
     expect_lt(max(context_rows), min(core_rows))
   })
 
+  it("keeps the medial wall when filtering on hemi (ggseg#210)", {
+    # Contextual geometry holds no `core` row, so the join leaves its `hemi`
+    # NA and `NA %in% "right"` is FALSE. Filtering before the hemisphere is
+    # inferred dropped the medial wall, so `hemi = "right"` drew no backdrop
+    # at all while `position_brain("right lateral")` drew one.
+    core_labels <- ggseg.formats::atlas_labels(dk())
+    flat <- prepare_polygon_atlas(dk(), hemi = "right")
+    context <- unique(flat$label[!flat$label %in% core_labels])
+
+    expect_length(context, 1)
+    expect_match(context, "^rh[_.]")
+    expect_false(anyNA(flat$hemi))
+  })
+
   it("keeps the stored order within context and within structures", {
     poly <- ggseg.formats::as_polygon_atlas(aseg())
     core_labels <- ggseg.formats::atlas_labels(poly)

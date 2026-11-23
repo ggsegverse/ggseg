@@ -466,6 +466,26 @@ prepare_polygon_atlas <- function(
     relationship = "many-to-many"
   )
 
+  # Before any filtering: contextual geometry (the medial wall) holds no `core`
+  # row, so the join leaves its `hemi` NA, and `NA %in% "right"` is FALSE. With
+  # this below the filter, `hemi = "right"` dropped the medial wall and then
+  # inferred a hemisphere for rows that had already gone (ggsegverse/ggseg#210).
+  atlas_type <- ggseg.formats::atlas_type(atlas)
+  flat$atlas <- ggseg.formats::atlas_name(atlas)
+  flat$type <- atlas_type
+
+  if (atlas_type == "cortical") {
+    if (!"hemi" %in% names(flat)) {
+      flat$hemi <- NA_character_
+    }
+    missing_hemi <- is.na(flat$hemi)
+    flat$hemi[missing_hemi] <- dplyr::case_when(
+      grepl("^lh[_.]", flat$label[missing_hemi]) ~ "left",
+      grepl("^rh[_.]", flat$label[missing_hemi]) ~ "right",
+      .default = NA_character_
+    )
+  }
+
   if (!is.null(view)) {
     avail <- unique(flat$view)
     invalid <- setdiff(view, avail)
@@ -490,22 +510,6 @@ prepare_polygon_atlas <- function(
 
   if (!context && "region" %in% names(flat)) {
     flat <- flat[!is.na(flat$region), , drop = FALSE]
-  }
-
-  atlas_type <- ggseg.formats::atlas_type(atlas)
-  flat$atlas <- ggseg.formats::atlas_name(atlas)
-  flat$type <- atlas_type
-
-  if (atlas_type == "cortical") {
-    if (!"hemi" %in% names(flat)) {
-      flat$hemi <- NA_character_
-    }
-    missing_hemi <- is.na(flat$hemi)
-    flat$hemi[missing_hemi] <- dplyr::case_when(
-      grepl("^lh[_.]", flat$label[missing_hemi]) ~ "left",
-      grepl("^rh[_.]", flat$label[missing_hemi]) ~ "right",
-      .default = NA_character_
-    )
   }
 
   # Draw order follows row order: feature ids increase in the order features

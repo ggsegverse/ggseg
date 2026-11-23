@@ -85,6 +85,11 @@ figures, so read the breaking changes before upgrading.
 - Requires R >= 4.2, which is the floor of `S7`, and so of `ggseg.formats`.
   The package advertised an older R than its own dependency could install on.
 
+- `geom_brain(hemi = ...)` draws the medial wall again. The hemisphere was
+  inferred from the `lh_`/`rh_` label prefix only after the filter had run, so
+  contextual geometry -- which carries no `core` row and so no `hemi` -- was
+  dropped before it could be assigned one (#210).
+
 - A mapped `fill` no longer colours the context backdrop. `aes(fill = label)`
   used to paint the whole silhouette as one enormous parcel, because context
   rows carry a `label` but no `region` (#182).
