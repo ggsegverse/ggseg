@@ -2,7 +2,6 @@
 
 export(GeomBrain)
 export(GeomBrainSf)
-export(LayerBrainText)
 export(StatBrain)
 export(annotate_brain)
 export(aseg)
