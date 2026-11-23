@@ -1,8 +1,9 @@
-# The label layer is the last one added, and `get_layer_data()` is ggplot2's
-# accessor for a layer's computed data -- `ggplot_build(p)$data` reaches into
-# a built object whose data is an S7 property in ggplot2 4.0.
+# The label layer is the last one added. `layer_data()` rather than
+# `get_layer_data()`: the latter arrived in ggplot2 4.0 and this package
+# declares `ggplot2 (>= 3.3)`, so CI installing the newest ggplot2 would have
+# hidden a floor the tests quietly broke.
 label_layer_data <- function(plot) {
-  ggplot2::get_layer_data(plot, i = length(plot$layers))
+  ggplot2::layer_data(plot, i = length(plot$layers))
 }
 
 
