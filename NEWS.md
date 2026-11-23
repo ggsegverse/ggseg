@@ -82,6 +82,11 @@ figures, so read the breaking changes before upgrading.
 
 ## Bug fixes
 
+- Filtering on `hemi` no longer deletes an atlas's backdrop. Context geometry
+  belongs to no hemisphere, so `aseg` and `tracula` lost their whole-brain
+  silhouette entirely, and a cortical atlas kept its medial wall only by the
+  `lh_`/`rh_` naming convention.
+
 - Requires R >= 4.2, which is the floor of `S7`, and so of `ggseg.formats`.
   The package advertised an older R than its own dependency could install on.
 

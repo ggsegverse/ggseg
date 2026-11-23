@@ -498,14 +498,24 @@ prepare_polygon_atlas <- function(
   }
 
   if (!is.null(hemi)) {
-    avail <- unique(flat$hemi)
+    # The atlas decides which hemispheres exist, not the geometry: inferring
+    # from a label prefix would let a `rh_` row in a left-only atlas pass for
+    # an available hemisphere and draw a region-less plot.
+    avail <- unique(stats::na.omit(ggseg.formats::atlas_core(atlas)$hemi))
     invalid <- setdiff(hemi, avail)
     if (length(invalid)) {
       cli::cli_abort(
         "Invalid hemisphere(s): {.val {invalid}}. Available: {.val {avail}}"
       )
     }
-    flat <- flat[flat$hemi %in% hemi, , drop = FALSE]
+    # Context geometry belongs to no hemisphere -- `aseg`'s and `tracula`'s
+    # whole-brain silhouette spans both, and a cortical atlas only gets a
+    # hemisphere for it by the `lh_`/`rh_` naming convention. Filtering on
+    # hemisphere must not delete anatomy that has none, or the brain is drawn
+    # with a hole in it (ggsegverse/ggseg#210).
+    is_context <- is.na(flat$hemi) &
+      (!"region" %in% names(flat) | is.na(flat$region))
+    flat <- flat[flat$hemi %in% hemi | is_context, , drop = FALSE]
   }
 
   if (!context && "region" %in% names(flat)) {

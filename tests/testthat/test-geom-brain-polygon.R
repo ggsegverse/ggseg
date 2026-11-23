@@ -697,7 +697,7 @@ describe("the brain is drawn whole", {
   # every region of the atlas is still drawn, and the non-region anatomy (the
   # medial wall, subcortical backdrop) is still drawn behind it. A plot that
   # silently loses shapes reads as a brain with a hole in it, which is how
-  # ggsegverse/ggseg#210 was reported.
+  # issue 210 was reported.
   shapes <- function(p) {
     built <- ggplot2::ggplot_build(p)
     vapply(built$data, function(d) length(unique(d$group)), integer(1))
@@ -732,22 +732,28 @@ describe("the brain is drawn whole", {
   it("does not lose context geometry to a filter", {
     # Not every view has context -- `superior` has none, because looking down
     # on a brain there is no medial wall to see. The invariant is that a
-    # filter never drops context the unfiltered plot has, which is what broke
-    # in #210: `hemi` filtered on a column the context rows had not been
-    # given yet.
-    atlas <- ggseg.formats::dk()
+    # filter never drops context the unfiltered plot has.
+    #
+    # Looping the bundled atlases is the point: #210 was fixed for `dk` by
+    # inferring a hemisphere from an `lh_`/`rh_` label prefix, which `aseg`
+    # and `tracula` do not have, so their whole-brain backdrop was still
+    # being deleted while a dk-only test called it fixed.
+    for (name in c("dk", "aseg", "tracula")) {
+      atlas <- getExportedValue("ggseg.formats", name)()
+      whole <- shapes(ggplot2::ggplot() + geom_brain(atlas = atlas))[[1]]
 
-    for (hemi in c("left", "right")) {
-      counts <- shapes(
-        ggplot2::ggplot() + geom_brain(atlas = atlas, hemi = hemi)
+      sided <- vapply(
+        c("left", "right"),
+        function(h) {
+          shapes(ggplot2::ggplot() + geom_brain(atlas = atlas, hemi = h))[[1]]
+        },
+        integer(1)
       )
-      expect_gt(counts[[1]], 0)
-    }
-    for (view in c("lateral", "medial", "inferior")) {
-      counts <- shapes(
-        ggplot2::ggplot() + geom_brain(atlas = atlas, view = view)
-      )
-      expect_gt(counts[[1]], 0)
+
+      # Every context shape survives into at least one hemisphere: a backdrop
+      # that spans both is kept twice, a sided one lands in its own.
+      expect_gte(sum(sided), whole)
+      expect_true(all(sided > 0))
     }
   })
 
