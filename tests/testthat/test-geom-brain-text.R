@@ -1,3 +1,11 @@
+# The label layer is the last one added, and `get_layer_data()` is ggplot2's
+# accessor for a layer's computed data -- `ggplot_build(p)$data` reaches into
+# a built object whose data is an S7 property in ggplot2 4.0.
+label_layer_data <- function(plot) {
+  ggplot2::get_layer_data(plot, i = length(plot$layers))
+}
+
+
 describe("brain_label_anchors()", {
   it("puts the anchor inside the region, not at its centroid", {
     # The whole reason this is not `mean(x), mean(y)`: a crescent region has
@@ -69,10 +77,7 @@ describe("brain_label_anchors()", {
 
 
 describe("geom_brain_text()", {
-  drawn <- function(plot) {
-    built <- ggplot2::ggplot_build(plot)
-    built$data[[length(built$data)]]
-  }
+  drawn <- label_layer_data
 
   it("takes its atlas from the brain layer it follows", {
     # The point of the layer: the plot already says which atlas it draws, and
@@ -368,10 +373,9 @@ describe("geom_brain_text(nudge_x=, nudge_y=)", {
   it("carries the recorded anchor through to the geom", {
     # ggplot2 drops any column the mapping does not claim, so the anchor only
     # survives because `default_label_mapping()` maps it.
-    built <- ggplot2::ggplot_build(
+    drawn <- label_layer_data(
       nudged_plot(nudge_x = c(0, -40), nudge_y = c(0, -30))
     )
-    drawn <- built$data[[length(built$data)]]
 
     expect_true(all(c("x_orig", "y_orig") %in% names(drawn)))
     expect_identical(drawn$x - drawn$x_orig, c(0, -40))
@@ -381,7 +385,7 @@ describe("geom_brain_text(nudge_x=, nudge_y=)", {
     # `merge()` returns rows in key order, so a nudge vector written against
     # the caller's own row order landed on the wrong labels: a region asked to
     # move up moved down instead, silently and only visibly in the render.
-    built <- ggplot2::ggplot_build(
+    drawn <- label_layer_data(
       ggplot2::ggplot() +
         geom_brain(
           atlas = ggseg.formats::dk(),
@@ -394,7 +398,6 @@ describe("geom_brain_text(nudge_x=, nudge_y=)", {
           nudge_y = c(60, -60)
         )
     )
-    drawn <- built$data[[length(built$data)]]
     moved <- stats::setNames(drawn$y - drawn$y_orig, drawn$label)
 
     expect_identical(moved[["superior frontal"]], 60)
@@ -404,7 +407,7 @@ describe("geom_brain_text(nudge_x=, nudge_y=)", {
   it("moves a region the same way in every view it is drawn in", {
     # One row written by the caller is one nudge, however many anchors that
     # row turns into.
-    built <- ggplot2::ggplot_build(
+    drawn <- label_layer_data(
       ggplot2::ggplot() +
         geom_brain(atlas = ggseg.formats::dk(), hemi = "left") +
         geom_brain_text(
@@ -412,15 +415,13 @@ describe("geom_brain_text(nudge_x=, nudge_y=)", {
           nudge_x = 25
         )
     )
-    drawn <- built$data[[length(built$data)]]
 
     expect_gt(nrow(drawn), 1)
     expect_identical(unique(drawn$x - drawn$x_orig), 25)
   })
 
   it("adds no anchor column when nothing is nudged", {
-    built <- ggplot2::ggplot_build(nudged_plot())
-    drawn <- built$data[[length(built$data)]]
+    drawn <- label_layer_data(nudged_plot())
 
     expect_false("x_orig" %in% names(drawn))
   })
