@@ -348,7 +348,7 @@ warn_sf_atlas <- function(atlas) {
   }
 
   lifecycle::deprecate_warn(
-    "2.3.0",
+    "3.0.0",
     I("Passing an sf-backed atlas to `geom_brain()`"),
     details = paste(
       "Convert it once with `ggseg.formats::as_polygon_atlas()`, or use",
