@@ -440,7 +440,7 @@ describe("geom_brain_text(nudge_x=, nudge_y=)", {
     # when these arguments were silently dropped, two plots differing only in
     # `segment.colour` and `segment.linewidth` rendered byte-identically.
     expect_brain_doppelganger(
-      "nudged label with a styled leader line",
+      "styled leader line",
       nudged_plot(
         nudge_x = c(0, -40),
         nudge_y = c(0, -30),
