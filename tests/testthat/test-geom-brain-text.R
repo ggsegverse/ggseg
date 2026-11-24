@@ -278,9 +278,40 @@ describe("the label geoms", {
     }
   })
 
+  it("takes the connector's colour and width as aesthetics", {
+    # Parameters would force every connector in a plot to look the same.
+    # As aesthetics they can be mapped, so one label can be accented and the
+    # rest left quiet.
+    for (geom in list(GeomBrainText, GeomBrainLabel)) {
+      expect_true(all(
+        c("segment.colour", "segment.linewidth") %in% geom$aesthetics()
+      ))
+    }
+  })
+
   it("keeps what it inherits from the geom it wraps", {
     expect_true("check_overlap" %in% GeomBrainText$parameters())
     expect_true("label.padding" %in% GeomBrainLabel$parameters())
+  })
+})
+
+
+describe("segment_colour()", {
+  it("falls back to the colour of the text it belongs to", {
+    # What makes the aesthetic optional: say nothing about the connector and
+    # it still matches its own label rather than turning up black.
+    quiet <- data.frame(colour = c("red", "blue"), segment.colour = NA)
+
+    expect_identical(segment_colour(quiet), c("red", "blue"))
+  })
+
+  it("uses its own colour where one is given", {
+    mixed <- data.frame(
+      colour = c("red", "blue"),
+      segment.colour = c(NA, "grey50")
+    )
+
+    expect_identical(segment_colour(mixed), c("red", "grey50"))
   })
 })
 
@@ -358,17 +389,17 @@ describe("makeContent.brain_leader()", {
 
 
 describe("geom_brain_text(nudge_x=, nudge_y=)", {
-  nudged_plot <- function(...) {
+  nudged_plot <- function(
+    ...,
+    data = data.frame(label = c("lh_insula", "lh_temporalpole"))
+  ) {
     ggplot2::ggplot() +
       geom_brain(
         atlas = ggseg.formats::dk(),
         hemi = "left",
         view = "lateral"
       ) +
-      geom_brain_text(
-        data = data.frame(label = c("lh_insula", "lh_temporalpole")),
-        ...
-      )
+      geom_brain_text(data = data, ...)
   }
 
   it("carries the recorded anchor through to the geom", {
@@ -431,6 +462,27 @@ describe("geom_brain_text(nudge_x=, nudge_y=)", {
     expect_brain_doppelganger(
       "nudged label with leader line",
       nudged_plot(nudge_x = c(0, -40), nudge_y = c(0, -30), size = 3)
+    )
+  })
+
+  it("accents one connector differently from another", {
+    # The reason these are aesthetics and not parameters.
+    expect_brain_doppelganger(
+      "accented connectors",
+      nudged_plot(
+        data = data.frame(
+          label = c("lh_insula", "lh_temporalpole"),
+          accent = c("firebrick", "grey60"),
+          weight = c(1.5, 0.4)
+        ),
+        mapping = ggplot2::aes(
+          segment.colour = .data$accent,
+          segment.linewidth = .data$weight
+        ),
+        nudge_x = c(-45, -40),
+        nudge_y = c(-45, -30),
+        size = 3
+      )
     )
   })
 

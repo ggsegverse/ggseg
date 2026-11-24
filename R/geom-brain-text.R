@@ -44,9 +44,31 @@
 #' @param ... Passed to [ggplot2::geom_text()] or [ggplot2::geom_label()]:
 #'   `size`, `colour`, `fontface` and the rest. The leader line takes
 #'   `box.padding` and `point.padding` (its gap from the text and from the
-#'   region), `min.segment.length` (below which it is not drawn at all),
-#'   `segment.colour` and `segment.linewidth`.
+#'   region) and `min.segment.length` (below which it is not drawn at all).
 #' @param inherit.aes Whether to inherit the plot's aesthetic mapping.
+#'
+#' @section Aesthetics:
+#'
+#' Everything [ggplot2::geom_text()] or [ggplot2::geom_label()] understands,
+#' and two of its own: `segment.colour` and `segment.linewidth`, the colour
+#' and width of the leader line. They are aesthetics rather than arguments so
+#' that one label can be accented and the rest left quiet:
+#'
+#' ```r
+#' geom_brain_text(
+#'   data = regions,
+#'   aes(segment.colour = accent, segment.linewidth = weight)
+#' )
+#' ```
+#'
+#' Neither is scaled, so map them to a column that already holds the values
+#' you want drawn, the way `scale_colour_identity()` works. A connector given
+#' no colour of its own takes the colour of its text.
+#'
+#' `label` is an aesthetic like any other. Unmapped it writes the region's
+#' display name, and mapping it writes whatever you say instead, including an
+#' expression over your own columns:
+#' `aes(label = sprintf("%s (%.1f)", region, estimate))`.
 #'
 #' @section Moving a label off a cramped region:
 #'

@@ -180,7 +180,8 @@ ggplot() +
 The gaps at either end are yours to set.
 `box.padding` is the gap next to the text and `point.padding` the gap next to the region, both in grid units.
 `min.segment.length` is the length below which no line is drawn at all, which keeps a barely-moved label from sprouting a useless stub.
-`segment.colour` and `segment.linewidth` style the line itself; left alone it takes the colour of the text.
+`segment.colour` and `segment.linewidth` style the line itself.
+Left alone, a line takes the colour of its own text, so you rarely have to think about it.
 
 ```{r}
 #| label: leader-style
@@ -207,6 +208,47 @@ ggplot() +
   coord_brain(clip = "off") +
   theme_brain2()
 ```
+
+Those last two are aesthetics rather than arguments, which matters when you want one label to shout and the others to stay quiet.
+Map them and each connector gets its own treatment.
+
+```{r}
+#| label: accent
+#| fig-alt: >
+#|   Left lateral view of the dk atlas with three names outside the
+#|   outline. Superior frontal is in dark red with a thick red line, while
+#|   temporal pole and lateral occipital are in grey with thin grey lines.
+#| fig-cap: >
+#|   One region accented and the others kept quiet, by mapping the
+#|   connector's colour and width.
+regions <- data.frame(
+  label = c("lh_superiorfrontal", "lh_temporalpole", "lh_lateraloccipital"),
+  accent = c("firebrick", "grey60", "grey60"),
+  weight = c(1.5, 0.4, 0.4)
+)
+
+ggplot() +
+  geom_brain(
+    atlas = dk(), hemi = "left", view = "lateral", show.legend = FALSE
+  ) +
+  geom_brain_text(
+    data = regions,
+    aes(
+      colour = accent,
+      segment.colour = accent,
+      segment.linewidth = weight
+    ),
+    nudge_x = c(-70, -40, 90),
+    nudge_y = c(70, -55, -20),
+    size = 3.5
+  ) +
+  scale_colour_identity() +
+  coord_brain(clip = "off") +
+  theme_brain2()
+```
+
+Neither of them is scaled, so map them to a column that already holds the values you want drawn.
+That is why `accent` above is a column of colour names rather than a grouping variable, and why the text colour needs `scale_colour_identity()` while the connector does not.
 
 ## When there is more than one view
 

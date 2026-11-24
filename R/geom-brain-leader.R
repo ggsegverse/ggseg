@@ -37,7 +37,7 @@ makeContent.brain_leader <- function(x) {
       y1 = grid::unit(label_y[drawn] - unit_y * box_padding, "mm"),
       gp = grid::gpar(
         col = recycle_to(x$colour, length(drawn))[drawn],
-        lwd = x$linewidth * ggplot2::.pt
+        lwd = recycle_to(x$linewidth, length(drawn))[drawn] * ggplot2::.pt
       )
     ))
   )
@@ -47,9 +47,7 @@ makeContent.brain_leader <- function(x) {
 connector_params <- c(
   "box.padding",
   "point.padding",
-  "min.segment.length",
-  "segment.colour",
-  "segment.linewidth"
+  "min.segment.length"
 )
 
 #' Geoms that draw a leader line back to the region they name
@@ -69,10 +67,15 @@ brain_text_geom <- function(parent, name) {
   ggproto(
     name,
     parent,
+    # `segment.colour` and `segment.linewidth` are aesthetics rather than
+    # parameters, so a figure can accent one label's connector differently
+    # from another's. `NA` colour means "whatever colour the text is".
     default_aes = {
       defaults <- parent$default_aes
       defaults$hjust <- NA
       defaults$vjust <- NA
+      defaults$segment.colour <- NA
+      defaults$segment.linewidth <- 0.4
       defaults
     },
     # ggplot2 reads a geom's parameters off `draw_group` whenever `draw_panel`
@@ -93,8 +96,6 @@ brain_text_geom <- function(parent, name) {
       box.padding = grid::unit(0.3, "lines"),
       point.padding = grid::unit(0.15, "lines"),
       min.segment.length = grid::unit(0.5, "lines"),
-      segment.colour = NULL,
-      segment.linewidth = 0.4,
       ...
     ) {
       nudged <- all(c("x_orig", "y_orig") %in% names(data))
@@ -117,9 +118,7 @@ brain_text_geom <- function(parent, name) {
           coord,
           box.padding = box.padding,
           point.padding = point.padding,
-          min.segment.length = min.segment.length,
-          segment.colour = segment.colour,
-          segment.linewidth = segment.linewidth
+          min.segment.length = min.segment.length
         ),
         text
       )
@@ -161,9 +160,7 @@ brain_leader_grob <- function(
   coord,
   box.padding,
   point.padding,
-  min.segment.length,
-  segment.colour,
-  segment.linewidth
+  min.segment.length
 ) {
   ends <- coord$transform(
     data.frame(
@@ -183,10 +180,19 @@ brain_leader_grob <- function(
     box_padding = as_padding_unit(box.padding),
     point_padding = as_padding_unit(point.padding),
     min_length = as_padding_unit(min.segment.length),
-    colour = segment.colour %||% data$colour,
-    linewidth = segment.linewidth,
+    colour = segment_colour(data),
+    linewidth = data$segment.linewidth,
     cl = "brain_leader"
   )
+}
+
+#' A connector with no colour of its own takes the colour of its text
+#'
+#' Which is what makes the aesthetic optional: a figure that never mentions
+#' `segment.colour` still gets a line that matches the label it belongs to.
+#' @noRd
+segment_colour <- function(data) {
+  ifelse(is.na(data$segment.colour), data$colour, data$segment.colour)
 }
 
 #' Accept a bare number as millimetres, the way ggplot2 sizes things
