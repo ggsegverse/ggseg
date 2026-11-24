@@ -109,7 +109,7 @@ Neither is scaled, so map them to a column that already holds the values
 you want drawn, the way \code{scale_colour_identity()} works. A connector given
 no colour of its own takes the colour of its text.
 
-\code{label} is an aesthetic like any other. Unmapped it writes the region's
+\code{label} is an aesthetic like any other. Left alone it writes the region's
 display name, and mapping it writes whatever you say instead, including an
 expression over your own columns:
 \code{aes(label = sprintf("\%s (\%.1f)", region, estimate))}.
