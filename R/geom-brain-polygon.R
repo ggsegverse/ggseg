@@ -235,7 +235,16 @@ LayerBrain <- ggproto(
       }
     }
 
-    has_data <- !inherits(dt, "waiver") && is.data.frame(dt) && nrow(dt) > 0
+    # The backdrop layer is built with `data = NULL`, which ggplot2 reads as
+    # "inherit the plot's data" -- `inherit.aes = FALSE` does not stop that. It
+    # has no user data by construction, so say so rather than joining the
+    # plot's data against context rows and reporting every row as unmatched
+    # (ggsegverse/ggseg#217).
+    is_context <- identical(self$brain_rows, "context")
+    has_data <- !is_context &&
+      !inherits(dt, "waiver") &&
+      is.data.frame(dt) &&
+      nrow(dt) > 0
 
     zoom_spec <- if (is_polygon_position(self$brain_position)) {
       self$brain_position$zoom
@@ -266,10 +275,31 @@ LayerBrain <- ggproto(
       # No user data: drive the stat with the atlas's own identity rows so its
       # columns are available for aesthetics like aes(fill = label) and for
       # faceting on an atlas column; the atlas draw order is preserved (reorder
-      # off).
-      dt <- unique(flat[, atlas_cols, drop = FALSE])
+      # off). An emptied `data` takes this branch too, and its columns must
+      # survive or a mapping onto them fails to evaluate (ggsegverse/ggseg#217).
+      identity_rows <- unique(flat[, atlas_cols, drop = FALSE])
+      dt <- if (!is_context && is.data.frame(dt)) {
+        dplyr::bind_rows(dt[0, , drop = FALSE], identity_rows)
+      } else {
+        identity_rows
+      }
     }
 
+    # The backdrop belongs to no hemisphere on a slice atlas, so faceting on
+    # `hemi` would file the whole silhouette into an unlabelled NA panel and
+    # leave the parcels with nothing behind them. Dropping a facet column the
+    # backdrop has no value for makes ggplot2 draw it behind every panel
+    # (ggsegverse/ggseg#217).
+    if (is_context) {
+      facet_vars <- intersect(plot$facet$vars(), names(dt))
+      empty <- vapply(facet_vars, function(v) all(is.na(dt[[v]])), logical(1))
+      dt[facet_vars[empty]] <- NULL
+    }
+
+    # Worked out once, here, and handed to the stat. `label` is both a ggplot2
+    # aesthetic and the atlas join key, so recomputing the keys from the
+    # computed aesthetics would join on a user `aes(label = )` holding text
+    # (ggsegverse/ggseg#217).
     keys <- intersect(brain_join_keys(), intersect(names(dt), names(flat)))
     if (length(keys) == 0) {
       cli::cli_abort(c(
@@ -306,6 +336,7 @@ LayerBrain <- ggproto(
     self$stat_params$reorder <- has_data
     self$stat_params$has_data <- has_data
     self$stat_params$facet_atlas_cols <- facet_atlas_cols
+    self$stat_params$keys <- keys
 
     dt
   }
@@ -568,14 +599,17 @@ warn_unmatched_polygon_data <- function(data, flat, by) {
   if (nrow(unmatched) == 0) {
     return(invisible(NULL))
   }
-  cli::cli_warn(c(
-    "Some data not merged properly.",
-    "i" = "Check for naming errors in {.arg data}:",
-    " " = paste(
-      utils::capture.output(print(dplyr::as_tibble(unmatched))),
-      collapse = "\n"
-    )
-  ))
+  cli::cli_warn(
+    c(
+      "Some data not merged properly.",
+      "i" = "Check for naming errors in {.arg data}:",
+      " " = paste(
+        utils::capture.output(print(dplyr::as_tibble(unmatched))),
+        collapse = "\n"
+      )
+    ),
+    class = "ggseg_unmatched_data"
+  )
   invisible(NULL)
 }
 

@@ -104,6 +104,24 @@ figures, so read the breaking changes before upgrading.
 
 ## Bug fixes
 
+- A `label` aesthetic no longer silently loses every value. `label` is both a
+  ggplot2 aesthetic and the atlas join key; the keys are now resolved once and
+  handed to the stat (#217).
+
+- `facet_wrap(~hemi)` on a slice atlas (`aseg`, `suit`, `tracula`) keeps the
+  brain outline behind every panel instead of filing it into an unlabelled
+  `NA` panel (#217).
+
+- "Some data not merged properly" no longer fires on correct data: the context
+  backdrop no longer inherits the plot's data (#217). The warning now carries
+  the condition class `ggseg_unmatched_data`.
+
+- A zero-row `data` draws the bare atlas instead of failing on the mapped
+  column (#217).
+
+- `brain_join()` auto-detects `by` as the atlas join keys only, not every
+  shared column name, matching `geom_brain()` (#217).
+
 - Filtering on `hemi` no longer deletes an atlas's backdrop. Context geometry
   belongs to no hemisphere, so `aseg` and `tracula` lost their whole-brain
   silhouette entirely, and a cortical atlas kept its medial wall only by the
