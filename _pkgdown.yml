@@ -17,6 +17,8 @@ navbar:
           href: articles/ggseg.html
         - text: External Data
           href: articles/external-data.html
+        - text: Labelling Regions
+          href: articles/labelling-regions.html
         - text: -------
         - text: Advanced Usage
         - text: How geom_brain() works
@@ -34,6 +36,7 @@ articles:
     contents:
       - ggseg
       - external-data
+      - labelling-regions
 
   - title: Advanced Usage
     contents:
