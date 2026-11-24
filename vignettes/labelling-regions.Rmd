@@ -38,10 +38,16 @@ You do not say any of it twice, and the labels cannot drift onto a different bra
 
 ```{r}
 #| label: label-everything
-#| fig-alt: "Left lateral view of the dk atlas with all 34 region names written across it in small text. Several names overlap where regions are narrow."
-#| fig-cap: "Every region named at once. It works, and it shows you why you will usually want fewer."
+#| fig-alt: >
+#|   Left lateral view of the dk atlas with all 34 region names written
+#|   across it in small text. Several names overlap where regions are narrow.
+#| fig-cap: >
+#|   Every region named at once. It works, and it shows you why you will
+#|   usually want fewer.
 ggplot() +
-  geom_brain(atlas = dk(), hemi = "left", view = "lateral", show.legend = FALSE) +
+  geom_brain(
+    atlas = dk(), hemi = "left", view = "lateral", show.legend = FALSE
+  ) +
   geom_brain_text(size = 2.5) +
   theme_brain2()
 ```
@@ -59,10 +65,15 @@ Hand the label layer a data frame holding the regions you want named, keyed on `
 
 ```{r}
 #| label: label-some
-#| fig-alt: "Left lateral view of the dk atlas with only two regions named: insula and precentral, each written on its own region."
-#| fig-cap: "Two names instead of thirty-four, chosen by handing the layer less data."
+#| fig-alt: >
+#|   Left lateral view of the dk atlas with only two regions named: insula
+#|   and precentral, each written on its own region.
+#| fig-cap: >
+#|   Two names instead of thirty-four, chosen by handing the layer less data.
 ggplot() +
-  geom_brain(atlas = dk(), hemi = "left", view = "lateral", show.legend = FALSE) +
+  geom_brain(
+    atlas = dk(), hemi = "left", view = "lateral", show.legend = FALSE
+  ) +
   geom_brain_text(
     data = data.frame(label = c("lh_insula", "lh_precentral")),
     size = 4
@@ -75,7 +86,9 @@ Map `label` to whatever the data carries.
 
 ```{r}
 #| label: label-mapping
-#| fig-alt: "Left lateral view of the dk atlas where the insula is annotated with the text p < .001 and the precentral gyrus with n.s."
+#| fig-alt: >
+#|   Left lateral view of the dk atlas where the insula is annotated with the
+#|   text p < .001 and the precentral gyrus with n.s.
 #| fig-cap: "The text is whatever your data says, not necessarily the anatomy."
 findings <- data.frame(
   label = c("lh_insula", "lh_precentral"),
@@ -83,7 +96,9 @@ findings <- data.frame(
 )
 
 ggplot() +
-  geom_brain(atlas = dk(), hemi = "left", view = "lateral", show.legend = FALSE) +
+  geom_brain(
+    atlas = dk(), hemi = "left", view = "lateral", show.legend = FALSE
+  ) +
   geom_brain_text(data = findings, aes(label = note), size = 4) +
   theme_brain2()
 ```
@@ -107,10 +122,18 @@ The leader line back to the region and the justification both follow from the nu
 
 ```{r}
 #| label: nudge
-#| fig-alt: "Left lateral view of the dk atlas with three names placed outside the brain outline: superior frontal above left, temporal pole below left, lateral occipital to the right. A thin line runs from each name to its region."
-#| fig-cap: "Three names nudged clear of the outline. Each turns to face away from its region, and each keeps a line back to it."
+#| fig-alt: >
+#|   Left lateral view of the dk atlas with three names placed outside the
+#|   brain outline: superior frontal above left, temporal pole below left,
+#|   lateral occipital to the right. A thin line runs from each name to its
+#|   region.
+#| fig-cap: >
+#|   Three names nudged clear of the outline. Each turns to face away from
+#|   its region, and each keeps a line back to it.
 ggplot() +
-  geom_brain(atlas = dk(), hemi = "left", view = "lateral", show.legend = FALSE) +
+  geom_brain(
+    atlas = dk(), hemi = "left", view = "lateral", show.legend = FALSE
+  ) +
   geom_brain_text(
     data = data.frame(
       label = c("lh_superiorfrontal", "lh_temporalpole", "lh_lateraloccipital")
@@ -131,10 +154,17 @@ Leave one at `0` and that label is drawn plainly on its region with no line at a
 
 ```{r}
 #| label: nudge-some
-#| fig-alt: "Left lateral view of the dk atlas where insula is written directly on its region with no line, while temporal pole sits below the outline with a line running back to it."
-#| fig-cap: "A label left at zero gets no line. The connector appears because something moved, not because you asked for it."
+#| fig-alt: >
+#|   Left lateral view of the dk atlas where insula is written directly on
+#|   its region with no line, while temporal pole sits below the outline with
+#|   a line running back to it.
+#| fig-cap: >
+#|   A label left at zero gets no line. The connector appears because
+#|   something moved, not because you asked for it.
 ggplot() +
-  geom_brain(atlas = dk(), hemi = "left", view = "lateral", show.legend = FALSE) +
+  geom_brain(
+    atlas = dk(), hemi = "left", view = "lateral", show.legend = FALSE
+  ) +
   geom_brain_text(
     data = data.frame(label = c("lh_insula", "lh_temporalpole")),
     nudge_x = c(0, -40),
@@ -154,10 +184,17 @@ The gaps at either end are yours to set.
 
 ```{r}
 #| label: leader-style
-#| fig-alt: "Left lateral view of the dk atlas with superior temporal named in a boxed label below the brain, joined by a grey line with a wide gap at both ends."
-#| fig-cap: "A boxed label with roomier padding and a grey line, using geom_brain_label()."
+#| fig-alt: >
+#|   Left lateral view of the dk atlas with superior temporal named in a
+#|   boxed label below the brain, joined by a grey line with a wide gap at
+#|   both ends.
+#| fig-cap: >
+#|   A boxed label with roomier padding and a grey line, using
+#|   geom_brain_label().
 ggplot() +
-  geom_brain(atlas = dk(), hemi = "left", view = "lateral", show.legend = FALSE) +
+  geom_brain(
+    atlas = dk(), hemi = "left", view = "lateral", show.legend = FALSE
+  ) +
   geom_brain_label(
     data = data.frame(label = "lh_superiortemporal"),
     nudge_x = -30,
@@ -179,8 +216,12 @@ One row of your data is one nudge, however many anchors that row turns into, so 
 
 ```{r}
 #| label: multi-view
-#| fig-alt: "Four views of the left hemisphere side by side. The insula is named in the three views that show it, each name nudged downwards by the same amount, and left unnamed in the view where it is hidden."
-#| fig-cap: "One written row, one nudge, applied in every view that draws the region."
+#| fig-alt: >
+#|   Four views of the left hemisphere side by side. The insula is named in
+#|   the three views that show it, each name nudged downwards by the same
+#|   amount, and left unnamed in the view where it is hidden.
+#| fig-cap: >
+#|   One written row, one nudge, applied in every view that draws the region.
 #| fig.height: 3
 ggplot() +
   geom_brain(atlas = dk(), hemi = "left", show.legend = FALSE) +
