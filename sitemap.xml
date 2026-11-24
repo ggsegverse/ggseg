@@ -8,6 +8,7 @@
 <url><loc>https://ggsegverse.github.io/ggseg/articles/ggseg.html</loc></url>
 <url><loc>https://ggsegverse.github.io/ggseg/articles/how-geom-brain-works.html</loc></url>
 <url><loc>https://ggsegverse.github.io/ggseg/articles/index.html</loc></url>
+<url><loc>https://ggsegverse.github.io/ggseg/articles/labelling-regions.html</loc></url>
 <url><loc>https://ggsegverse.github.io/ggseg/articles/positioning-views.html</loc></url>
 <url><loc>https://ggsegverse.github.io/ggseg/authors.html</loc></url>
 <url><loc>https://ggsegverse.github.io/ggseg/copilot-instructions.html</loc></url>
@@ -19,6 +20,7 @@
 <url><loc>https://ggsegverse.github.io/ggseg/reference/brain_test_plot.html</loc></url>
 <url><loc>https://ggsegverse.github.io/ggseg/reference/coord_brain.html</loc></url>
 <url><loc>https://ggsegverse.github.io/ggseg/reference/geom_brain_sf.html</loc></url>
+<url><loc>https://ggsegverse.github.io/ggseg/reference/geom_brain_text.html</loc></url>
 <url><loc>https://ggsegverse.github.io/ggseg/reference/ggbrain.html</loc></url>
 <url><loc>https://ggsegverse.github.io/ggseg/reference/ggseg.html</loc></url>
 <url><loc>https://ggsegverse.github.io/ggseg/reference/index.html</loc></url>

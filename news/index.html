@@ -9,7 +9,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">ggseg</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">2.2.1.9020</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">2.2.1.9021</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -24,6 +24,7 @@
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><h6 class="dropdown-header" data-toc-skip>Getting Started</h6></li>
     <li><a class="dropdown-item" href="../articles/ggseg.html">Introduction</a></li>
     <li><a class="dropdown-item" href="../articles/external-data.html">External Data</a></li>
+    <li><a class="dropdown-item" href="../articles/labelling-regions.html">Labelling Regions</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>Advanced Usage</h6></li>
     <li><a class="dropdown-item" href="../articles/how-geom-brain-works.html">How geom_brain() works</a></li>
@@ -71,7 +72,9 @@
 </ul></div>
 <div class="section level3">
 <h3 id="new-features-development-version">New features<a class="anchor" aria-label="anchor" href="#new-features-development-version"></a></h3>
-<ul><li><p><code><a href="../reference/ggbrain.html">geom_brain()</a></code> and <code><a href="../reference/stat_brain.html">stat_brain()</a></code> gain <code>context_fill</code>, the colour of the context backdrop (default <code>"grey"</code>).</p></li>
+<ul><li><p><code><a href="../reference/geom_brain_text.html">geom_brain_text()</a></code> and <code><a href="../reference/geom_brain_text.html">geom_brain_label()</a></code> write region names onto a brain, working out where each one goes. The anchor is the middle of the widest run of region a horizontal line crosses, not the centroid: a crescent region has its centroid outside itself, which would print the name on a neighbour, and that is 9% of <code>dk</code>’s shapes and 41% of <code>tracula</code>’s. Name the regions a figure is about by handing the layer <code>data</code> holding them, keyed on <code>label</code> or <code>region</code>, as any other ggplot2 layer takes a subset. Added after a <code><a href="../reference/ggbrain.html">geom_brain()</a></code> layer it takes that layer’s atlas, layout, hemisphere and view, so <code>ggplot() + geom_brain(atlas = dk()) + geom_brain_text()</code> names every region it drew.</p></li>
+<li><p>The label geoms gain <code>nudge_x</code>/<code>nudge_y</code>, in atlas units, for a region too small for its name. A nudged label keeps a leader line back to its region and turns to face away from it; a label left where it is draws no line. The line’s gaps are <code>box.padding</code> and <code>point.padding</code>, and <code>min.segment.length</code> is the length below which it is not drawn.</p></li>
+<li><p><code><a href="../reference/ggbrain.html">geom_brain()</a></code> and <code><a href="../reference/stat_brain.html">stat_brain()</a></code> gain <code>context_fill</code>, the colour of the context backdrop (default <code>"grey"</code>).</p></li>
 <li><p>New <code><a href="../reference/brain_layer_data.html">brain_layer_data()</a></code> returns a brain plot’s region data whatever the layer order, with <code>context = TRUE</code> for the backdrop.</p></li>
 <li><p>The read-only atlas accessors from <code>ggseg.formats</code> are re-exported, so <code><a href="https://ggsegverse.github.io/ggseg.formats/reference/atlas_palette.html">atlas_palette()</a></code>, <code><a href="https://ggsegverse.github.io/ggseg.formats/reference/atlas_regions.html">atlas_regions()</a></code> and their siblings work after <code><a href="https://ggsegverse.github.io/ggseg/">library(ggseg)</a></code> without attaching <code>ggseg.formats</code>. The atlas-editing verbs stay in <code>ggseg.extra</code>. Requires <code>ggseg.formats (&gt;= 0.0.4.9015)</code> (<a href="https://github.com/ggsegverse/ggseg/issues/183" class="external-link">#183</a>).</p></li>
 <li><p><code><a href="../reference/stat_brain.html">stat_brain()</a></code> and <code>StatBrain</code>: the stat-first spelling of <code><a href="../reference/ggbrain.html">geom_brain()</a></code>.</p></li>

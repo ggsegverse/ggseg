@@ -93,6 +93,27 @@ upgrading.
 
 ### New features
 
+- [`geom_brain_text()`](https://ggsegverse.github.io/ggseg/reference/geom_brain_text.md)
+  and
+  [`geom_brain_label()`](https://ggsegverse.github.io/ggseg/reference/geom_brain_text.md)
+  write region names onto a brain, working out where each one goes. The
+  anchor is the middle of the widest run of region a horizontal line
+  crosses, not the centroid: a crescent region has its centroid outside
+  itself, which would print the name on a neighbour, and that is 9% of
+  `dk`’s shapes and 41% of `tracula`’s. Name the regions a figure is
+  about by handing the layer `data` holding them, keyed on `label` or
+  `region`, as any other ggplot2 layer takes a subset. Added after a
+  [`geom_brain()`](https://ggsegverse.github.io/ggseg/reference/ggbrain.md)
+  layer it takes that layer’s atlas, layout, hemisphere and view, so
+  `ggplot() + geom_brain(atlas = dk()) + geom_brain_text()` names every
+  region it drew.
+
+- The label geoms gain `nudge_x`/`nudge_y`, in atlas units, for a region
+  too small for its name. A nudged label keeps a leader line back to its
+  region and turns to face away from it; a label left where it is draws
+  no line. The line’s gaps are `box.padding` and `point.padding`, and
+  `min.segment.length` is the length below which it is not drawn.
+
 - [`geom_brain()`](https://ggsegverse.github.io/ggseg/reference/ggbrain.md)
   and
   [`stat_brain()`](https://ggsegverse.github.io/ggseg/reference/stat_brain.md)

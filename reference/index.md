@@ -4,6 +4,9 @@
 
 Core geom and positioning for brain plots
 
+- [`geom_brain_text()`](https://ggsegverse.github.io/ggseg/reference/geom_brain_text.md)
+  [`geom_brain_label()`](https://ggsegverse.github.io/ggseg/reference/geom_brain_text.md)
+  : Label brain regions
 - [`geom_brain()`](https://ggsegverse.github.io/ggseg/reference/ggbrain.md)
   : Plot brain atlas regions
 - [`stat_brain()`](https://ggsegverse.github.io/ggseg/reference/stat_brain.md)
