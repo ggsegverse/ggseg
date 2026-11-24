@@ -35,7 +35,8 @@ StatBrain <- ggproto(
     "flat",
     "reorder",
     "has_data",
-    "facet_atlas_cols"
+    "facet_atlas_cols",
+    "keys"
   ),
   # `na.rm` is the standard stat switch for dropping missing values (used by the
   # base `Stat$compute_layer()`'s `remove_missing()`); it does NOT touch
@@ -49,6 +50,7 @@ StatBrain <- ggproto(
     reorder = TRUE,
     has_data = TRUE,
     facet_atlas_cols = character(0),
+    keys = character(0),
     na.rm = FALSE
   ) {
     if (is.null(flat)) {
@@ -61,7 +63,14 @@ StatBrain <- ggproto(
     # per panel rather than replicating it; faceting on a user column replicates
     # the whole atlas. This mirrors the pre-StatBrain contract.
     flat <- subset_flat_to_facet(flat, data, facet_atlas_cols)
-    join_brain_values(data, flat, fun, reorder = reorder, has_data = has_data)
+    join_brain_values(
+      data,
+      flat,
+      fun,
+      keys,
+      reorder = reorder,
+      has_data = has_data
+    )
   }
 )
 
@@ -162,6 +171,10 @@ atlas_metadata_cols <- function(flat) {
 #' @param data One facet panel's user data, with computed aesthetics.
 #' @param flat The flattened atlas geometry from [prepare_polygon_atlas()].
 #' @param fun Aggregating function applied to numeric aesthetics per region.
+#' @param keys The join keys, resolved once in `LayerBrain$setup_layer()` from
+#'   the raw `data`'s columns. Not re-derived here: `label` is a ggplot2
+#'   aesthetic as well as the canonical atlas key, so a user
+#'   `aes(label = <text>)` would otherwise be mistaken for one.
 #' @param reorder When `TRUE`, reassign the polygon draw order to follow the
 #'   data row order (ggsegverse/ggseg#162). Set `FALSE` when the data is just
 #'   the atlas's own identity rows (no user data), so the atlas draw order is
@@ -177,11 +190,10 @@ join_brain_values <- function(
   data,
   flat,
   fun,
+  keys,
   reorder = TRUE,
   has_data = TRUE
 ) {
-  keys <- intersect(brain_join_keys(), intersect(names(data), names(flat)))
-
   if (length(keys) == 0) {
     flat$group <- flat$.feature_id
     return(flat)

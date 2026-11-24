@@ -26,6 +26,28 @@ describe("brain_join", {
     )
   })
 
+  it("joins only on atlas keys, not every shared column", {
+    skip_if_not_installed("sf")
+    atlas <- as.data.frame(dk())
+    skip_if_not("lobe" %in% names(atlas))
+    # `lobe` is shared but is not a join key: treating it as one matched only
+    # the regions whose lobe happened to agree, and dropped the rest.
+    single <- data.frame(region = regs[1:3], lobe = "frontal", p = 1:3)
+    result <- suppressMessages(brain_join(single, dk()))
+    expect_identical(nrow(result), nrow(atlas))
+    expect_identical(
+      sum(!is.na(result$p)),
+      sum(atlas$region %in% single$region)
+    )
+  })
+
+  it("errors when data shares no join key with the atlas", {
+    expect_error(
+      brain_join(data.frame(lobe = "frontal", p = 1), dk()),
+      "no columns in common"
+    )
+  })
+
   it("respects explicit by argument", {
     skip_if_not_installed("sf")
     single <- some_data[some_data$grp == "G1", ]

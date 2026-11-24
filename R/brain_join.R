@@ -39,7 +39,20 @@ brain_join <- function(data, atlas, by = NULL) {
   }
 
   if (is.null(by)) {
-    by <- names(data)[names(data) %in% names(atlas)]
+    # Only the atlas join keys, not every shared name: an incidental shared
+    # classification column (e.g. `lobe`) would otherwise become a join key and
+    # silently drop most of the matches (ggsegverse/ggseg#217). Same keys
+    # `geom_brain()` uses.
+    by <- intersect(brain_join_keys(), intersect(names(data), names(atlas)))
+    if (length(by) == 0) {
+      cli::cli_abort(c(
+        "{.arg data} has no columns in common with {.arg atlas}.",
+        "i" = paste0(
+          "Need {.field label} or {.field region} ",
+          "(and optionally {.field hemi})."
+        )
+      ))
+    }
     cli::cli_inform("Merging atlas and data by {.field {by}}.")
   }
 

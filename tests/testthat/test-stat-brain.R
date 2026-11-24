@@ -93,7 +93,7 @@ describe("join_brain_values()", {
   it("keeps every atlas polygon and leaves unmatched regions NA", {
     reg <- sort(unique(ggseg.formats::atlas_regions(dk())))[1]
     d <- data.frame(region = reg, fill = 5)
-    j <- join_brain_values(d, flat, mean)
+    j <- join_brain_values(d, flat, mean, "region")
     expect_identical(nrow(j), nrow(flat))
     expect_identical(
       unique(j$fill[j$region %in% reg & !is.na(j$region)]),
@@ -105,13 +105,13 @@ describe("join_brain_values()", {
   it("joins by label when data carries label but not region", {
     lbl <- sort(unique(ggseg.formats::atlas_labels(dk())))[1]
     d <- data.frame(label = lbl, fill = 1.5)
-    j <- join_brain_values(d, flat, mean)
+    j <- join_brain_values(d, flat, mean, "label")
     expect_identical(unique(j$fill[j$label %in% lbl]), 1.5)
   })
 
   it("returns the bare atlas when the data has no join keys", {
     d <- data.frame(other = 1)
-    j <- join_brain_values(d, flat, mean)
+    j <- join_brain_values(d, flat, mean, character(0))
     expect_identical(nrow(j), nrow(flat))
     expect_identical(j$group, j$.feature_id)
   })
@@ -121,7 +121,7 @@ describe("join_brain_values()", {
       region = sort(unique(ggseg.formats::atlas_regions(dk())))[1],
       fill = 1
     )
-    j <- join_brain_values(d, flat, mean)
+    j <- join_brain_values(d, flat, mean, "region")
     expect_identical(j$group, j$.feature_id)
   })
 })
@@ -288,6 +288,37 @@ describe("faceting on an atlas column subsets the atlas (not replicate)", {
     )
     expect_gt(length(per), 1)
     expect_true(all(per < nrow(flat)))
+  })
+
+  it("keeps the backdrop in every panel of a slice atlas (#217)", {
+    # dk()'s context carries a hemisphere (inferred from the lh_/rh_ label
+    # prefix), so only a slice atlas exposes this: aseg()'s backdrop belongs to
+    # no hemisphere, and faceting on `hemi` filed the whole silhouette into an
+    # extra, unlabelled NA panel -- leaving the parcels with nothing behind
+    # them. Reads the *context* layer: panel_rows() above would not notice.
+    atlas <- ggseg.formats::aseg()
+    flat <- prepare_polygon_atlas(ggseg.formats::as_polygon_atlas(atlas))
+    context_rows <- is.na(flat$region)
+    skip_if_not(
+      any(context_rows) && all(is.na(flat$hemi[context_rows])),
+      "aseg()'s context geometry carries a hemisphere"
+    )
+
+    p <- ggplot2::ggplot() +
+      geom_brain(atlas = atlas, show.legend = FALSE) +
+      ggplot2::facet_wrap(~hemi)
+    layout <- ggplot2::ggplot_build(p)$layout$layout
+    hemis <- sort(unique(stats::na.omit(flat$hemi)))
+
+    expect_false(anyNA(layout$hemi))
+    expect_identical(nrow(layout), length(hemis))
+
+    backdrop <- brain_layer_data(p, context = TRUE)
+    expect_gt(nrow(backdrop), 0)
+    expect_identical(
+      sort(unique(as.integer(backdrop$PANEL))),
+      seq_along(hemis)
+    )
   })
 })
 

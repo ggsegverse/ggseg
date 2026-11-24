@@ -289,7 +289,7 @@ brain_grob <- function(
   na.rm = TRUE
 ) {
   # nolint: object_name_linter
-  defaults <- modify_list(
+  defaults <- utils::modifyList(
     GeomPolygon$default_aes,
     list(colour = "grey35", size = 0.2)
   )
@@ -313,21 +313,6 @@ brain_grob <- function(
     linemitre = linemitre
   )
   sf::st_as_grob(x$geometry, gp = gp)
-}
-
-#' Merge values from one list into another
-#'
-#' @param old List to update.
-#' @param new List whose elements overwrite matching names in `old`.
-#'
-#' @return Updated list.
-#' @keywords internal
-#' @noRd
-modify_list <- function(old, new) {
-  for (i in names(new)) {
-    old[[i]] <- new[[i]]
-  }
-  old
 }
 
 #' Warn that an sf-backed atlas is converted on every build

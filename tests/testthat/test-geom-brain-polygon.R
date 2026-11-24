@@ -269,6 +269,89 @@ describe("warn_unmatched_polygon_data() (ggseg#121)", {
       geom_brain(atlas = dk(), ggplot2::aes(fill = p))
     expect_warning(ggplot2::ggplot_build(p), "not merged")
   })
+
+  it("stays silent on correct top-level data", {
+    # The backdrop layer is built with `data = NULL`, which ggplot2 reads as
+    # "inherit the plot's data". Joining that against context rows matched
+    # nothing and reported every correct row as unmatched.
+    data <- data.frame(
+      region = sort(unique(ggseg.formats::atlas_regions(dk())))[1:4],
+      p = seq(0.1, 0.4, by = 0.1)
+    )
+    p <- ggplot2::ggplot(data, ggplot2::aes(fill = p)) +
+      geom_brain(atlas = dk())
+    expect_no_warning(
+      ggplot2::ggplot_build(p),
+      class = "ggseg_unmatched_data"
+    )
+  })
+})
+
+describe("a `label` aesthetic is not mistaken for the join key", {
+  # `label` is both a ggplot2 aesthetic and the atlas's canonical join key, so
+  # deriving the keys a second time from the computed aesthetics joined on the
+  # user's text and lost every value.
+  regs <- sort(unique(ggseg.formats::atlas_regions(dk())))[1:4]
+  data <- data.frame(
+    region = regs,
+    v = seq_along(regs),
+    txt = paste0("t", seq_along(regs))
+  )
+  fills <- function(p) brain_layer_data(p)$fill
+
+  it("gives the same fills whether or not `label` is mapped", {
+    expect_identical(
+      fills(
+        ggplot2::ggplot(data, ggplot2::aes(fill = v, label = txt)) +
+          geom_brain(atlas = dk())
+      ),
+      fills(
+        ggplot2::ggplot(data, ggplot2::aes(fill = v)) + geom_brain(atlas = dk())
+      )
+    )
+  })
+
+  it("gives the same fills with the mapping on the layer", {
+    expect_identical(
+      fills(
+        ggplot2::ggplot(data) +
+          geom_brain(atlas = dk(), ggplot2::aes(fill = v, label = txt))
+      ),
+      fills(
+        ggplot2::ggplot(data, ggplot2::aes(fill = v)) + geom_brain(atlas = dk())
+      )
+    )
+  })
+
+  it("still colours the mapped regions", {
+    f <- fills(
+      ggplot2::ggplot(data, ggplot2::aes(fill = v, label = txt)) +
+        geom_brain(atlas = dk())
+    )
+    expect_length(setdiff(unique(f), "grey50"), length(regs))
+  })
+})
+
+describe("an emptied `data` still draws the atlas", {
+  # A filter that matches nothing leaves a zero-row data.frame, which takes the
+  # no-user-data branch; the atlas's own rows do not carry the user's columns,
+  # so a mapping onto them failed to evaluate.
+  it("renders rather than failing on the mapped column", {
+    data <- data.frame(
+      region = sort(unique(ggseg.formats::atlas_regions(dk())))[1:4],
+      p = seq(0.1, 0.4, by = 0.1)
+    )
+    p <- ggplot2::ggplot() +
+      geom_brain(
+        data = data[data$p > 1, , drop = FALSE],
+        atlas = dk(),
+        ggplot2::aes(fill = p)
+      )
+    expect_no_error(built <- brain_layer_data(p))
+    expect_gt(nrow(built), 0)
+    # nothing matched, so every region takes the scale's NA colour
+    expect_length(unique(built$fill), 1L)
+  })
 })
 
 describe("geom_brain() inherits top-level data and aes (ggseg#158)", {
@@ -489,7 +572,7 @@ describe("draw order follows the data row order (ggseg#162)", {
       region = sort(unique(ggseg.formats::atlas_regions(dk())))[1:2],
       v = 1:2
     )
-    joined <- join_brain_values(data, flat, mean)
+    joined <- join_brain_values(data, flat, mean, "region")
     feat <- joined[!duplicated(joined$.feature_id), c(".feature_id", "region")]
     in_data <- feat$region %in% data$region
     expect_lt(max(feat$.feature_id[!in_data]), min(feat$.feature_id[in_data]))
@@ -500,7 +583,7 @@ describe("draw order follows the data row order (ggseg#162)", {
     flat <- prepare_polygon_atlas(poly)
     top_region <- function(order_regs) {
       d <- data.frame(region = order_regs, v = seq_along(order_regs))
-      j <- join_brain_values(d, flat, mean)
+      j <- join_brain_values(d, flat, mean, "region")
       j$region[j$.feature_id == max(j$.feature_id)][1]
     }
     regs <- sort(unique(ggseg.formats::atlas_regions(dk())))[1:4]
@@ -515,7 +598,7 @@ describe("draw order follows the data row order (ggseg#162)", {
     flat <- prepare_polygon_atlas(poly)
     top_in <- function(panel_regs) {
       d <- data.frame(region = panel_regs, v = seq_along(panel_regs))
-      j <- join_brain_values(d, flat, mean)
+      j <- join_brain_values(d, flat, mean, "region")
       j$region[j$.feature_id == max(j$.feature_id)][1]
     }
     two <- sort(unique(ggseg.formats::atlas_regions(dk())))[1:2]
