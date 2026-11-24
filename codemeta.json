@@ -8,7 +8,7 @@
   "codeRepository": "https://github.com/ggsegverse/ggseg",
   "issueTracker": "https://github.com/ggsegverse/ggseg/issues",
   "license": "https://spdx.org/licenses/MIT",
-  "version": "2.2.1.9019",
+  "version": "2.2.1.9020",
   "programmingLanguage": {
     "@type": "ComputerLanguage",
     "name": "R",
