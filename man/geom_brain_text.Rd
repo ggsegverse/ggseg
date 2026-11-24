@@ -54,8 +54,7 @@ back to its region and turns to face away from it.}
 \item{...}{Passed to \code{\link[ggplot2:geom_text]{ggplot2::geom_text()}} or \code{\link[ggplot2:geom_label]{ggplot2::geom_label()}}:
 \code{size}, \code{colour}, \code{fontface} and the rest. The leader line takes
 \code{box.padding} and \code{point.padding} (its gap from the text and from the
-region), \code{min.segment.length} (below which it is not drawn at all),
-\code{segment.colour} and \code{segment.linewidth}.}
+region) and \code{min.segment.length} (below which it is not drawn at all).}
 
 \item{inherit.aes}{Whether to inherit the plot's aesthetic mapping.}
 }
@@ -90,6 +89,30 @@ name on a neighbouring structure: measured across the bundled atlases, a
 centroid falls outside its own region for 9\% of \code{dk} shapes and 41\% of
 \code{tracula} ones. The anchor is the middle of the widest run of region that a
 horizontal line crosses, which is inside the region by construction.
+}
+
+\section{Aesthetics}{
+
+
+Everything \code{\link[ggplot2:geom_text]{ggplot2::geom_text()}} or \code{\link[ggplot2:geom_label]{ggplot2::geom_label()}} understands,
+and two of its own: \code{segment.colour} and \code{segment.linewidth}, the colour
+and width of the leader line. They are aesthetics rather than arguments so
+that one label can be accented and the rest left quiet:
+
+\if{html}{\out{<div class="sourceCode r">}}\preformatted{geom_brain_text(
+  data = regions,
+  aes(segment.colour = accent, segment.linewidth = weight)
+)
+}\if{html}{\out{</div>}}
+
+Neither is scaled, so map them to a column that already holds the values
+you want drawn, the way \code{scale_colour_identity()} works. A connector given
+no colour of its own takes the colour of its text.
+
+\code{label} is an aesthetic like any other. Unmapped it writes the region's
+display name, and mapping it writes whatever you say instead, including an
+expression over your own columns:
+\code{aes(label = sprintf("\%s (\%.1f)", region, estimate))}.
 }
 
 \section{Moving a label off a cramped region}{
