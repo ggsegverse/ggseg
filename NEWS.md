@@ -8,6 +8,11 @@ figures, so read the breaking changes before upgrading.
 
 ## Breaking changes
 
+- `brain_join()` auto-detects `by` as the atlas join keys (`label`, `region`,
+  `hemi`) only, not every shared column name, matching `geom_brain()`. Data
+  keyed on another shared column -- `dk()` carries `lobe` -- now errors rather
+  than joining; pass `by = "lobe"` to keep that join (#217).
+
 - Passing an sf-backed atlas to `geom_brain()` is deprecated. It still draws:
   `geom_brain()` converts it with `atlas_polygons()`, but it does so on every
   build of the plot. Convert once with `ggseg.formats::as_polygon_atlas()`, or
@@ -119,8 +124,6 @@ figures, so read the breaking changes before upgrading.
 - A zero-row `data` draws the bare atlas instead of failing on the mapped
   column (#217).
 
-- `brain_join()` auto-detects `by` as the atlas join keys only, not every
-  shared column name, matching `geom_brain()` (#217).
 
 - Filtering on `hemi` no longer deletes an atlas's backdrop. Context geometry
   belongs to no hemisphere, so `aseg` and `tracula` lost their whole-brain

@@ -141,6 +141,38 @@ describe("geom_brain_polygon()", {
       )
     expect_gt(nrow(ggplot2::ggplot_build(p)$data[[1]]), 0)
   })
+
+  # The backdrop and the parcels are two layers of one pair, so they must crop
+  # to the SAME focus. Deriving the focus from the flag that says "this layer
+  # has user data" gave the context layer the whole atlas while the regions
+  # layer zoomed, so the grey silhouette no longer registered with the
+  # parcellation (ggsegverse/ggseg#217). Data goes on `ggplot()` here, not on
+  # the layer: with layer-level data the plot has no top-level data and the
+  # context layer never had a focus to lose.
+  it("crops the backdrop and the parcels to the same focus", {
+    regs <- unique(ggseg.formats::atlas_regions(aseg()))
+    regs <- regs[!is.na(regs)][1:3]
+    user <- data.frame(region = regs, measure = seq_along(regs))
+
+    context_span <- function(dat) {
+      plot <- if (is.null(dat)) {
+        ggplot2::ggplot()
+      } else {
+        ggplot2::ggplot(dat, ggplot2::aes(fill = measure))
+      }
+      built <- ggplot2::ggplot_build(
+        plot +
+          geom_brain(atlas = aseg(), position = position_brain(zoom = TRUE))
+      )
+      diff(range(built$data[[1]]$x))
+    }
+
+    # With no user data the backdrop legitimately focuses on every label, so
+    # comparing against that is what distinguishes "focused on the user's three
+    # regions" from "ignored the user's data". Comparing against `zoom = FALSE`
+    # is NOT enough: the broken layout still narrows, just to the wrong focus.
+    expect_lt(context_span(user), context_span(NULL))
+  })
 })
 
 describe("prepare_polygon_atlas()", {
@@ -234,7 +266,8 @@ describe("warn_unmatched_polygon_data() (ggseg#121)", {
     data <- data.frame(region = c(a_region, "notaregion"), p = c(0.9, 0.1))
     w <- expect_warning(
       warn_unmatched_polygon_data(data, flat, "region"),
-      "not merged"
+      "not merged",
+      class = "ggseg_unmatched_data"
     )
     expect_match(conditionMessage(w), "notaregion")
     expect_no_match(conditionMessage(w), a_region, fixed = TRUE)
@@ -268,6 +301,24 @@ describe("warn_unmatched_polygon_data() (ggseg#121)", {
     p <- ggplot2::ggplot(data) +
       geom_brain(atlas = dk(), ggplot2::aes(fill = p))
     expect_warning(ggplot2::ggplot_build(p), "not merged")
+  })
+
+  # The `region`-keyed cases above are fixed. `label`-keyed data is NOT: the
+  # user's `label` key column is overwritten by the aesthetic before the stat
+  # joins on it, so the values are lost. The join cannot be rescued by
+  # resolving keys earlier -- the column is already gone -- so the real fix is
+  # to carry keys under internal names. Until then it must at least be loud.
+  it("warns when a mapped aesthetic shadows the label join key", {
+    lbls <- sort(unique(ggseg.formats::atlas_labels(dk())))[1:4]
+    data <- data.frame(label = lbls, v = seq_along(lbls), txt = "t")
+
+    expect_warning(
+      ggplot2::ggplot_build(
+        ggplot2::ggplot(data, ggplot2::aes(fill = v, label = txt)) +
+          geom_brain(atlas = dk())
+      ),
+      class = "ggseg_shadowed_join_key"
+    )
   })
 
   it("stays silent on correct top-level data", {
