@@ -10,7 +10,9 @@
 #'   (typically `"region"`). Can be grouped with [dplyr::group_by()].
 #' @param atlas A `ggseg_atlas` object or data.frame containing atlas data.
 #' @param by Character vector of column names to join by. If `NULL` (default),
-#'   columns are detected automatically.
+#'   the join keys `label`, `region` and `hemi` are detected automatically --
+#'   and only those, so an incidental shared column cannot narrow the join.
+#'   Pass `by` explicitly to join on any other shared column.
 #'
 #' @return An `sf` object if the atlas contains geometry, otherwise a tibble.
 #' @export
@@ -46,11 +48,12 @@ brain_join <- function(data, atlas, by = NULL) {
     by <- intersect(brain_join_keys(), intersect(names(data), names(atlas)))
     if (length(by) == 0) {
       cli::cli_abort(c(
-        "{.arg data} has no columns in common with {.arg atlas}.",
+        "{.arg data} shares no join-key column with {.arg atlas}.",
         "i" = paste0(
-          "Need {.field label} or {.field region} ",
-          "(and optionally {.field hemi})."
-        )
+          "Auto-detection uses {.field label}, {.field region} and ",
+          "{.field hemi} only."
+        ),
+        "i" = "To join on another shared column, pass {.arg by} explicitly."
       ))
     }
     cli::cli_inform("Merging atlas and data by {.field {by}}.")

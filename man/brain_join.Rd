@@ -13,7 +13,9 @@ brain_join(data, atlas, by = NULL)
 \item{atlas}{A \code{ggseg_atlas} object or data.frame containing atlas data.}
 
 \item{by}{Character vector of column names to join by. If \code{NULL} (default),
-columns are detected automatically.}
+the join keys \code{label}, \code{region} and \code{hemi} are detected automatically --
+and only those, so an incidental shared column cannot narrow the join.
+Pass \code{by} explicitly to join on any other shared column.}
 }
 \value{
 An \code{sf} object if the atlas contains geometry, otherwise a tibble.

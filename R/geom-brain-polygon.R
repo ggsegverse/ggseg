@@ -241,17 +241,20 @@ LayerBrain <- ggproto(
     # plot's data against context rows and reporting every row as unmatched
     # (ggsegverse/ggseg#217).
     is_context <- identical(self$brain_rows, "context")
-    has_data <- !is_context &&
-      !inherits(dt, "waiver") &&
+    user_rows <- !inherits(dt, "waiver") &&
       is.data.frame(dt) &&
       nrow(dt) > 0
+    has_data <- !is_context && user_rows
 
     zoom_spec <- if (is_polygon_position(self$brain_position)) {
       self$brain_position$zoom
     } else {
       NULL
     }
-    focus <- resolve_zoom_focus(zoom_spec, if (has_data) dt else NULL, atlas)
+    # The focus must NOT use `has_data`: both halves of a context/regions pair
+    # have to crop to the same labels, or the backdrop is laid out on a
+    # different zoom than the parcels (ggsegverse/ggseg#217).
+    focus <- resolve_zoom_focus(zoom_spec, if (user_rows) dt else NULL, atlas)
 
     # Both halves of a context/regions pair flatten the *same* rows, because
     # prepare_polygon_atlas() lays the views out from whatever it is given and
@@ -303,10 +306,10 @@ LayerBrain <- ggproto(
     keys <- intersect(brain_join_keys(), intersect(names(dt), names(flat)))
     if (length(keys) == 0) {
       cli::cli_abort(c(
-        "{.arg data} has no columns in common with the atlas.",
+        "{.arg data} shares no join-key column with the atlas.",
         "i" = paste0(
-          "Need {.field label} or {.field region} ",
-          "(and optionally {.field hemi})."
+          "Auto-detection uses {.field label}, {.field region} and ",
+          "{.field hemi} only."
         )
       ))
     }
@@ -325,8 +328,23 @@ LayerBrain <- ggproto(
     # Join keys and any atlas facet columns must be aesthetics to survive
     # compute_aesthetics() and reach StatBrain (see R/stat-brain.R).
     for (k in union(keys, facet_atlas_cols)) {
-      if (is.null(self$computed_mapping[[k]])) {
+      mapped <- self$computed_mapping[[k]]
+      if (is.null(mapped)) {
         self$computed_mapping[[k]] <- as.name(k)
+      } else if (!identical(mapped, as.name(k))) {
+        # `label` is both an atlas join key and a ggplot2 aesthetic. Mapping it
+        # to something else leaves the key column holding that value, so the
+        # join matches nothing and the whole atlas draws unfilled.
+        cli::cli_warn(
+          c(
+            "{.field {k}} is an atlas join key, and {.arg mapping} points it
+            elsewhere.",
+            "x" = "Nothing will match, so no region will be filled.",
+            "i" = "Map {.field {k}} on the text layer instead, e.g.
+            {.code geom_brain_text(aes({k} = ...))}."
+          ),
+          class = "ggseg_shadowed_join_key"
+        )
       }
     }
 
