@@ -17,7 +17,7 @@ for brain_join() when you want the joined sf object yourself."><meta property="o
 
     <a class="navbar-brand me-2" href="../index.html">ggseg</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">2.2.1.9021</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">2.2.1.9022</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -90,7 +90,9 @@ for <code>brain_join()</code> when you want the joined sf object yourself.</p>
 
 <dt id="arg-by">by<a class="anchor" aria-label="anchor" href="#arg-by"></a></dt>
 <dd><p>Character vector of column names to join by. If <code>NULL</code> (default),
-columns are detected automatically.</p></dd>
+the join keys <code>label</code>, <code>region</code> and <code>hemi</code> are detected automatically –
+and only those, so an incidental shared column cannot narrow the join.
+Pass <code>by</code> explicitly to join on any other shared column.</p></dd>
 
 </dl></div>
     <div class="section level2">

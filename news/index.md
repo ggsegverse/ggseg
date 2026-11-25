@@ -13,6 +13,16 @@ upgrading.
 
 ### Breaking changes
 
+- [`brain_join()`](https://ggsegverse.github.io/ggseg/reference/brain_join.md)
+  auto-detects `by` as the atlas join keys (`label`, `region`, `hemi`)
+  only, not every shared column name, matching
+  [`geom_brain()`](https://ggsegverse.github.io/ggseg/reference/ggbrain.md).
+  Data keyed on another shared column –
+  [`dk()`](https://ggsegverse.github.io/ggseg.formats/reference/dk.html)
+  carries `lobe` – now errors rather than joining; pass `by = "lobe"` to
+  keep that join
+  ([\#217](https://github.com/ggsegverse/ggseg/issues/217)).
+
 - Passing an sf-backed atlas to
   [`geom_brain()`](https://ggsegverse.github.io/ggseg/reference/ggbrain.md)
   is deprecated. It still draws:
@@ -145,6 +155,25 @@ upgrading.
 - `GeomBrainSf` is exported.
 
 ### Bug fixes
+
+- A `label` aesthetic no longer silently loses every value. `label` is
+  both a ggplot2 aesthetic and the atlas join key; the keys are now
+  resolved once and handed to the stat
+  ([\#217](https://github.com/ggsegverse/ggseg/issues/217)).
+
+- `facet_wrap(~hemi)` on a slice atlas (`aseg`, `suit`, `tracula`) keeps
+  the brain outline behind every panel instead of filing it into an
+  unlabelled `NA` panel
+  ([\#217](https://github.com/ggsegverse/ggseg/issues/217)).
+
+- “Some data not merged properly” no longer fires on correct data: the
+  context backdrop no longer inherits the plot’s data
+  ([\#217](https://github.com/ggsegverse/ggseg/issues/217)). The warning
+  now carries the condition class `ggseg_unmatched_data`.
+
+- A zero-row `data` draws the bare atlas instead of failing on the
+  mapped column
+  ([\#217](https://github.com/ggsegverse/ggseg/issues/217)).
 
 - Filtering on `hemi` no longer deletes an atlas’s backdrop. Context
   geometry belongs to no hemisphere, so `aseg` and `tracula` lost their

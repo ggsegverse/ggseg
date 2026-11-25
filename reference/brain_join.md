@@ -29,8 +29,10 @@ brain_join(data, atlas, by = NULL)
 
 - by:
 
-  Character vector of column names to join by. If `NULL` (default),
-  columns are detected automatically.
+  Character vector of column names to join by. If `NULL` (default), the
+  join keys `label`, `region` and `hemi` are detected automatically –
+  and only those, so an incidental shared column cannot narrow the join.
+  Pass `by` explicitly to join on any other shared column.
 
 ## Value
 
