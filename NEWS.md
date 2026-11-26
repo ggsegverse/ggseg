@@ -1,5 +1,9 @@
 # ggseg (development version)
 
+- The row aggregation behind `geom_brain()` is now `ggseg.formats`'
+  `aggregate_brain_values()` rather than a private copy of it, so `ggseg` and
+  `ggseg3d` collapse duplicate rows the same way.
+
 A major release. The atlas geometry now comes from the re-keyed
 `ggseg.formats` atlases (`>= 0.0.4.9008`), and `geom_brain()` has been rebuilt
 on a `Stat` so that faceting, inherited `data`/`aes()`, and outline aesthetics

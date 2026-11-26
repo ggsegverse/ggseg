@@ -162,7 +162,8 @@ atlas_metadata_cols <- function(flat) {
 #' Aggregate user values per atlas region and join onto the flat atlas
 #'
 #' The heart of [StatBrain]'s `compute_panel()`. Collapses the panel's user rows
-#' to one row per join key with [aggregate_brain_values()], left-joins them onto
+#' to one row per join key with [ggseg.formats::aggregate_brain_values()],
+#' left-joins them onto
 #' the full atlas geometry so unmatched regions keep `NA` (drawn grey by the
 #' fill scale's `na.value`), and reassigns the polygon draw order to the user
 #' data row order (ggsegverse/ggseg#162). With no join keys (no user data) it
@@ -199,11 +200,16 @@ join_brain_values <- function(
     return(flat)
   }
 
-  agg <- aggregate_brain_values(
+  agg <- ggseg.formats::aggregate_brain_values(
     data,
     keys,
-    fun,
-    atlas_metadata_cols(flat),
+    fun = fun,
+    ignore = c(
+      "group",
+      "PANEL",
+      "flipped_aes",
+      intersect(names(data), atlas_metadata_cols(flat))
+    ),
     warn_collapse = has_data
   )
   joined <- dplyr::left_join(flat, agg, by = keys, suffix = c("", ".user"))
@@ -212,106 +218,6 @@ join_brain_values <- function(
   }
   joined$group <- joined$.feature_id
   joined
-}
-
-
-#' Collapse multiple rows per region to one aggregated row
-#'
-#' Groups the user data by the join keys and reduces every other aesthetic
-#' column to a single value: numeric columns (e.g. a mapped `fill` value) with
-#' `fun`, non-numeric columns to their first value. Atlas columns (already on
-#' `flat`) and ggplot2 bookkeeping columns are left out of the aggregation. This
-#' is what lets `geom_brain()` accept long data with several rows per region
-#' (e.g. one per subject) and draw a single summarised value.
-#'
-#' @param data The user data for one panel, with computed aesthetics.
-#' @param keys Character vector of join-key columns to group by.
-#' @param fun Aggregating function for numeric aesthetic columns.
-#' @param atlas_cols The atlas metadata columns (from [atlas_metadata_cols()]);
-#'   any `data` column among them is geometry, not a value to aggregate.
-#' @param warn_collapse Whether to warn when `fun` collapses rows.
-#' @return One row per unique key combination.
-#' @keywords internal
-#' @noRd
-aggregate_brain_values <- function(
-  data,
-  keys,
-  fun,
-  atlas_cols,
-  warn_collapse = TRUE
-) {
-  ignore <- c(
-    "group",
-    "PANEL",
-    "flipped_aes",
-    intersect(names(data), atlas_cols)
-  )
-  value_cols <- setdiff(names(data), ignore)
-
-  if (warn_collapse) {
-    warn_collapsed_rows(data, keys, value_cols)
-  }
-
-  grouped <- dplyr::group_by(data, dplyr::across(dplyr::all_of(keys)))
-  tryCatch(
-    dplyr::summarise(
-      grouped,
-      dplyr::across(
-        dplyr::all_of(value_cols),
-        function(col) if (is.numeric(col)) fun(col) else col[[1]]
-      ),
-      .groups = "drop"
-    ),
-    error = function(cnd) {
-      cli::cli_abort(
-        c(
-          "{.arg fun} must reduce each region's values to a single value.",
-          "i" = "It returned the wrong length for at least one region.",
-          "i" = "Try {.fn mean} (the default), {.fn median}, or {.fn max}."
-        ),
-        parent = cnd
-      )
-    }
-  )
-}
-
-
-#' Warn once per session when `fun` actually collapses rows
-#'
-#' Before ggseg 3.0.0 several `data` rows for the same region overplotted, so
-#' the last row won; they are now reduced with `fun` (mean by default). That is
-#' a silent numeric change for anyone plotting an unaggregated cohort, so say so
-#' the first time it happens in a session.
-#'
-#' @param data One facet panel's user data, with computed aesthetics.
-#' @param keys Character vector of join-key columns.
-#' @param value_cols The aesthetic columns that would be aggregated.
-#' @return `invisible(NULL)`, called for its warning side effect.
-#' @keywords internal
-#' @noRd
-warn_collapsed_rows <- function(data, keys, value_cols) {
-  collapses <- length(value_cols) > 0 &&
-    anyDuplicated(data[, keys, drop = FALSE]) > 0
-  if (!collapses) {
-    return(invisible(NULL))
-  }
-  rlang::warn(
-    cli::format_message(c(
-      "!" = paste(
-        "Several {.arg data} rows map to the same atlas region;",
-        "combining them with {.arg fun}."
-      ),
-      "i" = paste(
-        "Before ggseg 3.0.0 these rows overplotted, so the last one won.",
-        "Pass {.code fun = dplyr::last} to keep that behaviour."
-      ),
-      "i" = "Non-numeric columns take the first value regardless of {.arg fun}."
-    )),
-    class = "ggseg_collapsed_rows",
-    .frequency = "once",
-    .frequency_id = "ggseg_collapsed_rows"
-  )
-  invisible(NULL)
 }
 
 
