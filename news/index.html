@@ -55,7 +55,8 @@
 
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="development version" id="ggseg-development-version">ggseg (development version)<a class="anchor" aria-label="anchor" href="#ggseg-development-version"></a></h2>
-<ul><li>
+<ul><li>The row aggregation behind <code><a href="../reference/ggbrain.html">geom_brain()</a></code> is now <code>ggseg.formats</code>’ <code><a href="https://ggsegverse.github.io/ggseg.formats/reference/aggregate_brain_values.html">aggregate_brain_values()</a></code> rather than a private copy of it, so <code>ggseg</code> and <code>ggseg3d</code> collapse duplicate rows the same way.</li>
+<li>
 <code><a href="../reference/ggbrain.html">geom_brain()</a></code> joins <code>label</code>-keyed data even when <code>label</code> is mapped to something else, e.g. <code>aes(fill = v, label = txt)</code>. The join keys now travel under internal aesthetic names, so the mapping and the atlas key no longer compete for one column; the warning that case used to raise is gone with it. A facet variable a mapping points elsewhere still warns (<code>ggseg_shadowed_facet_column</code>), because panels are resolved by column name.</li>
 </ul><p>A major release. The atlas geometry now comes from the re-keyed <code>ggseg.formats</code> atlases (<code>&gt;= 0.0.4.9008</code>), and <code><a href="../reference/ggbrain.html">geom_brain()</a></code> has been rebuilt on a <code>Stat</code> so that faceting, inherited <code>data</code>/<code><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes()</a></code>, and outline aesthetics work the way ggplot2 users expect. Several of those fixes change existing figures, so read the breaking changes before upgrading.</p>
 <div class="section level3">

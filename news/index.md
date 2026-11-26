@@ -2,6 +2,12 @@
 
 ## ggseg (development version)
 
+- The row aggregation behind
+  [`geom_brain()`](https://ggsegverse.github.io/ggseg/reference/ggbrain.md)
+  is now `ggseg.formats`’
+  [`aggregate_brain_values()`](https://ggsegverse.github.io/ggseg.formats/reference/aggregate_brain_values.html)
+  rather than a private copy of it, so `ggseg` and `ggseg3d` collapse
+  duplicate rows the same way.
 - [`geom_brain()`](https://ggsegverse.github.io/ggseg/reference/ggbrain.md)
   joins `label`-keyed data even when `label` is mapped to something
   else, e.g. `aes(fill = v, label = txt)`. The join keys now travel
