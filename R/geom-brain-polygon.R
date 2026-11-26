@@ -330,28 +330,32 @@ LayerBrain <- ggproto(
     # aesthetic too, and sending the key as `label` let a user
     # `aes(label = <text>)` overwrite it, so the join matched nothing
     # (ggsegverse/ggseg#217). StatBrain renames them back.
-    for (k in keys) {
-      self$computed_mapping[[key_aes(k)]] <- as.name(k)
-    }
+    self$computed_mapping[key_aes(keys)] <- lapply(keys, as.name)
 
     # Facet columns, by contrast, must keep their own names: ggplot2 resolves
     # the panel variables against the layer data before the stat runs.
-    for (k in facet_atlas_cols) {
-      mapped <- self$computed_mapping[[k]]
-      if (is.null(mapped)) {
-        self$computed_mapping[[k]] <- as.name(k)
-      } else if (!identical(mapped, as.name(k))) {
-        cli::cli_warn(
-          c(
-            "{.field {k}} is an atlas column this plot facets on, and
-            {.arg mapping} points it elsewhere.",
-            "x" = "The panels will be built from the mapped values instead.",
-            "i" = "Map {.field {k}} on the text layer instead, e.g.
-            {.code geom_brain_text(aes({k} = ...))}."
-          ),
-          class = "ggseg_shadowed_facet_column"
-        )
-      }
+    unmapped <- setdiff(facet_atlas_cols, names(self$computed_mapping))
+    self$computed_mapping[unmapped] <- lapply(unmapped, as.name)
+
+    named <- setdiff(facet_atlas_cols, unmapped)
+    shadowed <- named[
+      !vapply(
+        named,
+        function(k) identical(self$computed_mapping[[k]], as.name(k)),
+        logical(1)
+      )
+    ]
+    if (length(shadowed) > 0) {
+      cli::cli_warn(
+        c(
+          "{.field {shadowed}} {?is/are} an atlas column this plot facets on,
+          and {.arg mapping} points {?it/them} elsewhere.",
+          "x" = "The panels will be built from the mapped values instead.",
+          "i" = "Map {.field {shadowed}} on a text layer instead, e.g.
+          {.code geom_brain_text()}."
+        ),
+        class = "ggseg_shadowed_facet_column"
+      )
     }
 
     self$stat_params$flat <- flat
