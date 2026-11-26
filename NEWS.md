@@ -1,5 +1,8 @@
 # ggseg (development version)
 
+- The row aggregation behind `geom_brain()` is now `ggseg.formats`'
+  `aggregate_brain_values()` rather than a private copy of it, so `ggseg` and
+  `ggseg3d` collapse duplicate rows the same way.
 - `geom_brain()` joins `label`-keyed data even when `label` is mapped to
   something else, e.g. `aes(fill = v, label = txt)`. The join keys now travel
   under internal aesthetic names, so the mapping and the atlas key no longer
