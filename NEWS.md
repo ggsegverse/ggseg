@@ -1,5 +1,9 @@
 # ggseg (development version)
 
+- `geom_brain_text()` keys on every join key the data carries, as
+  `geom_brain()` does. Data keyed on `region` and `hemi` matched on `region`
+  alone, so a left-hemisphere row's text was also drawn on the right.
+
 A major release. The atlas geometry now comes from the re-keyed
 `ggseg.formats` atlases (`>= 0.0.4.9008`), and `geom_brain()` has been rebuilt
 on a `Stat` so that faceting, inherited `data`/`aes()`, and outline aesthetics
