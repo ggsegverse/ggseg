@@ -2,6 +2,15 @@
 
 ## ggseg (development version)
 
+- [`geom_brain()`](https://ggsegverse.github.io/ggseg/reference/ggbrain.md)
+  joins `label`-keyed data even when `label` is mapped to something
+  else, e.g. `aes(fill = v, label = txt)`. The join keys now travel
+  under internal aesthetic names, so the mapping and the atlas key no
+  longer compete for one column; the warning that case used to raise is
+  gone with it. A facet variable a mapping points elsewhere still warns
+  (`ggseg_shadowed_facet_column`), because panels are resolved by column
+  name.
+
 A major release. The atlas geometry now comes from the re-keyed
 `ggseg.formats` atlases (`>= 0.0.4.9008`), and
 [`geom_brain()`](https://ggsegverse.github.io/ggseg/reference/ggbrain.md)

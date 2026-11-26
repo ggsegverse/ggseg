@@ -47,20 +47,20 @@ p <- ggplot() + geom_brain(atlas = dk())
 
 # the regions, whichever layer they are
 head(brain_layer_data(p))
-#>   PANEL         label     region hemi group     view        x        y .group
-#> 1     1 lh_precentral precentral left     8 inferior 66.57283 103.3961      1
-#> 2     1 lh_precentral precentral left     8 inferior 75.43627 107.7048      1
-#> 3     1 lh_precentral precentral left     8 inferior 83.73107 112.1067      1
-#> 4     1 lh_precentral precentral left     8 inferior 88.97667 114.1050      1
-#> 5     1 lh_precentral precentral left     8 inferior 86.58294 112.3535      1
-#> 6     1 lh_precentral precentral left     8 inferior 86.15597 106.5335      1
-#>   subgroup    display    lobe atlas     type .feature_id    fill colour
-#> 1        1 precentral frontal    dk cortical           8 #3C14DC grey35
-#> 2        1 precentral frontal    dk cortical           8 #3C14DC grey35
-#> 3        1 precentral frontal    dk cortical           8 #3C14DC grey35
-#> 4        1 precentral frontal    dk cortical           8 #3C14DC grey35
-#> 5        1 precentral frontal    dk cortical           8 #3C14DC grey35
-#> 6        1 precentral frontal    dk cortical           8 #3C14DC grey35
+#>   PANEL group         label     view        x        y .group subgroup hemi
+#> 1     1     8 lh_precentral inferior 66.57283 103.3961      1        1 left
+#> 2     1     8 lh_precentral inferior 75.43627 107.7048      1        1 left
+#> 3     1     8 lh_precentral inferior 83.73107 112.1067      1        1 left
+#> 4     1     8 lh_precentral inferior 88.97667 114.1050      1        1 left
+#> 5     1     8 lh_precentral inferior 86.58294 112.3535      1        1 left
+#> 6     1     8 lh_precentral inferior 86.15597 106.5335      1        1 left
+#>       region    display    lobe atlas     type .feature_id    fill colour
+#> 1 precentral precentral frontal    dk cortical           8 #3C14DC grey35
+#> 2 precentral precentral frontal    dk cortical           8 #3C14DC grey35
+#> 3 precentral precentral frontal    dk cortical           8 #3C14DC grey35
+#> 4 precentral precentral frontal    dk cortical           8 #3C14DC grey35
+#> 5 precentral precentral frontal    dk cortical           8 #3C14DC grey35
+#> 6 precentral precentral frontal    dk cortical           8 #3C14DC grey35
 #>   linewidth linetype alpha
 #> 1       0.2        1    NA
 #> 2       0.2        1    NA
@@ -71,13 +71,13 @@ head(brain_layer_data(p))
 
 # and the backdrop behind them
 head(brain_layer_data(p, context = TRUE))
-#>   PANEL      label region hemi group     view        x        y .group subgroup
-#> 1     1 lh_unknown   <NA> left     1 inferior 59.99261 37.94643      1        1
-#> 2     1 lh_unknown   <NA> left     1 inferior 59.29154 39.90608      1        1
-#> 3     1 lh_unknown   <NA> left     1 inferior 62.22706 42.19811      1        1
-#> 4     1 lh_unknown   <NA> left     1 inferior 58.87957 48.37019      1        1
-#> 5     1 lh_unknown   <NA> left     1 inferior 58.73218 49.28655      1        1
-#> 6     1 lh_unknown   <NA> left     1 inferior 61.62657 50.40204      1        1
+#>   PANEL group      label     view        x        y .group subgroup hemi region
+#> 1     1     1 lh_unknown inferior 59.99261 37.94643      1        1 left   <NA>
+#> 2     1     1 lh_unknown inferior 59.29154 39.90608      1        1 left   <NA>
+#> 3     1     1 lh_unknown inferior 62.22706 42.19811      1        1 left   <NA>
+#> 4     1     1 lh_unknown inferior 58.87957 48.37019      1        1 left   <NA>
+#> 5     1     1 lh_unknown inferior 58.73218 49.28655      1        1 left   <NA>
+#> 6     1     1 lh_unknown inferior 61.62657 50.40204      1        1 left   <NA>
 #>   display lobe atlas     type .feature_id colour fill linewidth linetype alpha
 #> 1    <NA> <NA>    dk cortical           1 grey35 grey       0.2        1    NA
 #> 2    <NA> <NA>    dk cortical           1 grey35 grey       0.2        1    NA

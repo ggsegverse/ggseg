@@ -9,7 +9,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">ggseg</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">2.2.1.9022</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">2.2.1.9023</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -55,7 +55,9 @@
 
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="development version" id="ggseg-development-version">ggseg (development version)<a class="anchor" aria-label="anchor" href="#ggseg-development-version"></a></h2>
-<p>A major release. The atlas geometry now comes from the re-keyed <code>ggseg.formats</code> atlases (<code>&gt;= 0.0.4.9008</code>), and <code><a href="../reference/ggbrain.html">geom_brain()</a></code> has been rebuilt on a <code>Stat</code> so that faceting, inherited <code>data</code>/<code><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes()</a></code>, and outline aesthetics work the way ggplot2 users expect. Several of those fixes change existing figures, so read the breaking changes before upgrading.</p>
+<ul><li>
+<code><a href="../reference/ggbrain.html">geom_brain()</a></code> joins <code>label</code>-keyed data even when <code>label</code> is mapped to something else, e.g. <code>aes(fill = v, label = txt)</code>. The join keys now travel under internal aesthetic names, so the mapping and the atlas key no longer compete for one column; the warning that case used to raise is gone with it. A facet variable a mapping points elsewhere still warns (<code>ggseg_shadowed_facet_column</code>), because panels are resolved by column name.</li>
+</ul><p>A major release. The atlas geometry now comes from the re-keyed <code>ggseg.formats</code> atlases (<code>&gt;= 0.0.4.9008</code>), and <code><a href="../reference/ggbrain.html">geom_brain()</a></code> has been rebuilt on a <code>Stat</code> so that faceting, inherited <code>data</code>/<code><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes()</a></code>, and outline aesthetics work the way ggplot2 users expect. Several of those fixes change existing figures, so read the breaking changes before upgrading.</p>
 <div class="section level3">
 <h3 id="breaking-changes-development-version">Breaking changes<a class="anchor" aria-label="anchor" href="#breaking-changes-development-version"></a></h3>
 <ul><li><p><code><a href="../reference/brain_join.html">brain_join()</a></code> auto-detects <code>by</code> as the atlas join keys (<code>label</code>, <code>region</code>, <code>hemi</code>) only, not every shared column name, matching <code><a href="../reference/ggbrain.html">geom_brain()</a></code>. Data keyed on another shared column – <code><a href="https://ggsegverse.github.io/ggseg.formats/reference/dk.html">dk()</a></code> carries <code>lobe</code> – now errors rather than joining; pass <code>by = "lobe"</code> to keep that join (<a href="https://github.com/ggsegverse/ggseg/issues/217" class="external-link">#217</a>).</p></li>
