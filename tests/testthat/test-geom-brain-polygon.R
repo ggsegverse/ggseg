@@ -303,24 +303,6 @@ describe("warn_unmatched_polygon_data() (ggseg#121)", {
     expect_warning(ggplot2::ggplot_build(p), "not merged")
   })
 
-  # The `region`-keyed cases above are fixed. `label`-keyed data is NOT: the
-  # user's `label` key column is overwritten by the aesthetic before the stat
-  # joins on it, so the values are lost. The join cannot be rescued by
-  # resolving keys earlier -- the column is already gone -- so the real fix is
-  # to carry keys under internal names. Until then it must at least be loud.
-  it("warns when a mapped aesthetic shadows the label join key", {
-    lbls <- sort(unique(ggseg.formats::atlas_labels(dk())))[1:4]
-    data <- data.frame(label = lbls, v = seq_along(lbls), txt = "t")
-
-    expect_warning(
-      ggplot2::ggplot_build(
-        ggplot2::ggplot(data, ggplot2::aes(fill = v, label = txt)) +
-          geom_brain(atlas = dk())
-      ),
-      class = "ggseg_shadowed_join_key"
-    )
-  })
-
   it("stays silent on correct top-level data", {
     # The backdrop layer is built with `data = NULL`, which ggplot2 reads as
     # "inherit the plot's data". Joining that against context rows matched
@@ -341,7 +323,8 @@ describe("warn_unmatched_polygon_data() (ggseg#121)", {
 describe("a `label` aesthetic is not mistaken for the join key", {
   # `label` is both a ggplot2 aesthetic and the atlas's canonical join key, so
   # deriving the keys a second time from the computed aesthetics joined on the
-  # user's text and lost every value.
+  # user's text and lost every value. The keys now travel under internal
+  # aesthetic names (see key_aes()), so the two cannot collide at all.
   regs <- sort(unique(ggseg.formats::atlas_regions(dk())))[1:4]
   data <- data.frame(
     region = regs,
@@ -380,6 +363,52 @@ describe("a `label` aesthetic is not mistaken for the join key", {
         geom_brain(atlas = dk())
     )
     expect_length(setdiff(unique(f), "grey50"), length(regs))
+  })
+
+  it("joins `label`-keyed data too, which the aesthetic used to overwrite", {
+    # The ecosystem keys on `label`, so this is the standard case, not a
+    # corner: the key column was replaced by the user's text before the stat
+    # joined on it and every value was lost.
+    lbls <- sort(unique(ggseg.formats::atlas_labels(dk())))[1:4]
+    keyed <- data.frame(label = lbls, v = seq_along(lbls), txt = "t")
+    f <- fills(
+      ggplot2::ggplot(keyed, ggplot2::aes(fill = v, label = txt)) +
+        geom_brain(atlas = dk())
+    )
+    expect_length(setdiff(unique(f), "grey50"), length(lbls))
+  })
+
+  it("gives label-keyed data the same fills with or without the aesthetic", {
+    lbls <- sort(unique(ggseg.formats::atlas_labels(dk())))[1:4]
+    keyed <- data.frame(label = lbls, v = seq_along(lbls), txt = "t")
+    expect_identical(
+      fills(
+        ggplot2::ggplot(keyed, ggplot2::aes(fill = v, label = txt)) +
+          geom_brain(atlas = dk())
+      ),
+      fills(
+        ggplot2::ggplot(keyed, ggplot2::aes(fill = v)) +
+          geom_brain(atlas = dk())
+      )
+    )
+  })
+})
+
+describe("a facet column a mapping points elsewhere", {
+  it("warns that the panels will follow the mapped values", {
+    # Keys are safe now that they travel under internal names, but a facet
+    # variable must keep its own name for ggplot2 to resolve the panels, so
+    # this collision is still real.
+    lbls <- sort(unique(ggseg.formats::atlas_labels(dk())))[1:4]
+    keyed <- data.frame(label = lbls, v = seq_along(lbls), txt = "t")
+    expect_warning(
+      ggplot2::ggplot_build(
+        ggplot2::ggplot(keyed, ggplot2::aes(fill = v, label = txt)) +
+          geom_brain(atlas = dk()) +
+          ggplot2::facet_wrap(~label)
+      ),
+      class = "ggseg_shadowed_facet_column"
+    )
   })
 })
 

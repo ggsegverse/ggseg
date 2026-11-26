@@ -291,3 +291,26 @@ describe("geom_brain() with no data (atlas identity drives the stat)", {
     expect_identical(d$group, d$.feature_id)
   })
 })
+
+describe("restore_key_columns()", {
+  it("renames the internal key aesthetics back to the atlas columns", {
+    data <- data.frame(.brain_key_label = c("a", "b"), v = 1:2)
+    expect_identical(
+      restore_key_columns(data, "label"),
+      data.frame(v = 1:2, label = c("a", "b"))
+    )
+  })
+
+  it("overwrites a same-named aesthetic, which is the user's text", {
+    data <- data.frame(.brain_key_label = "a", label = "txt", v = 1)
+    expect_identical(restore_key_columns(data, "label")$label, "a")
+  })
+
+  it("leaves data alone when no key travelled, including no keys at all", {
+    # paste0() with a zero-length `keys` returns the bare prefix, so an
+    # unguarded key_aes() selected a column that does not exist.
+    data <- data.frame(v = 1)
+    expect_identical(restore_key_columns(data, character(0)), data)
+    expect_identical(restore_key_columns(data, c("label", "region")), data)
+  })
+})

@@ -3,6 +3,12 @@
 - The row aggregation behind `geom_brain()` is now `ggseg.formats`'
   `aggregate_brain_values()` rather than a private copy of it, so `ggseg` and
   `ggseg3d` collapse duplicate rows the same way.
+- `geom_brain()` joins `label`-keyed data even when `label` is mapped to
+  something else, e.g. `aes(fill = v, label = txt)`. The join keys now travel
+  under internal aesthetic names, so the mapping and the atlas key no longer
+  compete for one column; the warning that case used to raise is gone with it.
+  A facet variable a mapping points elsewhere still warns
+  (`ggseg_shadowed_facet_column`), because panels are resolved by column name.
 
 A major release. The atlas geometry now comes from the re-keyed
 `ggseg.formats` atlases (`>= 0.0.4.9008`), and `geom_brain()` has been rebuilt

@@ -63,6 +63,7 @@ StatBrain <- ggproto(
     # per panel rather than replicating it; faceting on a user column replicates
     # the whole atlas. This mirrors the pre-StatBrain contract.
     flat <- subset_flat_to_facet(flat, data, facet_atlas_cols)
+    data <- restore_key_columns(data, keys)
     join_brain_values(
       data,
       flat,
@@ -129,6 +130,45 @@ stat_brain <- function(
     inherit.aes = inherit.aes,
     ...
   )
+}
+
+
+#' The internal aesthetic a join key travels under
+#'
+#' `label` is both the atlas's canonical join key and a ggplot2 aesthetic, so a
+#' key sent to the stat under its own name is overwritten by a user
+#' `aes(label = <text>)` before the join ever runs. Prefixing takes the key out
+#' of ggplot2's namespace, so both mean what they say.
+#'
+#' @param keys Character vector of join-key column names.
+#' @return The internal aesthetic names, one per key.
+#' @keywords internal
+#' @noRd
+key_aes <- function(keys) {
+  # recycle0: paste0() with a zero-length `keys` would otherwise return the
+  # bare prefix, i.e. one column name that does not exist.
+  paste0(".brain_key_", keys, recycle0 = TRUE)
+}
+
+
+#' Rename the internal key aesthetics back to the atlas column names
+#'
+#' The inverse of [key_aes()], applied once at the top of
+#' [StatBrain]'s `compute_panel()` so everything downstream joins and orders on
+#' `label`/`region`/`hemi` as before. A key column overwrites a same-named
+#' aesthetic, which is the user's `label` text -- unusable in a polygon layer,
+#' and already left out of the aggregation as an atlas column.
+#'
+#' @param data One facet panel's data, with computed aesthetics.
+#' @param keys Character vector of join-key column names.
+#' @return `data` with each `.brain_key_*` column renamed to its key.
+#' @keywords internal
+#' @noRd
+restore_key_columns <- function(data, keys) {
+  present <- keys[key_aes(keys) %in% names(data)]
+  data[present] <- data[key_aes(present)]
+  data[key_aes(present)] <- NULL
+  data
 }
 
 
