@@ -145,7 +145,9 @@ stat_brain <- function(
 #' @keywords internal
 #' @noRd
 key_aes <- function(keys) {
-  paste0(".brain_key_", keys)
+  # recycle0: paste0() with a zero-length `keys` would otherwise return the
+  # bare prefix, i.e. one column name that does not exist.
+  paste0(".brain_key_", keys, recycle0 = TRUE)
 }
 
 
@@ -163,14 +165,9 @@ key_aes <- function(keys) {
 #' @keywords internal
 #' @noRd
 restore_key_columns <- function(data, keys) {
-  for (k in keys) {
-    internal <- key_aes(k)
-    if (!internal %in% names(data)) {
-      next
-    }
-    data[[k]] <- data[[internal]]
-    data[[internal]] <- NULL
-  }
+  present <- keys[key_aes(keys) %in% names(data)]
+  data[present] <- data[key_aes(present)]
+  data[key_aes(present)] <- NULL
   data
 }
 
