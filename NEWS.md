@@ -1,5 +1,7 @@
 # ggseg (development version)
 
+- Follows ggseg.formats in renaming the atlas type `wm` to `white_matter`.
+
 A major release. The atlas geometry now comes from the re-keyed
 `ggseg.formats` atlases (`>= 0.0.4.9008`), and `geom_brain()` has been rebuilt
 on a `Stat` so that faceting, inherited `data`/`aes()`, and outline aesthetics

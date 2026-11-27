@@ -25,9 +25,13 @@ adapt_scales <- function(
   }
 
   atlas_type <- atlas_type_of(geobrain)
+  # TODO(I9): read this from ggseg.formats::atlas_types() once that export is
+  # on main (ggsegverse/ggseg.formats#136) -- written out, the list silently
+  # loses whichever type is added or renamed next.
+  slice_types <- c("subcortical", "tract", "cerebellar", "white_matter")
   if (identical(atlas_type, "cortical")) {
     adapt_scales_cortical(geobrain, position, aesthetics)
-  } else if (atlas_type %in% c("subcortical", "tract", "cerebellar", "wm")) {
+  } else if (atlas_type %in% slice_types) {
     # Cerebellar atlases (e.g. suit()) are slice-based like subcortical ones,
     # so their axes are labelled by view, not hemisphere. A white-matter
     # atlas is a subcortical atlas in all but name -- same polygons, same
@@ -36,8 +40,7 @@ adapt_scales <- function(
   } else {
     cli::cli_abort(c(
       "Cannot build brain axis scales for atlas type {.val {atlas_type}}.",
-      "i" = "Supported types: {.val cortical}, {.val subcortical}, \
-        {.val tract}, {.val cerebellar}, {.val wm}."
+      "i" = "Supported types: {.val {c(\"cortical\", slice_types)}}."
     ))
   }
 }
