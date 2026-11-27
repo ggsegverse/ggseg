@@ -1,5 +1,8 @@
 # ggseg (development version)
 
+- Follows ggseg.formats in renaming the atlas type `wm` to `white_matter`,
+  and reads the slice-drawn types from `atlas_types()` rather than listing
+  them, so a future type is drawn rather than refused.
 - The row aggregation behind `geom_brain()` is now `ggseg.formats`'
   `aggregate_brain_values()` rather than a private copy of it, so `ggseg` and
   `ggseg3d` collapse duplicate rows the same way.

@@ -127,7 +127,7 @@ describe("adapt_scales type dispatch", {
     # relabelling a subcortical atlas rather than from scratch: the point is
     # that the type reaches the same branch, not that the geometry differs.
     geo <- atlas_scale_coords(aseg())
-    geo$type <- "wm"
+    geo$type <- "white_matter"
 
     labs <- adapt_scales(geo, position = "dispersed", aesthetics = "labs")
     expect_identical(labs$x, "view")
@@ -138,11 +138,11 @@ describe("adapt_scales type dispatch", {
   })
 
   it("gives a white-matter atlas the same scales as a subcortical one", {
-    # The claim the branch makes. If "wm" fell through to the error, or to
+    # The claim the branch makes. If white_matter fell through to the error, or
     # the cortical branch, these would differ.
     sub <- atlas_scale_coords(aseg())
     wm <- sub
-    wm$type <- "wm"
+    wm$type <- "white_matter"
 
     expect_identical(
       adapt_scales(wm, position = "dispersed", aesthetics = "x"),
