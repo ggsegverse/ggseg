@@ -325,27 +325,37 @@ LayerBrain <- ggproto(
       intersect(atlas_cols, names(dt))
     )
 
-    # Join keys and any atlas facet columns must be aesthetics to survive
-    # compute_aesthetics() and reach StatBrain (see R/stat-brain.R).
-    for (k in union(keys, facet_atlas_cols)) {
-      mapped <- self$computed_mapping[[k]]
-      if (is.null(mapped)) {
-        self$computed_mapping[[k]] <- as.name(k)
-      } else if (!identical(mapped, as.name(k))) {
-        # `label` is both an atlas join key and a ggplot2 aesthetic. Mapping it
-        # to something else leaves the key column holding that value, so the
-        # join matches nothing and the whole atlas draws unfilled.
-        cli::cli_warn(
-          c(
-            "{.field {k}} is an atlas join key, and {.arg mapping} points it
-            elsewhere.",
-            "x" = "Nothing will match, so no region will be filled.",
-            "i" = "Map {.field {k}} on the text layer instead, e.g.
-            {.code geom_brain_text(aes({k} = ...))}."
-          ),
-          class = "ggseg_shadowed_join_key"
-        )
-      }
+    # A key column only reaches StatBrain if it is an aesthetic, so each one is
+    # mapped under an internal name rather than its own: `label` is a ggplot2
+    # aesthetic too, and sending the key as `label` let a user
+    # `aes(label = <text>)` overwrite it, so the join matched nothing
+    # (ggsegverse/ggseg#217). StatBrain renames them back.
+    self$computed_mapping[key_aes(keys)] <- lapply(keys, as.name)
+
+    # Facet columns, by contrast, must keep their own names: ggplot2 resolves
+    # the panel variables against the layer data before the stat runs.
+    unmapped <- setdiff(facet_atlas_cols, names(self$computed_mapping))
+    self$computed_mapping[unmapped] <- lapply(unmapped, as.name)
+
+    named <- setdiff(facet_atlas_cols, unmapped)
+    shadowed <- named[
+      !vapply(
+        named,
+        function(k) identical(self$computed_mapping[[k]], as.name(k)),
+        logical(1)
+      )
+    ]
+    if (length(shadowed) > 0) {
+      cli::cli_warn(
+        c(
+          "{.field {shadowed}} {?is/are} an atlas column this plot facets on,
+          and {.arg mapping} points {?it/them} elsewhere.",
+          "x" = "The panels will be built from the mapped values instead.",
+          "i" = "Map {.field {shadowed}} on a text layer instead, e.g.
+          {.code geom_brain_text()}."
+        ),
+        class = "ggseg_shadowed_facet_column"
+      )
     }
 
     self$stat_params$flat <- flat

@@ -5,87 +5,6 @@ describe("StatBrain", {
   })
 })
 
-describe("aggregate_brain_values()", {
-  keys <- c("region", "label", "hemi")
-
-  it("reduces numeric columns per key with fun (default mean)", {
-    d <- data.frame(region = c("a", "a", "b"), fill = c(1, 3, 10))
-    agg <- aggregate_brain_values(
-      d,
-      "region",
-      mean,
-      keys,
-      warn_collapse = FALSE
-    )
-    expect_identical(agg$fill[agg$region == "a"], 2)
-    expect_identical(agg$fill[agg$region == "b"], 10)
-  })
-
-  it("honours a custom aggregating function", {
-    d <- data.frame(region = c("a", "a"), fill = c(1, 3))
-    expect_identical(
-      aggregate_brain_values(
-        d,
-        "region",
-        max,
-        keys,
-        warn_collapse = FALSE
-      )$fill,
-      3
-    )
-    expect_identical(
-      aggregate_brain_values(
-        d,
-        "region",
-        min,
-        keys,
-        warn_collapse = FALSE
-      )$fill,
-      1
-    )
-  })
-
-  it("takes the first value of non-numeric columns", {
-    d <- data.frame(
-      region = c("a", "a"),
-      grp = c("x", "y"),
-      stringsAsFactors = FALSE
-    )
-    expect_identical(
-      aggregate_brain_values(
-        d,
-        "region",
-        mean,
-        keys,
-        warn_collapse = FALSE
-      )$grp,
-      "x"
-    )
-  })
-
-  it("collapses to one row per key", {
-    d <- data.frame(region = c("a", "a", "b", "b"), fill = 1:4)
-    expect_identical(
-      nrow(aggregate_brain_values(
-        d,
-        "region",
-        mean,
-        keys,
-        warn_collapse = FALSE
-      )),
-      2L
-    )
-  })
-
-  it("errors clearly when fun does not reduce to a single value", {
-    d <- data.frame(region = c("a", "a"), fill = c(1, 3))
-    expect_error(
-      aggregate_brain_values(d, "region", range, keys, warn_collapse = FALSE),
-      "single value"
-    )
-  })
-})
-
 describe("join_brain_values()", {
   poly <- ggseg.formats::as_polygon_atlas(dk())
   flat <- prepare_polygon_atlas(poly)
@@ -370,5 +289,28 @@ describe("geom_brain() with no data (atlas identity drives the stat)", {
       ggplot2::ggplot() + geom_brain(atlas = dk())
     )$data[[1]]
     expect_identical(d$group, d$.feature_id)
+  })
+})
+
+describe("restore_key_columns()", {
+  it("renames the internal key aesthetics back to the atlas columns", {
+    data <- data.frame(.brain_key_label = c("a", "b"), v = 1:2)
+    expect_identical(
+      restore_key_columns(data, "label"),
+      data.frame(v = 1:2, label = c("a", "b"))
+    )
+  })
+
+  it("overwrites a same-named aesthetic, which is the user's text", {
+    data <- data.frame(.brain_key_label = "a", label = "txt", v = 1)
+    expect_identical(restore_key_columns(data, "label")$label, "a")
+  })
+
+  it("leaves data alone when no key travelled, including no keys at all", {
+    # paste0() with a zero-length `keys` returns the bare prefix, so an
+    # unguarded key_aes() selected a column that does not exist.
+    data <- data.frame(v = 1)
+    expect_identical(restore_key_columns(data, character(0)), data)
+    expect_identical(restore_key_columns(data, c("label", "region")), data)
   })
 })
