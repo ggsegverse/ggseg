@@ -1,5 +1,8 @@
 # ggseg (development version)
 
+- `geom_brain_text()` keys on every join key the data carries, as
+  `geom_brain()` does. Data keyed on `region` and `hemi` matched on `region`
+  alone, so a left-hemisphere row's text was also drawn on the right.
 - The row aggregation behind `geom_brain()` is now `ggseg.formats`'
   `aggregate_brain_values()` rather than a private copy of it, so `ggseg` and
   `ggseg3d` collapse duplicate rows the same way.

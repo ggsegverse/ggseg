@@ -262,14 +262,20 @@ select_labelled_regions <- function(anchors, user_data) {
     return(anchors)
   }
 
-  key <- intersect(c("label", "region"), names(user_data))
-  if (length(key) == 0) {
+  # Every join key the data carries, as `geom_brain()` uses them -- not the
+  # first one. Keying on `region` alone put a left-hemisphere row's text on
+  # the right hemisphere too, because an anatomically named parcellation
+  # shares `region` between the sides and `hemi` is what tells them apart.
+  key <- intersect(
+    brain_join_keys(),
+    intersect(names(user_data), names(anchors))
+  )
+  if (!any(c("label", "region") %in% key)) {
     cli::cli_abort(c(
       "{.arg data} has no column in common with the atlas.",
       "i" = "Key it on {.field label}, or on {.field region}."
     ))
   }
-  key <- key[1]
 
   # `.brain_row` is the caller's own row order, which `merge()` destroys and
   # which a per-label `nudge_x` is written against. A region drawn in four

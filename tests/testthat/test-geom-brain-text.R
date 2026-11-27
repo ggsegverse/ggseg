@@ -504,3 +504,29 @@ describe("geom_brain_text(nudge_x=, nudge_y=)", {
     )
   })
 })
+
+describe("a region-keyed label respects the hemisphere", {
+  # `dk` names its parcels anatomically, so `region` is shared between the
+  # sides and `hemi` is the only thing that separates them. Keying on
+  # `region` alone drew a left-only row's text on the right hemisphere too --
+  # a left/right error, not a cosmetic one.
+  it("labels only the hemisphere the data names", {
+    anchors <- brain_label_anchors(dk())
+    region <- anchors$region[!is.na(anchors$hemi)][1]
+    user_data <- data.frame(region = region, hemi = "left")
+
+    named <- select_labelled_regions(anchors, user_data)
+
+    expect_setequal(named$hemi, "left")
+    expect_gt(nrow(named), 0)
+  })
+
+  it("labels both hemispheres when the data names neither", {
+    anchors <- brain_label_anchors(dk())
+    region <- anchors$region[!is.na(anchors$hemi)][1]
+
+    named <- select_labelled_regions(anchors, data.frame(region = region))
+
+    expect_setequal(named$hemi, c("left", "right"))
+  })
+})
