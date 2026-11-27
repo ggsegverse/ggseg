@@ -1,6 +1,8 @@
 # ggseg (development version)
 
-- Follows ggseg.formats in renaming the atlas type `wm` to `white_matter`.
+- Follows ggseg.formats in renaming the atlas type `wm` to `white_matter`,
+  and reads the slice-drawn types from `atlas_types()` rather than listing
+  them, so a future type is drawn rather than refused.
 
 A major release. The atlas geometry now comes from the re-keyed
 `ggseg.formats` atlases (`>= 0.0.4.9008`), and `geom_brain()` has been rebuilt

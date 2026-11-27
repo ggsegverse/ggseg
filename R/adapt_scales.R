@@ -25,10 +25,10 @@ adapt_scales <- function(
   }
 
   atlas_type <- atlas_type_of(geobrain)
-  # TODO(I9): read this from ggseg.formats::atlas_types() once that export is
-  # on main (ggsegverse/ggseg.formats#136) -- written out, the list silently
-  # loses whichever type is added or renamed next.
-  slice_types <- c("subcortical", "tract", "cerebellar", "white_matter")
+  # The remainder of the vocabulary, not a copy of it: written out, the list
+  # silently loses whichever type ggseg.formats adds or renames next, and the
+  # omission shows up as an atlas being refused for no reason.
+  slice_types <- setdiff(ggseg.formats::atlas_types(), "cortical")
   if (identical(atlas_type, "cortical")) {
     adapt_scales_cortical(geobrain, position, aesthetics)
   } else if (atlas_type %in% slice_types) {
@@ -40,7 +40,7 @@ adapt_scales <- function(
   } else {
     cli::cli_abort(c(
       "Cannot build brain axis scales for atlas type {.val {atlas_type}}.",
-      "i" = "Supported types: {.val {c(\"cortical\", slice_types)}}."
+      "i" = "Supported types: {.val {ggseg.formats::atlas_types()}}."
     ))
   }
 }
